@@ -1,0 +1,393 @@
+/* Import the typography system */
+@import '../../styles/typography.css';
+
+/* Base Footer Styles */
+.hoomie-footer-container {
+  background: #f8f9fa;
+  color: #4a4a4a;
+  font-family: var(--font-primary);
+  padding: 60px 0 0;
+  position: relative;
+  border-top: 1px solid #e0e0e0;
+}
+
+.hoomie-footer-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #c5393a, #e57373);
+}
+
+.hoomie-footer-main {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 0 30px 40px;
+  position: relative;
+}
+
+/* Footer Columns */
+.hoomie-footer-col {
+  flex: 1 1 200px;
+  min-width: 200px;
+  margin-bottom: 30px;
+}
+
+.hoomie-footer-brand {
+  flex: 0 1 250px;
+  max-width: 300px;
+}
+
+.hoomie-footer-logo {
+  margin-bottom: 20px;
+  height: 50px; /* Adjust based on your logo's aspect ratio */
+  display: flex;
+  align-items: center;
+}
+
+.hoomie-logo-image {
+  height: 100%;
+  width: auto;
+  max-width: 200px; /* Adjust based on your logo's width */
+  object-fit: contain;
+}
+
+.hoomie-footer-logo::after {
+  content: '.';
+  color: #c5393a;
+  font-size: 2.5rem;
+  line-height: 0;
+}
+
+/* Footer Headings */
+.hoomie-footer-heading {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  position: relative;
+  padding-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.hoomie-footer-heading::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background: #c5393a;
+}
+
+/* Footer Links */
+.hoomie-footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.hoomie-footer-col li {
+  font-size: 1rem;
+  color: #6c757d;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  padding-left: 0;
+}
+
+.hoomie-footer-col li::before {
+  content: '→';
+  position: absolute;
+  left: -20px;
+  color: #c5393a;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.hoomie-footer-col li:hover {
+  color: #c5393a;
+  padding-left: 20px;
+}
+
+.hoomie-footer-col li:hover::before {
+  opacity: 1;
+  left: 0;
+}
+
+/* Connect Section */
+.hoomie-footer-connect {
+  min-width: 300px;
+  flex: 1 1 340px;
+}
+
+.hoomie-footer-form {
+  display: flex;
+  margin-bottom: 25px;
+  position: relative;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.hoomie-footer-input {
+  flex: 1;
+  padding: 14px 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px 0 0 6px;
+  font-size: 1rem;
+  background: #fff;
+  color: #333;
+  transition: all 0.3s ease;
+  border-right: none;
+}
+
+.hoomie-footer-input:focus {
+  outline: none;
+  border-color: #c5393a;
+  box-shadow: 0 0 0 2px rgba(197, 57, 58, 0.1);
+}
+
+.hoomie-footer-join-btn {
+  background: linear-gradient(135deg, #c5393a, #e57373);
+  color: white;
+  border: none;
+  border-radius: 0 6px 6px 0;
+  padding: 0 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hoomie-footer-join-btn:hover {
+  background: linear-gradient(135deg, #b33030, #d32f2f);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(197, 57, 58, 0.15);
+}
+
+/* Contact Info */
+.hoomie-footer-contact-row {
+  display: flex;
+  gap: 40px;
+  margin-top: 20px;
+}
+
+.hoomie-footer-contact-label {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hoomie-footer-contact-bold {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hoomie-footer-contact-bold a {
+  color: #2c3e50;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.hoomie-footer-contact-bold a:hover {
+  color: #c5393a;
+}
+
+/* Social Icons */
+.hoomie-footer-socials {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.hoomie-footer-social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #f8f9fa;
+  color: #4a4a4a;
+  font-size: 1.4rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Individual icon colors on hover */
+.hoomie-footer-social-icon:hover {
+  transform: translateY(-3px) scale(1.1);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.hoomie-footer-social-icon:nth-child(1):hover { /* LinkedIn */
+  background: #0077b5;
+  color: white;
+  border-color: #0077b5;
+}
+
+.hoomie-footer-social-icon:nth-child(2):hover { /* Facebook */
+  background: #4267B2;
+  color: white;
+  border-color: #4267B2;
+}
+
+.hoomie-footer-social-icon:nth-child(3):hover { /* Instagram */
+  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  color: white;
+  border-color: transparent;
+}
+
+/* Add subtle animation on hover */
+@keyframes iconBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.hoomie-footer-social-icon:hover {
+  animation: iconBounce 0.6s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hoomie-footer-socials {
+    margin-top: 25px;
+  }
+  
+  .hoomie-footer-social-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+  }
+}
+
+/* Bottom Bar */
+.hoomie-footer-bottom {
+  background: #f0f2f5;
+  padding: 20px 30px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  border-top: 1px solid #e0e0e0;
+}
+
+.hoomie-footer-bottom p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.hoomie-footer-bottom a {
+  color: #c5393a;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.hoomie-footer-bottom a:hover {
+  color: #a83030;
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .hoomie-footer-main {
+    padding: 0 20px 30px;
+  }
+  
+  .hoomie-footer-col {
+    flex: 1 1 160px;
+  }
+  
+  .hoomie-footer-connect {
+    flex: 1 1 100%;
+    max-width: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hoomie-footer-main {
+    gap: 20px;
+  }
+  
+  .hoomie-footer-col {
+    flex: 1 1 45%;
+  }
+  
+  .hoomie-footer-brand {
+    flex: 1 1 100%;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .hoomie-footer-heading {
+    text-align: center;
+  }
+  
+  .hoomie-footer-heading::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .hoomie-footer-contact-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .hoomie-footer-socials {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .hoomie-footer-col {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+  
+  .hoomie-footer-col li::before {
+    display: none;
+  }
+  
+  .hoomie-footer-col li:hover {
+    padding-left: 0;
+  }
+  
+  .hoomie-footer-form {
+    flex-direction: column;
+    background: transparent;
+    box-shadow: none;
+  }
+  
+  .hoomie-footer-input {
+    border-radius: 6px;
+    margin-bottom: 10px;
+    border: 1px solid #e0e0e0;
+  }
+  
+  .hoomie-footer-join-btn {
+    border-radius: 6px;
+    padding: 12px;
+  }
+}

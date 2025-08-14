@@ -1,0 +1,133 @@
+:root{
+  --tmxluxe-resi-red:#e6392e;
+  --tmxluxe-resi-text:#1b2430;
+  --tmxluxe-resi-muted:#6e7a89;
+  --tmxluxe-resi-border:#f1d0cc;
+  --tmxluxe-resi-soft:#fff6f4;
+  --tmxluxe-resi-shadow:0 10px 30px rgba(14,23,38,.06);
+}
+
+.tmxluxe-resi{
+  padding: 32px 16px 48px;
+  background:#ffffff;
+}
+
+.tmxluxe-resi-container{
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+.tmxluxe-resi-title{
+  text-align:center;
+  font-weight:500;
+  font-size: 25px;
+  color:#111;
+  margin: 4px 0 22px;
+}
+
+/* Outer bordered box */
+.tmxluxe-resi-box{
+  border: 2px solid var(--tmxluxe-resi-red);
+  border-radius: 16px;
+  background: #fff;
+  padding: 22px 22px 10px;
+  box-shadow: var(--tmxluxe-resi-shadow);
+}
+
+.tmxluxe-resi-item{
+  display:flex;
+  gap:14px;
+  padding: 14px 8px 18px;
+}
+
+.tmxluxe-resi-item + .tmxluxe-resi-item{
+  border-top: 1px solid #f4f5f7;
+  margin-top: 8px;
+  padding-top: 20px;
+}
+
+.tmxluxe-resi-avatar{
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  display:block;
+}
+
+.tmxluxe-resi-content{ flex:1; min-width:0; }
+
+.tmxluxe-resi-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom: 6px;
+}
+
+.tmxluxe-resi-name{
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--tmxluxe-resi-text);
+  margin: 0;
+}
+
+.tmxluxe-resi-date{
+  color: var(--tmxluxe-resi-muted);
+  font-size: 13px;
+}
+
+.tmxluxe-resi-stars{
+  display:flex;
+  gap:6px;
+  margin: 6px 0 10px;
+}
+
+.tmxluxe-resi-star{
+  font-size: 18px;
+  color: #ffb5b2;
+}
+
+.tmxluxe-resi-star.is-filled{
+  color: var(--tmxluxe-resi-red);
+}
+
+.tmxluxe-resi-text{
+  color: #2a2f36;
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 2px 0 10px;
+}
+
+.tmxluxe-resi-actions{
+  display:flex;
+  gap:18px;
+  align-items:center;
+  color:#2a2f36;
+  font-weight:600;
+}
+
+.tmxluxe-resi-act{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:#2b2f35;
+}
+
+.tmxluxe-resi-ic{
+  width: 18px;
+  height: 18px;
+  color:#2b2f35;
+}
+
+/* Responsive */
+@media (max-width: 720px){
+  .tmxluxe-resi-title{ font-size: 26px; }
+  .tmxluxe-resi-box{ padding: 16px 14px 8px; }
+  .tmxluxe-resi-item{ align-items:flex-start; }
+  .tmxluxe-resi-text{ font-size: 13.5px; }
+}
+
+@media (max-width: 460px){
+  .tmxluxe-resi-item{ gap:10px; }
+  .tmxluxe-resi-avatar{ width: 48px; height: 48px; }
+  .tmxluxe-resi-stars{ gap:5px; }
+}

@@ -1,0 +1,248 @@
+:root {
+  --tmxluxe-red: #e6392e;
+  --tmxluxe-dark: #0b1220;
+  --tmxluxe-text: #243041;
+  --tmxluxe-muted: #6b7788;
+  --tmxluxe-shadow: 0 10px 30px rgba(14, 23, 38, 0.08);
+  font-family: sans-serif;
+}
+
+/* Wrapper */
+.tmxluxe-banner {
+  background: radial-gradient(1200px 420px at -80px 60px, #fff1eb 0%, #ffffff 48%), #ffffff;
+  padding: 48px 24px;
+}
+#luxe4{
+    width: 540px;
+    height: 200px;
+}
+.tmxluxe-container {
+  max-width: 1160px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 32px;
+  align-items: start;
+  margin-top: 2rem;
+}
+
+/* Left column */
+.tmxluxe-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.tmxluxe-logo-mark {
+  font-family: cursive;
+  font-weight: 600;
+  font-size: 60px;
+  line-height: 1;
+  color: var(--tmxluxe-red);
+  letter-spacing: -2px;
+}
+
+.tmxluxe-logo-text {
+  font-weight: 700;
+  font-size: 56px;
+  letter-spacing: -1px;
+  color: #0b1526;
+}
+
+.tmxluxe-heading {
+  margin: 18px 0 16px;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--tmxluxe-text);
+  letter-spacing: 0.2px;
+}
+
+.tmxluxe-accent {
+  color: var(--tmxluxe-red);
+}
+
+.tmxluxe-subtext {
+  color: var(--tmxluxe-muted);
+  line-height: 1.8;
+  font-size: 16px;
+  max-width: 640px;
+}
+
+.tmxluxe-cta-row {
+  display: flex;
+  gap: 16px;
+  margin: 26px 0 28px;
+  flex-wrap: wrap;
+}
+
+.tmxluxe-btn {
+  padding: 14px 22px;
+  border-radius: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s ease;
+}
+
+.tmxluxe-btn-primary {
+  background: var(--tmxluxe-red);
+  color: #ffffff;
+  box-shadow: var(--tmxluxe-shadow);
+}
+
+.tmxluxe-btn-primary:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+.tmxluxe-btn-ghost {
+  background: #ffffff;
+  color: var(--tmxluxe-text);
+  border: 2px solid #eef0f3;
+}
+
+.tmxluxe-btn-ghost:hover {
+  background: #fafafa;
+}
+
+.tmxluxe-stats {
+  display: flex;
+  gap: 44px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+  max-width: 720px;
+}
+
+.tmxluxe-stat {
+  min-width: 140px;
+}
+
+.tmxluxe-stat-value {
+     font-size: 34px;
+    font-weight: 500;
+    color: var(--tmxluxe-red);
+    margin-bottom: 6px;
+}
+
+.tmxluxe-stat-label {
+  color: var(--tmxluxe-muted);
+  font-weight: 500;
+}
+
+/* Right column - image collage */
+.tmxluxe-right {
+  position: relative;
+}
+
+.tmxluxe-grid {
+  display: grid;
+  grid-template-columns: 1fr 0.85fr;
+  grid-template-rows: auto auto;
+  gap: 18px;
+}
+
+.tmxluxe-grid-large {
+  grid-row: 1 / 3;
+}
+
+.tmxluxe-grid-side {
+  display: grid;
+  gap: 18px;
+}
+
+.tmxluxe-grid-wide {
+  grid-column: 1 / 3;
+}
+
+.tmxluxe-card {
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--tmxluxe-shadow);
+}
+
+.tmxluxe-card img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+/* Floating badge */
+.tmxluxe-badge {
+  position: absolute;
+  right: 8px;
+  bottom: -10px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 12px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  box-shadow: var(--tmxluxe-shadow);
+}
+
+.tmxluxe-badge-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #fff2ef;
+  color: var(--tmxluxe-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.tmxluxe-badge-title {
+  color: var(--tmxluxe-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tmxluxe-badge-sub {
+  color: var(--tmxluxe-text);
+  font-weight: 800;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .tmxluxe-container {
+    grid-template-columns: 1fr;
+  }
+  .tmxluxe-right {
+    order: -1;
+  }
+  .tmxluxe-logo-text {
+    font-size: 48px;
+  }
+  .tmxluxe-logo-mark {
+    font-size: 64px;
+  }
+}
+
+@media (max-width: 640px) {
+  .tmxluxe-heading {
+    font-size: 22px;
+  }
+  .tmxluxe-subtext {
+    font-size: 15px;
+  }
+  .tmxluxe-stats {
+    gap: 24px;
+  }
+  .tmxluxe-stat-value {
+    font-size: 32px;
+  }
+  .tmxluxe-logo-text {
+    font-size: 40px;
+  }
+  .tmxluxe-logo-mark {
+    font-size: 56px;
+  }
+}

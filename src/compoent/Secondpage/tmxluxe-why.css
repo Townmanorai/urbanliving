@@ -1,0 +1,128 @@
+:root {
+  --tmxluxe-why-red: #fff1eb;
+  --tmxluxe-why-text: #243041;
+  --tmxluxe-why-muted: #6b7788;
+  --tmxluxe-why-soft: #fff1eb;
+  --tmxluxe-why-border: #f0f0f0;
+  --tmxluxe-why-shadow: 0 16px 36px rgba(14, 23, 38, 0.06);
+  
+}
+
+/* Section shell */
+.tmxluxe-why {
+  padding: 56px 24px 72px;
+  background: #ffffff;
+  font-family: sans-serif;
+}
+
+.tmxluxe-why-container {
+  max-width: 1160px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Heading */
+.tmxluxe-why-title {
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: 500;
+  color: var(--tmxluxe-why-text);
+  margin: 0 0 10px;
+}
+
+.tmxluxe-why-sub {
+  color: var(--tmxluxe-why-muted);
+  font-size: 18px;
+  line-height: 1.7;
+  max-width: 820px;
+  margin: 0 auto 28px;
+}
+
+/* Grid */
+.tmxluxe-why-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+  margin-top: 22px;
+}
+
+/* Card */
+.tmxluxe-why-card {
+  text-align: left;
+  background: #ffffff;
+  border: 1px solid var(--tmxluxe-why-border);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: var(--tmxluxe-why-shadow);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.tmxluxe-why-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 44px rgba(14, 23, 38, 0.08);
+}
+
+/* Icon styles */
+.tmxluxe-why-iconwrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: #ffeceb; /* soft pink */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.tmxluxe-why-iconwrap.is-primary {
+  background: var(--tmxluxe-why-red); /* solid red for the third card */
+}
+
+.tmxluxe-why-icon {
+  font-size: 26px;
+  color: var(--tmxluxe-why-red);
+  line-height: 1;
+}
+
+.tmxluxe-why-icon.is-contrast {
+  color: #ffffff; /* white icon on red background */
+}
+
+/* Card text */
+.tmxluxe-why-card-title {
+  font-size: 20px;
+  line-height: 1.35;
+  font-weight: 500;
+  color: var(--tmxluxe-why-text);
+  margin: 4px 0 12px;
+}
+
+.tmxluxe-why-card-text {
+  color: var(--tmxluxe-why-muted);
+  line-height: 1.8;
+  font-size: 15.5px;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .tmxluxe-why-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .tmxluxe-why-title {
+    font-size: 32px;
+  }
+  .tmxluxe-why-sub {
+    font-size: 16px;
+    margin-bottom: 22px;
+  }
+  .tmxluxe-why-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .tmxluxe-why-card {
+    padding: 22px;
+  }
+}

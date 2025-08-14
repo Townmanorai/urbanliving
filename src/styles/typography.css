@@ -1,0 +1,142 @@
+:root {
+  /* Font Families */
+  --font-primary: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', sans-serif;
+  --font-secondary: 'Merriweather', 'Georgia', serif;
+  
+  /* Base Font Size (for 1rem) */
+  --base-font-size: 16px;
+  
+  /* Line Heights */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-loose: 1.7;
+  
+  /* Font Weights */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Type Scale (modular scale 1.25) */
+  --text-xs: 0.8rem;    /* 12.8px */
+  --text-sm: 1rem;      /* 16px */
+  --text-base: 1.25rem; /* 20px */
+  --text-lg: 1.563rem;  /* 25px */
+  --text-xl: 1.953rem;  /* 31.25px */
+  --text-2xl: 2.441rem; /* 39.06px */
+  --text-3xl: 3.052rem; /* 48.83px */
+  
+  /* Responsive Type Scale */
+  @media (min-width: 768px) {
+    --text-xs: 0.8rem;    /* 12.8px */
+    --text-sm: 1rem;      /* 16px */
+    --text-base: 1.25rem; /* 20px */
+    --text-lg: 1.563rem;  /* 25px */
+    --text-xl: 1.953rem;  /* 31.25px */
+    --text-2xl: 2.441rem; /* 39.06px */
+    --text-3xl: 3.815rem; /* 61.04px */
+  }
+}
+
+/* Base Typography */
+body {
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  line-height: var(--line-height-normal);
+  font-weight: var(--font-weight-regular);
+  color: #333;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings */
+h1, .h1 {
+  font-size: var(--text-3xl);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: 1.5rem;
+  color: #1a1a1a;
+}
+
+h2, .h2 {
+  font-size: var(--text-2xl);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: 1.25rem;
+  color: #1f1f1f;
+}
+
+h3, .h3 {
+  font-size: var(--text-xl);
+  line-height: var(--line-height-tight);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: 1rem;
+  color: #2a2a2a;
+}
+
+h4, .h4 {
+  font-size: var(--text-lg);
+  line-height: var(--line-height-normal);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: 0.75rem;
+  color: #333;
+}
+
+/* Paragraphs */
+p {
+  margin-bottom: 1.25rem;
+  line-height: var(--line-height-loose);
+  color: #4a4a4a;
+  max-width: 65ch;
+}
+
+/* Small Text */
+.small, small {
+  font-size: var(--text-sm);
+  line-height: var(--line-height-normal);
+  color: #666;
+}
+
+/* Links */
+a {
+  color: var(--primary-color, #c5393a);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--primary-hover, #a83030);
+  text-decoration: underline;
+}
+
+/* Buttons */
+button, .btn {
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Form Elements */
+input, textarea, select {
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+  line-height: var(--line-height-normal);
+}
+
+/* Utility Classes */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+.text-uppercase { text-transform: uppercase; }
+.text-lowercase { text-transform: lowercase; }
+.text-capitalize { text-transform: capitalize; }
+.font-light { font-weight: var(--font-weight-light); }
+.font-regular { font-weight: var(--font-weight-regular); }
+.font-medium { font-weight: var(--font-weight-medium); }
+.font-semibold { font-weight: var(--font-weight-semibold); }
+.font-bold { font-weight: var(--font-weight-bold); }

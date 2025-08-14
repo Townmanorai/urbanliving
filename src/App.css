@@ -1,0 +1,6 @@
+.body{
+    overflow-x: hidden !important;
+}
+#root{
+     overflow-x: hidden !important;
+}
