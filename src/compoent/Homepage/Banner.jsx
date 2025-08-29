@@ -1,5 +1,5 @@
 import React from 'react';
-import './banner.css';
+import './Banner.css';
 import { IoArrowForwardSharp, IoSearch } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 
