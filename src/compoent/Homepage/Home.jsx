@@ -1,16 +1,19 @@
 import React from 'react'
-import Navabar from './Navabar'
+
 import Banner from './Banner'
 import TMFeatures from './TMFeatures'
 import BookingSteps from './BookingSteps'
 import ListYourPropertyTM from './ListYourPropertyTM'
 import HoomieFooter from './HoomieFooter'
+import Navbar from './Navbar'
+
 
 function Home() {
   return (
    <>
-   <Navabar/>
+   <Navbar/>
    <Banner/>
+   {/* <HowItWorks/> */}
    <TMFeatures/>
    <BookingSteps/>
    <ListYourPropertyTM/>

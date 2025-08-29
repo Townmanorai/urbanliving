@@ -25,10 +25,11 @@
 }
 
 .tmxluxe-prop-title{
-  font-size: 22px;
-  font-weight: 700;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 28px;
+  font-weight: 500;
   color: var(--tmxluxe-prop-text);
-  margin: 0;
+  margin: 0px;
 }
 
 .tmxluxe-prop-chevron{
@@ -84,7 +85,7 @@
   border-radius: 999px;
   padding: 6px 12px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 400px;
   box-shadow: 0 6px 16px rgba(0,0,0,.08);
 }
 
@@ -118,6 +119,7 @@
   font-size: 16px;
   font-weight: 700;
   color: var(--tmxluxe-prop-text);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Meta row */
@@ -132,6 +134,7 @@
   color:#111;
   font-weight: 600;
   font-size: 13.5px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .tmxluxe-prop-rating{
@@ -164,6 +167,7 @@
 }
 
 .tmxluxe-prop-cta {
+  margin: 20px;;
   display: inline-flex;
   align-items: center;
   gap: 10px;

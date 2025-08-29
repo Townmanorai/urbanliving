@@ -1,0 +1,22 @@
+.divider-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 40px 0;
+  }
+  
+  .divider-line {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(to right, transparent, #000, transparent);
+  }
+  
+  .divider-text {
+    font-size: 2.5rem;
+    font-weight: 500;
+    margin: 0 15px;
+    color: #000;
+    white-space: nowrap;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  }
+  

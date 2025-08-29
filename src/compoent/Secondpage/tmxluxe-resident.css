@@ -20,9 +20,10 @@
 .tmxluxe-resi-title{
   text-align:center;
   font-weight:500;
-  font-size: 25px;
+  font-size: 30px;
   color:#111;
   margin: 4px 0 22px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Outer bordered box */
@@ -64,6 +65,7 @@
 }
 
 .tmxluxe-resi-name{
+  font-family: 'sogoe UI';
   font-size: 16px;
   font-weight: 600;
   color: var(--tmxluxe-resi-text);
@@ -91,6 +93,7 @@
 }
 
 .tmxluxe-resi-text{
+  font-family:'Sagoe UI' ;
   color: #2a2f36;
   font-size: 14px;
   line-height: 1.7;

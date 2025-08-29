@@ -1,65 +1,59 @@
 // BookingSteps.jsx
 import React from "react";
 import "./BookingSteps.css";
+import Divider from "./DIvider";
+
+// Import icons from react-icons (example: Font Awesome & Material icons)
+import { FaHome, FaCalendarAlt, FaUpload, FaCreditCard } from "react-icons/fa";
+import { BsCameraFill } from "react-icons/bs";
 
 const steps = [
   {
     title: "Select Property",
-    desc: "Browse and select your preferred property from our extensive listings.",
-    img: '/icon1.png',
+    desc: "Browse and select your preferred property from our listings.",
+    icon: <FaHome size={54} color="#a52b2b" />
+  
   },
   {
-    title: "Choose Date & Enter Data",
-    desc: "Pick your ideal dates and provide your booking details securely.",
-    img: '/icon2.png',
-    down: 'down'
+    title: "Choose Date and Enter Data",
+    desc: "Pick your dates and provide your booking details securely.",
+    icon: <FaCalendarAlt size={54} color="#a52b2b"/>,
+    down: "down",
   },
   {
     title: "Upload Your Photo",
-    desc: "Share a photo for verification and a personalized experience.",
-    img: '/icon3.png',
+    desc: "Upload a photo for verification and a personalized experience.",
+    icon:<BsCameraFill size={54} color="#a52b2b"  />
   },
   {
     title: "Make Payment",
-    desc: "Complete your booking with our secure payment gateway.",
-    img: '/icon4.png',
-    down: 'down'
+    desc: "Pay securely and receive instant booking confirmation.",
+    icon: <FaCreditCard size={54} color="#a52b2b" />,
+    down: "down",
   },
 ];
 
 const BookingSteps = () => (
-  <section className="booking-steps-container" id="how-it-works">
-    <div className="booking-steps-header">
-      <h2 className="booking-steps-title">How It Works</h2>
-      <div className="booking-steps-subtitle-container">
-        <p className="booking-steps-subtitle">
-          Book your stay in 4 easy steps using our seamless online process.
-        </p>
-      </div>
-    </div>
-    
+  <div className="booking-steps-container">
+    <Divider text="How We Work" />
+    <p className="booking-steps-subtitle">
+      Book your stay in 4 easy steps using our seamless online process.
+    </p>
     <div className="booking-steps-flow">
       {steps.map((step, idx) => (
-        <div className={`booking-step ${step.down || ''}`} key={step.title}>
-          <div className="booking-step-icon">
-            <img 
-              src={step.img} 
-              alt={step.title} 
-              className="step-icon"
-              loading="lazy"
-            />
-            {idx < steps.length - 1 && (
-              <div className="booking-step-connector" />
-            )}
-          </div>
+        <div className={`booking-step ${step.down}`} key={step.title}>
+          <div className="booking-step-icon">{step.icon}</div>
           <div className="booking-step-content">
             <h3 className="booking-step-title">{step.title}</h3>
             <p className="booking-step-desc">{step.desc}</p>
           </div>
+          {idx < steps.length - 1 && (
+            <div className="booking-step-dotted-line" />
+          )}
         </div>
       ))}
     </div>
-  </section>
+  </div>
 );
 
 export default BookingSteps;

@@ -29,7 +29,7 @@ function LuxeResidentReviews() {
           <article className="tmxluxe-resi-item">
             <img
               className="tmxluxe-resi-avatar"
-              src="https://placehold.co/64x64/png"
+              src="/r4.png"
               alt="avatar"
             />
             <div className="tmxluxe-resi-content">
@@ -61,7 +61,7 @@ function LuxeResidentReviews() {
           <article className="tmxluxe-resi-item">
             <img
               className="tmxluxe-resi-avatar"
-              src="https://placehold.co/64x64/png"
+              src="/r3.png"
               alt="avatar"
             />
             <div className="tmxluxe-resi-content">

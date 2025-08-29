@@ -1,11 +1,16 @@
-import React from 'react'
-import './LuxeBanner.css'
+import React from 'react';
+import './LuxeBanner.css';
+import { FaHotel } from 'react-icons/fa6';
+import { FaMapMarkerAlt } from 'react-icons/fa';
+import { FaBellConcierge } from 'react-icons/fa6';
+
 function LuxeBanner() {
     return (
-   <>
-            <div className="tmxluxe-banner">
+        <>
+            {/* Hero Section */}
+            <div className="tmxluxe-hero">
                 <div className="tmxluxe-container">
-                    <div className="tmxluxe-left">
+                    <div className="tmxluxe-hero-content">
                         <div className="tmxluxe-logo-row">
                             <span className="tmxluxe-logo-mark">TM</span>
                             <span className="tmxluxe-logo-text">Luxe</span>
@@ -13,57 +18,52 @@ function LuxeBanner() {
                         <h1 className="tmxluxe-heading">
                             Where sophistication meets ultimate <span className="tmxluxe-accent">comfort</span>
                         </h1>
-                        <p className="tmxluxe-subtext">
-                            TM Luxe offers premium hotel services for discerning luxury travelers in major cities and recreational areas. Experience world-class hospitality with unparalleled comfort and exceptional attention to detail.
-                        </p>
-
-                        <div className="tmxluxe-cta-row">
-                            <a className="tmxluxe-btn tmxluxe-btn-primary" href="#">Explore Properties</a>
-                            <a className="tmxluxe-btn tmxluxe-btn-ghost" href="#">Watch Video</a>
-                        </div>
-
-                        <div className="tmxluxe-stats">
-                            <div className="tmxluxe-stat">
-                                <div className="tmxluxe-stat-value">150+</div>
-                                <div className="tmxluxe-stat-label">Luxury Properties</div>
-                            </div>
-                            <div className="tmxluxe-stat">
-                                <div className="tmxluxe-stat-value">15k+</div>
-                                <div className="tmxluxe-stat-label">Happy Guests</div>
-                            </div>
-                            <div className="tmxluxe-stat">
-                                <div className="tmxluxe-stat-value">4.9</div>
-                                <div className="tmxluxe-stat-label">Guest Rating</div>
-                            </div>
-                        </div>
+                    <div id ='tmxluxe-subtext_1'>
+                  
                     </div>
+                    
+                    </div>
+                    <div id='cta_button'>
+                    <p class="tmxluxe-subtext">
+  TM Luxe offers premium stays designed for travelers seeking elegance, privacy, and personalized service. Every space blends modern luxury with warm hospitality,<br></br>
+  ensuring an unforgettable experience from check-in to check-out.</p>
+                    <a href="#" className="tmxluxe-cta">Book your Luxury stay</a>
+                    </div>
+                    <h2 className="tmxluxe-section-title">Why choose TM Luxe?</h2>
+                </div>
+            </div>
 
-                    <div className="tmxluxe-right">
-                        <div className="tmxluxe-grid">
-                            <div className="tmxluxe-grid-large tmxluxe-card">
-                                <img src="/l1.png" alt="Lobby" />
+            {/* Why Choose Section */}
+            <div className="tmxluxe-why-choose">
+                <div className="tmxluxe-container">
+                
+                    <div className="tmxluxe-features">
+                        <div className="tmxluxe-feature">
+                            <div className="tmxluxe-feature-icon">
+                                <FaHotel />
                             </div>
-                            <div className="tmxluxe-grid-side">
-                                <div className="tmxluxe-card"><img src="/l3.png" alt="Pool" /></div>
-                                <div className="tmxluxe-card"><img src="/l5.png" alt="Room" /></div>
-                            </div>
-                            <div className="tmxluxe-grid-wide tmxluxe-card">
-                                <img src="/l2.webp" alt="Dining" id='luxe4'/>
-                            </div>
+                            <h3>Sophisticated Interiors</h3>
+                            <p>Carefully curated spaces that blend modern design with ultimate comfort.</p>
                         </div>
-
-                        <div className="tmxluxe-badge">
-                            <div className="tmxluxe-badge-icon">⚙</div>
-                            <div>
-                                <div className="tmxluxe-badge-title">Trusted by</div>
-                                <div className="tmxluxe-badge-sub">10,000+ Travelers</div>
+                        <div className="tmxluxe-feature">
+                            <div className="tmxluxe-feature-icon">
+                                <FaMapMarkerAlt />
                             </div>
+                            <h3>Prime Location</h3>
+                            <p>Strategically located in the heart of the city's most vibrant districts.</p>
+                        </div>
+                        <div className="tmxluxe-feature">
+                            <div className="tmxluxe-feature-icon">
+                                <FaBellConcierge />
+                            </div>
+                            <h3>Exceptional Services</h3>
+                            <p>24/7 personalized service to anticipate and fulfill your every need.</p>
                         </div>
                     </div>
                 </div>
             </div>
-            </>
-            )
+        </>
+    )
 }
 
-            export default LuxeBanner
+export default LuxeBanner
