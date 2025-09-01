@@ -7,163 +7,195 @@
   --shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* Body */
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
+/* Navbar */
+.navbar {
+  width: 100%;
+  padding: 2.5rem 3rem;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1000;
+  min-height: 80px;
 }
 
-/* Top Bar with Logo + Sign Up */
-.top-bar {
-  position: relative; /* Change from fixed to relative */
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100px;
-  background: transparent;
+.navbar-content {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0 10px;
-  box-shadow: none; /* remove shadow while scrolling */
-  z-index: 1002;
-  margin-bottom: 20px; /* space below for content */
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  height: 100%;
 }
 
-.top-logo {
-  height: 160px;
+/* Hamburger Menu Toggle */
+.menu-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 40px;
+  height: 40px;
+  z-index: 100;
+}
+
+.hamburger-line {
+  display: block;
+  width: 25px;
+  height: 2px;
+  background-color: #333;
+  transition: all 0.3s ease;
+}
+
+.menu-toggle.active .hamburger-line:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.menu-toggle.active .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.active .hamburger-line:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Logo */
+.logo {
+  height: 150px;
   width: auto;
-  max-width: 220px;
+  position: absolute;
+  left: 50%;
+  top: 10%;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease;
   object-fit: contain;
-  border-radius: 10px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  background: transparent;
 }
 
+.logo:hover {
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+/* Sign Up Button */
 .signup-btn {
-  position: absolute;
-  right: 30px;
   background: var(--primary-color);
   color: white;
-  padding: 10px 25px;
-  border-radius: 25px;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 50px;
   font-weight: 500;
   cursor: pointer;
-  border: none;
   transition: all 0.3s ease;
 }
 
 .signup-btn:hover {
   background: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 
-    0 2px 4px rgba(207, 21, 24, 0.5),
-    0 4px 8px rgba(27, 1, 1, 0.3),
-    0 8px 12px rgba(27, 1, 1, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-
-/* Sidebar */
-.sidebar {
-  margin-top: -26px;
+/* Dropdown Menu */
+.dropdown-menu {
   position: fixed;
+  top: 100px;
   left: 0;
-  height: calc(100% - 100px);
-  width: 60px;
-  background: var(--bg-color);
-  border-right: 1px solid #eee;
+  right: 0;
+  max-height: 60vh;
+  overflow-y: auto;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 99;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+  padding: 1rem 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 20px;
-  transition: width 0.3s;
-  box-shadow: var(--shadow);
-  z-index: 1000;
-}
-
-.sidebar.expanded {
-  width: 220px;
-}
-
-/* Toggle Button */
-.sidebar .toggle-btn {
-  width: 30px;
-  height: 30px;
-  background: var(--primary-color);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 20px;
-  margin-bottom: 20px;
+  text-align: center;
 }
 
-/* Nav Items */
-.nav-item {
+.dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.menu-item {
+  padding: 1rem 2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
   width: 100%;
-  padding: 15px 10px;
+  text-align: center;
+  font-size: 1.1rem;
+  color: #333;
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--text-color);
-  cursor: pointer;
-  border-radius: 8px;
-  transition: var(--transition);
   justify-content: center;
 }
 
-.nav-item:hover {
-  background: var(--primary-color);
-  color: white;
+.menu-item:hover {
+  background: #f8f9fa;
+  color: #c5393a;
 }
 
-.nav-icon {
-  font-size: 20px;
+.menu-icon {
+  margin-right: 0.75rem;
+  font-size: 1.1rem;
 }
 
-.nav-text {
-  display: inline-block;
+.menu-text {
+  font-size: 1em;
+  color: #333;
+  min-width: 200px;
+  overflow: hidden;
+  z-index: 1001;
+  animation: fadeIn 0.2s ease-out;
 }
 
-/* When collapsed */
-.sidebar:not(.expanded) .nav-text {
-  display: none;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Content */
-.content {
-  margin-left: 60px;
- 
-  transition: margin-left 0.3s;
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.sidebar.expanded ~ .content {
-  margin-left: 220px;
+.menu-item:hover {
+  background-color: #f8f8f8;
+}
+
+.menu-icon {
+  margin-right: 0.75rem;
+  font-size: 1.1rem;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .sidebar {
-    top: 100px;
-    width: 30px;
+  .navbar {
+    padding: 0.75rem 1rem;
   }
-  .sidebar.expanded {
-    width: 180px;
+  
+  .logo {
+    height: 35px;
   }
-  .content {
-    margin-left: 0;
-  }
-  .sidebar.expanded ~ .content {
-    margin-left: 180px;
-  }
-
+  
   .signup-btn {
-    right: 20px;
-    padding: 8px 20px;
+    padding: 0.4rem 1.2rem;
+    font-size: 0.9rem;
+  }
+  
+  .dropdown-menu {
+    width: calc(100% - 2rem);
+    left: 1rem;
   }
 }
