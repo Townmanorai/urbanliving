@@ -2,6 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import { CheckCircle, XCircle, UploadCloud, Loader, ChevronLeft, ChevronRight } from 'lucide-react';
 import './Payment.css';
 import { MdCurrencyRupee } from 'react-icons/md';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import Cookies from 'js-cookie';
+import { format, differenceInDays } from 'date-fns';
 
 // Calendar Component
 const Calendar = ({ selectedDates, onDateSelect, minDate = new Date() }) => {
@@ -170,7 +174,7 @@ function Payment() {
   // Phone & OTP state
   const [phoneDigits, setPhoneDigits] = useState(Array(10).fill(''));
   const [showOtpInputs, setShowOtpInputs] = useState(false);
-  const [otpDigits, setOtpDigits] = useState(Array(4).fill(''));
+  const [otpDigits, setOtpDigits] = useState(Array(6).fill(''));
   const [otpError, setOtpError] = useState('');
   const phoneInputsRef = useRef([]);
   const otpInputsRef = useRef([]);
@@ -192,6 +196,30 @@ function Payment() {
 
   // References for file upload
   const fileInputRef = useRef(null);
+
+  // Additional state for API integration
+  const [clientId, setClientId] = useState('');
+  const [phoneVerificationData, setPhoneVerificationData] = useState(null);
+  const [bookingId, setBookingId] = useState(null);
+  const [photoUploaded, setPhotoUploaded] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  // Get user data from localStorage and cookies
+  const roomId = localStorage.getItem('roomId');
+  const userId = localStorage.getItem('propertyid');
+  const token = Cookies.get('jwttoken');
+  let username = '';
+  
+  if (token) {
+    try {
+      const decodedToken = jwtDecode(token);
+      username = decodedToken.username;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+    }
+  }
 
   // Progress bar steps
   const steps = [
@@ -233,7 +261,7 @@ function Payment() {
       
       const pricePerNight = 3400; // Sample price
       const subtotal = diffDays * pricePerNight;
-      const gst = subtotal * 0.18; // 18% GST
+      const gst = subtotal * 0.12; // 18% GST
       const total = subtotal + gst;
 
       setPricing({ subtotal, gst, total });
@@ -272,29 +300,82 @@ function Payment() {
   };
 
   // Process the uploaded file
-  const handleFile = (file) => {
+  const handleFile = async (file) => {
     if (file.type.startsWith('image/')) {
-      const photoUrl = URL.createObjectURL(file);
       setIsPhotoUploading(true);
-      setTimeout(() => {
+      setUploading(true);
+      
+      const formData = new FormData();
+      formData.append('images', file);
+      
+      try {
+        const response = await fetch('https://www.townmanor.ai/api/image/aws-upload-owner-images', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        const data = await response.json();
+        console.log(data);
+        
+        if (!data || !data.fileUrls || data.fileUrls.length === 0) {
+          throw new Error('Image URL not found in upload response.');
+        }
+
+        const imageUrl = data.fileUrls[0];
+        const photoUrl = imageUrl;
+        
         setFormData({ ...formData, uploadedPhoto: photoUrl });
+        setPhotoUploaded(true);
+        showAlert('Photo uploaded successfully!');
+
+      } catch (error) {
+        console.error('Error uploading photo:', error);
+        showAlert('Failed to upload photo. ' + (error.message || 'An unknown error occurred.'));
+      } finally {
         setIsPhotoUploading(false);
-      }, 1000); // Simulate upload time
+        setUploading(false);
+      }
     } else {
-      alert('Please upload a valid image file.');
+      showAlert('Please upload a valid image file.');
     }
   };
 
   // Handle verification logic
-  const handleSendOtp = () => {
+  const handleSendOtp = async () => {
     const phone = phoneDigits.join('');
-    if (phone.length === 10) {
-      setShowOtpInputs(true);
-      setOtpDigits(Array(4).fill(''));
-      setOtpError('');
-      setTimeout(() => {
-        if (otpInputsRef.current[0]) otpInputsRef.current[0].focus();
-      }, 0);
+    if (!phone || !/^\d{10}$/.test(phone)) {
+      showAlert('Please enter a valid 10-digit phone number.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await axios.post('https://kyc-api.surepass.io/api/v1/telecom/generate-otp', {
+        id_number: phone
+      }, {
+        headers: {
+          'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxMDE0NjA5NiwianRpIjoiNmM0YWMxNTMtNDE2MS00YzliLWI4N2EtZWIxYjhmNDRiOTU5IiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LnVzZXJuYW1lXzJ5MTV1OWk0MW10bjR3eWpsaTh6b2p6eXZiZEBzdXJlcGFzcy5pbyIsIm5iZiI6MTcxMDE0NjA5NiwiZXhwIjoyMzQwODY2MDk2LCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsidXNlciJdfX0.DfipEQt4RqFBQbOK29jbQju3slpn0wF9aoccdmtIsPg'
+        }
+      });
+
+             if (response.data.success) {
+         setClientId(response.data.data.client_id);
+         setShowOtpInputs(true);
+         setOtpDigits(Array(6).fill(''));
+         setOtpError('');
+         showAlert('OTP sent successfully!');
+         setTimeout(() => {
+           if (otpInputsRef.current[0]) otpInputsRef.current[0].focus();
+         }, 0);
+       } else {
+        showAlert('Failed to send OTP. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error generating OTP:', error);
+      showAlert('An error occurred while sending OTP. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -304,16 +385,46 @@ function Payment() {
       next[index] = value;
       setOtpDigits(next);
       setOtpError('');
-      if (value && index < 3) {
+      if (value && index < 5) {
         otpInputsRef.current[index + 1]?.focus();
       }
-      if (next.join('').length === 4) {
-        if (next.join('') === '4173') {
-          setFormData(prev => ({ ...prev, phoneOtpVerified: true }));
-        } else {
-          setOtpError('Invalid OTP. Try 4173');
-        }
+      if (next.join('').length === 6) {
+        handleSubmitOtp(next.join(''));
       }
+    }
+  };
+
+  const handleSubmitOtp = async (otpValue) => {
+    if (!otpValue || otpValue.length !== 6) {
+      showAlert('Please enter the OTP.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await axios.post('https://kyc-api.surepass.io/api/v1/telecom/submit-otp', {
+        client_id: clientId,
+        otp: otpValue
+      }, {
+        headers: {
+          'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxMDE0NjA5NiwianRpIjoiNmM0YWMxNTMtNDE2MS00YzliLWI4N2EtZWIxYjhmNDRiOTU5IiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LnVzZXJuYW1lXzJ5MTV1OWk0MW10bjR3eWpsaTh6b2p6eXZiZEBzdXJlcGFzcy5pbyIsIm5iZiI6MTcxMDE0NjA5NiwiZXhwIjoyMzQwODY2MDk2LCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsidXNlciJdfX0.DfipEQt4RqFBQbOK29jbQju3slpn0wF9aoccdmtIsPg'
+        }
+      });
+
+      if (response.data.success) {
+        setFormData(prev => ({ ...prev, phoneOtpVerified: true }));
+        setShowOtpInputs(false);
+        setPhoneVerificationData(response.data);
+        showAlert('Phone number verified successfully!');
+      } else {
+        setOtpError('Invalid OTP. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting OTP:', error);
+      setOtpError('An error occurred while verifying OTP. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -340,13 +451,82 @@ function Payment() {
     }
   };
 
-  const handleVerifyAadhaar = () => {
-    if (!aadhaarNumber || formData.aadhaarVerified) return;
+  const handleVerifyAadhaar = async () => {
+    if (!aadhaarNumber || !/^\d{12}$/.test(aadhaarNumber)) {
+      showAlert('Please enter a valid 12-digit Aadhar number.');
+      return;
+    }
+
     setIsAadhaarLoading(true);
-    setTimeout(() => {
+
+    const pollAadhaarStatus = async (clientId, retries = 5) => {
+      if (retries === 0) {
+        showAlert('Aadhaar verification is taking longer than usual. Please try again later.');
+        setIsAadhaarLoading(false);
+        return;
+      }
+
+      try {
+        const statusResponse = await axios.get(
+          `https://kyc-api.surepass.io/api/v1/async/status/${clientId}`,
+          {
+            headers: {
+              'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxMDE0NjA5NiwianRpIjoiNmM0YWMxNTMtNDE2MS00YzliLWI4N2EtZWIxYjhmNDRiOTU5IiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LnVzZXJuYW1lXzJ5MTV1OWk0MW10bjR3eWpsaTh6b2p6eXZiZEBzdXJlcGFzcy5pbyIsIm5iZiI6MTcxMDE0NjA5NiwiZXhwIjoyMzQwODY2MDk2LCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsidXNlciJdfX0.DfipEQt4RqFBQbOK29jbQju3slpn0wF9aoccdmtIsPg',
+            },
+          }
+        );
+
+        const statusData = statusResponse.data;
+        if (statusData && statusData.data.status === 'success') {
+          if (statusData.data.api_resp.success) {
+            setFormData(prev => ({ ...prev, aadhaarVerified: true }));
+            showAlert('Aadhar verified successfully!');
+          } else {
+            showAlert(`Aadhar verification failed: ${statusData.data.api_resp.message} please check addhar number once again`);
+          }
+          setIsAadhaarLoading(false);
+        } else if (statusData && statusData.data.status === 'pending') {
+          setTimeout(() => pollAadhaarStatus(clientId, retries - 1), 3000);
+        } else {
+          showAlert('Aadhar verification failed. Please check the number and try again.');
+          setIsAadhaarLoading(false);
+        }
+      } catch (error) {
+        console.error('Error fetching Aadhar status:', error);
+        showAlert('An error occurred while checking Aadhar verification status.');
+        setIsAadhaarLoading(false);
+      }
+    };
+
+    try {
+      const submitResponse = await axios.post(
+        'https://kyc-api.surepass.io/api/v1/async/submit',
+        {
+          type: 'aadhaar_validation',
+          body: {
+            id_number: aadhaarNumber,
+          },
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxMDE0NjA5NiwianRpIjoiNmM0YWMxNTMtNDE2MS00YzliLWI4N2EtZWIxYjhmNDRiOTU5IiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LnVzZXJuYW1lXzJ5MTV1OWk0MW10bjR3eWpsaTh6b2p6eXZiZEBzdXJlcGFzcy5pbyIsIm5iZiI6MTcxMDE0NjA5NiwiZXhwIjoyMzQwODY2MDk2LCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsidXNlciJdfX0.DfipEQt4RqFBQbOK29jbQju3slpn0wF9aoccdmtIsPg',
+          },
+        }
+      );
+
+      if (submitResponse.data && submitResponse.data.success) {
+        const clientId = submitResponse.data.data.client_id;
+        pollAadhaarStatus(clientId);
+      } else {
+        showAlert('Failed to submit Aadhar for verification.');
+        setIsAadhaarLoading(false);
+      }
+    } catch (error) {
+      console.error('Error submitting Aadhar:', error);
+      showAlert('An error occurred during Aadhar verification.');
       setIsAadhaarLoading(false);
-      setFormData(prev => ({ ...prev, aadhaarVerified: true }));
-    }, 2000);
+    }
   };
   
   // Custom styled alert box to replace native alert()
@@ -374,73 +554,123 @@ function Payment() {
   const handlePayNow = async () => {
     if (!isPayNowEnabled || isSubmitting) return;
     setIsSubmitting(true);
+    
     try {
-      const storageRaw = localStorage.getItem('user');
-      let parsedStorage = null;
-      try {
-        parsedStorage = storageRaw ? JSON.parse(storageRaw) : null;
-      } catch (e) {
-        parsedStorage = storageRaw || null;
+      if (!formData.phoneOtpVerified || !formData.aadhaarVerified) {
+        showAlert('Please verify your Aadhar and Phone number.');
+        return;
       }
 
-      let email = storageRaw.email;
-      let username = storageRaw.username;
-
-      if (parsedStorage && typeof parsedStorage === 'object') {
-        email = parsedStorage.email || (parsedStorage.user && parsedStorage.user.email) || '';
-        username = parsedStorage.username || parsedStorage.name || (parsedStorage.user && parsedStorage.user.name) || '';
-      } else if (typeof parsedStorage === 'string') {
-        if (parsedStorage.includes('@')) {
-          email = parsedStorage;
-        } else {
-          username = parsedStorage;
-        }
-      }
-
-      const phoneRaw = phoneDigits.join('');
-      const onlyDigits = phoneRaw.replace(/\D/g, '');
-      const lastTen = onlyDigits.slice(-10);
-      const phone_number = lastTen ? `+91${lastTen}` : '';
-      console.log(phone_number)
-      const formatAadhaar = (aadhaar) => {
-        if (!aadhaar) return '';
-        const digits = aadhaar.replace(/\D/g, '');
-        if (digits.length === 12) {
-          return `${digits.slice(0, 4)}-${digits.slice(4, 8)}-${digits.slice(8)}`;
-        }
-        return aadhaar;
+      const phoneNumber = phoneDigits.join('');
+      const bookingDetails = {
+        user_id: 148, // This should be dynamic based on logged-in user
+        room_id: roomId,
+        start_date: format(new Date(formData.checkInDate), 'yyyy-MM-dd'),
+        end_date: format(new Date(formData.checkOutDate), 'yyyy-MM-dd'),
+        status: 'pending',
+        adhar_verification: formData.aadhaarVerified ? 1 : 0,
+        phone_verification: formData.phoneOtpVerified ? 1 : 0,
+        adhar_detail: aadhaarNumber,
+        price: pricing.total,
+        username: username,
+        phone_number: phoneNumber,
       };
 
-      const payload = {
-        property_id: 2,
-        email,
-        start_date: formData.checkInDate,
-        end_date: formData.checkOutDate,
-        username,
-        phone_number,
-        aadhar_number: formatAadhaar(aadhaarNumber),
-        user_photo: formData.uploadedPhoto,
-        terms_verified: !!formData.termsAgreed,
-      };
-      console.log(payload)
-      const response = await fetch('http://localhost:3000/bookings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      const response = await axios.post('https://townmanor.ai/api/bookings', bookingDetails);
+      const newBookingId = response.data?.booking?.id || response.data?.id || response.data?.bookingId;
 
-      const data = await response.json().catch(() => ({}));
+      if (newBookingId) {
+        setBookingId(newBookingId);
 
-      if (response.ok && data && data.success) {
-        const b = data.booking || {};
-        showAlert(`Booking created successfully. Total: ₹${b.total_price} for ${b.nights} nights (${b.start_date} to ${b.end_date}).`);
+        if (phoneVerificationData) {
+          try {
+            await axios.patch(`https://townmanor.ai/api/bookings/${newBookingId}`, {
+              phone_data: JSON.stringify(phoneVerificationData),
+            });
+          } catch (patchError) {
+            console.error('Error updating booking with phone data:', patchError);
+          }
+        }
+
+        if (formData.uploadedPhoto) {
+          try {
+            await axios.patch(`https://townmanor.ai/api/bookings/${newBookingId}`, {
+              profile_picture: formData.uploadedPhoto,
+            });
+          } catch (patchError) {
+            console.error('Error updating booking with photo:', patchError);
+          }
+        }
+
+        // Proceed to payment
+        await handleProceedToPayment(newBookingId);
       } else {
-        showAlert((data && data.message) || 'Booking failed. Please try again.');
+        throw new Error('Booking ID not found in response.');
       }
+    
     } catch (error) {
-      showAlert('Network error. Please check your connection and try again.');
+      console.error('Error creating booking:', error);
+      showAlert('Failed to create booking. ' + (error.response?.data?.message || error.message));
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleProceedToPayment = async (bookingId) => {
+    console.log('Proceeding to payment for booking ID:', bookingId);
+    try {
+      localStorage.setItem('paymentType', 'coliving');
+      localStorage.setItem('bookingId', bookingId);
+      
+      const userResponse = await fetch(`https://www.townmanor.ai/api/user/${username}`);
+      if (!userResponse.ok) {
+        throw new Error('Failed to fetch user data');
+      }
+      const userData = await userResponse.json();
+
+      const txnid = 'OID' + Date.now();
+
+      const paymentData = {
+        key: 'UvTrjC',
+        txnid: txnid,
+        amount: pricing.total,
+        productinfo: 'Room Booking',
+        firstname: userData.name || username || '',
+        email: userData.email || '',
+        phone: userData.phone || '',
+        surl: `https://townmanor.ai/api/boster/payu/success`,
+        furl: `https://townmanor.ai/api/boster/payu/failure`,
+        udf1: bookingId,
+        service_provider: 'payu_paisa'
+      };
+
+      const response = await axios.post('https://townmanor.ai/api/payu/payment', paymentData);
+
+      if (!response.data || !response.data.paymentUrl || !response.data.params) {
+        throw new Error('Invalid payment response received');
+      }
+
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = response.data.paymentUrl;
+
+      Object.entries(response.data.params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = value.toString();
+          form.appendChild(input);
+        }
+      });
+
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
+
+    } catch (error) {
+      console.error('Payment initiation failed:', error);
+      showAlert(error.response?.data?.message || error.message || 'Failed to initiate payment. Please try again.');
     }
   };
 
@@ -566,7 +796,7 @@ function Payment() {
                       <span><MdCurrencyRupee/>{pricing.subtotal.toFixed(2)}</span>
                     </div>
                     <div className="pricing-item">
-                      <span>Taxes & GST (18%)</span>
+                      <span>Taxes & GST (12%)</span>
                       <span><MdCurrencyRupee/>{pricing.gst.toFixed(2)}</span>
                     </div>
                     <div className="pricing-total">
@@ -619,28 +849,28 @@ function Payment() {
                     </button>
                   </div>
 
-                  {showOtpInputs && !formData.phoneOtpVerified && (
-                    <div className="otp-inputs-container">
-                      <label className="digit-inputs-label">Enter 4-digit OTP (try 4173)</label>
-                      <div className="digit-inputs" role="group" aria-label="OTP">
-                        {otpDigits.map((d, i) => (
-                          <input
-                            key={i}
-                            type="text"
-                            inputMode="numeric"
-                            pattern="[0-9]*"
-                            maxLength={1}
-                            value={d}
-                            ref={el => otpInputsRef.current[i] = el}
-                            onChange={(e) => handleOtpChange(i, e.target.value.replace(/\D/g, ''))}
-                            onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                            className={`digit-box ${d ? 'is-filled' : ''}`}
-                          />
-                        ))}
-                      </div>
-                      {otpError && <p className="otp-error-text">{otpError}</p>}
-                    </div>
-                  )}
+                                     {showOtpInputs && !formData.phoneOtpVerified && (
+                     <div className="otp-inputs-container">
+                       <label className="digit-inputs-label">Enter 6-digit OTP</label>
+                       <div className="digit-inputs" role="group" aria-label="OTP">
+                         {otpDigits.map((d, i) => (
+                           <input
+                             key={i}
+                             type="text"
+                             inputMode="numeric"
+                             pattern="[0-9]*"
+                             maxLength={1}
+                             value={d}
+                             ref={el => otpInputsRef.current[i] = el}
+                             onChange={(e) => handleOtpChange(i, e.target.value.replace(/\D/g, ''))}
+                             onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                             className={`digit-box ${d ? 'is-filled' : ''}`}
+                           />
+                         ))}
+                       </div>
+                       {otpError && <p className="otp-error-text">{otpError}</p>}
+                     </div>
+                   )}
 
                   <div className="verification-status-icon">
                     {formData.phoneOtpVerified ? (
