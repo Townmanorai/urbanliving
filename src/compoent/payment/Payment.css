@@ -9,7 +9,7 @@
             min-height: 100vh;
             background-color: #f3f4f6;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
             padding: 1rem;
             font-family: sans-serif;
@@ -554,11 +554,11 @@
           }
 
           .photo-preview-image {
-            width: 100%;
-            height: auto;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            object-fit: cover;
+              width: 400px;
+    height: 30vh;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    object-fit: cover;
           }
 
           /* Step 6 Specific */

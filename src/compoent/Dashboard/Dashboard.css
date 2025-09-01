@@ -1,0 +1,261 @@
+/* Main container */
+.dashboard-container {
+     display: flex
+;
+    /* height: 100vh; */
+    font-family: Arial, sans-serif;
+    color: #333;
+    background: #fff;
+  
+    margin-left: 72px;
+}
+
+/* Sidebar */
+.dashboard-sidebar {
+  width: 250px;
+  background: #fff;
+  border-right: 1px solid #eee;
+  padding: 20px 10px;
+}
+
+.sidebar-profile {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.sidebar-profile-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.sidebar-profile-name {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.sidebar-profile-role {
+  font-size: 13px;
+  color: gray;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-menu-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.sidebar-menu-item:hover {
+  background: #f4f4f4;
+}
+
+.sidebar-menu-item.active {
+  background: #f4f4f4;
+  font-weight: bold;
+}
+
+.sidebar-menu-icon {
+  margin-right: 12px;
+  color: #b60000;
+}
+
+/* Main Content */
+.dashboard-main {
+  flex: 1;
+  padding: 30px;
+  background: url("/135.png") no-repeat center center/cover;
+  position: relative;
+}
+
+/* Topbar */
+.dashboard-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-welcome {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.dashboard-bell {
+  font-size: 20px;
+  background: #fff;
+  border-radius: 50%;
+  padding: 10px;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+
+/* Profile Section */
+.dashboard-profile-section {
+  display: flex;
+  align-items: center;
+  margin-top: 60px;
+}
+
+.dashboard-profile-image {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  margin-right: 20px;
+}
+
+.dashboard-profile-details {
+  line-height: 1.8;
+}
+
+.dashboard-profile-heading {
+  color: #b60000;
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+.dashboard-profile-name {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.dashboard-profile-role {
+  color: gray;
+  font-size: 14px;
+}
+
+.dashboard-profile-actions {
+  font-size: 14px;
+  color: #444;
+}
+/* Booking Section */
+.dashboard-booking-section {
+  margin-top: 40px;
+  margin-left: 350px;
+}
+
+.dashboard-booking-heading {
+  font-size: 22px;
+  font-weight: bold;
+  color: #b60000;
+  margin-bottom: 15px;
+}
+
+.booking-card {
+ background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 1400px;
+    line-height: 1.8;
+    margin-bottom: 34px;
+}
+
+.booking-more-details {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.booking-more-btn {
+  margin-top: 15px;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(to right, #b60000, #8b0000);
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.3s ease;
+}
+
+.booking-more-btn:hover {
+  background: linear-gradient(to right, #8b0000, #b60000);
+}
+/* Notification Section */
+.dashboard-notification-section {
+  margin-top: 40px;
+  margin-left: 350px;
+}
+
+.dashboard-notification-heading {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.notification-card {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.notification-icon {
+  font-size: 22px;
+  color: #b60000;
+  margin-right: 12px;
+  margin-top: 3px;
+}
+
+.notification-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.notification-desc {
+  font-size: 14px;
+  color: #555;
+  margin: 3px 0 0 0;
+}
+/* Support & Help Section */
+.dashboard-support-section {
+  margin-top: 40px;
+  margin-left: 350px;
+}
+
+.dashboard-support-heading {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.support-options {
+  display: flex;
+  gap: 60px;
+}
+
+.support-card {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.support-card:hover {
+  transform: translateY(-2px);
+}
+
+.support-icon {
+  font-size: 22px;
+  margin-right: 8px;
+  color: #b60000;
+}
+
+.support-text {
+  font-size: 16px;
+}
+
+

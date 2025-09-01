@@ -9,13 +9,15 @@ import Payment from './compoent/payment/Payment';
 import Auth from './Auth';
 import AuthPage from './compoent/Login/AuthPage';
 import About from './compoent/about/About';
+import Dashboard from './compoent/Dashboard/Dashboard';
+import Navbar from './compoent/Homepage/Navbar';
 
 
 
 function App() {
   return (
     <Router>
-  
+     <Navbar/>
       <Routes>
         <Route path="/" element={<Home />} />
        <Route path="/tmluxe" element={<LuxeMain />} />
@@ -23,6 +25,7 @@ function App() {
         <Route path="/payment" element={<Payment />} />
         <Route path="/login" element={<AuthPage />} />
          <Route path="/about" element={<About />} />
+         <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
       <HoomieFooter/>
     </Router>

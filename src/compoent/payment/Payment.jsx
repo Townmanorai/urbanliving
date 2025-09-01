@@ -375,7 +375,7 @@ function Payment() {
     if (!isPayNowEnabled || isSubmitting) return;
     setIsSubmitting(true);
     try {
-      const storageRaw = localStorage.getItem('storage');
+      const storageRaw = localStorage.getItem('user');
       let parsedStorage = null;
       try {
         parsedStorage = storageRaw ? JSON.parse(storageRaw) : null;
@@ -383,8 +383,8 @@ function Payment() {
         parsedStorage = storageRaw || null;
       }
 
-      let email = '';
-      let username = '';
+      let email = storageRaw.email;
+      let username = storageRaw.username;
 
       if (parsedStorage && typeof parsedStorage === 'object') {
         email = parsedStorage.email || (parsedStorage.user && parsedStorage.user.email) || '';
@@ -398,8 +398,10 @@ function Payment() {
       }
 
       const phoneRaw = phoneDigits.join('');
-      const phone_number = phoneRaw ? (phoneRaw.startsWith('+') ? phoneRaw : `+${phoneRaw}`) : '';
-
+      const onlyDigits = phoneRaw.replace(/\D/g, '');
+      const lastTen = onlyDigits.slice(-10);
+      const phone_number = lastTen ? `+91${lastTen}` : '';
+      console.log(phone_number)
       const formatAadhaar = (aadhaar) => {
         if (!aadhaar) return '';
         const digits = aadhaar.replace(/\D/g, '');
@@ -420,7 +422,7 @@ function Payment() {
         user_photo: formData.uploadedPhoto,
         terms_verified: !!formData.termsAgreed,
       };
-
+      console.log(payload)
       const response = await fetch('http://localhost:3000/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
