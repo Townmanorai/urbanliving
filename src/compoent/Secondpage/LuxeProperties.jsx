@@ -9,7 +9,7 @@ function LuxeProperties() {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const res = await fetch('http://localhost:3000/properties/all');
+        const res = await fetch('https://townmanor.ai/api/properties/all');
         if (!res.ok) throw new Error('Failed to load properties');
         const data = await res.json();
         if (data && data.success && Array.isArray(data.properties)) {
