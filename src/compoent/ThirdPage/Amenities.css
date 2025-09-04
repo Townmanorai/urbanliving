@@ -30,7 +30,7 @@
 
 .amenity-icon {
   color: #b60000; /* same deep red as screenshot */
-  font-size: 45px;
+  font-size: 35px;
   flex-shrink: 0;
   margin: 0px 10px;
 }

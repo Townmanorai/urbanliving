@@ -12,7 +12,9 @@ function LuxeProperties() {
         const res = await fetch('https://townmanor.ai/api/properties/all');
         if (!res.ok) throw new Error('Failed to load properties');
         const data = await res.json();
-        if (data && data.success && Array.isArray(data.properties)) {
+        if (Array.isArray(data)) {
+          setProperties(data);
+        } else if (data && Array.isArray(data.properties)) {
           setProperties(data.properties);
         } else {
           setError('Invalid response format');
@@ -25,6 +27,7 @@ function LuxeProperties() {
     };
     fetchProperties();
   }, []);
+  console.log(properties);
   const navigate = useNavigate();
   return (
     <section className="tmxluxe-prop">
@@ -47,22 +50,26 @@ function LuxeProperties() {
         {!loading && !error && (
           <div className="tmxluxe-prop-grid">
             {properties.map((prop) => {
-              const imageSrc = Array.isArray(prop.IMAGES) && prop.IMAGES.length > 0 ? prop.IMAGES[0] : '/p1.png';
-              const priceNumber = typeof prop.PER_NIGHT_PRICE === 'string' ? parseFloat(prop.PER_NIGHT_PRICE) : prop.PER_NIGHT_PRICE;
+              const imageArray = Array.isArray(prop.images) ? prop.images : (Array.isArray(prop.IMAGES) ? prop.IMAGES : []);
+              const imageSrc = imageArray.length > 0 ? imageArray[0] : '/p1.png';
+              const rawPrice = prop.per_night_price ?? prop.PER_NIGHT_PRICE;
+              const priceNumber = typeof rawPrice === 'string' ? parseFloat(rawPrice) : rawPrice;
               const priceText = priceNumber ? `₹ ${priceNumber.toLocaleString('en-IN')} per night` : '';
+              const id = prop.id ?? prop.ID;
+              const name = prop.name ?? prop.NAME;
               return (
-                <article key={prop.ID} className="tmxluxe-prop-card" onClick={() => {
-                  navigate(`/tmluxespecific/${prop.ID}`, { state: { propertyId: prop.ID } });
+                <article key={id} className="tmxluxe-prop-card" onClick={() => {
+                  navigate(`/tmluxespecific/${id}`, { state: { propertyId: id } });
                 }}>
                   <div className="tmxluxe-prop-media">
-                    <img src={imageSrc} alt={prop.NAME} />
+                    <img src={imageSrc} alt={name} />
                     <span className="tmxluxe-prop-badge">Guest Favorite</span>
                     <button className="tmxluxe-prop-like" aria-label="save">
                       ♥
                     </button>
                   </div>
                   <div className="tmxluxe-prop-body">
-                    <h3 className="tmxluxe-prop-name">{prop.NAME}</h3>
+                    <h3 className="tmxluxe-prop-name">{name}</h3>
                     <div className="tmxluxe-prop-meta">
                       <span className="tmxluxe-prop-price">{priceText}</span>
                     </div>

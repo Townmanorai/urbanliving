@@ -20,13 +20,16 @@ function ThirdMain() {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(`http://localhost:3000/properties/${id}`);
+        const response = await fetch(`https://townmanor.ai/api/properties/${id}`);
         if (!response.ok) {
           throw new Error(`Request failed with status ${response.status}`);
         }
         const data = await response.json();
         if (isMounted) {
-          setProperty(data?.property || null);
+          const resolved = data && typeof data === 'object' && !Array.isArray(data)
+            ? (data.property ?? data)
+            : null;
+          setProperty(resolved);
         }
       } catch (err) {
         if (isMounted) setError(err?.message || 'Failed to load property');
@@ -50,28 +53,34 @@ function ThirdMain() {
     return <div style={{ padding: '24px' }}>No property found.</div>
   }
 
-  const images = Array.isArray(property.IMAGES) ? property.IMAGES : [];
-  const amenities = Array.isArray(property.AMENITIES) ? property.AMENITIES : [];
-  const keyFeatures = Array.isArray(property.KEY_FEATURES) ? property.KEY_FEATURES : [];
-  const latitude = property.LATITUDE ? String(property.LATITUDE) : '';
-  const longitude = property.LONGITUDE ? String(property.LONGITUDE) : '';
+  const images = Array.isArray(property.images) ? property.images : (Array.isArray(property.IMAGES) ? property.IMAGES : []);
+  const amenities = Array.isArray(property.amenities) ? property.amenities : (Array.isArray(property.AMENITIES) ? property.AMENITIES : []);
+  const keyFeatures = Array.isArray(property.key_features) ? property.key_features : (Array.isArray(property.KEY_FEATURES) ? property.KEY_FEATURES : []);
+  const latitude = property.latitude ?? property.LATITUDE;
+  const longitude = property.longitude ?? property.LONGITUDE;
+  const name = property.name ?? property.NAME;
+  const pricePerNight = property.per_night_price ?? property.PER_NIGHT_PRICE;
+  const description = property.description ?? property.DESCRIPTION;
+  const address = property.address ?? property.ADDRESS;
+  const area = property.area ?? property.AREA;
 
   return (
     <>
       <TranquilPerch
-        title={property.NAME}
-        pricePerNight={property.PER_NIGHT_PRICE}
+        title={name}
+        pricePerNight={pricePerNight}
         mainImage={images[0]}
         sideImages={images.slice(1, 3)}
+        id={property.id}
       />
       <AboutPlace
-        description={property.DESCRIPTION}
-        address={property.ADDRESS}
-        area={property.AREA}
+        description={description}
+        address={address}
+        area={area}
         keyFeatures={keyFeatures}
       />
       <Amenities amenities={amenities} />
-      <LocationMap latitude={latitude} longitude={longitude} address={property.ADDRESS} />
+      <LocationMap latitude={latitude ? String(latitude) : ''} longitude={longitude ? String(longitude) : ''} address={address} />
       <ReviewsSurroundings />
       <GuestReviews />
     </>

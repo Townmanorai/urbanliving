@@ -5,8 +5,12 @@ import { FaRegShareFromSquare } from "react-icons/fa6";
 import { FaRegHeart } from "react-icons/fa";
 import { Navigate, useNavigate } from "react-router";
 
-export default function TranquilPerch({ title, pricePerNight, mainImage, sideImages = [] }) {
+export default function TranquilPerch({ title, pricePerNight, mainImage, sideImages = [],id }) {
   const navigate = useNavigate();
+  const handlebooknow = ()=>{
+    localStorage.setItem("property_id", id);
+    navigate('/payment')
+  }
   return (
     <>
     <div className="tranquil-perch-container">
@@ -52,7 +56,7 @@ export default function TranquilPerch({ title, pricePerNight, mainImage, sideIma
   </div>
   <div class="book-button">
     <button class="book-now-btn" onClick={()=>{
-      navigate('/payment')
+      handlebooknow()
     }}>Book Now</button>
   </div>
 </div>

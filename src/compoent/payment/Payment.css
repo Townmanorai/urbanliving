@@ -89,7 +89,8 @@
           }
           
           .form-step-card-image {
-            width: 100%;
+            width: 288px;
+            height: 225px;
             border-radius: 0.5rem;
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             object-fit: cover;
@@ -101,9 +102,7 @@
               align-items: flex-start;
               gap: 1.5rem;
             }
-            .form-step-card-image {
-              width: 33.333333%;
-            }
+          
           }
           
           .form-step-card-content {

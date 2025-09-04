@@ -162,6 +162,9 @@ const Calendar = ({ selectedDates, onDateSelect, minDate = new Date() }) => {
 
 function Payment() {
     const [step, setStep] = useState(1);
+  const [property, setProperty] = useState(null);
+  const [propertyLoading, setPropertyLoading] = useState(true);
+  const [propertyError, setPropertyError] = useState('');
   const [formData, setFormData] = useState({
     termsAgreed: false,
     checkInDate: '',
@@ -209,6 +212,7 @@ function Payment() {
   // Get user data from localStorage and cookies
   const roomId = localStorage.getItem('roomId');
   const userId = localStorage.getItem('propertyid');
+  const propertyId = localStorage.getItem('property_id');
   const token = Cookies.get('jwttoken');
   let username = '';
   
@@ -259,16 +263,16 @@ function Payment() {
       const diffTime = Math.abs(checkOut - checkIn);
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       
-      const pricePerNight = 3400; // Sample price
+      const pricePerNight = property?.per_night_price ? Number(property.per_night_price) : 0;
       const subtotal = diffDays * pricePerNight;
-      const gst = subtotal * 0.12; // 18% GST
+      const gst = subtotal * 0.05; // 18% GST
       const total = subtotal + gst;
 
       setPricing({ subtotal, gst, total });
     } else {
       setPricing({ subtotal: 0, gst: 0, total: 0 });
     }
-  }, [formData.checkInDate, formData.checkOutDate]);
+  }, [formData.checkInDate, formData.checkOutDate, property]);
 
   // Enable Pay Now button only when all steps are valid
   useEffect(() => {
@@ -280,6 +284,29 @@ function Payment() {
       formData.uploadedPhoto;
     setIsPayNowEnabled(allStepsComplete);
   }, [formData, pricing]);
+
+  // Fetch property details from API using property_id in localStorage
+  useEffect(() => {
+    const id = propertyId || '2';
+    const fetchProperty = async () => {
+      setPropertyLoading(true);
+      setPropertyError('');
+      try {
+        const res = await fetch(`https://townmanor.ai/api/properties/${id}`);
+        const json = await res.json();
+        if (json && json.success && json.property) {
+          setProperty(json.property);
+        } else {
+          setPropertyError('Failed to load property');
+        }
+      } catch (e) {
+        setPropertyError('Failed to load property');
+      } finally {
+        setPropertyLoading(false);
+      }
+    };
+    fetchProperty();
+  }, [propertyId]);
 
   // Handle file drop for photo upload
   const handleFileDrop = (e) => {
@@ -575,7 +602,7 @@ function Payment() {
         username: username,
         phone_number: phoneNumber,
       };
-
+      console.log(bookingDetails)
       const response = await axios.post('https://townmanor.ai/api/bookings', bookingDetails);
       const newBookingId = response.data?.booking?.id || response.data?.id || response.data?.bookingId;
 
@@ -707,24 +734,23 @@ function Payment() {
               <h2 className="form-step-title">Property Details</h2>
               <div className="form-step-card">
                 <img
-                  src="/image 71.png"
+                  src={(property && property.images && property.images[0]) ? property.images[0] : '/image 71.png'}
                   alt="Property"
                   className="form-step-card-image"
                 />
                 <div className="form-step-card-content">
-                  <h3 className="form-step-card-title">The Tranquil Perch (Patio View)</h3>
-                  <p className="form-step-card-location">Greater Noida, Uttar Pradesh</p>
+                  <h3 className="form-step-card-title">{property?.name || '—'}</h3>
+                  <p className="form-step-card-location">{property?.address || ''}</p>
                   <p className="form-step-card-description">
-                    A serene escape with breathtaking ocean views. Perfect for couples or a small family.
+                    {property?.description || ''}
                   </p>
-                  <ul className="form-step-card-amenities">
-                    <li>2 Beds, 1 Bath</li>
-                    <li>Wi-Fi & Kitchen</li>
-                    <li>Free Parking</li>
-                    <li>Pet-friendly</li>
-                  </ul>
+                  {/* <ul className="form-step-card-amenities">
+                    {(property?.amenities || []).map((a, i) => (
+                      <li key={i}>{a}</li>
+                    ))}
+                  </ul> */}
                   <p className="form-step-card-price">
-                    <MdCurrencyRupee />3400<span className="form-step-card-price-per-night">/night</span>
+                    <MdCurrencyRupee />{property?.per_night_price || 0}<span className="form-step-card-price-per-night">/night</span>
                   </p>
                 </div>
               </div>
@@ -796,7 +822,7 @@ function Payment() {
                       <span><MdCurrencyRupee/>{pricing.subtotal.toFixed(2)}</span>
                     </div>
                     <div className="pricing-item">
-                      <span>Taxes & GST (12%)</span>
+                      <span>Taxes & GST (5%)</span>
                       <span><MdCurrencyRupee/>{pricing.gst.toFixed(2)}</span>
                     </div>
                     <div className="pricing-total">
