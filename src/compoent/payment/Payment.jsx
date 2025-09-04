@@ -573,7 +573,6 @@ function Payment() {
   const showAlert = (message) => {
     setAlertMessage(message);
   };
-
   const closeAlert = () => {
     setAlertMessage(null);
   };
@@ -581,60 +580,53 @@ function Payment() {
   const handlePayNow = async () => {
     if (!isPayNowEnabled || isSubmitting) return;
     setIsSubmitting(true);
-    
+  
     try {
+      // Verify Aadhaar & Phone first
       if (!formData.phoneOtpVerified || !formData.aadhaarVerified) {
         showAlert('Please verify your Aadhar and Phone number.');
         return;
       }
+  
+      // Collect required details
+      const userLocal = (() => {
+        try {
+          return JSON.parse(localStorage.getItem('user') || '{}');
+        } catch {
+          return {};
+        }
+      })();
 
-      const phoneNumber = phoneDigits.join('');
       const bookingDetails = {
-        user_id: 148, // This should be dynamic based on logged-in user
-        room_id: roomId,
+        property_id: String(propertyId || '2'),
         start_date: format(new Date(formData.checkInDate), 'yyyy-MM-dd'),
         end_date: format(new Date(formData.checkOutDate), 'yyyy-MM-dd'),
-        status: 'pending',
-        adhar_verification: formData.aadhaarVerified ? 1 : 0,
-        phone_verification: formData.phoneOtpVerified ? 1 : 0,
-        adhar_detail: aadhaarNumber,
-        price: pricing.total,
-        username: username,
-        phone_number: phoneNumber,
+        username: userLocal.username || username || '',
+        phone_number: phoneDigits.join(''),
+        aadhar_number: aadhaarNumber || '',
+        user_photo: formData.uploadedPhoto || '',
+        terms_verified: !!formData.termsAgreed,
+        email: userLocal.email || '',
       };
-      console.log(bookingDetails)
-      const response = await axios.post('https://townmanor.ai/api/bookings', bookingDetails);
-      const newBookingId = response.data?.booking?.id || response.data?.id || response.data?.bookingId;
+      console.log('Booking details:', bookingDetails);
+      // Create booking
+      const { data } = await axios.post('https://townmanor.ai/api/booking', bookingDetails);
+      const newBookingId =
+        data?.booking?.id || data?.booking_id || data?.id || data?.bookingId || null;
 
+      // Handle the expected response showing pricing summary
+      if (data?.success && data?.booking) {
+        const b = data.booking;
+        showAlert(`Booking created successfully. Total: ${b.total_price}, Nights: ${b.nights}, From ${b.start_date} to ${b.end_date}`);
+      }
+  
       if (newBookingId) {
         setBookingId(newBookingId);
-
-        if (phoneVerificationData) {
-          try {
-            await axios.patch(`https://townmanor.ai/api/bookings/${newBookingId}`, {
-              phone_data: JSON.stringify(phoneVerificationData),
-            });
-          } catch (patchError) {
-            console.error('Error updating booking with phone data:', patchError);
-          }
-        }
-
-        if (formData.uploadedPhoto) {
-          try {
-            await axios.patch(`https://townmanor.ai/api/bookings/${newBookingId}`, {
-              profile_picture: formData.uploadedPhoto,
-            });
-          } catch (patchError) {
-            console.error('Error updating booking with photo:', patchError);
-          }
-        }
-
-        // Proceed to payment
-        await handleProceedToPayment(newBookingId);
-      } else {
-        throw new Error('Booking ID not found in response.');
       }
-    
+  
+      // Always proceed to payment
+      await handleProceedToPayment(newBookingId);
+  
     } catch (error) {
       console.error('Error creating booking:', error);
       showAlert('Failed to create booking. ' + (error.response?.data?.message || error.message));
@@ -642,12 +634,13 @@ function Payment() {
       setIsSubmitting(false);
     }
   };
+  
 
-  const handleProceedToPayment = async (bookingId) => {
-    console.log('Proceeding to payment for booking ID:', bookingId);
+  const handleProceedToPayment = async (bookingIdParam) => {
+    console.log('Proceeding to payment for booking ID:', bookingIdParam);
     try {
       localStorage.setItem('paymentType', 'coliving');
-      localStorage.setItem('bookingId', bookingId);
+      if (bookingIdParam) localStorage.setItem('bookingId', bookingIdParam);
       
       const userResponse = await fetch(`https://www.townmanor.ai/api/user/${username}`);
       if (!userResponse.ok) {
@@ -667,7 +660,7 @@ function Payment() {
         phone: userData.phone || '',
         surl: `https://townmanor.ai/api/boster/payu/success`,
         furl: `https://townmanor.ai/api/boster/payu/failure`,
-        udf1: bookingId,
+        udf1: bookingIdParam || '',
         service_provider: 'payu_paisa'
       };
 

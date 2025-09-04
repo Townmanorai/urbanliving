@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Navbar.css';
+import { useNavigate } from 'react-router';
 
 function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
@@ -15,7 +16,7 @@ function Navbar() {
   const toggleMenu = () => {
     setShowMenu(!showMenu);
   };
-
+  const navigate = useNavigate();
   return (
     <div className="navbar">
       <div className="navbar-content">
@@ -31,7 +32,7 @@ function Navbar() {
         
         <img src="/ovika.png" alt="Ovika Logo" className="logo" />
         
-        <button className="signup-btn">Sign Up</button>
+        <button className="signup-btn" onClick={() => navigate('/login')}>Sign Up</button>
       </div>
 
       <div className={`dropdown-menu ${showMenu ? 'show' : ''}`}>

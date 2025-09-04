@@ -11,7 +11,7 @@ const AuthPage = () => {
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
-  const API_BASE ="http://localhost:3000";
+  const API_BASE ="https://townmanor.ai/api";
 
   const persistUser = (user) => {
     try {
@@ -24,7 +24,7 @@ const AuthPage = () => {
   const handleSignup = async () => {
     setSubmitting(true);
     try {
-      const response = await fetch(`${API_BASE}/signup`, {
+      const response = await fetch(`${API_BASE}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
