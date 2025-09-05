@@ -4,83 +4,83 @@ import { IoArrowForward } from "react-icons/io5";
 
 const TMFeaturesMobile = () => (
   <div className="tm-features-mobile">
-    <h1 className="tm-features-mobile__title">TM features</h1>
+    <h1 className="tm-features-mobile__title">TM Features</h1>
     <p className="tm-features-mobile__subtitle">
       Our doors are open to every kind of traveler. No judgments. Just cozy rooms and kind service
     </p>
 
-    {/* TM Stay Card */}
-    <div className="tm-feature-card">
-      <div className="tm-feature-card__header">
-        <h2 className="tm-feature-card__title">
-          TM <span className="tm-feature-card__accent">Stay</span>
-        </h2>
+    {/* ===== TM Stay (Image Left) ===== */}
+    <section className="tm-section left">
+      <div className="tm-section__label">
+        <span className="tm-watermark">TM</span>
+        <span className="tm-small">Stay</span>
       </div>
-      <div className="tm-feature-card__image">
-        <img src="image 86.png" alt="TM Stay" />
+      <div className="tm-section__image">
+        <img src="image 86.png" alt="Stay" />
       </div>
-      <div className="tm-feature-card__content">
-        <h3 className="tm-feature-card__subtitle">
-          A Space That <span className="highlight">Holds</span> You <span className="highlight">Gently</span>
-        </h3>
-        <p className="tm-feature-card__desc">
-          TM Stay offers fully managed and affordable PG rentals tailored for students and working professionals. 
-          With clean, secure, and comfortable living spaces, we ensure a hassle-free stay that feels just like home – only better.
-        </p>
-        <button className="tm-feature-button">
-          Know more <IoArrowForward className="arrow-icon" />
-        </button>
-      </div>
+    </section>
+
+    <div className="tm-section__content">
+      <h3 className="tm-subtitle">
+        A Space That <span className="highlight">Holds</span> You <span className="highlight">Gently</span>
+      </h3>
+      <p className="tm-desc">
+        TM Stay offers fully managed and affordable PG rentals tailored for students and working professionals. 
+        With clean, secure, and comfortable living spaces, we ensure a hassle-free stay that feels just like home – only better.
+      </p>
+      <button className="tm-btn">
+        Know more <IoArrowForward className="arrow-icon" />
+      </button>
     </div>
 
-    {/* TM Hive Card */}
-    <div className="tm-feature-card">
-      <div className="tm-feature-card__header">
-        <h2 className="tm-feature-card__title">
-          TM <span className="tm-feature-card__accent">Hive</span>
-        </h2>
+    {/* ===== TM Hive (Image Right) ===== */}
+    <section className="tm-section right">
+      <div className="tm-section__label">
+        <span className="tm-watermark">TM</span>
+        <span className="tm-small">Hive</span>
       </div>
-      <div className="tm-feature-card__image">
-        <img src="image 91.png" alt="TM Hive" />
+      <div className="tm-section__image">
+        <img src="image 91.png" alt="Hive" />
       </div>
-      <div className="tm-feature-card__content">
-        <h3 className="tm-feature-card__subtitle">
-          Live together, <span className="highlight">grow</span> together.
-        </h3>
-        <p className="tm-feature-card__desc">
-          TM Hive brings together vibrant communities in thoughtfully designed shared spaces. 
-          Whether you're a young professional, a remote worker, or a creative soul, our co-living 
-          homes offer the perfect blend of privacy, social, and flexibility.
-        </p>
-        <button className="tm-feature-button">
-          Know more <IoArrowForward className="arrow-icon" />
-        </button>
-      </div>
+    </section>
+
+    <div className="tm-section__content">
+      <h3 className="tm-subtitle">
+        <span className="tm-subtitle-text">Live together, <span className="highlight">grow together</span>.</span>
+      </h3>
+      <p className="tm-desc">
+        TM Hive brings together vibrant communities in thoughtfully designed shared spaces.
+        Whether you're a young professional, a remote worker, or a creative soul, our co-living
+        homes offer the perfect blend of privacy, social, and flexibility.
+      </p>
+      <button className="tm-btn">
+        Know more <IoArrowForward className="arrow-icon" />
+      </button>
     </div>
 
-    {/* TM Luxe Card */}
-    <div className="tm-feature-card">
-      <div className="tm-feature-card__header">
-        <h2 className="tm-feature-card__title">
-          TM <span className="tm-feature-card__accent">Luxe</span>
-        </h2>
+    {/* ===== TM Luxe (Image Left) ===== */}
+    <section className="tm-section left">
+      <div className="tm-section__label">
+        <span className="tm-watermark">TM</span>
+        <span className="tm-small">Luxe</span>
       </div>
-      <div className="tm-feature-card__image">
-        <img src="image 87.png" alt="TM Luxe" />
+      <div className="tm-section__image">
+        <img src="image 87.png" alt="Luxe" />
       </div>
-      <div className="tm-feature-card__content">
-        <h3 className="tm-feature-card__subtitle">
-          More Than <span className="highlight">Service</span> — We Offer Care
-        </h3>
-        <p className="tm-feature-card__desc">
-          TM Luxe redefines premium living with our exclusive collection of luxury apartments. 
-          With sophisticated interiors, modern amenities, and prime locations, TM Luxe is crafted for those 
-          seeking a luxurious living experience.
-        </p>
-        <button className="tm-feature-button">
-          Know more <IoArrowForward className="arrow-icon" />
-        </button>
-      </div>
+    </section>
+
+    <div className="tm-section__content">
+      <h3 className="tm-subtitle">
+        More Than <span className="highlight">Service</span> — We Offer Care
+      </h3>
+      <p className="tm-desc">
+        TM Luxe offers high-end, fully serviced apartments for those who value elegance, comfort, and privacy. 
+        With sophisticated interiors, modern amenities, and prime locations, TM Luxe is crafted for families,
+        business travelers, and individuals seeking a luxurious living experience.
+      </p>
+      <button className="tm-btn">
+        Know more <IoArrowForward className="arrow-icon" />
+      </button>
     </div>
   </div>
 );
