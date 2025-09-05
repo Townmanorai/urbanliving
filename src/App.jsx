@@ -11,6 +11,8 @@ import AuthPage from './compoent/Login/AuthPage';
 import About from './compoent/about/About';
 import Dashboard from './compoent/Dashboard/Dashboard';
 import Navbar from './compoent/Homepage/Navbar';
+import Sucess from './compoent/payment/Sucess';
+import Failure from './compoent/payment/Failure';
 
 
 
@@ -26,6 +28,8 @@ function App() {
         <Route path="/login" element={<AuthPage />} />
          <Route path="/about" element={<About />} />
          <Route path="/dashboard" element={<Dashboard />} />
+         <Route path="/success" element={<Sucess />} />
+         <Route path="/failure" element={<Failure />} />
       </Routes>
       <HoomieFooter/>
     </Router>

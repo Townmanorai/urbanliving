@@ -209,6 +209,80 @@ function Payment() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
 
+  // Persist step-wise progress in localStorage
+  const STORAGE_KEYS = {
+    step: 'payment_step',
+    formData: 'payment_formData',
+    phoneDigits: 'payment_phoneDigits',
+    otpDigits: 'payment_otpDigits',
+    aadhaar: 'payment_aadhaarNumber',
+  };
+  const hasLoadedFromStorageRef = useRef(false);
+
+  // Load saved progress on mount
+  useEffect(() => {
+    try {
+      const savedStepRaw = localStorage.getItem(STORAGE_KEYS.step);
+      const savedStep = savedStepRaw ? parseInt(savedStepRaw, 10) : null;
+      const savedFormData = JSON.parse(localStorage.getItem(STORAGE_KEYS.formData) || '{}');
+      const savedPhoneDigits = JSON.parse(localStorage.getItem(STORAGE_KEYS.phoneDigits) || '[]');
+      const savedOtpDigits = JSON.parse(localStorage.getItem(STORAGE_KEYS.otpDigits) || '[]');
+      const savedAadhaar = localStorage.getItem(STORAGE_KEYS.aadhaar) || '';
+
+      if (!Number.isNaN(savedStep) && savedStep && savedStep >= 1 && savedStep <= 6) {
+        setStep(savedStep);
+      }
+      if (savedFormData && typeof savedFormData === 'object') {
+        setFormData(prev => ({ ...prev, ...savedFormData }));
+      }
+      if (Array.isArray(savedPhoneDigits) && savedPhoneDigits.length === 10) {
+        setPhoneDigits(savedPhoneDigits);
+      }
+      if (Array.isArray(savedOtpDigits) && savedOtpDigits.length === 6) {
+        setOtpDigits(savedOtpDigits);
+      }
+      if (savedAadhaar) {
+        setAadhaarNumber(savedAadhaar);
+      }
+    } catch (e) {
+      console.warn('Failed to restore payment progress from storage', e);
+    } finally {
+      hasLoadedFromStorageRef.current = true;
+    }
+  }, []);
+
+  // Persist progress whenever it changes
+  useEffect(() => {
+    if (!hasLoadedFromStorageRef.current) return;
+    localStorage.setItem(STORAGE_KEYS.step, String(step));
+  }, [step]);
+
+  useEffect(() => {
+    if (!hasLoadedFromStorageRef.current) return;
+    try {
+      localStorage.setItem(STORAGE_KEYS.formData, JSON.stringify(formData));
+    } catch {}
+  }, [formData]);
+
+  useEffect(() => {
+    if (!hasLoadedFromStorageRef.current) return;
+    try {
+      localStorage.setItem(STORAGE_KEYS.phoneDigits, JSON.stringify(phoneDigits));
+    } catch {}
+  }, [phoneDigits]);
+
+  useEffect(() => {
+    if (!hasLoadedFromStorageRef.current) return;
+    try {
+      localStorage.setItem(STORAGE_KEYS.otpDigits, JSON.stringify(otpDigits));
+    } catch {}
+  }, [otpDigits]);
+
+  useEffect(() => {
+    if (!hasLoadedFromStorageRef.current) return;
+    localStorage.setItem(STORAGE_KEYS.aadhaar, aadhaarNumber);
+  }, [aadhaarNumber]);
+
   // Get user data from localStorage and cookies
   const roomId = localStorage.getItem('roomId');
   const userId = localStorage.getItem('propertyid');
@@ -351,7 +425,7 @@ function Payment() {
         const imageUrl = data.fileUrls[0];
         const photoUrl = imageUrl;
         
-        setFormData({ ...formData, uploadedPhoto: photoUrl });
+        setFormData(prev => ({ ...prev, uploadedPhoto: photoUrl }));
         setPhotoUploaded(true);
         showAlert('Photo uploaded successfully!');
 
@@ -653,13 +727,13 @@ function Payment() {
       const paymentData = {
         key: 'UvTrjC',
         txnid: txnid,
-        amount: pricing.total,
+        amount: 1.00,
         productinfo: 'Room Booking',
         firstname: userData.name || username || '',
         email: userData.email || '',
         phone: userData.phone || '',
-        surl: `https://townmanor.ai/api/boster/payu/success`,
-        furl: `https://townmanor.ai/api/boster/payu/failure`,
+        surl: `https://www.ovika.co.in/success`,
+        furl: `https://www.ovika.co.in/failure`,
         udf1: bookingIdParam || '',
         service_provider: 'payu_paisa'
       };
