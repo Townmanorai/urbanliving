@@ -8,7 +8,7 @@ import Cookies from 'js-cookie';
 import { format, differenceInDays } from 'date-fns';
 
 // Calendar Component
-const Calendar = ({ selectedDates, onDateSelect, minDate = new Date() }) => {
+const Calendar = ({ selectedDates, onDateSelect, minDate = new Date(), disabledDateSet = new Set(), onInvalidRange }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [view, setView] = useState('calendar'); // 'calendar' or 'checkout'
   const [checkInDate, setCheckInDate] = useState(selectedDates.checkInDate ? new Date(selectedDates.checkInDate) : null);
@@ -45,7 +45,9 @@ const Calendar = ({ selectedDates, onDateSelect, minDate = new Date() }) => {
   };
 
   const isDateDisabled = (date) => {
-    return date < minDate;
+    if (!date) return true;
+    const dateStr = date.toISOString().split('T')[0];
+    return date < minDate || disabledDateSet.has(dateStr);
   };
 
   const isDateSelected = (date) => {
@@ -66,6 +68,18 @@ const Calendar = ({ selectedDates, onDateSelect, minDate = new Date() }) => {
   const handleDateClick = (date) => {
     if (!date || isDateDisabled(date)) return;
 
+    const hasBlockedDateInRange = (start, end) => {
+      if (!start || !end) return false;
+      const s = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+      const e = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+      // iterate from start to end (inclusive)
+      for (let d = new Date(s); d <= e; d.setDate(d.getDate() + 1)) {
+        const dStr = d.toISOString().split('T')[0];
+        if (disabledDateSet.has(dStr)) return true;
+      }
+      return false;
+    };
+
     if (!checkInDate || (checkInDate && checkOutDate)) {
       // Start new selection
       setCheckInDate(date);
@@ -73,13 +87,22 @@ const Calendar = ({ selectedDates, onDateSelect, minDate = new Date() }) => {
     } else {
       // Complete selection
       if (date > checkInDate) {
+        // Validate range does not include disabled dates
+        if (hasBlockedDateInRange(checkInDate, date)) {
+          onInvalidRange && onInvalidRange('Selected range includes unavailable dates. Please choose different dates.');
+          return;
+        }
         setCheckOutDate(date);
         onDateSelect({
           checkInDate: checkInDate.toISOString().split('T')[0],
           checkOutDate: date.toISOString().split('T')[0]
         });
       } else {
-        // If selected date is before check-in, swap them
+        // If selected date is before check-in, validate and swap them
+        if (hasBlockedDateInRange(date, checkInDate)) {
+          onInvalidRange && onInvalidRange('Selected range includes unavailable dates. Please choose different dates.');
+          return;
+        }
         setCheckInDate(date);
         setCheckOutDate(checkInDate);
         onDateSelect({
@@ -208,6 +231,10 @@ function Payment() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+
+  // Booking availability state
+  const [disabledDateSet, setDisabledDateSet] = useState(new Set());
+  const [bookingsLoading, setBookingsLoading] = useState(false);
 
   // Persist step-wise progress in localStorage
   const STORAGE_KEYS = {
@@ -381,6 +408,39 @@ function Payment() {
     };
     fetchProperty();
   }, [propertyId]);
+
+  // Fetch booked dates (disabled) when on Step 3
+  useEffect(() => {
+    const fetchBookedDates = async () => {
+      try {
+        setBookingsLoading(true);
+        const res = await fetch('https://townmanor.ai/api/booking/dates');
+        const json = await res.json();
+        const pid = Number(propertyId || '2');
+        const bookings = Array.isArray(json?.bookings) ? json.bookings : [];
+        const filtered = bookings.filter(b => Number(b.property_id) === pid && Number(b.cancelled) === 0);
+        const dates = new Set();
+        // Disable from start_date through day before end_date (treat end as checkout)
+        filtered.forEach(b => {
+          const start = new Date(b.start_date);
+          const end = new Date(b.end_date);
+          for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
+            const dStr = d.toISOString().split('T')[0];
+            dates.add(dStr);
+          }
+        });
+        setDisabledDateSet(dates);
+      } catch (e) {
+        console.error('Failed to load booked dates', e);
+      } finally {
+        setBookingsLoading(false);
+      }
+    };
+
+    if (step === 3) {
+      fetchBookedDates();
+    }
+  }, [step, propertyId]);
 
   // Handle file drop for photo upload
   const handleFileDrop = (e) => {
@@ -696,6 +756,9 @@ function Payment() {
   
       if (newBookingId) {
         setBookingId(newBookingId);
+        try {
+          localStorage.setItem('bookingId', String(newBookingId));
+        } catch {}
       }
   
       // Always proceed to payment
@@ -732,8 +795,8 @@ function Payment() {
         firstname: userData.name || username || '',
         email: userData.email || '',
         phone: userData.phone || '',
-        surl: `https://www.ovika.co.in/success`,
-        furl: `https://www.ovika.co.in/failure`,
+        surl: `https://townmanor.ai/api/boster/payu/success?redirectUrl=https://www.ovika.co.in/success`,
+        furl: `https://townmanor.ai/api/boster/payu/failure?redirectUrl=https://www.ovika.co.in/failure`,
         udf1: bookingIdParam || '',
         service_provider: 'payu_paisa'
       };
@@ -878,7 +941,12 @@ function Payment() {
                     }}
                     onDateSelect={(dates) => setFormData({ ...formData, ...dates })}
                     minDate={new Date()}
+                    disabledDateSet={disabledDateSet}
+                    onInvalidRange={showAlert}
                   />
+                  {bookingsLoading && (
+                    <p style={{ marginTop: '8px', color: '#666' }}>Loading availability…</p>
+                  )}
                 </div>
 
                 <div className="pricing-summary-card">

@@ -7,10 +7,19 @@ import { Navigate, useNavigate } from "react-router";
 
 export default function TranquilPerch({ title, pricePerNight, mainImage, sideImages = [],id }) {
   const navigate = useNavigate();
-  const handlebooknow = ()=>{
+  const handleBookNow = () => {
+    const user = localStorage.getItem("user");
+  
+    if (!user) {
+      // If user not logged in, redirect to login page
+      navigate("/login");
+      return;
+    }
+  
+    // If logged in, proceed with booking
     localStorage.setItem("property_id", id);
-    navigate('/payment')
-  }
+    navigate("/payment");
+  };
   return (
     <>
     <div className="tranquil-perch-container">
@@ -56,7 +65,7 @@ export default function TranquilPerch({ title, pricePerNight, mainImage, sideIma
   </div>
   <div class="book-button">
     <button class="book-now-btn" onClick={()=>{
-      handlebooknow()
+      handleBookNow()
     }}>Book Now</button>
   </div>
 </div>
