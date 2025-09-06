@@ -2,84 +2,75 @@ import React from 'react';
 import './BannerMobile.css';
 import { IoArrowForwardSharp, IoSearch } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
-
+import img1 from '/1.png';
+import img2 from '/2.png';
+import img4 from '/4.png';
+import group10 from '/Group 10.png';
 // Import images
 
 
 function BannerMobile() {
+
   const navigate = useNavigate();
 
   return (
-    <div className='banner-mobile-container'>
-      <div className='banner-mobile-content'>
-        <h1>
-          <span className='heading_design3'>Smart Living Simplified.</span>
-          <br />
-          Your Space!
-          <br />
-          <span className='heading_design'>Your Comfort!</span>
-          <br />
-          <span className='heading_design2'>Your Freedom!</span>
-        </h1>
-        <p className='banner-mobile-content_p'>
-          From shared to stylish - living spaces for every lifestyle
+    <div className="sf-container">
+      {/* Hero Section */}
+      <div className="sf-hero">
+        <h2 className="sf-title">
+          Where Comfort Meets <br /> Non-Judgmental Hospitality.
+        </h2>
+        <p className="sf-subtitle">
+          Co-ed. Girls-only. Boys-only. All types of residences available.
         </p>
-
-        <div className='search-bar-mobile'>
-          <div className='search-container-mobile'>
-            <span className='search-bar-icon'>
-              <input type='text' placeholder='Search your location' />
-              <IoSearch size={20} className='search-icon' />
-            </span>
-          </div>
+        <div className="sf-search-bar">
+          <input type="text" placeholder="Search your location" />
           <button>Search</button>
+        </div>
+        <img
+          src={group10}
+          alt="Student"
+          className="sf-hero-img"
+        />
+      </div>
+
+      {/* Options */}
+      <div className="sf-card">
+        <img
+          src={img1}
+          alt="PG"
+          className="sf-card-img"
+        />
+        <div>
+          <h3 className="sf-card-title">TM Stay</h3>
+          <p className="sf-card-sub">For PG</p>
+          <p className="sf-card-num">450+ Residence</p>
         </div>
       </div>
 
-      <div className='category-container-mobile'>
-        <div className='category-box-mobile' onClick={() => navigate('/tmstay')}>
-          <div className='category-image-mobile'>
-            <img src='image 26.png' alt='TM Stay' />
-          </div>
-          <div className='category-details-mobile'>
-            <h3>
-              <span className='tm'>TM</span> <span className='stay'>Stay</span>
-            </h3>
-            <p>For PG</p>
-            <span className='arrow-mobile'>
-              <IoArrowForwardSharp size={20} />
-            </span>
-          </div>
+      <div className="sf-card">
+        <div>
+          <h3 className="sf-card-title">TM Hive</h3>
+          <p className="sf-card-sub">For Co-living</p>
+          <p className="sf-card-num">40000+ Rooms</p>
         </div>
+        <img
+          src={img2}
+          alt="Co-living"
+          className="sf-card-img"
+        />
+      </div>
 
-        <div className='category-box-mobile' onClick={() => navigate('/tmhive')}>
-          <div className='category-image-mobile'>
-            <img src='/image 28.png' alt='TM Hive' />
-          </div>
-          <div className='category-details-mobile'>
-            <h3>
-              <span className='tm'>TM</span> <span className='hive'>Hive</span>
-            </h3>
-            <p>For Co-living</p>
-            <span className='arrow-mobile'>
-              <IoArrowForwardSharp size={20} />
-            </span>
-          </div>
-        </div>
-
-        <div className='category-box-mobile' onClick={() => navigate('/tmluxe')}>
-          <div className='category-image-mobile'>
-            <img src='image 29.png' alt='TM Luxe' />
-          </div>
-          <div className='category-details-mobile'>
-            <h3>
-              <span className='tm'>TM</span> <span className='luxe'>Luxe</span>
-            </h3>
-            <p>For Luxury apartments</p>
-            <span className='arrow-mobile'>
-              <IoArrowForwardSharp size={20} />
-            </span>
-          </div>
+      <div className="sf-card">
+        <img
+          src={img4}
+          alt="Luxury"
+          className="sf-card-img"
+        />
+        <div>
+          <h3 className="sf-card-title">TM Hive</h3>
+          <p className="sf-card-sub">For Luxury apartments</p>
+          <p className="sf-card-num">15+ Cities</p>
         </div>
       </div>
     </div>
