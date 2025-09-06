@@ -1,37 +1,16 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect} from 'react';
 import './Banner.css';
 import { IoArrowForwardSharp, IoSearch } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 
-// Import images
-import img1 from '/1.png';
-import img2 from '/2.png';
-import img4 from '/4.png';
-import group10 from '/Group 10.png';
+
 
 // Lazy load the mobile component
-const BannerMobile = lazy(() => import('./BannerMobile'));
+
 
 function Banner() {
   const navigate = useNavigate();
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  if (isMobile) {
-    return (
-      <Suspense fallback={<div>Loading...</div>}>
-        <BannerMobile />
-      </Suspense>
-    );
-  }
+ 
 
   return (
     <div className='banner_container'>
@@ -40,7 +19,7 @@ function Banner() {
         {/* TM Stay */}
         <div className='category_box'>
           <div className='image-stay'>
-            <img src={img1} alt='TM Stay' />
+            <img src="/1.png" alt='TM Stay' />
           </div>
           <div id='categoryright'>
             <h3>
@@ -56,7 +35,7 @@ function Banner() {
         {/* TM Hive */}
         <div className='category_box hive_box' >
           <div className='image-hive'>
-            <img src={img2} alt='TM Hive' />
+            <img src="/2.png" alt='TM Hive' />
           </div>
           <div id='categoryright'>
             <h3>
@@ -72,7 +51,7 @@ function Banner() {
         {/* TM Luxe */}
         <div className='category_box luxe_box'>
           <div className='image-luxe'>
-            <img src={img4} alt='TM Luxe' />
+            <img src="/4.png" alt='TM Luxe' />
           </div>
           <div id='categoryright'>
             <h3>
@@ -109,7 +88,7 @@ function Banner() {
         </div>
 
         <div className='backpart'>
-          <img src={group10} alt='Background' />
+          <img src="/Group-10.png" alt='Background' />
         </div>
       </div>
     </div>

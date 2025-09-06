@@ -1,0 +1,17 @@
+/* Show desktop only on screens wider than 768px */
+.desktop-banner {
+    display: block;
+  }
+  .mobile-banner {
+    display: none;
+  }
+  
+  @media (max-width: 768px) {
+    .desktop-banner {
+      display: none;
+    }
+    .mobile-banner {
+      display: block;
+    }
+  }
+  
