@@ -3,6 +3,9 @@ import './BannerMobile.css';
 import { IoArrowForwardSharp, IoSearch } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 
+// Import images
+
+
 function BannerMobile() {
   const navigate = useNavigate();
 
@@ -36,7 +39,7 @@ function BannerMobile() {
       <div className='category-container-mobile'>
         <div className='category-box-mobile' onClick={() => navigate('/tmstay')}>
           <div className='category-image-mobile'>
-            <img src='/1.png' alt='TM Stay' />
+            <img src='image 26.png' alt='TM Stay' />
           </div>
           <div className='category-details-mobile'>
             <h3>
@@ -51,7 +54,7 @@ function BannerMobile() {
 
         <div className='category-box-mobile' onClick={() => navigate('/tmhive')}>
           <div className='category-image-mobile'>
-            <img src='/2.png' alt='TM Hive' />
+            <img src='/image 28.png' alt='TM Hive' />
           </div>
           <div className='category-details-mobile'>
             <h3>
@@ -66,7 +69,7 @@ function BannerMobile() {
 
         <div className='category-box-mobile' onClick={() => navigate('/tmluxe')}>
           <div className='category-image-mobile'>
-            <img src='/4.png' alt='TM Luxe' />
+            <img src='image 29.png' alt='TM Luxe' />
           </div>
           <div className='category-details-mobile'>
             <h3>

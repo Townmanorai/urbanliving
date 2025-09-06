@@ -1,8 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import './Banner.css';
 import { IoArrowForwardSharp, IoSearch } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
-import BannerMobile from './BannerMobile';
+
+// Import images
+import img1 from '/1.png';
+import img2 from '/2.png';
+import img4 from '/4.png';
+import group10 from '/Group 10.png';
+
+// Lazy load the mobile component
+const BannerMobile = lazy(() => import('./BannerMobile'));
 
 function Banner() {
   const navigate = useNavigate();
@@ -18,7 +26,11 @@ function Banner() {
   }, []);
 
   if (isMobile) {
-    return <BannerMobile />;
+    return (
+      <Suspense fallback={<div>Loading...</div>}>
+        <BannerMobile />
+      </Suspense>
+    );
   }
 
   return (
@@ -28,7 +40,7 @@ function Banner() {
         {/* TM Stay */}
         <div className='category_box'>
           <div className='image-stay'>
-            <img src='/1.png' alt='TM Stay' />
+            <img src={img1} alt='TM Stay' />
           </div>
           <div id='categoryright'>
             <h3>
@@ -44,7 +56,7 @@ function Banner() {
         {/* TM Hive */}
         <div className='category_box hive_box' >
           <div className='image-hive'>
-            <img src='/2.png' alt='TM Hive' />
+            <img src={img2} alt='TM Hive' />
           </div>
           <div id='categoryright'>
             <h3>
@@ -60,7 +72,7 @@ function Banner() {
         {/* TM Luxe */}
         <div className='category_box luxe_box'>
           <div className='image-luxe'>
-            <img src='/4.png' alt='TM Luxe' />
+            <img src={img4} alt='TM Luxe' />
           </div>
           <div id='categoryright'>
             <h3>
@@ -97,7 +109,7 @@ function Banner() {
         </div>
 
         <div className='backpart'>
-          <img src='Group 10.png' alt='Background' />
+          <img src={group10} alt='Background' />
         </div>
       </div>
     </div>

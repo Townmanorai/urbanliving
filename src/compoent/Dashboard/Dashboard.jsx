@@ -84,7 +84,7 @@ const Dashboard = () => {
         <aside className="dashboard-sidebar">
           <div className="sidebar-profile">
             <img
-              src="image 129.png"
+              src="user.png"
               alt="user avatar"
               className="sidebar-profile-image"
             />
@@ -126,7 +126,7 @@ const Dashboard = () => {
           {/* Profile Section */}
           <div className="dashboard-profile-section">
             <img
-              src="/130.png"
+              src="user.png"
               alt="profile avatar"
               className="dashboard-profile-image"
             />
