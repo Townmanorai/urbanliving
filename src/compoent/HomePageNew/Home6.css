@@ -1,403 +1,339 @@
-*{
-   
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 .ovika-connect-main {
-  background: #fff;
-  padding: 40px 0 0 0;
-  border-radius: 18px;
-  margin: 0 auto;
   width: 100%;
-  max-width: 1400px;
+  max-width: 100%;
+  margin: 0 auto;
+  overflow: hidden;
 }
 
-.ovika-connect-title {
-  text-align: center;
-  font-size: 2rem;
-  font-weight: 300;
-  margin-bottom: 26px;
-  color: #111;
-  letter-spacing: 0.2px;
-}
-
-.ovika-title-highlight {
-  color: #c99b3b;
-}
-
+/* ===== DESKTOP LAYOUT ===== */
 .ovika-connect-content {
   display: flex;
-  justify-content: space-between;
+  flex-direction: row;
   align-items: stretch;
-  background: url('/Group 167.png') no-repeat center center/cover;
-  border-radius: 32px;
-  padding: 64px 50px;
+  background: url('/home6.png') no-repeat center top;
+  min-height: 560px;
   position: relative;
-  max-width: 1400px;
-  margin: 0 auto;
+  width: 100%;
+  background-size: cover;
+  background-position: center center;
 }
 
+/* LEFT SIDE: text + form */
 .ovika-connect-left {
-  flex: 1.2;
-  color: #fff;
+  flex: 0 0 52%;
+  max-width: 52%;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding: 60px 48px 60px 60px;
+  z-index: 2;
   position: relative;
-  padding: 28px 0 28px 16px;
 }
 
-.ovika-property-graphic {
+/* RIGHT SIDE: lady image — fills full height */
+.ovika-connect-right {
+  flex: 0 0 48%;
+  max-width: 48%;
+  position: relative;
+  overflow: hidden;
+}
+
+.ovika-lady-img {
   position: absolute;
-  top: 44px;
-  left: 16px;
-  width: 390px;
-  height: 215px;
-  opacity: 1;
-  z-index: 1;
-  pointer-events: none;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
+  width: auto;
+  max-width: none;
+  object-fit: contain;
+  object-position: bottom center;
+  display: block;
 }
 
+/* ===== HEADING ===== */
 .ovika-property-heading {
-  font-size: 3rem;
-  font-weight: 400;
-  margin-top: 42px;
-  margin-bottom: 22px;
-  line-height: 1.08;
-  z-index: 2;
-  position: relative;
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #1a1a1a;
+  margin-bottom: 18px;
+  letter-spacing: -0.5px;
 }
 
+/* ===== DESC ===== */
 .ovika-property-desc {
-  font-size: 1.18rem;
-  font-weight: 300;
-  letter-spacing: 0.1px;
-  margin-top: 0;
-  max-width: 405px;
-  z-index: 2;
-  position: relative;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 28px;
+  max-width: 440px;
 }
 
+/* ===== FORM WRAPPER ===== */
 .ovika-connect-form-wrapper {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 35px 0;
-  z-index: 2;
+  width: 100%;
 }
 
+/* ===== FORM ===== */
 .ovika-connect-form {
-  background: #ecebe7;
-  border-radius: 28px;
-  padding: 30px 28px;
+  background: rgba(255, 255, 255, 0.93);
+  border-radius: 16px;
+  padding: 24px 24px 20px 24px;
   display: flex;
   flex-direction: column;
-  min-width: 350px;
-  box-shadow: 0 7px 16px 0 rgba(50,50,51,0.10);
-}
-
-.ovika-input {
-  margin-bottom: 18px;
-  padding: 8px 44px 10px 25px;
-  border-radius: 24px;
-  border: none;
-  outline: none;
-  font-size: 1.12rem;
-  background: #fff;
-  box-shadow: 0 2px 1px 1px rgba(50, 48, 48, 0.2), 
-              0 0px 1px rgba(50, 48, 48, 0.2); 
-}
-
-.ovika-input::placeholder {
-  color: #888;
-  font-size: 1.13rem;
-  letter-spacing: 0.01em;
-}
-
-.ovika-submit-btn-homepage {
-  background: #c2772b;
-  color: #fff;
-  font-size: 1.2rem;
-  padding: 10px 0;
-  border: none;
-  border-radius: 28px;
-  cursor: pointer;
-  font-weight: 300;
-  margin-top: 0px;
-  transition: opacity 0.22s;
-}
-
-.ovika-submit-btn-homepage:hover {
-  opacity: 0.89;
-  background-color: #a86424;
+  max-width: 420px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .form-heading-ovika-homepage {
-  font-size: 1.6rem;
-  font-weight: 300 !important;
-  color: #000;
-  margin-bottom: 20px;
-  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 16px;
+  text-align: left;
 }
 
-.ovika-left-btn-property {
+/* ===== INPUT ===== */
+.ovika-input {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 12px 18px;
+  border-radius: 8px;
+  border: 1.5px solid #c2772b;
+  outline: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  background: #fff;
+  color: #333;
+  transition: border-color 0.2s;
+}
+
+.ovika-input:focus {
+  border-color: #a86424;
+}
+
+.ovika-input::placeholder {
+  color: #aaa;
+  font-size: 0.95rem;
+}
+
+/* ===== SUBMIT BUTTON ===== */
+.ovika-submit-btn-homepage {
   background: #c2772b;
   color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 12px 0;
   border: none;
-  border-radius: 28px;
-  padding: 8px 0;
-  width: 230px;
-  font-size: 1.08rem;
-  font-weight: 400;
+  border-radius: 8px;
   cursor: pointer;
-  margin-top: 26px;
-  transition: all 0.3s ease;
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
-  text-decoration: none;
-  display: flex;
+  width: 100%;
+  margin-bottom: 10px;
+  transition: background 0.22s;
+}
+
+.ovika-submit-btn-homepage:hover {
+  background: #a86424;
+}
+
+/* ===== HOST YOUR PROPERTY BUTTON ===== */
+.ovika-host-btn {
+  width: 100%;
+  background: transparent;
+  color: #c2772b;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 11px 0;
+  border: 1.5px solid #c2772b;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  text-align: center;
 }
 
-.ovika-left-btn-property:hover {
-  opacity: 0.9;
-  transform: translateY(-2px);
-  background-color: #a86424;
+.ovika-host-btn:hover {
+  background: #c2772b;
+  color: #fff;
 }
 
-.ovika-left-btn-arrow {
-  width: 18px;
-  height: 18px;
-  transition: transform 0.3s ease;
+.ovika-host-btn-arrow {
+  font-size: 1rem;
+  line-height: 1;
+  font-weight: 700;
 }
 
-.ovika-left-btn-property:hover .ovika-left-btn-arrow {
-  transform: translateX(4px);
-}
-
-/* Large Desktop */
+/* ===== LARGE DESKTOP ===== */
 @media (min-width: 1440px) {
   .ovika-connect-main {
     max-width: 1600px;
   }
 
-  .ovika-connect-content {
-    padding: 70px 80px;
-    max-width: 1600px;
-  }
-
   .ovika-property-heading {
-    font-size: 3.3rem;
+    font-size: 3rem;
   }
 
-  .ovika-property-desc {
-    font-size: 1.25rem;
-    max-width: 450px;
-  }
-
-  .ovika-connect-form {
-    min-width: 380px;
-    padding: 35px 32px;
-  }
-
-  .ovika-left-btn-property {
-    width: 250px;
-    font-size: 1.15rem;
-    padding: 10px 0;
+  .ovika-connect-left {
+    padding: 70px 60px 70px 80px;
   }
 }
 
-/* Medium Desktop / Laptop */
+/* ===== MEDIUM DESKTOP ===== */
 @media (min-width: 1024px) and (max-width: 1439px) {
-  .ovika-connect-main {
-    max-width: 1200px;
-  }
-
-  .ovika-connect-content {
-    padding: 60px 40px;
-  }
-
-  .ovika-property-heading {
-    font-size: 2.8rem;
-  }
-
-  .ovika-property-desc {
-    font-size: 1.15rem;
-  }
-}
-
-/* Tablet */
-@media (min-width: 769px) and (max-width: 1023px) {
-  .ovika-connect-content {
-    flex-direction: column;
-    padding: 40px 30px;
-  }
-
   .ovika-property-heading {
     font-size: 2.4rem;
   }
 
-  .ovika-property-desc {
-    font-size: 1.1rem;
-    max-width: 100%;
-  }
-
-  .ovika-connect-form-wrapper {
-    padding: 30px 0;
-    width: 100%;
-  }
-
-  .ovika-connect-form {
-    width: 100%;
-    max-width: 450px;
+  .ovika-connect-left {
+    padding: 50px 40px 50px 50px;
   }
 }
 
-/* Mobile */
+/* ===== TABLET ===== */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .ovika-connect-content {
+    min-height: 480px;
+  }
+
+  .ovika-connect-left {
+    flex: 0 0 55%;
+    max-width: 55%;
+    padding: 40px 30px 40px 36px;
+  }
+
+  .ovika-connect-right {
+    flex: 0 0 45%;
+    max-width: 45%;
+  }
+
+  .ovika-property-heading {
+    font-size: 2rem;
+  }
+
+  .ovika-connect-form {
+    max-width: 100%;
+  }
+}
+
+/* ===== MOBILE ===== */
 @media (max-width: 768px) {
   .ovika-connect-main {
     padding: 0;
-    border-radius: 0;
-  }
-
-  .ovika-connect-title {
-    font-size: 1.4rem;
-    margin-bottom: 18px;
   }
 
   .ovika-connect-content {
     flex-direction: column;
-    background: url('/Group 168.png') no-repeat center center/cover;
-    border-radius: 0;
-    padding: 40px 12px 70px 12px;
-    text-align: center;
+    background: url('/home6mobile.png') no-repeat center center / cover;
+    min-height: 920px;
+    padding: 0;
+    background-size: cover;
+    background-position: center top;
     position: relative;
+    overflow: visible;
   }
 
   .ovika-connect-left {
-    padding: 0;
-    color: #fff;
-    text-align: left;
-    z-index: 2;
+    flex: unset;
+    max-width: 100%;
+    width: 100%;
+    padding: 32px 20px 24px 20px;
+    order: 1;
+    position: relative;
+    z-index: 1;
   }
 
-  .ovika-property-graphic {
-    width: 95vw;
-    height: 120px;
-    left: 0;
-    top: 28px;
+  .ovika-connect-right {
+    display: none;
+  }
+
+  .ovika-lady-img {
+    display: none;
   }
 
   .ovika-property-heading {
-    font-size: 1.8rem;
-    font-weight: 300 !important;
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.3px;
     line-height: 1.2;
-    margin: 30px 0 10px 0;
-    text-align: left;
+    color: #1a1a1a;
+    margin-bottom: 12px;
   }
 
   .ovika-property-desc {
-    font-size: 0.92rem;
-    font-weight: 300;
-    line-height: 1.45;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: #444;
+    margin-bottom: 20px;
     max-width: 100%;
-    text-align: left;
-    margin-bottom: 45px;
-  }
-
-  .ovika-left-btn-property {
-    width: 75%;
-    font-size: 1rem;
-    padding: 10px 0;
-    border-radius: 25px;
-    text-decoration: none;
-    background: #c2772b;
-    margin-left: 0;
-    border-color: #c2772b;
-    color: white;
-  }
-
-  .ovika-connect-form-wrapper {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 5;
   }
 
   .ovika-connect-form {
-    background: #ecebe7;
-    width: 90%;
-    max-width: 360px;
-    border-radius: 24px;
-    padding: 25px 20px 25px 20px;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
-    min-width: unset;
+    max-width: 100%;
+    width: 100%;
+    border-radius: 12px;
+    padding: 20px 18px;
   }
 
-  .ovika-input {
-    width: 100%;
-    padding: 10px 18px;
-    border-radius: 24px;
-    border: none;
-    outline: none;
-    background: #fff;
-    box-shadow: 0 2px 1px 1px rgba(50, 48, 48, 0.2),
-                0 0px 1px rgba(50, 48, 48, 0.2);
-    font-size: 1rem;
+  .form-heading-ovika-homepage {
+    font-size: 1.05rem;
     margin-bottom: 14px;
   }
 
-  .ovika-input::placeholder {
-    font-size: 1rem;
-    color: #777;
+  .ovika-input {
+    font-size: 0.9rem;
+    padding: 10px 14px;
+    margin-bottom: 10px;
   }
 
   .ovika-submit-btn-homepage {
-    background: #c2772b;
-    color: #fff;
-    font-size: 1.05rem;
-    font-weight: 400;
-    padding: 10px 0;
-    border-radius: 25px;
-    width: 100%;
+    font-size: 0.95rem;
+    padding: 11px 0;
   }
 
-  .form-heading-ovika-homepage {
-    font-size: 1.6rem;
-    font-weight: 300 !important;
-    color: #000;
-    margin-bottom: 20px;
-    text-align: center;
+  .ovika-host-btn {
+    font-size: 0.82rem;
+    padding: 10px 0;
   }
 }
 
-/* Extra Small Mobile */
+/* ===== EXTRA SMALL ===== */
 @media (max-width: 480px) {
-  .ovika-connect-content {
-    padding: 35px 10px 60px 10px;
+  .ovika-connect-left {
+    padding: 28px 16px 20px 16px;
   }
 
   .ovika-property-heading {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
   }
 
   .ovika-property-desc {
-    font-size: 0.88rem;
+    font-size: 0.86rem;
   }
 
-  .ovika-left-btn-property {
-    width: 85%;
-    font-size: 0.95rem;
+  .ovika-connect-right {
+    display: none;
   }
 
-  .ovika-connect-form {
-    width: 95%;
-    padding: 22px 18px;
-  }
-
-  .form-heading-ovika-homepage {
-    font-size: 1.4rem;
+  .ovika-connect-content {
+    min-height: 946px;
+    background-size: cover;
+    background-position: center top;
   }
 }
