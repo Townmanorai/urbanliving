@@ -79,7 +79,7 @@
 
 // WelcomePopup.jsx
 import React, { useState, useEffect } from 'react';
-import './WelcomePopup.css';
+import './WelcomePopUp.css';
 
 export default function WelcomePopup({
   heroBgImgUrl = '/modelbackground.png', // ← poore card ka background image
