@@ -83,6 +83,7 @@ import './WelcomePopUp.css';
 
 export default function WelcomePopup({
   heroBgImgUrl = '/modelbackground.png', // ← poore card ka background image
+  heroBgMobileImgUrl = '/mdelbackgroundmobile.png',
 }) {
   const [visible, setVisible] = useState(false);
 
@@ -114,7 +115,10 @@ export default function WelcomePopup({
       {/* ✅ backgroundImage poore card pe */}
       <div
         className="ovika-popup-card"
-        style={{ backgroundImage: `url(${heroBgImgUrl})` }}
+        style={{
+          '--ovika-popup-bg-desktop': `url(${heroBgImgUrl})`,
+          '--ovika-popup-bg-mobile': `url(${heroBgMobileImgUrl})`,
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Left spacer — image left pe dikh sake */}

@@ -33,6 +33,7 @@
   display: flex;
   flex-direction: row;
   /* ✅ Hero image as full card background */
+  background-image: var(--ovika-popup-bg-desktop);
   background-size: 100% 100%;
   background-position: center center;
   background-repeat: no-repeat;
@@ -259,57 +260,90 @@
 ════════════════════════════ */
 @media (max-width: 600px) {
   .ovika-popup-overlay {
-    padding: 0;
-    align-items: flex-end;
+    padding: 0.6rem;
+    align-items: center;
   }
 
   .ovika-popup-card {
     flex-direction: column;
-    border-radius: 1.2rem 1.2rem 0 0;
-    min-height: 80vh;
-    max-height: 93vh;
+    border-radius: 1.2rem;
+    min-height: auto;
+    max-height: 95vh;
+    background-image: var(--ovika-popup-bg-mobile);
     background-size: cover;
-    background-position: top center;
+    background-position: left top;
   }
 
   .ovika-popup-left {
-    width: 100%;
-    height: 200px;
-    flex-shrink: 0;
+    display: none;
   }
 
   .ovika-popup-right {
-    padding: 1rem 1rem 1.2rem;
+    padding: 2.8rem 0.7rem 1rem;
     gap: 0.7rem;
     overflow-y: auto;
     background: transparent;
+    margin-top: 40px;
   }
 
-  .ovika-popup-logo { font-size: 1rem; }
-  .ovika-popup-tagline { font-size: 1rem; }
+  .ovika-popup-logo { font-size: 1rem;
+     /* text-align: right; */
+    margin-left:100px;
+  }
+  .ovika-popup-tagline { font-size: 1rem; text-align: right; }
 
-  .ovika-popup-sections { gap: 0.45rem; }
+  .ovika-popup-sections {
+    gap: 0.5rem;
+    flex-direction: column;
+  }
 
   .ovika-popup-section {
     padding: 0.7rem 0.6rem 0.65rem;
     border-radius: 0.85rem;
+    align-items: flex-start;
+    text-align: left;
   }
 
-  .ovika-section-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
-  .ovika-section-title { font-size: 0.8rem; }
+  .ovika-section-icon { font-size: 1.5rem; margin-bottom: 0.2rem; }
+  .ovika-section-title { font-size: 0.8rem; margin-bottom: 0.3rem; }
 
   .ovika-section-desc {
     font-size: 0.68rem;
     line-height: 1.38;
     margin-bottom: 0.5rem;
     display: -webkit-box;
+    line-clamp: 3;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
 
-  .ovika-section-btn { font-size: 0.7rem; padding: 0.3rem 0.85rem; }
-  .ovika-badge { font-size: 0.62rem; padding: 0.22rem 0.55rem; }
+  .ovika-section-btn {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.85rem;
+    align-self: flex-end;
+  }
+
+  .ovika-cards-or {
+    display: none;
+  }
+  .ovika-trust-badges {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    gap: 0.35rem;
+    padding-bottom: 0.15rem;
+  }
+  .ovika-trust-badges::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ovika-badge {
+    font-size: 0.62rem;
+    padding: 0.22rem 0.55rem;
+    white-space: nowrap;
+    flex: 0 0 auto;
+  }
 
   .ovika-popup-close {
     top: 0.7rem;
