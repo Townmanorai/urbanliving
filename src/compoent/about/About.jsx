@@ -36,11 +36,17 @@
 
 // export default AboutUs;
 import React from "react";
+import { Helmet } from "react-helmet";
 import "./About.css";
 
 const AboutUs = () => {
   return (
     <div className="about-wrapper">
+      <Helmet>
+        <title>About OvikaLiving – Modern Rental Living & Urban Smart Living</title>
+        <meta name="description" content="OvikaLiving is a technology-driven platform for modern rental living. We offer managed short-term stays and smart living solutions for guests and owners." />
+        <meta name="keywords" content="near India Expo Mart, About OvikaLiving, modern rental living, urban smart living, short term stays Noida, managed rental apartments" />
+      </Helmet>
       {/* Hero Section */}
       <section className="about-hero">
         <div className="about-hero-content">

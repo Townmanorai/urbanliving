@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { Helmet } from 'react-helmet';
 import './ListPropertyPage.css';
 import { IoArrowForward } from 'react-icons/io5';
 import { FaUser, FaCamera, FaCheckCircle, FaPlay, FaShieldAlt, FaCreditCard, FaUsers, FaGlobe } from 'react-icons/fa';
@@ -69,6 +70,11 @@ const ListPropertyPage = () => {
 
   return (
     <div className="list-property-page">
+      <Helmet>
+        <title>Host Your Property & Earn More with OvikaLiving</title>
+        <meta name="description" content="List your property with OvikaLiving in Noida & Greater Noida. We handle management, tenants, and payouts so you can earn passive rental income effortlessly." />
+        <meta name="keywords" content="near India Expo Mart, host your property, property hosting, rental property management, earn income from property, Airbnb property management Noida" />
+      </Helmet>
       {/* Hero Section */}
       <div className="hero-section">
         <div className="hero-overlay"></div>

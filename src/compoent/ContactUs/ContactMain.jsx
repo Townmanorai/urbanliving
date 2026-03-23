@@ -604,6 +604,7 @@
 // export default ContactMain;
 
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 
 const ContactMain = () => {
@@ -647,6 +648,11 @@ const ContactMain = () => {
       background: '#f8f9fa',
       minHeight: '100vh'
     }}>
+      <Helmet>
+        <title>Contact OvikaLiving – Managed Rental Services & Property Income Management</title>
+        <meta name="description" content="Reach out to OvikaLiving for support with bookings, property hosting, and managed rental services in Noida and Greater Noida." />
+        <meta name="keywords" content="near India Expo Mart, Contact OvikaLiving, managed rental support, property income management Noida, rental services help" />
+      </Helmet>
       {/* Header Section */}
       <div style={{
         background: 'linear-gradient(135deg, #C8965F 0%, #A67843 100%)',

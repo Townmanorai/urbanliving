@@ -742,6 +742,7 @@
 // export default PropertyListPage;
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { Helmet } from 'react-helmet';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FiSearch, FiMapPin, FiHeart, FiPlus, FiStar, FiX, FiMoon, FiCalendar, FiTag, FiHome, FiTrendingUp, FiAward, FiClock } from 'react-icons/fi';
 import { BiBed, BiBath, BiArea } from 'react-icons/bi';
@@ -1229,6 +1230,11 @@ const PropertyListPage = () => {
 
   return (
     <div style={{ minHeight: '100vh', background: '#f7f7f7', fontFamily: "'Inter', -apple-system, sans-serif" }}>
+      <Helmet>
+        <title>Furnished Apartments for Rent in Noida & Greater Noida</title>
+        <meta name="description" content="Explore luxury studios, homestays, and fully furnished apartments for rent in Noida & Greater Noida. Flexible short-term and monthly rental options available." />
+        <meta name="keywords" content="near India Expo Mart, apartments for rent in Noida, apartments for rent in Greater Noida, furnished apartments Noida, rental homes Greater Noida, studio apartment Noida, short stay apartments Noida, co living spaces Noida, smart rental homes Noida, rental housing Greater Noida, managed rental apartments Noida, furnished apartments for rent, studio apartments for rent, smart rental homes" />
+      </Helmet>
 
       {/* ── HERO HEADER ── */}
       <div style={{
