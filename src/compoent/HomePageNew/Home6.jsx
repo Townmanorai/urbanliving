@@ -288,7 +288,7 @@ function Home6() {
   });
 
   /** Mobile hero image — same asset as section background (`public/home6mobile.png`). */
-  const MOBILE_MODEL_SRC = "/home6mobile.png";
+  const MOBILE_MODEL_SRC = "/home6mobile.jpeg";
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
