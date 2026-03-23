@@ -283,8 +283,12 @@ function Home6() {
   const [formData, setFormData] = useState({
     name: "",
     phone_number: "",
+    email: "",
     message: "",
   });
+
+  /** Mobile hero image — same asset as section background (`public/home6mobile.png`). */
+  const MOBILE_MODEL_SRC = "/home6mobile.png";
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -301,13 +305,14 @@ function Home6() {
         body: JSON.stringify({
           name: formData.name,
           phone_number: formData.phone_number,
+          email: formData.email,
           purpose: formData.message,
           source: "Home6 Contact Form"
         }),
       });
       if (response.ok) {
         setShowSuccessPopup(true);
-        setFormData({ name: "", phone_number: "", message: "" });
+        setFormData({ name: "", phone_number: "", email: "", message: "" });
       } else {
         throw new Error("Failed to submit form");
       }
@@ -378,16 +383,28 @@ function Home6() {
 
         {/* LEFT: Heading + Description + Form */}
         <div className="ovika-connect-left">
-          <h1 className="ovika-property-heading">
-            TURN YOUR PROPERTY<br />
-            INTO A SMART<br />
-            INCOME SOURCE
-          </h1>
-          <p className="ovika-property-desc">
-            Join hundreds of property owners earning passive income with our all-inclusive management services.
-          </p>
+          <div className="ovika-connect-intro">
+            <h1 className="ovika-property-heading">
+              TURN YOUR PROPERTY<br />
+              INTO A SMART<br />
+              INCOME SOURCE
+            </h1>
+            <p className="ovika-property-desc">
+              Join hundreds of property owners earning passive income with our all-inclusive management services.
+            </p>
+          </div>
 
-          <div className="ovika-connect-form-wrapper">
+          {/* Mobile: image + form stacked; form overlays on hand (CSS). Desktop: display:contents */}
+          <div className="ovika-connect-mobile-stack">
+            <div className="ovika-connect-mobile-hero" aria-hidden="true">
+              <img
+                src={MOBILE_MODEL_SRC}
+                alt=""
+                className="ovika-mobile-model-img"
+              />
+            </div>
+
+            <div className="ovika-connect-form-wrapper">
             <form className="ovika-connect-form" onSubmit={handleSubmit}>
               <h2 className="form-heading-ovika-homepage">Contact Us</h2>
 
@@ -416,6 +433,18 @@ function Home6() {
               />
 
               <input
+                type="email"
+                name="email"
+                className="ovika-input"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+                disabled={isSubmitting}
+                autoComplete="email"
+              />
+
+              <input
                 type="text"
                 name="message"
                 className="ovika-input"
@@ -441,17 +470,12 @@ function Home6() {
                 </button>
               </a>
             </form>
+            </div>
           </div>
         </div>
 
-        {/* RIGHT: Lady Image — anchored to bottom, full height */}
-        {/* <div className="ovika-connect-right">
-          <img
-            src="/ovika-lady.png"
-            alt="OvikaLiving representative"
-            className="ovika-lady-img"
-          />
-        </div> */}
+        {/* RIGHT: Desktop — model image */}
+      
 
       </div>
     </div>
