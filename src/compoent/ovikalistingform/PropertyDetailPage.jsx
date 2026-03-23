@@ -2717,6 +2717,8 @@ const PropertyDetailPage = () => {
     aadhaarVerified: false, passportVerified: false, mobileVerified: false,
     uploadedPhoto: '', termsAgreed: false,
   });
+  const [bookingFor, setBookingFor] = useState('me');
+  const [guestDetails, setGuestDetails] = useState({ name: '', address: '', phone: '' });
   const [availabilityRequested, setAvailabilityRequested] = useState(false);
   const [aadhaarNumber, setAadhaarNumber] = useState('');
   const [isAadhaarLoading, setIsAadhaarLoading] = useState(false);
@@ -3008,6 +3010,16 @@ const PropertyDetailPage = () => {
   };
 
   const handleNext = () => {
+    if (step === 1 && bookingFor === 'someone_else') {
+      if (!guestDetails.name || !guestDetails.address || !guestDetails.phone) {
+        showAlert('Please fill all details for the guest (Name, Address, Mobile).');
+        return;
+      }
+      if (guestDetails.phone.length !== 10) {
+        showAlert('Please enter a valid 10-digit mobile number.');
+        return;
+      }
+    }
     if (step === 3 && (!formData.checkInDate || !formData.checkOutDate)) return;
     if (step === 3 && bookingType === 1 && ownerApprovalStatus !== 'accepted') { showAlert('Please wait for owner approval.'); return; }
     if (step === 2 && !formData.termsAgreed) return;
@@ -3129,6 +3141,12 @@ const PropertyDetailPage = () => {
           if (userRes.ok) { const ud = await userRes.json(); userEmail = ud.email || userEmail; userPhone = ud.phone || userPhone; }
         } catch {}
       }
+
+      if (bookingFor === 'someone_else') {
+        finalUsername = guestDetails.name;
+        userPhone = guestDetails.phone;
+      }
+
       const validPropertyId = getValidPropertyId(id);
       const isInstantBooking = Number(property.booking_type) === 0;
       let newBookingId = (bookingType === 1 || !isInstantBooking) ? acceptedBookingId : null;
@@ -3273,6 +3291,38 @@ const PropertyDetailPage = () => {
               {step === 1 && (
                 <div>
                   <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Property Details</h2>
+
+                  <div style={{ marginBottom: '1.5rem', padding: '1.5rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Who are you booking for?</h3>
+                    <div style={{ display: 'flex', gap: '2rem', marginBottom: bookingFor === 'someone_else' ? '1.5rem' : '0' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontWeight: '500' }}>
+                        <input type="radio" value="me" checked={bookingFor === 'me'} onChange={() => { setBookingFor('me'); if(navigator.geolocation) navigator.geolocation.getCurrentPosition(()=>{},()=>{}); }} style={{ marginRight: '8px', width: '18px', height: '18px' }} />
+                        Booking for Myself
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontWeight: '500' }}>
+                        <input type="radio" value="someone_else" checked={bookingFor === 'someone_else'} onChange={() => setBookingFor('someone_else')} style={{ marginRight: '8px', width: '18px', height: '18px' }} />
+                        Booking for Someone Else
+                      </label>
+                    </div>
+                    
+                    {bookingFor === 'someone_else' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', paddingTop: '1.5rem', borderTop: '1px solid #e2e8f0' }}>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '600', marginBottom: '0.5rem', color: '#333' }}>Guest Name <span style={{color:'red'}}>*</span></label>
+                          <input type="text" value={guestDetails.name} onChange={e => setGuestDetails({...guestDetails, name: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '1rem' }} placeholder="Enter guest full name" />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '600', marginBottom: '0.5rem', color: '#333' }}>Guest Mobile Number <span style={{color:'red'}}>*</span></label>
+                          <input type="tel" maxLength={10} value={guestDetails.phone} onChange={e => setGuestDetails({...guestDetails, phone: e.target.value.replace(/\D/g,'')})} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '1rem' }} placeholder="Enter 10-digit mobile number" />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: '600', marginBottom: '0.5rem', color: '#333' }}>Guest Address <span style={{color:'red'}}>*</span></label>
+                          <textarea value={guestDetails.address} onChange={e => setGuestDetails({...guestDetails, address: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #cbd5e1', resize: 'vertical', minHeight: '80px', fontSize: '1rem', fontFamily: 'inherit' }} placeholder="Enter guest complete address"></textarea>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   <div style={{ display: 'flex', gap: '1.5rem', padding: '1.5rem', background: '#f8fafc', borderRadius: '8px', flexWrap: 'wrap' }}>
                     <img src={getPhotoUrl(property.photos?.[0]) || 'https://via.placeholder.com/300x200'} alt="Property" style={{ width: '300px', height: '200px', objectFit: 'cover', borderRadius: '8px', maxWidth: '100%' }} />
                     <div style={{ flex: 1, minWidth: '200px' }}>
