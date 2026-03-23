@@ -46,7 +46,7 @@ import TermsAndConditions from "./compoent/TermsAndConditions/TermsAndConditions
 import RefundAndCancellation from "./compoent/RefundAndCancellation/RefundAndCancellation";
 import FAQ from "./compoent/FAQ/FAQ";
 import OvikaVerified from "./compoent/ovikalistingform/OvikaVerified";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Subsriptionmain } from "./compoent/SubsriptionNew/Subsriptionmain";
 import SuperAdminDashboard from './compoent/AdminDashBoard/SuperAdmin/SuperAdminDashboard';
 import { Notification } from "./compoent/Dashboard/Notification";
@@ -83,10 +83,22 @@ function ProtectedAdminLayout() {
   return <AdminDashboardLayout />;
 }
 
+// 🔄 Scroll to Top Component
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 function App() {
   return (
     <AuthProvider>
       <Router>
+        <ScrollToTop />
         <AnalyticsTracker />
         {/* Top Navbar */}
         <Navbar />
