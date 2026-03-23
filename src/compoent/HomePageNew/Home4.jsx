@@ -307,7 +307,7 @@ const Home4 = () => {
                     position: 'absolute',
                     top: 10,
                     right: 10,
-                    width: 100,
+                    width: 'clamp(55px, 15vw, 75px)',
                     height: 'auto',
                     filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))',
                     pointerEvents: 'none',

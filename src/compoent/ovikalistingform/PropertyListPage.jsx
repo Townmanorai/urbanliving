@@ -937,9 +937,9 @@ const PropertyCard = ({ property, rentalType }) => {
             alt="Verified" 
             style={{
               position: 'absolute',
-              top: -15,
-              left: -15,
-              width: 110,
+              top: -12,
+              left: -12,
+              width: 'clamp(60px, 15vw, 85px)',
               height: 'auto',
               filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))',
               pointerEvents: 'none',
