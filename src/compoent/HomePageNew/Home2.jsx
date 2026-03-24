@@ -83,7 +83,7 @@ const Home2 = () => {
       text:"Ovika Co-Living brings modern community-driven co-living spaces for young professionals and urban residents. perience shared living that blends comfort, flexibility, and connection in thoughtfully designed homes",
       // text: "Ovika Hive brings together vibrant communities in thoughtfully designed shared spaces. Whether you’re a young professional, a remote worker, or a creative soul, our co-living homes offer the perfect blend of privacy, social connection, and flexibility – so you can live, work, and grow together.",
       btn: "Coming Soon",
-      link: "/"
+      link: "/coliving-space"
     },
    
   ];

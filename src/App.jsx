@@ -54,6 +54,7 @@ import PGUpdateForm from "./compoent/ovikalistingform/PGUpdateForm";
 import  ContactMain  from "./compoent/ContactUs/ContactMain";
 import CareerSupport from "./compoent/CareerSupport/CareerSupport";
 import CookieConsent from "./compoent/CookieConsent/CookieConsent";
+import ColivingSpace from './compoent/CoLivingSpace/ColivingSpace';
 
 
 // 🔒 Protected Route Component
@@ -160,7 +161,7 @@ function App() {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/ovika-verified" element={<OvikaVerified />} />
           <Route path="/career-support" element={<RequireAuth><CareerSupport /></RequireAuth>} />
-
+          <Route path="/coliving-space" element={<ColivingSpace />} />
           <Route path="/admindashboard" element={<ProtectedAdminLayout />}>
             <Route index element={<AdminDashBoard />} />
             <Route path="inquiriesbookings" element={<InquiriesBookings />} />
@@ -170,6 +171,7 @@ function App() {
             <Route path="documents" element={<DashBoardDocuments />} />
             <Route path="support" element={<Support />} />
             <Route path="listed" element={<PropertyListingForm />} />
+           
           </Route>
 
           {/* Super Admin Dashboard - Already Protected */}
