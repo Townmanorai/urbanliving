@@ -166,11 +166,7 @@ const Home3 = () => {
           </div>
           <button className="home3-cta-btn" onClick={handleCTAClick}>{cta.btnText}</button>
           
-          {tab === "renters" && (
-            <div className="home3-mobile-trust mobile-only">
-              <span style={{ color: '#c2772b' }}>🛡️</span> Trusted by 1,000+ renters in NCR
-            </div>
-          )}
+         
         </div>
 
         <p className="home3-footer">{cta.footnote}</p>
