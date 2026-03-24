@@ -642,6 +642,12 @@ export default function Navbar() {
     setTimeout(() => tryScroll(), 400);
   });
 
+  useEffect(() => {
+    const handleRentalPopupEvent = () => setRentalCategoryPopup(true);
+    window.addEventListener("openRentalCategoryPopup", handleRentalPopupEvent);
+    return () => window.removeEventListener("openRentalCategoryPopup", handleRentalPopupEvent);
+  }, []);
+
   const STORAGE_KEYS = ["user", "tm_user"];
 
   useEffect(() => {
