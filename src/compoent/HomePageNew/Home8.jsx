@@ -12,7 +12,7 @@ const Home8 = () => {
             Find Your <span className="home8-title-highlight">Perfect Stay</span>
           </h2>
           <p className="home8-subtitle">
-            Book for a night or rent for a month — choose the stay that suits you.
+            Book for a night or rent for a month — choose stay that suits you.
           </p>
         </div>
 

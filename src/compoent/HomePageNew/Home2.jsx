@@ -84,11 +84,11 @@ const Home2 = () => {
   return (
     <div className="living-container">
       <h2 className="living-heading">
-        Explore <span className="highlight">Living</span> Options
+        Explore <span className="highlight">Co- Living </span> Spaces
       </h2>
       <p className="living-subtext">
-        OvikaLiving offers a range of living options to suit your lifestyle from cosy PG
-        rentals to luxurious service apartments. <br /> Discover the perfect fit for you.
+        {/* OvikaLiving offers a range of living options to suit your lifestyle from cosy PG */}
+        {/* rentals to luxurious service apartments. <br /> Discover the perfect fit for you. */}
       </p>
       <div className="living-card-container">
         <div className="living-card">
