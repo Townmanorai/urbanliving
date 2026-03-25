@@ -2,15 +2,16 @@
 
 .home8 {
   width: 100%;
-  padding: 60px 20px;
+  padding: 56px 20px;
   background-color: #fdf8f4;
   font-family: inherit;
   margin-top: -40px;
 }
 
 .home8-container {
-  max-width: 1200px;
+  max-width: 1510px;
   margin: 0 auto;
+  padding: 0 20px;
 }
 
 /* --- Header --- */
@@ -20,11 +21,12 @@
 }
 
 .home8-title {
-  font-size: 38px;
+  font-size: 40px;
   font-weight: 700;
   color: #1a1a1a;
   margin: 0 0 12px 0;
   line-height: 1.2;
+  letter-spacing: -0.5px;
 }
 
 .home8-title-highlight {
@@ -34,10 +36,11 @@
 
 .home8-subtitle {
   font-size: 16px;
-  color: #666666;
+  color: #777777;
   margin: 0;
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.6;
+  letter-spacing: 0.1px;
 }
 
 /* --- Cards Container --- */
@@ -45,6 +48,7 @@
   display: flex;
   gap: 24px;
   margin-bottom: 24px;
+  align-items: stretch;
 }
 
 /* --- Individual Card --- */
@@ -52,34 +56,41 @@
   flex: 1;
   background: #ffffff;
   border-radius: 16px;
-  padding: 28px 24px;
+  padding: 26px 26px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   border: 1px solid #f0e8df;
   display: flex;
   flex-direction: column;
+  transition: box-shadow 0.3s ease;
+}
+
+.home8-card:hover {
+  box-shadow: 0 6px 24px rgba(193, 125, 46, 0.1);
 }
 
 .home8-card-title {
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 700;
   color: #1a1a1a;
-  margin: 0 0 6px 0;
+  margin: 0 0 8px 0;
   text-align: center;
+  letter-spacing: -0.2px;
 }
 
 .home8-card-desc {
   font-size: 14px;
-  color: #888888;
+  color: #999999;
   margin: 0 0 20px 0;
   text-align: center;
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.55;
+  letter-spacing: 0.15px;
 }
 
 /* Card Content - Image + Info side by side (desktop) */
 .home8-card-content {
   display: flex;
-  gap: 16px;
+  gap: 18px;
   margin-bottom: 20px;
   flex: 1;
 }
@@ -90,10 +101,10 @@
 
 .home8-card-image {
   width: 55%;
-  min-height: 200px;
+  height: 240px;
   border-radius: 12px;
   overflow: hidden;
-  background-color: #e8ddd3;
+  background-color: #f0e8df;
   flex-shrink: 0;
 }
 
@@ -102,12 +113,11 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  border-radius: 12px;
 }
 
 .home8-card-image-full {
   width: 100%;
-  min-height: 220px;
+  height: 280px;
 }
 
 /* Card Info - checklist (desktop only) */
@@ -115,13 +125,15 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding: 4px 0;
 }
 
 .home8-card-info-title {
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
   color: #1a1a1a;
   margin: 0 0 14px 0;
+  letter-spacing: -0.1px;
 }
 
 .home8-card-list {
@@ -137,14 +149,14 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 15px;
-  color: #333333;
+  font-size: 14px;
+  color: #444444;
   font-weight: 400;
 }
 
 .home8-check-icon {
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
   color: #c17d2e;
   flex-shrink: 0;
 }
@@ -155,82 +167,90 @@
 }
 
 .home8-card-below-title {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   color: #1a1a1a;
   margin: 0 0 4px 0;
   text-align: center;
+  letter-spacing: -0.1px;
 }
 
 .home8-card-below-desc {
   font-size: 13px;
-  color: #888888;
-  margin: 0 0 16px 0;
+  color: #999999;
+  margin: 0 0 14px 0;
   text-align: center;
   font-weight: 400;
-  line-height: 1.4;
+  line-height: 1.45;
+  letter-spacing: 0.1px;
 }
 
-/* CTA Button */
+/* CTA Button - refined */
 .home8-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   background-color: #c17d2e;
   color: #ffffff;
   border: none;
   border-radius: 8px;
-  padding: 12px 24px;
-  font-size: 15px;
-  font-weight: 600;
+  padding: 11px 22px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
   font-family: inherit;
   align-self: flex-start;
   margin-top: auto;
+  letter-spacing: 0.2px;
 }
 
 .home8-btn:hover {
   background-color: #a96a24;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(193, 125, 46, 0.3);
 }
 
 .home8-btn-arrow {
-  font-size: 18px;
+  font-size: 15px;
+  font-weight: 400;
   transition: transform 0.3s ease;
 }
 
 .home8-btn:hover .home8-btn-arrow {
-  transform: translateX(4px);
+  transform: translateX(3px);
 }
 
 /* --- Help Section --- */
 .home8-help {
   background: #ffffff;
   border-radius: 16px;
-  padding: 32px 24px;
+  padding: 30px 28px;
   text-align: center;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   border: 1px solid #f0e8df;
 }
 
 .home8-help-title {
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 700;
   color: #1a1a1a;
   margin: 0 0 6px 0;
+  letter-spacing: -0.2px;
 }
 
 .home8-help-desc {
   font-size: 14px;
-  color: #888888;
-  margin: 0 0 24px 0;
+  color: #999999;
+  margin: 0 0 22px 0;
   font-weight: 400;
+  letter-spacing: 0.1px;
 }
 
 .home8-help-actions {
   display: flex;
-  gap: 24px;
+  gap: 20px;
   justify-content: center;
 }
 
@@ -240,15 +260,16 @@
   gap: 14px;
   background: #fdf8f4;
   border-radius: 12px;
-  padding: 16px 28px;
+  padding: 16px 26px;
   min-width: 280px;
   border: 1px solid #f0e8df;
   cursor: pointer;
-  transition: box-shadow 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .home8-help-btn:hover {
-  box-shadow: 0 4px 16px rgba(193, 125, 46, 0.15);
+  box-shadow: 0 4px 16px rgba(193, 125, 46, 0.12);
+  border-color: #e8d5bf;
 }
 
 .home8-help-btn-icon {
@@ -262,8 +283,8 @@
 }
 
 .home8-help-btn-icon svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
 }
 
 .home8-help-btn-icon-call {
@@ -277,9 +298,10 @@
 }
 
 .home8-help-btn-text {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   color: #1a1a1a;
+  letter-spacing: -0.1px;
 }
 
 .home8-help-call-content {
@@ -296,27 +318,7 @@
   gap: 6px;
 }
 
-.home8-call-number-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background-color: #c17d2e;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-  transition: background-color 0.3s ease;
-  font-family: inherit;
-}
-
-.home8-call-number-btn:hover {
-  background-color: #a96a24;
-}
-
+.home8-call-number-btn,
 .home8-whatsapp-number-btn {
   display: inline-flex;
   align-items: center;
@@ -325,24 +327,37 @@
   color: #ffffff;
   border: none;
   border-radius: 6px;
-  padding: 6px 16px;
-  font-size: 14px;
-  font-weight: 600;
+  padding: 5px 14px;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   text-decoration: none;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
   font-family: inherit;
+  letter-spacing: 0.3px;
 }
 
+.home8-call-number-btn:hover,
 .home8-whatsapp-number-btn:hover {
   background-color: #a96a24;
+  box-shadow: 0 2px 8px rgba(193, 125, 46, 0.3);
 }
 
-/* ===== MOBILE RESPONSIVE - Exact match to mobile image ===== */
+.home8-call-number-btn .home8-btn-arrow,
+.home8-whatsapp-number-btn .home8-btn-arrow {
+  font-size: 13px;
+  font-weight: 400;
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
 @media (max-width: 768px) {
   .home8 {
     padding: 40px 16px;
     margin-top: -210px;
+  }
+
+  .home8-container {
+    padding: 0;
   }
 
   .home8-title {
@@ -350,10 +365,9 @@
   }
 
   .home8-subtitle {
-    font-size: 15px;
+    font-size: 14px;
   }
 
-  /* Cards stack vertically */
   .home8-cards {
     flex-direction: column;
     gap: 16px;
@@ -363,47 +377,47 @@
     padding: 20px 16px;
   }
 
-  /* Desktop: image + checklist side by side -> Mobile: image full width, checklist hide */
   .home8-card-content {
     flex-direction: column;
   }
 
+  .home8-card-content-monthly {
+    display: block;
+  }
+
   .home8-card-image {
     width: 100%;
-    min-height: 200px;
+    height: 220px;
     border-radius: 10px;
   }
 
   .home8-card-image-full {
-    min-height: 200px;
+    height: 220px;
   }
 
-  /* Hide the desktop checklist on mobile */
   .home8-card-info {
     display: none;
   }
 
-  /* Show the below-image info on mobile */
   .home8-card-below-info {
     display: block;
     margin-top: 12px;
   }
 
-  /* Button full width on mobile */
   .home8-btn {
     align-self: stretch;
     justify-content: center;
-    padding: 12px 20px;
-    font-size: 14px;
+    padding: 11px 20px;
+    font-size: 13px;
+    font-weight: 500;
   }
 
-  /* Help section mobile */
   .home8-help {
     padding: 24px 16px;
   }
 
   .home8-help-title {
-    font-size: 20px;
+    font-size: 19px;
   }
 
   .home8-help-actions {
@@ -414,7 +428,7 @@
 
   .home8-help-btn {
     min-width: 100%;
-    padding: 14px 20px;
+    padding: 14px 18px;
   }
 }
 
@@ -428,11 +442,11 @@
   }
 
   .home8-card-title {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .home8-card-desc {
-    font-size: 13px;
+    font-size: 12.5px;
   }
 
   .home8-help {
@@ -440,6 +454,6 @@
   }
 
   .home8-help-title {
-    font-size: 18px;
+    font-size: 17px;
   }
 }
