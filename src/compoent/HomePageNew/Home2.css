@@ -1,7 +1,3 @@
-* {
-  
-}
-
 .living-container {
   text-align: center;
   padding: 60px 40px;
@@ -36,35 +32,23 @@
 .living-card-container {
   display: flex;
   justify-content: center;
-  gap: 30px;
-  flex-wrap: wrap;
-  align-items: stretch;
-  max-width: 1400px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 0 20px;
 }
 
 .living-card {
-  flex: 1 1 calc(33.333% - 30px);
-  min-width: 300px;
-  max-width: 420px;
+  width: 100%;
+  max-width: 1200px;
   border-radius: 14px;
   overflow: hidden;
   background: #fff;
   box-shadow: 0 2px 6px rgba(50, 48, 48, 0.6);
   transition: all 0.3s ease;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: stretch;
   margin-top: 2px;
-}
-
-.living-content {
-  padding: 22px 18px 30px 18px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex-grow: 1;
-  text-align: center;
 }
 
 .living-card:hover {
@@ -72,27 +56,36 @@
 }
 
 .living-img {
-  width: 100%;
-  height: 220px;
+  width: 50%;
   object-fit: cover;
-  margin-top: 6px;
   border-radius: 12px;
+  margin: 6px;
+  flex-shrink: 0;
+}
+
+.living-content {
+  padding: 24px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
+  text-align: left;
+  gap: 0;
 }
 
 .living-title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 300 !important;
-  margin-bottom: 14px;
+  margin: 0 0 8px 0;
   color: #000;
   text-align: left;
 }
 
 .living-text {
-  font-size: 11px;
+  font-size: 12px;
   color: #555;
   line-height: 1.6;
-  flex-grow: 1;
-  margin-bottom: 24px;
+  margin: 0 0 14px 0;
   text-align: left;
 }
 
@@ -100,7 +93,7 @@
   background: #c2772b;
   color: white;
   border: none;
-  padding: 12px 24px;
+  padding: 10px 22px;
   border-radius: 25px;
   font-size: 14px;
   cursor: pointer;
@@ -110,7 +103,8 @@
   justify-content: center;
   gap: 6px;
   transition: all 0.3s ease;
-  margin: 0 auto;
+  align-self: flex-start;
+  margin: 0;
 }
 
 .living-btn:hover {
@@ -127,73 +121,46 @@
   .living-container {
     padding: 60px 80px;
   }
-  
-  .living-card-container {
-    max-width: 1600px;
-    gap: 40px;
-  }
-  
   .living-card {
-    max-width: 480px;
-  }
-  
-  .living-img {
-    height: 240px;
+    max-width: 1300px;
+    height: 400px;
   }
 }
 
 /* Medium Desktop / Laptop */
 @media (min-width: 1024px) and (max-width: 1439px) {
   .living-container {
-    padding: 60px 60px;
+    padding: 60px 40px;
   }
-  
-  .living-card-container {
-    max-width: 1200px;
-  }
-  
   .living-card {
-    flex: 1 1 calc(33.333% - 30px);
-    max-width: 380px;
-  }
-  
-  .living-img {
-    height: 210px;
+    max-width: 1100px;
   }
 }
 
 /* Tablet */
 @media (min-width: 769px) and (max-width: 1023px) {
   .living-container {
-    padding: 50px 40px;
+    padding: 50px 30px;
   }
-  
-  .living-card-container {
-    gap: 25px;
-  }
-  
   .living-card {
-    flex: 1 1 calc(50% - 25px);
-    max-width: 450px;
+    max-width: 95%;
   }
-  
   .living-img {
-    height: 200px;
+    width: 45%;
   }
 }
 
-/* Mobile */
+/* ===== MOBILE ===== */
 @media (max-width: 768px) {
   .living-container {
-    padding: 40px 20px;
-    margin-top: -240px;
+    padding: 40px 15px;
+    /* margin-top: -240px; */
+    overflow: visible;
   }
-  
   .living-heading {
     font-size: 26px;
     margin-top: 32px;
   }
-  
   .living-subtext {
     font-size: 10px;
     margin-bottom: 40px;
@@ -203,39 +170,58 @@
     margin-left: auto;
     margin-right: auto;
   }
-  
   .living-card-container {
-    gap: 20px;
-    padding: 0 10px;
-  }
-  
-  .living-card {
+    padding: 0;
     width: 100%;
-    max-width: 395px;
-    min-width: unset;
-    flex: 1 1 100%;
   }
-  
+  .living-card {
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 12px;
+    overflow: visible;
+  }
   .living-img {
-    height: 180px;
+    width: calc(100% - 12px);
+    height: 200px;
+    margin: 6px auto 0 auto;
+    display: block;
+    border-radius: 10px;
+  }
+  .living-content {
+    padding: 16px 16px 22px 16px;
+  }
+  .living-title {
+    font-size: 18px;
+    margin: 0 0 6px 0;
+  }
+  .living-text {
+    font-size: 11px;
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+  }
+  .living-btn {
+    padding: 10px 20px;
+    font-size: 13px;
   }
 }
 
 /* Extra Small Mobile */
 @media (max-width: 480px) {
   .living-container {
-    padding: 30px 15px;
+    padding: 30px 10px;
   }
-  
+  .living-card-container {
+    padding: 0;
+  }
   .living-card {
     max-width: 100%;
+    border-radius: 10px;
   }
-  
   .living-subtext {
     width: 95%;
   }
-  
   .living-img {
-    height: 160px;
+    height: 170px;
   }
 }
