@@ -7,6 +7,7 @@ import Home4 from './Home4'
 import Home5 from './Home5'
 import Home6 from './Home6'
 import Home7 from "./Home7"
+import Home8 from "./Home8"
 import WelcomePopUp from './WelcomePopUp';
 
 export const HomeMain = () => {
@@ -19,12 +20,12 @@ export const HomeMain = () => {
       </Helmet>
       <WelcomePopUp/>
       <Home1 />
-      <Home2 />
+      <Home8/>
       <Home3 />
       <Home4 />
       <Home5 />
       <Home7/>
-
+<Home2 />
       <Home6 />
     </div>
   )
