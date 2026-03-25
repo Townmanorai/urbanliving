@@ -31,7 +31,6 @@
 
 .home8-title-highlight {
   color: #c17d2e;
-  /* font-style: italic; */
 }
 
 .home8-subtitle {
@@ -95,10 +94,6 @@
   flex: 1;
 }
 
-.home8-card-content-monthly {
-  display: block;
-}
-
 .home8-card-image {
   width: 55%;
   height: 240px;
@@ -115,24 +110,37 @@
   display: block;
 }
 
-.home8-card-image-full {
-  width: 100%;
-  height: 280px;
-}
-
-/* Card Info - checklist (desktop only) */
+/* ===== Card Info - themed background ===== */
 .home8-card-info {
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 4px 0;
+  padding: 20px 22px;
+  background: linear-gradient(135deg, #fdf8f4 0%, #f9efe4 100%);
+  border-radius: 12px;
+  border: 1px solid #f0e8df;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle decorative accent line on left */
+.home8-card-info::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 16px;
+  bottom: 16px;
+  width: 3px;
+  background: linear-gradient(180deg, #c17d2e, #e0a85e);
+  border-radius: 0 3px 3px 0;
 }
 
 .home8-card-info-title {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   color: #1a1a1a;
-  margin: 0 0 14px 0;
+  margin: 0 0 16px 0;
   letter-spacing: -0.1px;
 }
 
@@ -142,22 +150,35 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .home8-card-list li {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-size: 14px;
-  color: #444444;
-  font-weight: 400;
+  color: #3a3a3a;
+  font-weight: 500;
+}
+
+/* Check badge - circle bg for the tick */
+.home8-check-badge {
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c17d2e, #d4943f);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(193, 125, 46, 0.25);
 }
 
 .home8-check-icon {
-  width: 17px;
-  height: 17px;
-  color: #c17d2e;
+  width: 13px;
+  height: 13px;
+  color: #ffffff;
   flex-shrink: 0;
 }
 
@@ -185,7 +206,7 @@
   letter-spacing: 0.1px;
 }
 
-/* CTA Button - refined */
+/* CTA Button */
 .home8-btn {
   display: inline-flex;
   align-items: center;
@@ -195,13 +216,13 @@
   color: #ffffff;
   border: none;
   border-radius: 8px;
-  padding: 11px 22px;
-  font-size: 14px;
+  padding: 9px 20px;
+  font-size: 13.5px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
   font-family: inherit;
-  align-self: flex-start;
+  align-self: center;
   margin-top: auto;
   letter-spacing: 0.2px;
 }
@@ -243,7 +264,42 @@
 .home8-help-desc {
   font-size: 14px;
   color: #999999;
-  margin: 0 0 22px 0;
+  margin: 0 0 18px 0;
+  font-weight: 400;
+  letter-spacing: 0.1px;
+}
+
+/* Trust badges row */
+.home8-help-badges {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+.home8-help-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b5a3e;
+  background: linear-gradient(135deg, #fdf8f4, #f5ead9);
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #eedcc5;
+}
+
+.home8-help-badge svg {
+  color: #c17d2e;
+  flex-shrink: 0;
+}
+
+/* Subtext under button title */
+.home8-help-btn-subtext {
+  font-size: 12px;
+  color: #999999;
   font-weight: 400;
   letter-spacing: 0.1px;
 }
@@ -252,6 +308,7 @@
   display: flex;
   gap: 20px;
   justify-content: center;
+  width: 100%;
 }
 
 .home8-help-btn {
@@ -259,12 +316,13 @@
   align-items: center;
   gap: 14px;
   background: #fdf8f4;
-  border-radius: 12px;
-  padding: 16px 26px;
-  min-width: 280px;
+  border-radius: 10px;
+  padding: 14px 24px;
+  flex: 1;
   border: 1px solid #f0e8df;
   cursor: pointer;
   transition: all 0.3s ease;
+  justify-content: center;
 }
 
 .home8-help-btn:hover {
@@ -308,14 +366,14 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 6px;
+  gap: 3px;
 }
 
 .home8-help-whatsapp-content {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 6px;
+  gap: 3px;
 }
 
 .home8-call-number-btn,
@@ -327,14 +385,15 @@
   color: #ffffff;
   border: none;
   border-radius: 6px;
-  padding: 5px 14px;
-  font-size: 13px;
+  padding: 4px 12px;
+  font-size: 12.5px;
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
   transition: all 0.3s ease;
   font-family: inherit;
   letter-spacing: 0.3px;
+  margin-top: 4px;
 }
 
 .home8-call-number-btn:hover,
@@ -381,18 +440,10 @@
     flex-direction: column;
   }
 
-  .home8-card-content-monthly {
-    display: block;
-  }
-
   .home8-card-image {
     width: 100%;
     height: 220px;
     border-radius: 10px;
-  }
-
-  .home8-card-image-full {
-    height: 220px;
   }
 
   .home8-card-info {
@@ -420,6 +471,15 @@
     font-size: 19px;
   }
 
+  .home8-help-badges {
+    gap: 10px;
+  }
+
+  .home8-help-badge {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
   .home8-help-actions {
     flex-direction: column;
     gap: 12px;
@@ -429,6 +489,7 @@
   .home8-help-btn {
     min-width: 100%;
     padding: 14px 18px;
+    justify-content: center;
   }
 }
 
