@@ -748,6 +748,48 @@ const styles = `
     letter-spacing: 1px;
   }
 
+  .vs-rental-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-top: 20px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .vs-rental-btn {
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 10px 28px;
+    border: 1.5px solid var(--gold);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: transparent;
+    color: var(--gold);
+    position: relative;
+  }
+  .vs-rental-btn:first-child {
+    border-radius: 50px 0 0 50px;
+    border-right: none;
+  }
+  .vs-rental-btn:last-child {
+    border-radius: 0 50px 50px 0;
+  }
+  .vs-rental-btn.active {
+    background: var(--gold);
+    color: white;
+    box-shadow: 0 4px 16px rgba(194,119,43,0.35);
+  }
+  .vs-rental-btn:not(.active):hover {
+    background: rgba(194,119,43,0.08);
+  }
+  .vs-rental-btn .vs-rental-icon {
+    margin-right: 6px;
+    font-size: 13px;
+  }
+
   .vs-controls {
     display: flex;
     align-items: center;
@@ -1057,6 +1099,13 @@ export default function VideoShowcase({ videos = SAMPLE_VIDEOS }) {
     return video.bookingUrlShort;
   };
 
+  // Toggle rental type + sync sessionStorage
+  const handleRentalToggle = (type) => {
+    setRentalType(type);
+    sessionStorage.setItem('ovika_rental_type', type);
+    setActiveIdx(0); // reset to first item when switching
+  };
+
   const goNext = () => setActiveIdx((i) => (i + 1) % filteredVideos.length);
   const goPrev = () => setActiveIdx((i) => (i - 1 + filteredVideos.length) % filteredVideos.length);
   const openModal = (video) => setPlayingVideo(video);
@@ -1082,8 +1131,22 @@ export default function VideoShowcase({ videos = SAMPLE_VIDEOS }) {
         <div className="vs-header">
           <h1 className="vs-title">Our <span style={{ color: "#c2772b" }}>Signature</span> Stays</h1>
           <p className="vs-subtitle">
-            {isMonthly ? 'Monthly Rentals — A Smarter Experience' : 'A Smarter Experience'}
+            A Smarter Experience
           </p>
+          <div className="vs-rental-toggle">
+            <button 
+              className={`vs-rental-btn${!isMonthly ? ' active' : ''}`} 
+              onClick={() => handleRentalToggle('short')}
+            >
+              <span className="vs-rental-icon">🏨</span>Nightly
+            </button>
+            <button 
+              className={`vs-rental-btn${isMonthly ? ' active' : ''}`} 
+              onClick={() => handleRentalToggle('long')}
+            >
+              <span className="vs-rental-icon">🏠</span>Monthly
+            </button>
+          </div>
         </div>
 
         <div className="vs-controls">
@@ -1120,7 +1183,7 @@ export default function VideoShowcase({ videos = SAMPLE_VIDEOS }) {
                     <div className="spotlight-actions">
                       <a className="instant-book-btn" href={getBookingUrl(current)} onClick={(e) => e.stopPropagation()}>
                         <span className="bolt-icon">⚡</span>
-                        {isMonthly ? 'Monthly Booking' : 'Instant Booking'}
+                        Instant Booking
                       </a>
                     </div>
                   </div>
@@ -1139,7 +1202,7 @@ export default function VideoShowcase({ videos = SAMPLE_VIDEOS }) {
                       <div className="playlist-cat">{v.category}</div>
                       <div className="playlist-title">{v.title}</div>
                       <a className="instant-book-btn-ghost" href={getBookingUrl(v)} onClick={(e) => e.stopPropagation()}>
-                        ⚡ {isMonthly ? 'Monthly Booking' : 'Instant Booking'}
+                        ⚡ Instant Booking
                       </a>
                     </div>
                     {activeIdx === i && <div className="playlist-active-bar" />}
@@ -1180,7 +1243,7 @@ export default function VideoShowcase({ videos = SAMPLE_VIDEOS }) {
                     <div className="grid-footer">
                       <div className="watch-btn" onClick={(e) => { e.stopPropagation(); openModal(v); }}>Watch</div>
                       <a className="instant-book-btn" href={getBookingUrl(v)} onClick={(e) => e.stopPropagation()} style={{ fontSize: "9px", padding: "9px 16px" }}>
-                        <span className="bolt-icon">⚡</span>{isMonthly ? 'Monthly Booking' : 'Instant Booking'}
+                        <span className="bolt-icon">⚡</span>Instant Booking
                       </a>
                     </div>
                   </div>
@@ -1201,7 +1264,7 @@ export default function VideoShowcase({ videos = SAMPLE_VIDEOS }) {
                 <div className="filmstrip-actions">
                   <span className="watch-now-btn" onClick={() => openModal(current)} style={{ cursor: "pointer" }}>Watch Now</span>
                   <a className="instant-book-btn" href={getBookingUrl(current)} onClick={(e) => e.stopPropagation()}>
-                    <span className="bolt-icon">⚡</span>{isMonthly ? 'Monthly Booking' : 'Instant Booking'}
+                    <span className="bolt-icon">⚡</span>Instant Booking
                   </a>
                 </div>
               </div>
@@ -1217,7 +1280,7 @@ export default function VideoShowcase({ videos = SAMPLE_VIDEOS }) {
                     <div className="strip-cat">{v.category}</div>
                     <div className="strip-title">{v.title}</div>
                     <a className="instant-book-btn" href={getBookingUrl(v)} onClick={(e) => e.stopPropagation()} style={{ fontSize: "8px", padding: "7px 12px", letterSpacing: "1.5px" }}>
-                      ⚡ {isMonthly ? 'Monthly Booking' : 'Instant Booking'}
+                      ⚡ Instant Booking
                     </a>
                   </div>
                 </div>
@@ -1254,7 +1317,7 @@ export default function VideoShowcase({ videos = SAMPLE_VIDEOS }) {
                 <div className="modal-title">{playingVideo.title}</div>
               </div>
               <a className="instant-book-btn" href={getBookingUrl(playingVideo)} onClick={(e) => e.stopPropagation()}>
-                <span className="bolt-icon">⚡</span>{isMonthly ? 'Monthly Booking' : 'Instant Booking'}
+                <span className="bolt-icon">⚡</span>Instant Booking
               </a>
             </div>
           </div>
