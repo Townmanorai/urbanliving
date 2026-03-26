@@ -54,23 +54,24 @@
   margin: 0;
 }
 
-/* ===== Grid ===== */
+/* ===== DESKTOP Grid ===== */
 .monthly-rentals__grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   max-width: 1200px;
   margin: 0 auto;
+  align-items: stretch;
 }
 
-/* ===== Card ===== */
+/* ===== DESKTOP Card ===== */
 .monthly-rentals__card {
   background-color: var(--mr-color-card-bg);
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 20px var(--mr-color-card-shadow);
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto 220px 1fr;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -79,17 +80,16 @@
   box-shadow: 0 10px 32px rgba(100, 60, 20, 0.16);
 }
 
-/* ===== Card Top (title + desc above image) ===== */
+/* ===== Card Top (title + desc above image) — DESKTOP ===== */
 .monthly-rentals__card-top {
   padding: 24px 24px 16px;
 }
 
-/* ===== Image ===== */
+/* ===== Image Wrapper ===== */
 .monthly-rentals__image-wrapper {
   width: 100%;
-  height: 220px;
+  height: 100%;
   overflow: hidden;
-  flex-shrink: 0;
 }
 
 .monthly-rentals__image {
@@ -104,7 +104,6 @@
   transform: scale(1.04);
 }
 
-/* Placeholder when no image src */
 .monthly-rentals__image-placeholder {
   width: 100%;
   height: 100%;
@@ -115,15 +114,13 @@
   color: var(--mr-color-placeholder-text);
   font-size: 0.9rem;
   font-family: var(--mr-font-body);
-  letter-spacing: 0.03em;
 }
 
-/* ===== Card Bottom (title + desc + button) ===== */
+/* ===== Card Bottom ===== */
 .monthly-rentals__card-bottom {
   padding: 20px 24px 28px;
   display: flex;
   flex-direction: column;
-  flex: 1;
 }
 
 /* ===== Card Title ===== */
@@ -163,6 +160,7 @@
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.15s ease;
   letter-spacing: 0.02em;
+  margin-top: auto;
 }
 
 .monthly-rentals__btn:hover {
@@ -179,27 +177,89 @@
   transform: translateX(4px);
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 960px) {
-  .monthly-rentals__grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 600px) {
+/* ===================================================
+   MOBILE VIEW — image left, content right
+   =================================================== */
+@media (max-width: 768px) {
   .monthly-rentals {
-    padding: 40px 20px 60px;
+    padding: 40px 16px 60px;
   }
 
   .monthly-rentals__title {
     font-size: 2rem;
   }
 
-  .monthly-rentals__grid {
-    grid-template-columns: 1fr;
+  .monthly-rentals__subtitle {
+    font-size: 0.95rem;
   }
 
+  /* Stack cards vertically */
+  .monthly-rentals__grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Each card: horizontal row layout */
+  .monthly-rentals__card {
+    display: grid;
+    grid-template-columns: 1fr; /* reset */
+    grid-template-rows: unset;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  /* Hide the top section (title+desc above image) on mobile */
+  .monthly-rentals__card-top {
+    display: none;
+  }
+
+  /* Image + bottom side by side */
   .monthly-rentals__image-wrapper {
-    height: 200px;
+    width: 45%;
+    height: 220px;
+    flex-shrink: 0;
+    border-radius: 0;
+  }
+
+  /* Card becomes a flex row on mobile */
+  .monthly-rentals__card {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    min-height: 220px;
+  }
+
+  /* Right side: title + desc + button */
+  .monthly-rentals__card-bottom {
+    flex: 1;
+    padding: 20px 18px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .monthly-rentals__card-title {
+    font-size: 1.15rem;
+    margin-bottom: 8px;
+  }
+
+  .monthly-rentals__card-desc {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    flex: 1;
+  }
+
+  .monthly-rentals__btn {
+    padding: 12px 14px;
+    font-size: 0.88rem;
+    border-radius: 8px;
+  }
+}
+
+/* Tablet — 2 columns */
+@media (min-width: 769px) and (max-width: 960px) {
+  .monthly-rentals__grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
