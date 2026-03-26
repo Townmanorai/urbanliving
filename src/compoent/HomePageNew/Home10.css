@@ -263,3 +263,18 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ===== Title visibility fix ===== */
+
+/* Desktop: title in card-top dikhta hai, card-bottom wala hide */
+.monthly-rentals__card-title--mobile {
+  display: none;
+}
+
+/* Mobile: card-top hide, card-bottom ka title show */
+@media (max-width: 768px) {
+  .monthly-rentals__card-title--mobile {
+    display: block;
+    margin-bottom: 6px;
+  }
+}

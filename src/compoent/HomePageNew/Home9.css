@@ -257,3 +257,18 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ===== Title visibility fix ===== */
+
+/* Desktop: card-bottom ka title hide */
+.nightly-stays__card-title--mobile {
+  display: none;
+}
+
+/* Mobile: card-bottom ka title show */
+@media (max-width: 768px) {
+  .nightly-stays__card-title--mobile {
+    display: block;
+    margin-bottom: 6px;
+  }
+}
