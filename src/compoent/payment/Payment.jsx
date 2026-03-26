@@ -1328,7 +1328,7 @@ import Cookies from 'js-cookie';
 import { format } from 'date-fns';
 
 // ========== OVIKA IDs ==========
-const OVIKA_IDS = [287, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305];
+const OVIKA_IDS = [287, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 77, 78, 79];
 const isOvikaProperty = (id) => {
   const nid = Number(id);
   return nid >= 200 || OVIKA_IDS.includes(nid);
@@ -1408,8 +1408,10 @@ const Calendar = ({ selectedDates, onDateSelect, minDate = new Date(), disabledD
 
   const isDateDisabled = (date) => {
     if (!date) return true;
+    const startOfToday = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate());
+    const startOfDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     const dateStr = date.toISOString().split('T')[0];
-    return date < minDate || disabledDateSet.has(dateStr);
+    return startOfDate < startOfToday || disabledDateSet.has(dateStr);
   };
 
   const isDateSelected = (date) => {

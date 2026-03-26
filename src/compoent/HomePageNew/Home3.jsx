@@ -165,11 +165,9 @@ const Home3 = () => {
             ))}
           </div>
           <button className="home3-cta-btn" onClick={handleCTAClick}>{cta.btnText}</button>
-          
-         
+          <p className="home3-footer">{cta.footnote}</p>
         </div>
 
-        <p className="home3-footer">{cta.footnote}</p>
 
       </div>
     </section>

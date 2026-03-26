@@ -10,7 +10,7 @@ import { useParams } from 'react-router-dom'
 import { Helmet } from 'react-helmet'
 
 // Ovika API wale property IDs
-const OVIKA_IDS = [287];
+const OVIKA_IDS = [287, 77, 78, 79];
 
 // ✅ TM Luxe 3 mein YEH amenities NAHI dikhni chahiye
 const TM3_EXCLUDED_AMENITIES = [
@@ -65,7 +65,7 @@ function ThirdMain() {
               key_features: [],
               latitude: raw.latitude,
               longitude: raw.longitude,
-              per_night_price: 4000,
+              per_night_price: raw.price ?? raw.base_rate ?? 4000,
               base_rate: raw.base_rate,
             });
           }
@@ -78,6 +78,11 @@ function ThirdMain() {
             const resolved = data && typeof data === 'object' && !Array.isArray(data)
               ? (data.property ?? data)
               : null;
+            
+            // Format price for consistent usage
+            if (resolved) {
+              resolved.per_night_price = resolved.price ?? resolved.base_rate ?? resolved.per_night_price;
+            }
             setProperty(resolved);
           }
         }
@@ -109,7 +114,8 @@ function ThirdMain() {
   const latitude = property.latitude ?? property.LATITUDE;
   const longitude = property.longitude ?? property.LONGITUDE;
   const name = property.name ?? property.NAME;
-  const pricePerNight = property.per_night_price ?? property.PER_NIGHT_PRICE;
+  const pricePerNight = property.per_night_price ?? property.PER_NIGHT_PRICE ?? property.price ?? property.base_rate;
+
   const description = property.description ?? property.DESCRIPTION;
   const address = property.address ?? property.ADDRESS;
   const area = property.area ?? property.AREA;
@@ -151,11 +157,12 @@ function ThirdMain() {
   ];
 
   const lowerName = (name || '').toLowerCase();
-  const selectedReviews = lowerName.includes('tm luxe - 2') || lowerName.includes('tm luxe 2')
+  const selectedReviews = 
+    lowerName.includes('tm luxe - 2') || lowerName.includes('tm luxe 2') || lowerName.includes('ovika signature 2')
     ? luxe2Reviews
-    : lowerName.includes('tm luxe - 1') || lowerName.includes('tm luxe 1')
+    : lowerName.includes('tm luxe - 1') || lowerName.includes('tm luxe 1') || lowerName.includes('ovika signature 1')
       ? luxe1Reviews
-      : lowerName.includes('tm luxe - 3') || lowerName.includes('tm luxe 3')
+      : lowerName.includes('tm luxe - 3') || lowerName.includes('tm luxe 3') || lowerName.includes('ovika signature 3')
         ? luxe3Reviews
         : undefined;
 
