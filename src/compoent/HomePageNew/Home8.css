@@ -455,9 +455,7 @@
   }
 
   .home8-card-desc {
-    font-size: 10px;
-    margin: 0 0 8px 0;
-    line-height: 1.4;
+    display: none;
   }
 
   .home8-card-content {
@@ -476,18 +474,15 @@
 
   .home8-card-below-info {
     display: block;
-    margin-top: 8px;
+    margin-top: 2px;
   }
 
   .home8-card-below-title {
-    font-size: 13px;
-    margin: 0 0 2px 0;
+    display: none;
   }
 
   .home8-card-below-desc {
-    font-size: 9.5px;
-    margin: 0 0 8px 0;
-    line-height: 1.4;
+    display: none;
   }
 
   .home8-btn {
@@ -522,62 +517,74 @@
   }
 
   .home8-help-actions {
-    flex-direction: column;
-    gap: 12px;
+    flex-direction: row;
+    gap: 10px;
     align-items: stretch;
   }
 
   .home8-help-btn {
-    min-width: 100%;
-    padding: 12px 14px;
-    gap: 10px;
-    flex-direction: row;
+    min-width: 0;
+    flex: 1;
+    padding: 20px 12px;
+    gap: 14px;
+    flex-direction: column;
     align-items: center;
+    text-align: center;
   }
 
-  /* Mobile: Icon | (Title stacked over Subtitle) | Number btn on right */
+  .home8-help-btn .home8-help-btn-icon {
+    margin-bottom: 0;
+  }
+
+  .home8-help-btn .home8-help-call-content,
+  .home8-help-btn .home8-help-whatsapp-content {
+    margin-bottom: 0;
+  }
+
+  /* Mobile: Vertical stack inside each card, two cards side by side */
   .home8-help-call-content,
   .home8-help-whatsapp-content {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    grid-template-rows: auto auto;
-    gap: 2px 0;
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    gap: 3px;
     flex: 1;
+    width: 100%;
   }
 
   .home8-help-call-content .home8-help-btn-text,
   .home8-help-whatsapp-content .home8-help-btn-text {
-    grid-column: 1 / 2;
-    grid-row: 1;
     font-size: 13px;
+    white-space: normal;
+    text-align: center;
   }
 
   .home8-help-call-content .home8-help-btn-subtext,
   .home8-help-whatsapp-content .home8-help-btn-subtext {
-    grid-column: 1 / 2;
-    grid-row: 2;
-    font-size: 11px;
+    font-size: 10px;
+    white-space: normal;
+    text-align: center;
   }
 
   .home8-call-number-btn,
   .home8-whatsapp-number-btn {
-    grid-column: 2;
-    grid-row: 1 / 3;
-    justify-self: end;
-    padding: 5px 10px;
-    font-size: 11.5px;
+    padding: 6px 10px;
+    font-size: 11px;
+    line-height: 1.4;
     margin-left: 0;
+    margin-top: 12px;
+    width: 100%;
+    justify-content: center;
   }
 
   .home8-help-btn-icon {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
   }
 
   .home8-help-btn-icon svg {
-    width: 17px;
-    height: 17px;
+    width: 18px;
+    height: 18px;
   }
 }
 
