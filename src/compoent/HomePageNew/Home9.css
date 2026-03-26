@@ -1,0 +1,206 @@
+/* ===== Google Fonts Import ===== */
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap");
+
+/* ===== Root Variables ===== */
+:root {
+  --bg-page: #f5ede8;
+  --color-heading-dark: #2b1e14;
+  --color-highlight: #c87533;
+  --color-text-body: #5c4a3a;
+  --color-card-bg: #ffffff;
+  --color-card-shadow: rgba(100, 60, 20, 0.1);
+  --color-btn-bg: #c87533;
+  --color-btn-hover: #a85f25;
+  --color-btn-text: #ffffff;
+  --color-placeholder-bg: #e8d8ca;
+  --color-placeholder-text: #a08060;
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "DM Sans", sans-serif;
+}
+
+/* ===== Section Wrapper ===== */
+.nightly-stays {
+  background-color: var(--bg-page);
+  min-height: 100vh;
+  padding: 60px 40px 80px;
+  font-family: var(--font-body);
+  box-sizing: border-box;
+}
+
+/* ===== Header ===== */
+.nightly-stays__header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.nightly-stays__title {
+  font-family: var(--font-display);
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--color-heading-dark);
+  margin: 0 0 14px 0;
+  line-height: 1.15;
+}
+
+.nightly-stays__title--highlight {
+  color: var(--color-highlight);
+}
+
+.nightly-stays__subtitle {
+  font-size: 1.05rem;
+  color: var(--color-text-body);
+  font-weight: 400;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ===== Grid ===== */
+.nightly-stays__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: stretch; /* ✅ teeno cards same height */
+}
+
+/* ===== Card ===== */
+.nightly-stays__card {
+  background-color: var(--color-card-bg);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px var(--color-card-shadow);
+  display: grid;
+  /* ✅ KEY FIX: card-top auto, image fixed, card-bottom rest */
+  grid-template-rows: auto 220px 1fr;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.nightly-stays__card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 32px rgba(100, 60, 20, 0.16);
+}
+
+/* ===== Card Top ===== */
+.nightly-stays__card-top {
+  padding: 24px 24px 16px;
+}
+
+/* ===== Image ===== */
+.nightly-stays__image-wrapper {
+  width: 100%;
+  height: 100%; /* fills the 220px grid row */
+  overflow: hidden;
+}
+
+.nightly-stays__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.nightly-stays__card:hover .nightly-stays__image {
+  transform: scale(1.04);
+}
+
+/* Placeholder when no image src */
+.nightly-stays__image-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-placeholder-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-placeholder-text);
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  letter-spacing: 0.03em;
+}
+
+/* ===== Card Bottom ===== */
+.nightly-stays__card-bottom {
+  padding: 20px 24px 28px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Card Title ===== */
+.nightly-stays__card-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-heading-dark);
+  margin: 0 0 8px 0;
+  line-height: 1.2;
+}
+
+/* ===== Card Description ===== */
+.nightly-stays__card-desc {
+  font-size: 0.92rem;
+  color: var(--color-text-body);
+  line-height: 1.55;
+  margin: 0 0 20px 0;
+  flex: 1;
+}
+
+/* ===== CTA Button ===== */
+.nightly-stays__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 20px;
+  background-color: var(--color-btn-bg);
+  color: var(--color-btn-text);
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+  letter-spacing: 0.02em;
+  margin-top: auto;
+}
+
+.nightly-stays__btn:hover {
+  background-color: var(--color-btn-hover);
+  transform: scale(1.02);
+}
+
+.nightly-stays__btn-arrow {
+  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+}
+
+.nightly-stays__btn:hover .nightly-stays__btn-arrow {
+  transform: translateX(4px);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 960px) {
+  .nightly-stays__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .nightly-stays {
+    padding: 40px 20px 60px;
+  }
+
+  .nightly-stays__title {
+    font-size: 2rem;
+  }
+
+  .nightly-stays__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nightly-stays__card {
+    grid-template-rows: auto 200px 1fr;
+  }
+}

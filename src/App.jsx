@@ -55,6 +55,8 @@ import  ContactMain  from "./compoent/ContactUs/ContactMain";
 import CareerSupport from "./compoent/CareerSupport/CareerSupport";
 import CookieConsent from "./compoent/CookieConsent/CookieConsent";
 import ColivingSpace from './compoent/CoLivingSpace/ColivingSpace';
+import Home9 from "./compoent/HomePageNew/Home9";
+import Home10 from "./compoent/HomePageNew/Home10";
 
 
 // 🔒 Protected Route Component
@@ -125,6 +127,8 @@ function App() {
           <Route path="/subsription" element={<Subsriptionmain/>}/>
           <Route path="/notification" element={<Notification/>}/>
           <Route path="/contactus" element={<ContactMain/>}/>
+          <Route path="/nightly-stays" element={<Home9/>}/>
+          <Route path="/monthly-rentals" element={<Home10/>}/>
 
           {/* ✅ PROTECTED ROUTE – only after login */}
           <Route
