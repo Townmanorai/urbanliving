@@ -57,7 +57,7 @@ import CookieConsent from "./compoent/CookieConsent/CookieConsent";
 import ColivingSpace from './compoent/CoLivingSpace/ColivingSpace';
 import Home9 from "./compoent/HomePageNew/Home9";
 import Home10 from "./compoent/HomePageNew/Home10";
-
+import  OvikaSelfVerified  from "./compoent/ovikalistingform/OvikaSelfVerified";
 
 // 🔒 Protected Route Component
 function RequireAuth({ children }) {
@@ -129,7 +129,7 @@ function App() {
           <Route path="/contactus" element={<ContactMain/>}/>
           <Route path="/nightly-stays" element={<Home9/>}/>
           <Route path="/monthly-rentals" element={<Home10/>}/>
-
+<Route path="/ovika-self-verified" element={<OvikaSelfVerified/>}/>
           {/* ✅ PROTECTED ROUTE – only after login */}
           <Route
             path="/listed1"
