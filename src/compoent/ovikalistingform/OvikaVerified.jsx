@@ -355,33 +355,38 @@ const OvikaVerified = () => {
 
       {/* Hero */}
       <section style={{
-        background:  `linear-gradient(150deg, #fff 0%, #fdf5e8 60%, #fef9f0 100%)`,
-        padding:     '88px 20px 40px',
-        textAlign:   'center',
-        borderBottom:`1px solid ${C.border}`,
+        background:     `linear-gradient(150deg, #fff 0%, #fdf5e8 60%, #fef9f0 100%)`,
+        padding:        '88px 24px 40px',
+        borderBottom:   `1px solid ${C.border}`,
+        display:        'flex',
+        flexDirection:  'column',
+        alignItems:     'center',
+        textAlign:      'center',
       }}>
+        {/* Verified pill */}
         <div style={{
           display:'inline-flex', alignItems:'center', gap:'7px',
           background: C.verifiedLight, border:`1.5px solid ${C.verifiedBorder}`,
           borderRadius:'50px', padding:'5px 14px', marginBottom:'20px',
+          flexShrink: 0,
         }}>
-          <span style={{ width:'7px', height:'7px', borderRadius:'50%', background: C.verified, display:'block' }} />
-          <span style={{ fontSize:'11px', fontWeight:'700', color: C.verified, letterSpacing:'0.7px', textTransform:'uppercase' }}>
+          <span style={{ width:'7px', height:'7px', borderRadius:'50%', background: C.verified, flexShrink:0 }} />
+          <span style={{ fontSize:'11px', fontWeight:'700', color: C.verified, letterSpacing:'0.7px', textTransform:'uppercase', whiteSpace:'nowrap' }}>
             Verified Properties Program
           </span>
         </div>
 
         <img
           src="/ovikaver.png" alt="OvikaLiving Verified Badge"
-          style={{ width:'140px', height:'auto', marginBottom:'20px' }}
+          style={{ width:'130px', height:'auto', marginBottom:'20px', display:'block' }}
         />
 
-        <h1 style={{ fontSize:'26px', fontWeight:'800', lineHeight:'1.25', color: C.textDark, marginBottom:'14px' }}>
+        <h1 style={{ fontSize:'26px', fontWeight:'800', lineHeight:'1.3', color: C.textDark, marginBottom:'14px', width:'100%' }}>
           The <span style={{ color: C.primary }}>OvikaLiving</span>
           <br />Verified Standard
         </h1>
 
-        <p style={{ fontSize:'14px', color: C.textBody, lineHeight:'1.7', marginBottom:'0' }}>
+        <p style={{ fontSize:'14px', color: C.textBody, lineHeight:'1.75', marginBottom:'0', maxWidth:'340px' }}>
           Every badge-bearing property has been{' '}
           <strong style={{ color: C.textDark }}>physically inspected</strong> by our team —
           genuine listings, accurate details, trusted stays.
