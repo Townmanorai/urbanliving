@@ -2526,9 +2526,10 @@ const HoomieFooter = () => {
                   <Link to="/subsription" style={{ color: '#fff', textDecoration: 'none' }}>Subscription Plan</Link>,
                   <Link to="/career-support" style={{ color: '#fff', textDecoration: 'none' }}>Career Support</Link>,
                   <Link to="/ovika-verified" style={{ color: '#fff', textDecoration: 'none', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    OvikaLiving Verified 
-                    <img src="/ovikaver.png" alt="Verified" style={{ height: '40px', width: 'auto' }} />
+                    OvikaLiving Verified
+                    <img src="/ovikaver.png" alt="Verified" style={{ height: '18px', width: 'auto' }} />
                   </Link>,
+                  <Link to="/ovika-self-verified" style={{ color: '#fff', textDecoration: 'none' }}>Self Verification</Link>,
                 ]}
               />
             </div>
@@ -2656,9 +2657,10 @@ const HoomieFooter = () => {
                   <Link to="/subsription" style={{ color: '#fff', textDecoration: 'none' }}>Subscription</Link>,
                   <Link to="/career-support" style={{ color: '#fff', textDecoration: 'none' }}>Career Support</Link>,
                   <Link to="/ovika-verified" style={{ color: '#fff', textDecoration: 'none', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    Verified 
+                    Verified
                     <img src="/ovikaver.png" alt="Verified" style={{ height: '18px', width: 'auto' }} />
                   </Link>,
+                  <Link to="/ovika-self-verified" style={{ color: '#fff', textDecoration: 'none' }}>Self Verification</Link>,
                 ]}
               />
             </div>

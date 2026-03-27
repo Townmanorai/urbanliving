@@ -47,8 +47,8 @@ const perks = [
 const stats = [
   { num: '3×',   label: 'More Visibility' },
   { num: '2 min',label: 'To Complete'     },
-  { num: '10k+', label: 'Verified Owners' },
-  { num: '98%',  label: 'Approval Rate'   },
+//   { num: '10k+', label: 'Verified Owners' },
+  { num: '99%',  label: 'Approval Rate'   },
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
