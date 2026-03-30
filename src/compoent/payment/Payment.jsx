@@ -1570,6 +1570,7 @@ function Payment() {
   const [pricing, setPricing] = useState({
     subtotal: 0,
     gst: 0,
+    securityDeposit: 0,
     total: 0,
   });
 
@@ -1684,11 +1685,12 @@ function Payment() {
       const pricePerNight = property?.per_night_price ? Number(property.per_night_price) : 0;
       const subtotal = diffDays * pricePerNight;
       const gst = subtotal * 0.05;
-      const total = subtotal + gst;
+      const securityDeposit = pricePerNight; // 1 night's rent — refundable
+      const total = subtotal + gst + securityDeposit;
 
-      setPricing({ subtotal, gst, total });
+      setPricing({ subtotal, gst, securityDeposit, total });
     } else {
-      setPricing({ subtotal: 0, gst: 0, total: 0 });
+      setPricing({ subtotal: 0, gst: 0, securityDeposit: 0, total: 0 });
     }
   }, [formData.checkInDate, formData.checkOutDate, property]);
 
@@ -2379,6 +2381,12 @@ function Payment() {
                         <span>Taxes & GST (5%)</span>
                         <span><MdCurrencyRupee/>{pricing.gst.toFixed(2)}</span>
                       </div>
+                      {pricing.securityDeposit > 0 && (
+                        <div className="pricing-item" style={{ color: '#0369a1' }}>
+                          <span>Security Deposit <span style={{ fontSize: '0.75rem' }}>(1 night · Refundable)</span></span>
+                          <span><MdCurrencyRupee/>{pricing.securityDeposit.toFixed(2)}</span>
+                        </div>
+                      )}
                       <div className="pricing-total">
                         <span>Total Price</span>
                         <span><MdCurrencyRupee/>{pricing.total.toFixed(2)}</span>
@@ -2628,6 +2636,11 @@ function Payment() {
                   <p className="payment-price-text">
                     Final Price: <span className="payment-price-amount"><MdOutlineCurrencyRupee size={20} />{pricing.total.toFixed(2)}</span>
                   </p>
+                  {pricing.securityDeposit > 0 && (
+                    <p style={{ fontSize: '0.82rem', color: '#0369a1', marginBottom: '12px', background: '#eff6ff', padding: '6px 10px', borderRadius: '6px' }}>
+                      🔒 Includes Security Deposit of ₹{pricing.securityDeposit.toFixed(2)} (1 night · Refundable after check-out)
+                    </p>
+                  )}
                   <button
                     onClick={handlePayNow}
                     disabled={!isPayNowEnabled || isSubmitting}
