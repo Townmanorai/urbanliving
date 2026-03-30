@@ -307,7 +307,7 @@ const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookN
             <th className="rm-th">Bathroom</th>
             <th className="rm-th">Area</th>
             <th className="rm-th rm-th--price">Price / {priceUnit}</th>
-            {showDeposit && <th className="rm-th">Deposit</th>}
+            {showDeposit && <th className="rm-th">Security Deposit</th>}
             <th className="rm-th">Available</th>
             <th className="rm-th rm-th--action"></th>
           </tr>
@@ -569,7 +569,7 @@ const RoomTablePerRoomMobile = ({ rooms, pricingMode, propertyPrice, onBookNow, 
                   }
                 </span>
                 {room.securityDeposit && (
-                  <span className="rm-mob-deposit">Dep: ₹{Number(room.securityDeposit).toLocaleString('en-IN')}</span>
+                  <span className="rm-mob-deposit">Security Deposit: ₹{Number(room.securityDeposit).toLocaleString('en-IN')}</span>
                 )}
               </div>
               <div className="rm-mob-stat" style={{ borderRight:'none' }}>
@@ -1836,7 +1836,7 @@ const PropertyDetailPage = () => {
                 <FiLock className="f-icon" style={{ color: '#16a34a' }}/>
                 <div>
                   <strong style={{ color: '#16a34a' }}>1 night</strong>
-                  <span style={{ color: '#16a34a' }}>Deposit</span>
+                  <span style={{ color: '#16a34a' }}>Security Deposit</span>
                   <span style={{ fontSize: '0.65rem', color: '#64748b', display: 'block' }}>Refundable</span>
                 </div>
               </div>
@@ -2001,7 +2001,7 @@ const PropertyDetailPage = () => {
                                     <span className="rm-price-unit">/mo</span>
                                   </div>
                                   {room.securityDeposit && (
-                                    <div className="rm-deposit">Dep: ₹{Number(room.securityDeposit).toLocaleString('en-IN')}</div>
+                                    <div className="rm-deposit">Security Deposit: ₹{Number(room.securityDeposit).toLocaleString('en-IN')}</div>
                                   )}
                                 </div>
                               ) : <span className="rm-on-request">On Request</span>}
@@ -2202,7 +2202,7 @@ const PropertyDetailPage = () => {
                       <div style={{ display:'flex', alignItems:'center', gap:'5px', padding:'6px 10px', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'6px', fontSize:'0.75rem', color:'#166534' }}>
                         <FiLock size={12} />
                         <span>
-                          <strong>Deposit: </strong>
+                          <strong>Security Deposit: </strong>
                           {pricingMode === 'monthly'
                             ? (property.securityDeposit > 0 ? `₹${formatCurrency(property.securityDeposit)}` : 'As applicable')
                             : (isOvikaOwnProperty ? `1 night's rent` : `₹${formatCurrency(property.securityDeposit)}`)}
