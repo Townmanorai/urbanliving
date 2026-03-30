@@ -173,7 +173,9 @@ const Home3 = () => {
           <p className="home3-trust-label">Our Verified Listing Programs</p>
           <div className="home3-trust-badges">
             <Link to="/ovika-verified" className="home3-trust-badge">
-              <img src="/ovikaver.png" alt="OvikaLiving Verified" className="home3-trust-img" />
+              <div className="home3-trust-icon-wrap">
+                <img src="/ovikaver.png" alt="OvikaLiving Verified" className="home3-trust-img" />
+              </div>
               <div className="home3-trust-info">
                 <span className="home3-trust-name">OvikaLiving Verified</span>
                 <span className="home3-trust-sub">Team-verified listing</span>
@@ -181,6 +183,7 @@ const Home3 = () => {
             </Link>
             <div className="home3-trust-sep" />
             <Link to="/ovika-self-verified" className="home3-trust-badge">
+              <div className="home3-trust-icon-wrap">
               <svg className="home3-trust-shield" viewBox="0 0 130 155" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="h3gr1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#F5C842"/><stop offset="100%" stopColor="#C88A0A"/></linearGradient>
@@ -194,6 +197,7 @@ const Home3 = () => {
                 <text x="65" y="109" textAnchor="middle" fontFamily="serif" fontSize="10.5" fontWeight="600" fill="#FFF8EE" letterSpacing="0.8">SELF</text>
                 <path d="M40 40 L57 58 L90 25" stroke="#FFFAEA" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
               </svg>
+              </div>
               <div className="home3-trust-info">
                 <span className="home3-trust-name">Property Self-Verified</span>
                 <span className="home3-trust-sub">Owner self-verified listing</span>
