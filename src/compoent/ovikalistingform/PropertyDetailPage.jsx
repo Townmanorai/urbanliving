@@ -703,23 +703,35 @@ const Calendar = ({ selectedDates, onDateSelect, minDate = new Date(), disabledD
 
   const days = getDaysInMonth(currentMonth);
   return (
-    <div style={{ padding: '1rem', background: 'white', borderRadius: '8px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <button onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer' }}><ChevronLeft size={20} /></button>
-        <h3 style={{ margin: 0, fontSize: '1.1rem' }}>{months[currentMonth.getMonth()]} {currentMonth.getFullYear()}</h3>
-        <button onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))} style={{ padding: '8px', border: 'none', background: 'transparent', cursor: 'pointer' }}><ChevronRight size={20} /></button>
+    <div className="cal-wrap">
+      <div className="cal-header">
+        <button className="cal-nav-btn" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}><ChevronLeft size={20} /></button>
+        <h3 className="cal-title">{months[currentMonth.getMonth()]} {currentMonth.getFullYear()}</h3>
+        <button className="cal-nav-btn" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}><ChevronRight size={20} /></button>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '1rem' }}>
-        {daysOfWeek.map(day => <div key={day} style={{ textAlign: 'center', fontSize: '0.75rem', fontWeight: '600', color: '#666', padding: '8px 0' }}>{day}</div>)}
+      <div className="cal-grid">
+        {daysOfWeek.map(day => <div key={day} className="cal-dow">{day}</div>)}
         {days.map((date, index) => (
-          <button key={index} onClick={() => handleDateClick(date)} disabled={!date || isDateDisabled(date)} style={{ padding: '8px', border: 'none', borderRadius: '4px', cursor: date && !isDateDisabled(date) ? 'pointer' : 'not-allowed', background: !date ? 'transparent' : isDateDisabled(date) ? '#f1f1f1' : isDateSelected(date) ? '#8b0000' : isDateInRange(date) ? '#ffe5e5' : 'white', color: !date ? 'transparent' : isDateDisabled(date) ? '#ccc' : isDateSelected(date) ? 'white' : '#333', fontWeight: isDateSelected(date) ? '600' : 'normal' }}>
+          <button
+            key={index}
+            onClick={() => handleDateClick(date)}
+            disabled={!date || isDateDisabled(date)}
+            className={[
+              'cal-day',
+              !date ? 'cal-day--empty' : '',
+              date && isDateDisabled(date) ? 'cal-day--disabled' : '',
+              date && isDateSelected(date) ? 'cal-day--selected' : '',
+              date && isDateInRange(date) ? 'cal-day--range' : '',
+            ].join(' ')}
+          >
             {date ? date.getDate() : ''}
           </button>
         ))}
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '1rem', borderTop: '1px solid #eee' }}>
-        <div><span style={{ fontSize: '0.85rem', color: '#666' }}>Check-in: </span><strong>{checkInDate ? checkInDate.toLocaleDateString() : 'Not selected'}</strong></div>
-        <div><span style={{ fontSize: '0.85rem', color: '#666' }}>Check-out: </span><strong>{checkOutDate ? checkOutDate.toLocaleDateString() : 'Not selected'}</strong></div>
+      <div className="cal-footer">
+        <div className="cal-footer-item"><span className="cal-footer-label">Check-in</span><strong>{checkInDate ? checkInDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—'}</strong></div>
+        <div className="cal-footer-sep" />
+        <div className="cal-footer-item"><span className="cal-footer-label">Check-out</span><strong>{checkOutDate ? checkOutDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—'}</strong></div>
       </div>
     </div>
   );
@@ -833,6 +845,7 @@ const PropertyDetailPage = () => {
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [selectedRoomForLead, setSelectedRoomForLead] = useState(null);
   const [calendarViewMonth, setCalendarViewMonth] = useState(new Date());
+  const [monthlyDuration, setMonthlyDuration] = useState(1);
   const [bookingRequestStatus, setBookingRequestStatus] = useState(null);
   const [userBookingRequests, setUserBookingRequests] = useState([]);
   const [passportFile, setPassportFile] = useState(null);
@@ -940,8 +953,9 @@ const PropertyDetailPage = () => {
         } else {
           monthly = selectedPrice || Number(property.meta?.perMonthPrice) || Number(property.meta?.monthlyPrice) || Number(property.monthly_price) || Number(property.price) || 0;
         }
-        subtotal = monthly;
-        currentDays = 30;
+        const effectiveMonths = (pricingMode === 'monthly' && monthlyDuration >= 1) ? monthlyDuration : 1;
+        subtotal = monthly * effectiveMonths;
+        currentDays = effectiveMonths * 30;
         if (datesSelected) {
           const checkIn = new Date(formData.checkInDate);
           const checkOut = new Date(formData.checkOutDate);
@@ -979,7 +993,7 @@ const PropertyDetailPage = () => {
     } else {
       setPricing({ subtotal: 0, discount: 0, discountPercentage: 0, gst: 0, total: 0, daysNeededForNextTier: 0, nextTierPercentage: 0 });
     }
-  }, [formData.checkInDate, formData.checkOutDate, property, pricingMode, selectedPrice]);
+  }, [formData.checkInDate, formData.checkOutDate, property, pricingMode, selectedPrice, monthlyDuration]);
 
   useEffect(() => {
     const allStepsComplete =
@@ -1068,6 +1082,29 @@ const PropertyDetailPage = () => {
     setStep(1);
   };
 
+  // ── Monthly booking helpers ──────────────────────────────────────────────
+  const addMonths = (dateStr, months) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    d.setMonth(d.getMonth() + months);
+    return d.toISOString().split('T')[0];
+  };
+
+  const handleMonthlyCheckInChange = (checkIn) => {
+    if (!checkIn) { setFormData({ ...formData, checkInDate: '', checkOutDate: '' }); return; }
+    const checkOut = monthlyDuration <= 11 ? addMonths(checkIn, monthlyDuration) : '';
+    setFormData({ ...formData, checkInDate: checkIn, checkOutDate: checkOut });
+  };
+
+  const handleMonthlyDurationChange = (months) => {
+    setMonthlyDuration(months);
+    if (months <= 11 && formData.checkInDate) {
+      setFormData({ ...formData, checkOutDate: addMonths(formData.checkInDate, months) });
+    } else {
+      setFormData({ ...formData, checkOutDate: '' });
+    }
+  };
+
   const handleReserveClick = () => {
     if (!user) { navigate('/login', { state: { from: location } }); return; }
     setAvailabilityRequested(false);
@@ -1106,6 +1143,7 @@ const PropertyDetailPage = () => {
         return;
       }
     }
+    if (step === 3 && pricingMode === 'monthly' && monthlyDuration >= 12) { showAlert('Stays longer than 11 months require a rental agreement. Please contact us at +91 9310292309 to proceed.'); return; }
     if (step === 3 && (!formData.checkInDate || !formData.checkOutDate)) return;
     if (step === 3 && bookingType === 1 && pricingMode !== 'monthly' && ownerApprovalStatus !== 'accepted') { showAlert('Please wait for owner approval.'); return; }
     if (step === 2 && !formData.termsAgreed) return;
@@ -1353,27 +1391,27 @@ const PropertyDetailPage = () => {
 
       {/* ── PAYMENT MODAL ─────────────────────────────────────────────────── */}
       {showPaymentModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 9999, overflow: 'auto', padding: '2rem 0' }}>
-          <div style={{ maxWidth: '900px', margin: '0 auto', background: 'white', borderRadius: '12px', padding: '2rem', position: 'relative' }}>
-            <button onClick={() => setShowPaymentModal(false)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem' }}><FiX /></button>
+        <div className="pm-overlay">
+          <div className="pm-card">
+            <button onClick={() => setShowPaymentModal(false)} className="pm-close"><FiX /></button>
 
-            <div style={{ marginBottom: '2rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem' }}>
+            <div className="pm-steps-bar">
+              <div className="pm-steps-row">
                 {steps.map((stepName, index) => (
-                  <div key={index} style={{ flex: 1, position: 'relative' }}>
+                  <div key={index} className="pm-step-item">
                     {index < steps.length - 1 && (
-                      <div style={{ position: 'absolute', top: '15px', left: '50%', right: '-50%', height: '3px', background: index < step ? '#8b0000' : '#e5e5e5', zIndex: 0 }}></div>
+                      <div className={`pm-step-line ${index < step ? 'pm-step-line--done' : ''}`}></div>
                     )}
-                    <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
-                      <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: index + 1 <= step ? '#8b0000' : '#e5e5e5', color: index + 1 <= step ? 'white' : '#999', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.5rem', fontWeight: '600' }}>{index + 1}</div>
-                      <span style={{ fontSize: '0.75rem', fontWeight: index + 1 === step ? '600' : 'normal', color: index + 1 === step ? '#8b0000' : '#666' }}>{stepName}</span>
+                    <div className="pm-step-inner">
+                      <div className={`pm-step-dot ${index + 1 <= step ? 'pm-step-dot--done' : ''}`}>{index + 1}</div>
+                      <span className={`pm-step-label ${index + 1 === step ? 'pm-step-label--active' : ''}`}>{stepName}</span>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div style={{ minHeight: '450px' }}>
+            <div className="pm-body">
               {step === 1 && (
                 <div>
                   <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Property Details</h2>
@@ -1409,8 +1447,8 @@ const PropertyDetailPage = () => {
                     )}
                   </div>
 
-                  <div style={{ display: 'flex', gap: '1.5rem', padding: '1.5rem', background: '#f8fafc', borderRadius: '8px', flexWrap: 'wrap' }}>
-                    <img src={getPhotoUrl(property.photos?.[0]) || 'https://via.placeholder.com/300x200'} alt="Property" style={{ width: '300px', height: '200px', objectFit: 'cover', borderRadius: '8px', maxWidth: '100%' }} />
+                  <div className="pm-property-card">
+                    <img src={getPhotoUrl(property.photos?.[0]) || 'https://via.placeholder.com/300x200'} alt="Property" className="pm-property-img" />
                     <div style={{ flex: 1, minWidth: '200px' }}>
                       <h3 style={{ fontSize: '1.3rem', marginBottom: '0.5rem' }}>{property.property_name}</h3>
                       <p style={{ color: '#666', marginBottom: '0.5rem' }}>{property.address}, {property.city}</p>
@@ -1450,17 +1488,113 @@ const PropertyDetailPage = () => {
               {step === 3 && (
                 <div>
                   <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Dates & Pricing</h2>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem' }}>
+                  <div className="pm-dates-grid">
                     <div>
-                      {bookingType === 1 && ownerApprovalStatus === 'pending' && (
-                        <div style={{ marginBottom: '1rem', padding: '12px', background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: '6px', color: '#92400e', fontSize: '0.9rem' }}>
-                          ⏳ Request sent. Waiting for owner approval.
+                      {pricingMode === 'monthly' ? (
+                        /* ── Monthly Booking Date UI ── */
+                        <div>
+                          {/* Check-in Date */}
+                          <div style={{ marginBottom: '1.5rem' }}>
+                            <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', color: '#1a1a1a' }}>Check-in Date</label>
+                            <input
+                              type="date"
+                              min={new Date().toISOString().split('T')[0]}
+                              value={formData.checkInDate}
+                              onChange={(e) => handleMonthlyCheckInChange(e.target.value)}
+                              style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #ddd', fontSize: '1rem', boxSizing: 'border-box' }}
+                            />
+                          </div>
+
+                          {/* Duration selector */}
+                          <div style={{ marginBottom: '1.5rem' }}>
+                            <label style={{ display: 'block', fontWeight: '600', marginBottom: '10px', color: '#1a1a1a' }}>
+                              Duration (Months)
+                            </label>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                              {[1,2,3,4,5,6,7,8,9,10,11,12].map(n => (
+                                <button
+                                  key={n}
+                                  onClick={() => handleMonthlyDurationChange(n)}
+                                  style={{
+                                    padding: '8px 14px',
+                                    borderRadius: '8px',
+                                    border: monthlyDuration === n ? '2px solid #8b0000' : '1.5px solid #ddd',
+                                    background: monthlyDuration === n ? '#8b0000' : '#fff',
+                                    color: monthlyDuration === n ? '#fff' : '#333',
+                                    fontWeight: monthlyDuration === n ? '700' : '500',
+                                    fontSize: '0.9rem',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.15s',
+                                  }}
+                                >
+                                  {n} {n === 1 ? 'Mo' : 'Mo'}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* 12+ months agreement warning */}
+                          {monthlyDuration >= 12 && (
+                            <div style={{ padding: '16px', background: '#fff7ed', border: '1.5px solid #f97316', borderRadius: '10px', marginBottom: '1rem' }}>
+                              <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                                <span style={{ fontSize: '1.4rem', flexShrink: 0 }}>⚠️</span>
+                                <div>
+                                  <p style={{ fontWeight: '700', color: '#9a3412', marginBottom: '6px', fontSize: '0.95rem' }}>
+                                    Rental Agreement Required
+                                  </p>
+                                  <p style={{ color: '#7c2d12', fontSize: '0.875rem', lineHeight: '1.5', marginBottom: '8px' }}>
+                                    As per the <strong>Rent Control Act</strong>, stays exceeding <strong>11 months</strong> require a formal registered rental agreement. Booking cannot proceed without completing this process.
+                                  </p>
+                                  <p style={{ color: '#7c2d12', fontSize: '0.875rem', lineHeight: '1.5' }}>
+                                    📞 Please contact us to initiate the agreement process before booking:
+                                  </p>
+                                  <p style={{ fontWeight: '700', color: '#9a3412', fontSize: '0.95rem', marginTop: '6px' }}>
+                                    +91 9310292309
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Check-in / Check-out summary */}
+                          {formData.checkInDate && formData.checkOutDate && monthlyDuration <= 11 && (
+                            <div style={{ padding: '14px', background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '8px', display: 'flex', gap: '2rem' }}>
+                              <div>
+                                <p style={{ fontSize: '0.78rem', color: '#166534', fontWeight: '600', marginBottom: '2px' }}>CHECK-IN</p>
+                                <p style={{ fontWeight: '700', color: '#14532d' }}>{new Date(formData.checkInDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                              </div>
+                              <div style={{ width: '1px', background: '#86efac' }} />
+                              <div>
+                                <p style={{ fontSize: '0.78rem', color: '#166534', fontWeight: '600', marginBottom: '2px' }}>CHECK-OUT</p>
+                                <p style={{ fontWeight: '700', color: '#14532d' }}>{new Date(formData.checkOutDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                              </div>
+                              <div style={{ width: '1px', background: '#86efac' }} />
+                              <div>
+                                <p style={{ fontSize: '0.78rem', color: '#166534', fontWeight: '600', marginBottom: '2px' }}>DURATION</p>
+                                <p style={{ fontWeight: '700', color: '#14532d' }}>{monthlyDuration} {monthlyDuration === 1 ? 'Month' : 'Months'}</p>
+                              </div>
+                            </div>
+                          )}
                         </div>
+                      ) : (
+                        /* ── Daily Calendar ── */
+                        <>
+                          {bookingType === 1 && ownerApprovalStatus === 'pending' && (
+                            <div style={{ marginBottom: '1rem', padding: '12px', background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: '6px', color: '#92400e', fontSize: '0.9rem' }}>
+                              ⏳ Request sent. Waiting for owner approval.
+                            </div>
+                          )}
+                          <Calendar selectedDates={{ checkInDate: formData.checkInDate, checkOutDate: formData.checkOutDate }} currentMonth={calendarViewMonth} setCurrentMonth={setCalendarViewMonth} onDateSelect={(dates) => setFormData({ ...formData, ...dates })} minDate={new Date()} disabledDateSet={disabledDateSet} onInvalidRange={showAlert} />
+                        </>
                       )}
-                      <Calendar selectedDates={{ checkInDate: formData.checkInDate, checkOutDate: formData.checkOutDate }} currentMonth={calendarViewMonth} setCurrentMonth={setCalendarViewMonth} onDateSelect={(dates) => setFormData({ ...formData, ...dates })} minDate={new Date()} disabledDateSet={disabledDateSet} onInvalidRange={showAlert} />
                     </div>
                     <div style={{ padding: '1.5rem', background: '#f8fafc', borderRadius: '8px', height: 'fit-content' }}>
                       <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>Pricing Summary</h3>
+                      {pricingMode === 'monthly' && (
+                        <div style={{ marginBottom: '1rem', padding: '10px 12px', background: '#fff7ed', borderRadius: '6px', fontSize: '0.85rem', color: '#92400e' }}>
+                          📅 {monthlyDuration} {monthlyDuration === 1 ? 'Month' : 'Months'} × ₹{Number(selectedPrice || property?.price || 0).toLocaleString('en-IN')}/mo
+                        </div>
+                      )}
                       <div style={{ marginBottom: '1rem' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid #e5e5e5' }}>
                           <span>Subtotal</span><span><MdCurrencyRupee style={{ display: 'inline' }} />{pricing.subtotal.toFixed(2)}</span>
@@ -1578,14 +1712,14 @@ const PropertyDetailPage = () => {
               )}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '2px solid #eee' }}>
-              <button onClick={handlePrev} disabled={step === 1} style={{ padding: '12px 32px', background: step === 1 ? '#eee' : '#f8fafc', border: '2px solid #ddd', borderRadius: '8px', cursor: step === 1 ? 'not-allowed' : 'pointer', fontWeight: '600', color: step === 1 ? '#999' : '#333' }}>← Previous</button>
+            <div className="pm-footer">
+              <button onClick={handlePrev} disabled={step === 1} className={`pm-btn-prev ${step === 1 ? 'pm-btn-prev--disabled' : ''}`}>← Previous</button>
               {step === 3 && bookingType === 1 && pricingMode !== 'monthly' && bookingRequestStatus !== 'accepted' ? (
-                <button onClick={() => sendAvailabilityRequest({ checkInDate: formData.checkInDate, checkOutDate: formData.checkOutDate })} disabled={!formData.checkInDate || !formData.checkOutDate || ownerApprovalStatus === 'pending'} style={{ padding: '12px 32px', background: ownerApprovalStatus === 'pending' ? '#ccc' : '#8b0000', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: ownerApprovalStatus === 'pending' ? 'not-allowed' : 'pointer' }}>
+                <button onClick={() => sendAvailabilityRequest({ checkInDate: formData.checkInDate, checkOutDate: formData.checkOutDate })} disabled={!formData.checkInDate || !formData.checkOutDate || ownerApprovalStatus === 'pending'} className="pm-btn-next">
                   {ownerApprovalStatus === 'pending' ? 'Request Sent' : 'Send Booking Request'}
                 </button>
               ) : (
-                <button onClick={handleNext} style={{ padding: '12px 32px', background: '#8b0000', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer' }}>Next →</button>
+                <button onClick={handleNext} className="pm-btn-next">Next →</button>
               )}
             </div>
           </div>
