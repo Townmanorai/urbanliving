@@ -864,7 +864,7 @@ export default function Navbar() {
                   { icon: "📞", label: "Contact / Support", sub: "Get help and assistance", action: () => { setHamburgerMenuOpen(false); navigate("/contactus"); } },
                   { icon: "💼", label: "Career", sub: "Join our growing team", action: goCareer },
                   { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: '20px', height: 'auto' }} />, label: "OvikaLiving Verified", sub: "Know about our verification process", action: goOvikaVerified },
-                  { icon: "✅", label: "Self Verification", sub: "Verify your property yourself", action: goSelfVerified },
+                  { icon: "✅", label: "Property Self Verification", sub: "Verify your property yourself", action: goSelfVerified },
                   { icon: "🗺️", label: "Explore Townmanor", sub: "Discover amazing places", action: () => { setHamburgerMenuOpen(false); window.open("https://www.townmanor.ai/", "_blank"); } },
                 ].map((item) => (
                   <button key={item.label} onClick={item.action} style={{ ...panelButtonStyle, padding: "8px 4px" }}>
@@ -919,7 +919,7 @@ export default function Navbar() {
                   { icon: "🛡️", label: "Owner Dashboard", sub: "Access owner controls", action: goOwnerDashboard },
                   { icon: "💼", label: "Career", sub: "Join our growing team", action: goCareer },
                   { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: '20px', height: 'auto' }} />, label: "OvikaLiving Verified", sub: "Know about our verification process", action: goOvikaVerified },
-                  { icon: "✅", label: "Self Verification", sub: "Verify your property yourself", action: goSelfVerified },
+                  { icon: "✅", label: "Property Self Verification", sub: "Verify your property yourself", action: goSelfVerified },
                 ].map((item) => (
                   <button key={item.label} onClick={item.action} style={{ ...panelButtonStyle, padding: "8px 4px" }}>
                     <span style={{
@@ -1110,7 +1110,7 @@ export default function Navbar() {
                 { icon: "📞", label: "Contact / Support", sub: "Get help and assistance", action: () => { setHamburgerMenuOpen(false); navigate("/contactus"); } },
                 { icon: "💼", label: "Career", sub: "Join our growing team", action: goCareer },
                 { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: '20px', height: 'auto' }} />, label: "OvikaLiving Verified", sub: "Know about our verification process", action: goOvikaVerified },
-                { icon: "✅", label: "Self Verification", sub: "Verify your property yourself", action: goSelfVerified },
+                { icon: "✅", label: "Property Self Verification", sub: "Verify your property yourself", action: goSelfVerified },
                 { icon: "🗺️", label: "Explore Townmanor", sub: "Discover amazing places", action: () => { setHamburgerMenuOpen(false); window.open("https://www.townmanor.ai/", "_blank"); } },
               ].map((item) => (
                 <button key={item.label} onClick={item.action} style={{ border: "none", background: "transparent", padding: "7px 4px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", width: "100%", borderRadius: 8, transition: "background 0.15s" }}
@@ -1172,7 +1172,7 @@ export default function Navbar() {
                 { icon: "🛡️", label: "Owner Dashboard", sub: "Access owner controls", action: goOwnerDashboard },
                 { icon: "💼", label: "Career", sub: "Join our growing team", action: goCareer },
                 { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: '20px', height: 'auto' }} />, label: "OvikaLiving Verified", sub: "Know about our verification process", action: goOvikaVerified },
-                { icon: "✅", label: "Self Verification", sub: "Verify your property yourself", action: goSelfVerified },
+                { icon: "✅", label: "Property Self Verification", sub: "Verify your property yourself", action: goSelfVerified },
               ].map((item) => (
                 <button key={item.label} onClick={item.action} style={panelButtonStyle}>
                   <span style={{

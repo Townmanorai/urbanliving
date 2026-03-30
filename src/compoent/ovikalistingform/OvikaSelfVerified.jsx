@@ -38,7 +38,7 @@ const steps = [
 ];
 
 const perks = [
-  { icon: '🏅', text: 'SELF-VERIFIED badge displayed on your listing'    },
+  { icon: '🏅', text: 'PROPERTY SELF-VERIFIED badge displayed on your listing'    },
   { icon: '🔝', text: 'Higher position in OvikaLiving search results'    },
   { icon: '🤝', text: 'Greater trust & credibility with renters'          },
   { icon: '📊', text: 'Access to enhanced listing analytics'              },
@@ -68,11 +68,11 @@ export default function OvikaSelfVerified({ onOpenForm }) {
 
           {/* Left: text + actions + stats */}
           <div className="svp-hero-left">
-            <div className="svp-eyebrow">OvikaLiving · Self-Verification</div>
+            <div className="svp-eyebrow">OvikaLiving · Property Self-Verification</div>
 
             <h1 className="svp-hero-h1">
               Get Your Property<br />
-              <span className="svp-accent">Self-Verified</span>
+              <span className="svp-accent">Property Self-Verified</span>
             </h1>
 
             <p className="svp-hero-desc">
@@ -84,14 +84,14 @@ export default function OvikaSelfVerified({ onOpenForm }) {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Start Verification
+                Start Property Self-Verification
               </button>
               <div className="svp-mobile-note">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="5" y="2" width="14" height="20" rx="2" />
                   <line x1="12" y1="18" x2="12.01" y2="18" strokeLinecap="round" strokeWidth="3" />
                 </svg>
-                Mobile-only verification
+                Mobile-only property verification
               </div>
             </div>
 
@@ -116,9 +116,9 @@ export default function OvikaSelfVerified({ onOpenForm }) {
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Self-Verified
+                Property Self-Verified
               </div>
-              <p className="svp-hero-badge-text">Your listing gets this badge — a mark of trust renters look for.</p>
+              <p className="svp-hero-badge-text">Your listing gets this property badge — a mark of trust renters look for.</p>
             </div>
           </div>
 
@@ -132,9 +132,9 @@ export default function OvikaSelfVerified({ onOpenForm }) {
         <div className="svp-section-wrap">
           <div className="svp-section-head">
             <div className="svp-eyebrow">Why It Matters</div>
-            <h2 className="svp-section-title">Why Verify Your <span className="svp-accent">Property?</span></h2>
+            <h2 className="svp-section-title">Why Property Self-Verify <span className="svp-accent">Your Listing?</span></h2>
             <p className="svp-section-desc">
-              Self-verification is the fastest way to build credibility and reach more renters on OvikaLiving.
+              Property self-verification is the fastest way to build credibility and reach more renters on OvikaLiving.
             </p>
           </div>
           <div className="svp-benefits-grid">
@@ -201,9 +201,9 @@ export default function OvikaSelfVerified({ onOpenForm }) {
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Self-Verified
+                Property Self-Verified
               </div>
-              <h3>Your Listing Gets This Badge</h3>
+              <h3>Your Listing Gets This Property Badge</h3>
               <p>A mark of trust that renters look for when choosing a home.</p>
             </div>
 
@@ -233,7 +233,7 @@ export default function OvikaSelfVerified({ onOpenForm }) {
         <div className="svp-cta-inner">
           <div className="svp-note-inline">
             <span className="svp-note-icon">ℹ️</span>
-            <p>Self-verified listings use owner-submitted photos & videos. OvikaLiving performs digital checks to maintain authenticity standards.</p>
+            <p>Property self-verified listings use owner-submitted photos & videos. OvikaLiving performs digital checks to maintain authenticity standards.</p>
           </div>
           <h2>Ready to Get <span className="svp-accent-gold">Verified?</span></h2>
           <p className="svp-cta-sub">Fill in your details and get your badge within minutes.</p>
@@ -241,13 +241,13 @@ export default function OvikaSelfVerified({ onOpenForm }) {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Start Self-Verification
+            Start Property Self-Verification
           </button>
           <div className="svp-cta-mobile-note">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="5" y="2" width="14" height="20" rx="2" />
             </svg>
-            Verification available on mobile only
+            Property verification available on mobile only
           </div>
         </div>
       </section>

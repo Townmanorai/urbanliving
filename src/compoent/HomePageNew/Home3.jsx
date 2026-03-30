@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "./Home3.css";
 
 const rentersSteps = [
@@ -168,6 +168,39 @@ const Home3 = () => {
           <p className="home3-footer">{cta.footnote}</p>
         </div>
 
+        {/* Trust Badges Strip */}
+        <div className="home3-trust-strip">
+          <p className="home3-trust-label">Our Verified Listing Programs</p>
+          <div className="home3-trust-badges">
+            <Link to="/ovika-verified" className="home3-trust-badge">
+              <img src="/ovikaver.png" alt="OvikaLiving Verified" className="home3-trust-img" />
+              <div className="home3-trust-info">
+                <span className="home3-trust-name">OvikaLiving Verified</span>
+                <span className="home3-trust-sub">Team-verified listing</span>
+              </div>
+            </Link>
+            <div className="home3-trust-sep" />
+            <Link to="/ovika-self-verified" className="home3-trust-badge">
+              <svg className="home3-trust-shield" viewBox="0 0 130 155" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="h3gr1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#F5C842"/><stop offset="100%" stopColor="#C88A0A"/></linearGradient>
+                  <linearGradient id="h3gr2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#F07828"/><stop offset="100%" stopColor="#B84808"/></linearGradient>
+                  <linearGradient id="h3gr3" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="#C03A00"/><stop offset="50%" stopColor="#E05808"/><stop offset="100%" stopColor="#C03A00"/></linearGradient>
+                </defs>
+                <path d="M65 3 L124 28 L124 82 C124 118 65 150 65 150 C65 150 6 118 6 82 L6 28 Z" fill="url(#h3gr1)"/>
+                <path d="M65 10 L117 33 L117 82 C117 114 65 143 65 143 C65 143 13 114 13 82 L13 33 Z" fill="url(#h3gr2)"/>
+                <path d="M13 66 L117 66 L117 97 C105 107 87 116 65 121 C43 116 25 107 13 97 Z" fill="url(#h3gr3)"/>
+                <text x="65" y="87" textAnchor="middle" fontFamily="serif" fontSize="12.5" fontWeight="700" fill="#FFF8EE" letterSpacing="0.8">VERIFIED</text>
+                <text x="65" y="109" textAnchor="middle" fontFamily="serif" fontSize="10.5" fontWeight="600" fill="#FFF8EE" letterSpacing="0.8">SELF</text>
+                <path d="M40 40 L57 58 L90 25" stroke="#FFFAEA" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+              </svg>
+              <div className="home3-trust-info">
+                <span className="home3-trust-name">Property Self-Verified</span>
+                <span className="home3-trust-sub">Owner self-verified listing</span>
+              </div>
+            </Link>
+          </div>
+        </div>
 
       </div>
     </section>

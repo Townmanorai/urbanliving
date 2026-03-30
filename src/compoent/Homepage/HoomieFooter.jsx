@@ -1925,7 +1925,20 @@ const mobileCSS = `
     font-size: 10px !important;
     margin-top:-44px;
   }
-  
+
+  .footer-verified-badges {
+    justify-content: center !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  .footer-verified-badges a {
+    width: 100% !important;
+    max-width: 220px !important;
+    justify-content: center !important;
+  }
+
   .footer-link-columns {
     display: flex !important;
     justify-content: space-between !important;
@@ -1933,18 +1946,18 @@ const mobileCSS = `
     width: 100% !important;
     gap: 15px !important;
   }
-  
+
   .footer-link-columns .footer-col {
     flex: 1 !important;
     text-align: left !important;
   }
-  
+
   .footer-link-columns h3 {
     text-align: left !important;
     font-size: 14px !important;
     margin-bottom: 8px !important;
   }
-  
+
   .quicklinks-col, .contactus-col, .legal-col {
     margin: 0 !important;
   }
@@ -2503,6 +2516,7 @@ const HoomieFooter = () => {
                 integrates technology, design, and convenience to create connected
                 and intelligent living spaces.
               </p>
+
             </div>
 
             {/* Quick Links - Desktop Grid */}
@@ -2529,7 +2543,7 @@ const HoomieFooter = () => {
                     OvikaLiving Verified
                     <img src="/ovikaver.png" alt="Verified" style={{ height: '18px', width: 'auto' }} />
                   </Link>,
-                  <Link to="/ovika-self-verified" style={{ color: '#fff', textDecoration: 'none' }}>Self Verification</Link>,
+                  <Link to="/ovika-self-verified" style={{ color: '#fff', textDecoration: 'none' }}>Property Self Verification</Link>,
                 ]}
               />
             </div>
@@ -2660,7 +2674,7 @@ const HoomieFooter = () => {
                     Verified
                     <img src="/ovikaver.png" alt="Verified" style={{ height: '18px', width: 'auto' }} />
                   </Link>,
-                  <Link to="/ovika-self-verified" style={{ color: '#fff', textDecoration: 'none' }}>Self Verification</Link>,
+                  <Link to="/ovika-self-verified" style={{ color: '#fff', textDecoration: 'none' }}>Property Self Verification</Link>,
                 ]}
               />
             </div>
