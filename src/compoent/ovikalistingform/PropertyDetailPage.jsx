@@ -1063,18 +1063,12 @@ const PropertyDetailPage = () => {
       roomPrice = Number(property.meta?.perNightPrice) || Number(property.price) || 0;
     }
     setSelectedPrice(roomPrice);
-    if (pricingMode === 'monthly') {
-      setSelectedRoomForLead(room?.type || null);
-      setShowLeadModal(true);
-      return;
-    }
     setAvailabilityRequested(false);
     setShowPaymentModal(true);
     setStep(1);
   };
 
   const handleReserveClick = () => {
-    if (pricingMode === 'monthly') { setSelectedRoomForLead(null); setShowLeadModal(true); return; }
     if (!user) { navigate('/login', { state: { from: location } }); return; }
     setAvailabilityRequested(false);
     setOwnerApprovalStatus(bookingRequestStatus === 'accepted' ? 'accepted' : null);
@@ -1113,7 +1107,7 @@ const PropertyDetailPage = () => {
       }
     }
     if (step === 3 && (!formData.checkInDate || !formData.checkOutDate)) return;
-    if (step === 3 && bookingType === 1 && ownerApprovalStatus !== 'accepted') { showAlert('Please wait for owner approval.'); return; }
+    if (step === 3 && bookingType === 1 && pricingMode !== 'monthly' && ownerApprovalStatus !== 'accepted') { showAlert('Please wait for owner approval.'); return; }
     if (step === 2 && !formData.termsAgreed) return;
     if (step === 3 && pricing.total <= 0) return;
     if (step === 4) {
@@ -1586,7 +1580,7 @@ const PropertyDetailPage = () => {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '2rem', paddingTop: '1.5rem', borderTop: '2px solid #eee' }}>
               <button onClick={handlePrev} disabled={step === 1} style={{ padding: '12px 32px', background: step === 1 ? '#eee' : '#f8fafc', border: '2px solid #ddd', borderRadius: '8px', cursor: step === 1 ? 'not-allowed' : 'pointer', fontWeight: '600', color: step === 1 ? '#999' : '#333' }}>← Previous</button>
-              {step === 3 && bookingType === 1 && bookingRequestStatus !== 'accepted' ? (
+              {step === 3 && bookingType === 1 && pricingMode !== 'monthly' && bookingRequestStatus !== 'accepted' ? (
                 <button onClick={() => sendAvailabilityRequest({ checkInDate: formData.checkInDate, checkOutDate: formData.checkOutDate })} disabled={!formData.checkInDate || !formData.checkOutDate || ownerApprovalStatus === 'pending'} style={{ padding: '12px 32px', background: ownerApprovalStatus === 'pending' ? '#ccc' : '#8b0000', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: ownerApprovalStatus === 'pending' ? 'not-allowed' : 'pointer' }}>
                   {ownerApprovalStatus === 'pending' ? 'Request Sent' : 'Send Booking Request'}
                 </button>
@@ -1831,10 +1825,7 @@ const PropertyDetailPage = () => {
                             </td>
                             <td className="rm-td"><AvailBadge date={room.availabilityDate} /></td>
                             <td className="rm-td rm-td--cta">
-                              <div style={{ display:'flex', flexDirection:'column', gap:'6px' }}>
-                                <button className="rm-enquire-btn" onClick={() => { setSelectedRoomForLead(room.type); setShowLeadModal(true); }}>Enquire</button>
-                                <button className="rm-book-btn" onClick={() => handleRoomBookNow(room)}>Book Now</button>
-                              </div>
+                              <button className="rm-book-btn" onClick={() => handleRoomBookNow(room)}>Book Now</button>
                             </td>
                           </tr>
                         );
@@ -1848,8 +1839,8 @@ const PropertyDetailPage = () => {
                   pricingMode="monthly"
                   propertyPrice={0}
                   onBookNow={handleRoomBookNow}
-                  onEnquire={(room) => { setSelectedRoomForLead(room.type); setShowLeadModal(true); }}
-                  showEnquire={true}
+                  onEnquire={null}
+                  showEnquire={false}
                 />
               </div>
             </>
@@ -2019,10 +2010,10 @@ const PropertyDetailPage = () => {
 
                   <div style={{ margin: '1.5rem 0' }}>
                     <button className="reserve-btn" onClick={handleReserveClick}>
-                      {pricingMode === 'monthly' ? 'Enquire for Monthly Stay' : (bookingType === 1 && bookingRequestStatus !== 'accepted' ? 'Send Booking Request' : 'Reserve Now')}
+                      {bookingType === 1 && pricingMode !== 'monthly' && bookingRequestStatus !== 'accepted' ? 'Send Booking Request' : 'Book Now'}
                     </button>
                     <p className="hint" style={{ marginBottom: 0 }}>
-                      {pricingMode === 'monthly' ? 'Our team will contact you' : (bookingType === 1 && bookingRequestStatus !== 'accepted' ? 'Request needed first' : "You won't be charged yet")}
+                      {bookingType === 1 && pricingMode !== 'monthly' && bookingRequestStatus !== 'accepted' ? 'Request needed first' : "You won't be charged yet"}
                     </p>
                   </div>
 
