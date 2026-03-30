@@ -69,9 +69,13 @@ const Home4 = () => {
           const apiMatch = fetchedProps.find(p => (p.id ?? p.ID) === defProp.id);
           if (apiMatch) {
             const nightlyPrice = apiMatch.price ?? apiMatch.PRICE ?? apiMatch.base_rate ?? apiMatch.BASE_RATE;
+            let parsedMeta = {};
+            try { parsedMeta = typeof apiMatch.meta === 'string' ? JSON.parse(apiMatch.meta) : (apiMatch.meta || {}); } catch(e) {}
+            const monthlyRaw = apiMatch.monthly_price ?? apiMatch.MONTHLY_PRICE ?? parsedMeta.perMonthPrice ?? parsedMeta.monthlyPrice;
             return {
               ...defProp,
               price: nightlyPrice ? `₹${parseFloat(nightlyPrice).toLocaleString("en-IN")} / night` : defProp.price,
+              monthlyPrice: monthlyRaw ? `₹${parseFloat(monthlyRaw).toLocaleString("en-IN")} / month` : null,
             };
           }
           return defProp;
@@ -136,7 +140,14 @@ const Home4 = () => {
               <p className="featured-text">{item.text}</p>
               <div className="featured-bottom">
                 <p className="featured-rating">{item.rating}</p>
-                <h4 className="featured-price">{item.price}</h4>
+                <div style={{ marginBottom: '16px' }}>
+                  <h4 className="featured-price" style={{ marginBottom: '4px' }}>{item.price}</h4>
+                  {item.monthlyPrice && (
+                    <p style={{ fontSize: '13px', color: '#c2772b', fontWeight: '400', margin: 0 }}>
+                      {item.monthlyPrice} <span style={{ fontSize: '11px', color: '#888' }}>(monthly stay)</span>
+                    </p>
+                  )}
+                </div>
                 <button className="featured-btn">{item.btn}</button>
               </div>
             </div>

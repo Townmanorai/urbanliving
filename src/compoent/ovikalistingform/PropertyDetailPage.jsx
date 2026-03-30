@@ -287,17 +287,18 @@ const PriceCell = ({ price, unit }) => {
 };
 
 // ─── SCENARIO 1 / 4: Whole property, single Book Now ─────────────────────────
-const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookNow }) => {
+const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookNow, showDeposit, depositAmount }) => {
   const rowCount = rooms.length;
   return (
     <div className="rm-table-outer">
       <table className="rm-table" style={{ tableLayout:'fixed', width:'100%' }}>
         <colgroup>
-          <col style={{ width:'34%' }}/>
-          <col style={{ width:'16%' }}/>
-          <col style={{ width:'13%' }}/>
-          <col style={{ width:'15%' }}/>
-          <col style={{ width:'12%' }}/>
+          <col style={{ width: showDeposit ? '30%' : '34%' }}/>
+          <col style={{ width: showDeposit ? '13%' : '16%' }}/>
+          <col style={{ width: showDeposit ? '10%' : '13%' }}/>
+          <col style={{ width: showDeposit ? '13%' : '15%' }}/>
+          {showDeposit && <col style={{ width:'18%' }}/>}
+          <col style={{ width: showDeposit ? '10%' : '12%' }}/>
           <col style={{ width:'10%' }}/>
         </colgroup>
         <thead>
@@ -306,6 +307,7 @@ const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookN
             <th className="rm-th">Bathroom</th>
             <th className="rm-th">Area</th>
             <th className="rm-th rm-th--price">Price / {priceUnit}</th>
+            {showDeposit && <th className="rm-th">Deposit</th>}
             <th className="rm-th">Available</th>
             <th className="rm-th rm-th--action"></th>
           </tr>
@@ -350,6 +352,13 @@ const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookN
                 {isFirst && (
                   <td className="rm-td rm-td--price" rowSpan={rowCount} style={{ verticalAlign:'middle' }}>
                     <PriceCell price={price} unit={priceUnit} />
+                  </td>
+                )}
+                {isFirst && showDeposit && (
+                  <td className="rm-td" rowSpan={rowCount} style={{ verticalAlign:'middle' }}>
+                    <div style={{ fontSize:'0.8rem', fontWeight:'600', color:'#8b0000' }}>₹{formatCurrency(depositAmount)}</div>
+                    <div style={{ fontSize:'0.7rem', color:'#64748b' }}>1 night</div>
+                    <span style={{ display:'inline-block', marginTop:'3px', background:'#dcfce7', color:'#166534', padding:'1px 7px', borderRadius:'20px', fontSize:'0.68rem', fontWeight:'600' }}>Refundable</span>
                   </td>
                 )}
                 {isFirst && (
@@ -988,8 +997,12 @@ const PropertyDetailPage = () => {
       discountAmount = (subtotal * discountPercentage) / 100;
       const afterDiscount = subtotal - discountAmount;
       const isMonthlyBooking = pricingMode === 'monthly';
+      const isOvikaProperty = isOvikaOwnProperty;
+      const perNightPrice = selectedPrice || Number(property?.meta?.perNightPrice) || Number(property?.price) || 0;
       const gst = isMonthlyBooking ? 0 : afterDiscount * 0.05;
-      const securityDeposit = isMonthlyBooking ? (Number(property?.securityDeposit) || 0) : 0;
+      const securityDeposit = isMonthlyBooking
+        ? (Number(property?.securityDeposit) || 0)
+        : (!isMonthlyBooking && isOvikaProperty ? perNightPrice : 0);
       computedTotal = afterDiscount + gst + securityDeposit;
       setPricing({ subtotal, discount: discountAmount, discountPercentage, gst, securityDeposit, total: computedTotal, daysNeededForNextTier, nextTierPercentage });
     } else {
@@ -1368,6 +1381,13 @@ const PropertyDetailPage = () => {
     ? (selectedPrice || Number(property.meta?.perMonthPrice) || Number(property.meta?.monthlyPrice) || Number(property.monthly_price) || Number(property.price) || 0)
     : (selectedPrice || Number(property.meta?.perNightPrice) || Number(property.price) || 0);
 
+  // ── OvikaLiving own-managed nightly properties (TM Luxe / Signature 1-5) ───
+  const isOvikaOwnProperty = !!(
+    property.property_name?.includes('TM Luxe') ||
+    property.property_name?.toLowerCase().includes('ovika') ||
+    [77, 78, 79, 80, 81].includes(Number(property.id))
+  );
+
   // ── CONSISTENT BED/BATH COUNTS (same helpers as PropertyListPage) ──────────
   const bedCount  = getBedCount(property.bedrooms, property.parsedBedrooms);
   const bathCount = getBathCount(property.bathrooms, property.parsedBathrooms);
@@ -1606,13 +1626,13 @@ const PropertyDetailPage = () => {
                             <span>Discount ({pricing.discountPercentage}%)</span><span>-<MdCurrencyRupee style={{ display: 'inline' }} />{pricing.discount.toFixed(2)}</span>
                           </div>
                         )}
-                        {pricingMode === 'monthly' ? (
-                          pricing.securityDeposit > 0 && (
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid #e5e5e5', color: '#0369a1' }}>
-                              <span>Security Deposit</span><span><MdCurrencyRupee style={{ display: 'inline' }} />{pricing.securityDeposit.toLocaleString('en-IN')}</span>
-                            </div>
-                          )
-                        ) : (
+                        {pricing.securityDeposit > 0 && (
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid #e5e5e5', color: '#0369a1' }}>
+                            <span>Security Deposit {pricingMode !== 'monthly' ? '(1 night · Refundable)' : '(Refundable)'}</span>
+                            <span><MdCurrencyRupee style={{ display: 'inline' }} />{pricing.securityDeposit.toLocaleString('en-IN')}</span>
+                          </div>
+                        )}
+                        {pricingMode !== 'monthly' && (
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid #e5e5e5' }}>
                             <span>GST (5%)</span><span><MdCurrencyRupee style={{ display: 'inline' }} />{pricing.gst.toFixed(2)}</span>
                           </div>
@@ -1711,7 +1731,13 @@ const PropertyDetailPage = () => {
                     <div style={{ marginBottom: '2rem', padding: '1rem', background: 'white', borderRadius: '8px', textAlign: 'left' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}><span>Check-in:</span><strong>{formData.checkInDate ? new Date(formData.checkInDate).toLocaleDateString() : '-'}</strong></div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}><span>Check-out:</span><strong>{formData.checkOutDate ? new Date(formData.checkOutDate).toLocaleDateString() : '-'}</strong></div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid #e5e5e5' }}><span>Property:</span><strong>{property.property_name}</strong></div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid #e5e5e5', marginBottom: '0.5rem' }}><span>Property:</span><strong>{property.property_name}</strong></div>
+                      {pricing.securityDeposit > 0 && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid #e5e5e5', color: '#0369a1', fontSize: '0.9rem' }}>
+                          <span>Security Deposit {pricingMode !== 'monthly' ? '(1 night · Refundable)' : '(Refundable)'}:</span>
+                          <strong>₹{pricing.securityDeposit.toLocaleString('en-IN')}</strong>
+                        </div>
+                      )}
                     </div>
                     <button onClick={handlePayNow} disabled={!isPayNowEnabled || isSubmitting} style={{ width: '100%', padding: '18px', background: isPayNowEnabled && !isSubmitting ? '#8b0000' : '#ccc', color: 'white', border: 'none', borderRadius: '8px', fontSize: '1.2rem', fontWeight: '700', cursor: isPayNowEnabled && !isSubmitting ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
                       {isSubmitting ? <><Loader size={24} className="animate-spin" /> Processing...</> : <>Pay Now <FiShield size={24} /></>}
@@ -1803,7 +1829,18 @@ const PropertyDetailPage = () => {
             </div>
             {property.balconies > 0 && <div className="feature-box"><FiWind className="f-icon"/><div><strong>{property.balconies}</strong><span>Balcony</span></div></div>}
             <div className="feature-box"><BiArea className="f-icon"/><div><strong>{property.area || 'N/A'}</strong><span>Sq Ft</span></div></div>
+            {property.max_guests > 0 && <div className="feature-box"><FiUser className="f-icon"/><div><strong>{property.max_guests}</strong><span>Guests</span></div></div>}
             {property.facing && <div className="feature-box"><FiCompass className="f-icon"/><div><strong>{property.facing}</strong><span>Facing</span></div></div>}
+            {isOvikaOwnProperty && pricingMode !== 'monthly' && (
+              <div className="feature-box" style={{ borderLeft: '3px solid #16a34a' }}>
+                <FiLock className="f-icon" style={{ color: '#16a34a' }}/>
+                <div>
+                  <strong style={{ color: '#16a34a' }}>1 night</strong>
+                  <span style={{ color: '#16a34a' }}>Deposit</span>
+                  <span style={{ fontSize: '0.65rem', color: '#64748b', display: 'block' }}>Refundable</span>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="divider"></div>
@@ -1853,6 +1890,8 @@ const PropertyDetailPage = () => {
                       area={property.area ? `${property.area} sqft` : '—'}
                       availableFrom={property.availableFrom || property.meta?.availableFrom}
                       onBookNow={handleRoomBookNow}
+                      showDeposit={!!(isOvikaOwnProperty && pricingMode !== 'monthly')}
+                      depositAmount={displayBasePrice}
                     />
                     <RoomTableSingleMobile
                       rooms={property.parsedBedrooms}
@@ -2016,7 +2055,7 @@ const PropertyDetailPage = () => {
               <div className="text-section">
                 <h3>Financials & Availability</h3>
                 <div className="amenities-grid">
-                  {property.securityDeposit && <div className="amenity-card rule-card"><div className="rule-icon"><FiLock color="#8b0000" /></div><div className="rule-info"><span className="rule-label">Security Deposit</span><strong>₹{formatCurrency(property.securityDeposit)}</strong></div></div>}
+                  {property.securityDeposit && <div className="amenity-card rule-card"><div className="rule-icon"><FiLock color="#8b0000" /></div><div className="rule-info"><span className="rule-label">Security Deposit</span><strong>₹{formatCurrency(property.securityDeposit)}</strong><span style={{ fontSize:'0.72rem', color:'#16a34a', marginTop:'2px', display:'block' }}>Refundable</span></div></div>}
                   {property.maintenanceCharge && <div className="amenity-card rule-card"><div className="rule-icon"><CreditCard size={18} color="#0ea5e9" /></div><div className="rule-info"><span className="rule-label">Maintenance</span><strong>₹{formatCurrency(property.maintenanceCharge)} ({property.maintenanceCycle || 'Monthly'})</strong></div></div>}
                   {property.availableFrom && <div className="amenity-card rule-card"><div className="rule-icon"><FiCalendar color="#16a34a" /></div><div className="rule-info"><span className="rule-label">Available From</span><strong>{new Date(property.availableFrom).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</strong></div></div>}
                 </div>
@@ -2156,9 +2195,21 @@ const PropertyDetailPage = () => {
                     <button className="reserve-btn" onClick={handleReserveClick}>
                       {bookingType === 1 && pricingMode !== 'monthly' && bookingRequestStatus !== 'accepted' ? 'Send Booking Request' : 'Book Now'}
                     </button>
-                    <p className="hint" style={{ marginBottom: 0 }}>
+                    <p className="hint" style={{ marginBottom: '8px' }}>
                       {bookingType === 1 && pricingMode !== 'monthly' && bookingRequestStatus !== 'accepted' ? 'Request needed first' : "You won't be charged yet"}
                     </p>
+                    {(property.securityDeposit > 0 || isOvikaOwnProperty) && (
+                      <div style={{ display:'flex', alignItems:'center', gap:'5px', padding:'6px 10px', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'6px', fontSize:'0.75rem', color:'#166534' }}>
+                        <FiLock size={12} />
+                        <span>
+                          <strong>Deposit: </strong>
+                          {pricingMode === 'monthly'
+                            ? (property.securityDeposit > 0 ? `₹${formatCurrency(property.securityDeposit)}` : 'As applicable')
+                            : (isOvikaOwnProperty ? `1 night's rent` : `₹${formatCurrency(property.securityDeposit)}`)}
+                          {' '}(Refundable)
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {bookingType === 1 && (
