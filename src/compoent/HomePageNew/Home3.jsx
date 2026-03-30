@@ -168,41 +168,68 @@ const Home3 = () => {
           <p className="home3-footer">{cta.footnote}</p>
         </div>
 
-        {/* Trust Badges Strip */}
-        <div className="home3-trust-strip">
-          <p className="home3-trust-label">Our Verified Listing Programs</p>
-          <div className="home3-trust-badges">
-            <Link to="/ovika-verified" className="home3-trust-badge">
-              <div className="home3-trust-icon-wrap">
-                <img src="/ovikaver.png" alt="OvikaLiving Verified" className="home3-trust-img" />
+        {/* Premium Verified Badges */}
+        <div className="h3-vbadge-wrap">
+          <p className="h3-vbadge-heading">Our Verified Listing Programs</p>
+          <div className="h3-vbadge-row">
+
+            {/* OvikaLiving Verified — green */}
+            <Link to="/ovika-verified" className="h3-vbadge">
+              <div className="h3-vbadge-shield-wrap">
+                <svg viewBox="0 0 130 155" fill="none" xmlns="http://www.w3.org/2000/svg" className="h3-vbadge-shield">
+                  <defs>
+                    <linearGradient id="gRim"  x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#E8D45A"/><stop offset="100%" stopColor="#A88A00"/></linearGradient>
+                    <linearGradient id="gBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#3a7d44"/><stop offset="100%" stopColor="#1a4a20"/></linearGradient>
+                    <linearGradient id="gRib"  x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="#1a4a20"/><stop offset="50%" stopColor="#2d6e38"/><stop offset="100%" stopColor="#1a4a20"/></linearGradient>
+                  </defs>
+                  <path d="M65 3 L124 28 L124 82 C124 118 65 150 65 150 C65 150 6 118 6 82 L6 28 Z" fill="url(#gRim)"/>
+                  <path d="M65 10 L117 33 L117 82 C117 114 65 143 65 143 C65 143 13 114 13 82 L13 33 Z" fill="url(#gBody)"/>
+                  <path d="M13 66 L117 66 L117 97 C105 107 87 116 65 121 C43 116 25 107 13 97 Z" fill="url(#gRib)"/>
+                  <path d="M4 63 L13 68 L13 95 L4 90 Z" fill="#0e3518"/>
+                  <path d="M126 63 L117 68 L117 95 L126 90 Z" fill="#0e3518"/>
+                  <path d="M38 72 L55 92 L92 52" stroke="#E8D45A" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                </svg>
               </div>
-              <div className="home3-trust-info">
-                <span className="home3-trust-name">OvikaLiving Verified</span>
-                <span className="home3-trust-sub">Team-verified listing</span>
-              </div>
-            </Link>
-            <div className="home3-trust-sep" />
-            <Link to="/ovika-self-verified" className="home3-trust-badge">
-              <div className="home3-trust-icon-wrap">
-              <svg className="home3-trust-shield" viewBox="0 0 130 155" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="h3gr1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#F5C842"/><stop offset="100%" stopColor="#C88A0A"/></linearGradient>
-                  <linearGradient id="h3gr2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#F07828"/><stop offset="100%" stopColor="#B84808"/></linearGradient>
-                  <linearGradient id="h3gr3" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="#C03A00"/><stop offset="50%" stopColor="#E05808"/><stop offset="100%" stopColor="#C03A00"/></linearGradient>
-                </defs>
-                <path d="M65 3 L124 28 L124 82 C124 118 65 150 65 150 C65 150 6 118 6 82 L6 28 Z" fill="url(#h3gr1)"/>
-                <path d="M65 10 L117 33 L117 82 C117 114 65 143 65 143 C65 143 13 114 13 82 L13 33 Z" fill="url(#h3gr2)"/>
-                <path d="M13 66 L117 66 L117 97 C105 107 87 116 65 121 C43 116 25 107 13 97 Z" fill="url(#h3gr3)"/>
-                <text x="65" y="87" textAnchor="middle" fontFamily="serif" fontSize="12.5" fontWeight="700" fill="#FFF8EE" letterSpacing="0.8">VERIFIED</text>
-                <text x="65" y="109" textAnchor="middle" fontFamily="serif" fontSize="10.5" fontWeight="600" fill="#FFF8EE" letterSpacing="0.8">SELF</text>
-                <path d="M40 40 L57 58 L90 25" stroke="#FFFAEA" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-              </svg>
-              </div>
-              <div className="home3-trust-info">
-                <span className="home3-trust-name">Property Self-Verified</span>
-                <span className="home3-trust-sub">Owner self-verified listing</span>
+              <div className="h3-vbadge-text">
+                <div className="h3-vbadge-top h3-vbadge-top--green">
+                  <span className="h3-vbadge-title">OvikaLiving Verified</span>
+                </div>
+                <div className="h3-vbadge-bottom">
+                  <span className="h3-vbadge-sub">Physically verified by OvikaLiving</span>
+                </div>
               </div>
             </Link>
+
+            {/* Divider */}
+            <div className="h3-vbadge-divider" />
+
+            {/* Self Verified — orange */}
+            <Link to="/ovika-self-verified" className="h3-vbadge">
+              <div className="h3-vbadge-shield-wrap">
+                <svg viewBox="0 0 130 155" fill="none" xmlns="http://www.w3.org/2000/svg" className="h3-vbadge-shield">
+                  <defs>
+                    <linearGradient id="oRim"  x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#F5C842"/><stop offset="100%" stopColor="#C88A0A"/></linearGradient>
+                    <linearGradient id="oBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#E07030"/><stop offset="100%" stopColor="#8B3A00"/></linearGradient>
+                    <linearGradient id="oRib"  x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="#8B3A00"/><stop offset="50%" stopColor="#C05010"/><stop offset="100%" stopColor="#8B3A00"/></linearGradient>
+                  </defs>
+                  <path d="M65 3 L124 28 L124 82 C124 118 65 150 65 150 C65 150 6 118 6 82 L6 28 Z" fill="url(#oRim)"/>
+                  <path d="M65 10 L117 33 L117 82 C117 114 65 143 65 143 C65 143 13 114 13 82 L13 33 Z" fill="url(#oBody)"/>
+                  <path d="M13 66 L117 66 L117 97 C105 107 87 116 65 121 C43 116 25 107 13 97 Z" fill="url(#oRib)"/>
+                  <path d="M4 63 L13 68 L13 95 L4 90 Z" fill="#5a2000"/>
+                  <path d="M126 63 L117 68 L117 95 L126 90 Z" fill="#5a2000"/>
+                  <path d="M38 72 L55 92 L92 52" stroke="#F5C842" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                </svg>
+              </div>
+              <div className="h3-vbadge-text">
+                <div className="h3-vbadge-top h3-vbadge-top--orange">
+                  <span className="h3-vbadge-title">Self Verified</span>
+                </div>
+                <div className="h3-vbadge-bottom">
+                  <span className="h3-vbadge-sub">Verified by property owner via images &amp; video.</span>
+                </div>
+              </div>
+            </Link>
+
           </div>
         </div>
 

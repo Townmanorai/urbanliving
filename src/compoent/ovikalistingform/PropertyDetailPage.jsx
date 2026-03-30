@@ -987,11 +987,13 @@ const PropertyDetailPage = () => {
     if (subtotal > 0) {
       discountAmount = (subtotal * discountPercentage) / 100;
       const afterDiscount = subtotal - discountAmount;
-      const gst = afterDiscount * 0.05;
-      computedTotal = afterDiscount + gst;
-      setPricing({ subtotal, discount: discountAmount, discountPercentage, gst, total: computedTotal, daysNeededForNextTier, nextTierPercentage });
+      const isMonthlyBooking = pricingMode === 'monthly';
+      const gst = isMonthlyBooking ? 0 : afterDiscount * 0.05;
+      const securityDeposit = isMonthlyBooking ? (Number(property?.securityDeposit) || 0) : 0;
+      computedTotal = afterDiscount + gst + securityDeposit;
+      setPricing({ subtotal, discount: discountAmount, discountPercentage, gst, securityDeposit, total: computedTotal, daysNeededForNextTier, nextTierPercentage });
     } else {
-      setPricing({ subtotal: 0, discount: 0, discountPercentage: 0, gst: 0, total: 0, daysNeededForNextTier: 0, nextTierPercentage: 0 });
+      setPricing({ subtotal: 0, discount: 0, discountPercentage: 0, gst: 0, securityDeposit: 0, total: 0, daysNeededForNextTier: 0, nextTierPercentage: 0 });
     }
   }, [formData.checkInDate, formData.checkOutDate, property, pricingMode, selectedPrice, monthlyDuration]);
 
@@ -1604,9 +1606,17 @@ const PropertyDetailPage = () => {
                             <span>Discount ({pricing.discountPercentage}%)</span><span>-<MdCurrencyRupee style={{ display: 'inline' }} />{pricing.discount.toFixed(2)}</span>
                           </div>
                         )}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid #e5e5e5' }}>
-                          <span>GST (5%)</span><span><MdCurrencyRupee style={{ display: 'inline' }} />{pricing.gst.toFixed(2)}</span>
-                        </div>
+                        {pricingMode === 'monthly' ? (
+                          pricing.securityDeposit > 0 && (
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid #e5e5e5', color: '#0369a1' }}>
+                              <span>Security Deposit</span><span><MdCurrencyRupee style={{ display: 'inline' }} />{pricing.securityDeposit.toLocaleString('en-IN')}</span>
+                            </div>
+                          )
+                        ) : (
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid #e5e5e5' }}>
+                            <span>GST (5%)</span><span><MdCurrencyRupee style={{ display: 'inline' }} />{pricing.gst.toFixed(2)}</span>
+                          </div>
+                        )}
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '600', fontSize: '1.2rem', color: '#8b0000' }}>
                           <span>Total</span><span><MdCurrencyRupee style={{ display: 'inline' }} />{pricing.total.toFixed(2)}</span>
                         </div>
@@ -2133,12 +2143,12 @@ const PropertyDetailPage = () => {
                 <div className="booking-details">
                   <div className="date-picker-mock">
                     <div className="date-box">
-                      <label>{pricingMode === 'monthly' ? 'MOVE-IN DATE' : 'CHECK-IN'}</label>
+                      <label>{pricingMode === 'monthly' ? 'CHECK-IN TIME' : 'CHECK-IN'}</label>
                       <span>{formData.checkInDate ? new Date(formData.checkInDate).toLocaleDateString() : (property.check_in_time || 'Select Date')}</span>
                     </div>
                     <div className="date-box">
-                      <label>{pricingMode === 'monthly' ? 'NOTICE PERIOD' : 'CHECK-OUT'}</label>
-                      <span>{pricingMode === 'monthly' ? `${property.noticePeriod || property.meta?.noticePeriod || 30} Days` : (formData.checkOutDate ? new Date(formData.checkOutDate).toLocaleDateString() : 'Select Date')}</span>
+                      <label>{pricingMode === 'monthly' ? 'NOTICE PERIOD' : 'CHECK-OUT TIME'}</label>
+                      <span>{pricingMode === 'monthly' ? (property.property_name?.toLowerCase().includes('signature') ? '0 Days' : `${property.noticePeriod || property.meta?.noticePeriod || 30} Days`) : (property.check_out_time || property.meta?.check_out_time || '11:00')}</span>
                     </div>
                   </div>
 
