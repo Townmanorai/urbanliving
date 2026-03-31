@@ -170,7 +170,8 @@ const Home3 = () => {
 
         {/* Premium Verified Badges */}
         <div className="h3-vbadge-wrap">
-          <p className="h3-vbadge-heading">Our Verified Listing Programs</p>
+          <h2 className="h3-vbadge-heading">Get your property <span style={{ color: '#C98B3E' }}>verified</span></h2>
+          <p className="h3-vbadge-subheading">— Earn more visibility and win bookings faster —</p>
           <div className="h3-vbadge-row">
 
             {/* OvikaLiving Verified — green */}

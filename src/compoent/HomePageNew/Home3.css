@@ -361,12 +361,20 @@
 }
 
 .h3-vbadge-heading {
-  font-size: 0.78rem;
+  font-size: 1.6rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12rem;
-  color: #c2772b;
+  text-transform: none;
+  letter-spacing: -0.02em;
+  color: #1a1a1a;
+  margin-bottom: 0.35rem;
+}
+
+.h3-vbadge-subheading {
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: #888;
   margin-bottom: 1.4rem;
+  letter-spacing: 0.01em;
 }
 
 .h3-vbadge-row {

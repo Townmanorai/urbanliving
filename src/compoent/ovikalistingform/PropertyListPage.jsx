@@ -324,7 +324,6 @@ const PropertyListPage = () => {
   const [search, setSearch] = useState('');
   const [activeCat, setActiveCat] = useState(null);
   const [rentalType, setRentalType] = useState(null);
-  const [showRentalPopup, setShowRentalPopup] = useState(false);
   const [guests, setGuests] = useState(1);
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
@@ -463,11 +462,6 @@ const PropertyListPage = () => {
   }, [location.search, properties]);
 
   const isMonthly = rentalType === 'long';
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 480;
-  const btnFontSize = isMobile ? 10 : 13;
-  const btnPadding = isMobile ? '6px 8px' : '7px 14px';
-  const btnGap = isMobile ? 3 : 5;
-  const btnIconSize = isMobile ? 11 : 14;
 
   if (loading) return (
     <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -505,54 +499,53 @@ const PropertyListPage = () => {
 
       {/* ── HERO HEADER ── */}
       <div style={{
-        background: 'linear-gradient(135deg, #b8762e 0%, #C98B3E 40%, #d4a055 100%)',
-        padding: '52px 24px 44px',
+        background: 'linear-gradient(160deg, #8B5E2A 0%, #C98B3E 50%, #E0A44A 100%)',
+        padding: 'clamp(36px,6vw,64px) 20px clamp(32px,5vw,56px)',
         display: 'flex', justifyContent: 'center',
         position: 'relative', overflow: 'hidden',
       }}>
+        {/* Subtle dot pattern */}
         <div style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.06,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E")`,
+          position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.07,
+          backgroundImage: `radial-gradient(circle, #fff 1px, transparent 1px)`,
+          backgroundSize: '28px 28px',
+        }} />
+        {/* Decorative glow blobs */}
+        <div style={{
+          position: 'absolute', top: -60, right: -60, width: 260, height: 260,
+          borderRadius: '50%', background: 'rgba(255,255,255,0.08)', pointerEvents: 'none',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: -80, left: -40, width: 200, height: 200,
+          borderRadius: '50%', background: 'rgba(0,0,0,0.08)', pointerEvents: 'none',
         }} />
 
-        <div style={{ maxWidth: 760, width: '100%', position: 'relative', zIndex: 1, textAlign: 'center' }}>
+        <div style={{ maxWidth: 720, width: '100%', position: 'relative', zIndex: 1, textAlign: 'center' }}>
+
+
           <h1 style={{
-            fontSize: 44, fontWeight: 800, color: '#fff',
-            margin: '0 0 10px', letterSpacing: '-0.025em', lineHeight: 1.1,
+            fontSize: 'clamp(28px, 5.5vw, 48px)', fontWeight: 800, color: '#fff',
+            margin: '0 0 12px', letterSpacing: '-0.025em', lineHeight: 1.15,
           }}>
             Book your Stay
           </h1>
 
-          {rentalType && (
-            <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.4)',
-              borderRadius: 50, padding: '4px 14px', marginBottom: 14,
-            }}>
-              <span style={{ fontSize: 13, color: '#fff', fontWeight: 600 }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                  {isMonthly ? <FiCalendar style={{ fontSize: 13 }} /> : <FiMoon style={{ fontSize: 13 }} />}
-                  {isMonthly ? 'Monthly Rates' : 'Nightly Rates'}
-                </span>
-              </span>
-            </div>
-          )}
-
           <p style={{
-            fontSize: 16, color: 'rgba(255,255,255,0.88)',
-            margin: '0 0 30px', lineHeight: 1.65, maxWidth: 560, marginLeft: 'auto', marginRight: 'auto',
+            fontSize: 'clamp(13px, 2vw, 16px)', color: 'rgba(255,255,255,0.85)',
+            margin: '0 0 28px', lineHeight: 1.65,
+            maxWidth: 520, marginLeft: 'auto', marginRight: 'auto',
           }}>
-            Luxury studios, homestays, Hotel Rooms, apartments, Villas & Farmhouses — curated for comfortable short and extended stays
+            Studios, homestays, apartments, Villas & Co-living spaces — curated for short & extended stays in Noida
           </p>
 
           {/* Search Bar */}
           <div style={{
-            background: '#fff', borderRadius: 16,
+            background: '#fff', borderRadius: 14,
             display: 'flex', alignItems: 'center',
-            padding: '14px 16px', gap: 12,
-            boxShadow: '0 10px 36px rgba(0,0,0,0.2)',
+            padding: '12px 14px', gap: 10,
+            boxShadow: '0 12px 40px rgba(0,0,0,0.22)',
           }}>
-            <FiSearch style={{ fontSize: 20, color: '#aaa', flexShrink: 0 }} />
+            <FiSearch style={{ fontSize: 18, color: '#C98B3E', flexShrink: 0 }} />
             <input
               type="text"
               placeholder="Search by city, locality, or property name..."
@@ -560,7 +553,7 @@ const PropertyListPage = () => {
               onChange={e => setSearch(e.target.value)}
               style={{
                 flex: 1, border: 'none', outline: 'none',
-                fontSize: 15, color: '#222', background: 'transparent',
+                fontSize: 14, color: '#222', background: 'transparent',
                 fontFamily: 'inherit',
               }}
             />
@@ -568,87 +561,91 @@ const PropertyListPage = () => {
               <button
                 onClick={() => setSearch('')}
                 style={{
-                  width: 28, height: 28, borderRadius: '50%', border: 'none',
+                  width: 26, height: 26, borderRadius: '50%', border: 'none',
                   background: '#f0f0f0', color: '#777', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}
               >
-                <FiX style={{ fontSize: 13 }} />
+                <FiX style={{ fontSize: 12 }} />
               </button>
             )}
           </div>
 
-          {/* Category Tabs + Rental Type Button */}
-          <div style={{ position: 'relative' }}>
-            <div style={{
-              display: 'flex', justifyContent: 'center', alignItems: 'center',
-              gap: 8, marginTop: 14, flexWrap: 'nowrap', width: '100%',
-            }}>
-              {CATEGORIES.map(cat => {
-                const isActive = activeCat?.id === cat.id;
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={() => setActiveCat(isActive ? null : cat)}
-                    style={{
-                      display: 'inline-flex', alignItems: 'center', gap: btnGap,
-                      padding: btnPadding,
-                      background: isActive ? '#fff' : 'rgba(255,255,255,0.15)',
-                      border: `2px solid ${isActive ? '#fff' : 'rgba(255,255,255,0.4)'}`,
-                      borderRadius: 50,
-                      color: isActive ? '#C98B3E' : '#fff',
-                      fontWeight: isActive ? 700 : 500,
-                      fontSize: btnFontSize, cursor: 'pointer', fontFamily: 'inherit',
-                      transition: 'all 0.2s ease',
-                      boxShadow: isActive ? '0 4px 14px rgba(0,0,0,0.14)' : 'none',
-                      whiteSpace: 'nowrap', flex: '1 1 0', justifyContent: 'center',
-                      minWidth: 0,
-                    }}
-                    onMouseEnter={e => {
-                      if (!isActive) {
-                        e.currentTarget.style.background = 'rgba(255,255,255,0.26)';
-                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.7)';
-                      }
-                    }}
-                    onMouseLeave={e => {
-                      if (!isActive) {
-                        e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
-                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)';
-                      }
-                    }}
-                  >
-                    <CategoryIcon id={cat.id} size={btnIconSize} color={isActive ? '#C98B3E' : '#fff'} />
-                    <span>{cat.title}</span>
-                  </button>
-                );
-              })}
+          {/* Category pills + Nightly/Monthly toggle */}
+          <div style={{
+            display: 'flex', justifyContent: 'center', alignItems: 'center',
+            gap: 8, marginTop: 10, flexWrap: 'wrap', width: '100%',
+          }}>
+            {CATEGORIES.map(cat => {
+              const isActive = activeCat?.id === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCat(isActive ? null : cat)}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 5,
+                    padding: '6px 13px',
+                    background: isActive ? '#fff' : 'rgba(255,255,255,0.14)',
+                    border: `1.5px solid ${isActive ? '#fff' : 'rgba(255,255,255,0.38)'}`,
+                    borderRadius: 50,
+                    color: isActive ? '#C98B3E' : '#fff',
+                    fontWeight: isActive ? 700 : 500,
+                    fontSize: 13, cursor: 'pointer', fontFamily: 'inherit',
+                    transition: 'all 0.2s ease',
+                    boxShadow: isActive ? '0 4px 14px rgba(0,0,0,0.15)' : 'none',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <CategoryIcon id={cat.id} size={13} color={isActive ? '#C98B3E' : '#fff'} />
+                  <span>{cat.title}</span>
+                </button>
+              );
+            })}
 
-              {/* Rental Type Button */}
+            {/* Nightly / Monthly toggle pill */}
+            <div style={{
+              display: 'inline-flex', alignItems: 'center',
+              background: 'rgba(0,0,0,0.22)',
+              border: '1.5px solid rgba(255,255,255,0.32)',
+              borderRadius: 50, padding: 3,
+              gap: 2,
+              marginTop: window.innerWidth < 768 ? 20 : 0,
+            }}>
               <button
-                onClick={() => setShowRentalPopup(v => !v)}
+                onClick={() => setRentalType(rentalType === 'short' ? null : 'short')}
                 style={{
-                  display: 'inline-flex', alignItems: 'center', gap: btnGap,
-                  padding: btnPadding,
-                  background: rentalType ? '#fff' : 'rgba(255,255,255,0.15)',
-                  border: `2px solid ${rentalType ? '#fff' : 'rgba(255,255,255,0.4)'}`,
-                  borderRadius: 50,
-                  color: rentalType ? '#C98B3E' : '#fff',
-                  fontWeight: rentalType ? 700 : 500,
-                  fontSize: btnFontSize, cursor: 'pointer', fontFamily: 'inherit',
-                  transition: 'all 0.2s ease',
-                  boxShadow: rentalType ? '0 4px 14px rgba(0,0,0,0.14)' : 'none',
-                  whiteSpace: 'nowrap', flex: '1 1 0', justifyContent: 'center',
-                  minWidth: 0,
+                  display: 'inline-flex', alignItems: 'center', gap: 5,
+                  padding: '5px 12px', borderRadius: 50, border: 'none',
+                  background: rentalType === 'short' ? '#fff' : 'transparent',
+                  color: rentalType === 'short' ? '#C98B3E' : 'rgba(255,255,255,0.88)',
+                  fontWeight: rentalType === 'short' ? 700 : 500,
+                  fontSize: 13, cursor: 'pointer', fontFamily: 'inherit',
+                  transition: 'all 0.2s ease', whiteSpace: 'nowrap',
+                  boxShadow: rentalType === 'short' ? '0 2px 8px rgba(0,0,0,0.15)' : 'none',
                 }}
               >
-                <FiTag style={{ fontSize: btnIconSize }} />
-                <span>Category</span>
+                <FiMoon style={{ fontSize: 12 }} />
+                <span>Nightly</span>
+              </button>
+              <button
+                onClick={() => setRentalType(rentalType === 'long' ? null : 'long')}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 5,
+                  padding: '5px 12px', borderRadius: 50, border: 'none',
+                  background: rentalType === 'long' ? '#fff' : 'transparent',
+                  color: rentalType === 'long' ? '#C98B3E' : 'rgba(255,255,255,0.88)',
+                  fontWeight: rentalType === 'long' ? 700 : 500,
+                  fontSize: 13, cursor: 'pointer', fontFamily: 'inherit',
+                  transition: 'all 0.2s ease', whiteSpace: 'nowrap',
+                  boxShadow: rentalType === 'long' ? '0 2px 8px rgba(0,0,0,0.15)' : 'none',
+                }}
+              >
+                <FiCalendar style={{ fontSize: 12 }} />
+                <span>Monthly</span>
               </button>
             </div>
-
-            {/* Rental Type Popup */}
-
           </div>
+
         </div>
       </div>
 
@@ -744,154 +741,6 @@ const PropertyListPage = () => {
           </div>
         )}
       </div>
-      {/* ── RENTAL TYPE POPUP (Outside restricted stacking contexts) ── */}
-      {showRentalPopup && (
-        <>
-          <div
-            onClick={() => setShowRentalPopup(false)}
-            style={{ 
-              position: 'fixed', 
-              inset: 0, 
-              zIndex: 9999, 
-              background: 'rgba(0,0,0,0.6)', 
-              backdropFilter: 'blur(8px)',
-              transition: 'all 0.3s ease'
-            }}
-          />
-          <div style={{
-            position: 'fixed', 
-            top: '50%', 
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            background: '#ffffff', 
-            borderRadius: 32,
-            boxShadow: '0 30px 90px rgba(0,0,0,0.4)',
-            padding: typeof window !== 'undefined' && window.innerWidth < 480 ? '30px 20px' : '44px',
-            zIndex: 10000, 
-            display: 'flex', 
-            flexDirection: 'column', 
-            gap: 24,
-            width: typeof window !== 'undefined' && window.innerWidth < 480 ? 'calc(100vw - 32px)' : '580px',
-            maxWidth: '95vw', 
-            boxSizing: 'border-box',
-            animation: 'modalFadeIn 0.3s ease-out'
-          }}>
-            <style>{`
-              @keyframes modalFadeIn {
-                from { opacity: 0; transform: translate(-50%, -48%) scale(0.96); }
-                to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-              }
-            `}</style>
-            
-            <div style={{ textAlign: 'center' }}>
-              <h3 style={{ margin: '0 0 10px', fontSize: 26, fontWeight: 800, color: '#1a1a1a' }}>
-                Select Rental Type
-              </h3>
-              <p style={{ margin: 0, color: '#666', fontSize: 15 }}>Choose how you'd like to book your stay</p>
-            </div>
-
-            <div style={{ display: 'flex', gap: 18, flexDirection: typeof window !== 'undefined' && window.innerWidth < 480 ? 'column' : 'row' }}>
-              <button
-                onClick={() => {
-                  setRentalType('short');
-                  sessionStorage.setItem('ovika_rental_type', 'short');
-                  setShowRentalPopup(false);
-                }}
-                style={{
-                  flex: 1, 
-                  padding: '36px 24px', 
-                  borderRadius: 24,
-                  border: `2px solid ${rentalType === 'short' ? '#C98B3E' : '#f0f0f0'}`,
-                  background: rentalType === 'short' ? '#FFF9F4' : '#ffffff',
-                  cursor: 'pointer', 
-                  fontFamily: 'inherit',
-                  display: 'flex', 
-                  flexDirection: 'column', 
-                  alignItems: 'center', 
-                  gap: 16,
-                  transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                  boxShadow: rentalType === 'short' ? '0 12px 24px rgba(201,139,62,0.12)' : '0 4px 12px rgba(0,0,0,0.03)',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}
-              >
-                <div style={{
-                  width: 80, 
-                  height: 80, 
-                  borderRadius: '50%',
-                  background: rentalType === 'short' ? '#FFE8D1' : '#f4f7ff',
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center',
-                }}>
-                  <FiMoon style={{ fontSize: 36, color: rentalType === 'short' ? '#C98B3E' : '#4a6cf7' }} />
-                </div>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontWeight: 700, fontSize: 19, color: '#222', marginBottom: 6 }}>Nightly Rental</div>
-                  <div style={{ fontSize: 14, color: '#717171', lineHeight: 1.5 }}>Perfect for short visits and travel</div>
-                </div>
-              </button>
-
-              <button
-                onClick={() => {
-                  setRentalType('long');
-                  sessionStorage.setItem('ovika_rental_type', 'long');
-                  setShowRentalPopup(false);
-                }}
-                style={{
-                  flex: 1, 
-                  padding: '36px 24px', 
-                  borderRadius: 24,
-                  border: `2px solid ${rentalType === 'long' ? '#C98B3E' : '#f0f0f0'}`,
-                  background: rentalType === 'long' ? '#FFF9F4' : '#ffffff',
-                  cursor: 'pointer', 
-                  fontFamily: 'inherit',
-                  display: 'flex', 
-                  flexDirection: 'column', 
-                  alignItems: 'center', 
-                  gap: 16,
-                  transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                  boxShadow: rentalType === 'long' ? '0 12px 24px rgba(201,139,62,0.12)' : '0 4px 12px rgba(0,0,0,0.03)',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}
-              >
-                <div style={{
-                  width: 80, 
-                  height: 80, 
-                  borderRadius: '50%',
-                  background: rentalType === 'long' ? '#FFE8D1' : '#f0fff4',
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center',
-                }}>
-                  <FiCalendar style={{ fontSize: 36, color: rentalType === 'long' ? '#C98B3E' : '#10b981' }} />
-                </div>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontWeight: 700, fontSize: 19, color: '#222', marginBottom: 6 }}>Monthly Rental</div>
-                  <div style={{ fontSize: 14, color: '#717171', lineHeight: 1.5 }}>Ideal for long-term comfortable stays</div>
-                </div>
-              </button>
-            </div>
-            
-            <button 
-              onClick={() => setShowRentalPopup(false)}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#999',
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: 'pointer',
-                marginTop: 8,
-                textDecoration: 'underline'
-              }}
-            >
-              Continue with current selection
-            </button>
-          </div>
-        </>
-      )}
     </div>
   );
 };
