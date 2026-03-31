@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import './FAQ.css';
@@ -26,6 +27,15 @@ const FAQItem = ({ question, answer, number }) => {
 const FAQ = () => {
   return (
     <div className="faq-page-container-unique">
+      <Helmet>
+        <title>FAQ – PG, Co-Living & Rentals in Noida | OvikaLiving</title>
+        <meta name="description" content="Got questions about PG, co-living or furnished rentals in Noida & Greater Noida? Find answers to all your questions about OvikaLiving — booking process, security deposit, check-in, amenities & more." />
+        <meta name="keywords" content="faq pg noida, pg questions noida, co living faq noida, ovikaliving faq, pg booking process noida, security deposit pg noida, furnished pg questions, how to book pg noida, ovikaliving help" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.ovikaliving.com/faq" />
+        <meta property="og:title" content="FAQ | OvikaLiving – PG & Co-Living Noida" />
+        <meta property="og:url" content="https://www.ovikaliving.com/faq" />
+      </Helmet>
       <div className="faq-page-header-unique">
         <h1>Frequently Asked Questions</h1>
         <p className="faq-page-last-updated-unique">Last Updated: January 2026</p>

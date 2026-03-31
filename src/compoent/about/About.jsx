@@ -43,9 +43,16 @@ const AboutUs = () => {
   return (
     <div className="about-wrapper">
       <Helmet>
-        <title>About OvikaLiving – Modern Rental Living & Urban Smart Living</title>
-        <meta name="description" content="OvikaLiving is a technology-driven platform for modern rental living. We offer managed short-term stays and smart living solutions for guests and owners." />
-        <meta name="keywords" content="near India Expo Mart, About OvikaLiving, modern rental living, urban smart living, short term stays Noida, managed rental apartments" />
+        <title>About OvikaLiving | Best PG & Co-Living Platform in Noida & Greater Noida</title>
+        <meta name="description" content="OvikaLiving is a technology-driven platform for modern rental living in Noida & Greater Noida. We offer verified PG, co-living spaces, furnished apartments & managed rental homes for working professionals and students." />
+        <meta name="keywords" content="about ovikaliving, ovika living noida, ovikaliving platform, managed rental homes noida, co living platform noida, pg platform noida, smart rental living, urban living noida, ovika co living, ovika rental platform" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.ovikaliving.com/about" />
+        <meta property="og:title" content="About OvikaLiving | PG & Co-Living Platform Noida" />
+        <meta property="og:description" content="OvikaLiving — verified PG, co-living & furnished stays in Noida & Greater Noida. Modern rental living platform." />
+        <meta property="og:url" content="https://www.ovikaliving.com/about" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="About OvikaLiving | Noida" />
       </Helmet>
       {/* Hero Section */}
       <section className="about-hero">

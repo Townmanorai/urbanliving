@@ -1,4 +1,5 @@
 import React from "react";
+import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
 import "./Home10.css";
 
@@ -33,6 +34,19 @@ const Home10 = () => {
   const navigate = useNavigate();
 
   return (
+    <>
+    <Helmet>
+      <title>Monthly Rentals in Noida & Greater Noida | Furnished PG & Co-Living | OvikaLiving</title>
+      <meta name="description" content="Find the best monthly rental PG and co-living spaces in Noida & Greater Noida. Fully furnished, managed properties with flexible lease. Best monthly accommodation for working professionals & students." />
+      <meta name="keywords" content="monthly rentals noida, monthly stay rooms noida, monthly pg in noida, co living monthly noida, furnished apartment monthly rent noida, monthly rental homes greater noida, pg with monthly rent noida, flexible stay noida, managed monthly rentals noida, affordable monthly pg noida, monthly co living spaces noida" />
+      <meta name="robots" content="index, follow" />
+      <link rel="canonical" href="https://www.ovikaliving.com/monthly-rentals" />
+      <meta property="og:title" content="Monthly Rentals in Noida | PG & Co-Living | OvikaLiving" />
+      <meta property="og:description" content="Best monthly PG & co-living in Noida. Fully furnished, verified, flexible lease. No brokerage. Book now!" />
+      <meta property="og:url" content="https://www.ovikaliving.com/monthly-rentals" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content="Monthly Rentals Noida | OvikaLiving" />
+    </Helmet>
     <section className="monthly-rentals">
       <div className="monthly-rentals__header">
         <h1 className="monthly-rentals__title">
@@ -87,6 +101,7 @@ const Home10 = () => {
         ))}
       </div>
     </section>
+    </>
   );
 };
 

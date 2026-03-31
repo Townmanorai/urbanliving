@@ -11,39 +11,18 @@ function LuxeMain() {
   return (
     <>
      <Helmet>
-
-      <title>Ovika Luxe – Premium Apartments for Rent | Airbnb-Style Living</title>
-
-
-      <meta
-        name="description"
-        content="Experience Ovika Luxe premium apartments with Airbnb-style flexibility. Stylish, fully furnished homes for short & long stays in Delhi, Noida & Gurgaon."
-      />
-
-     
-      <meta
-        name="keywords"
-        content="Ovika Luxe, premium apartments Delhi, Airbnb style apartments, luxury apartments Noida, serviced apartments Gurgaon, furnished apartments for rent, short stay apartments, monthly rentals Noida, flexible rentals Gurgaon"
-      />
-
-      {/* 🔹 Open Graph / Social Sharing */}
-      <meta property="og:title" content="Ovika Luxe – Premium Apartments for Rent" />
-      <meta
-        property="og:description"
-        content="Book premium Airbnb-style apartments with Ovika Luxe. Fully furnished, flexible rentals in Delhi, Noida & Gurgaon."
-      />
-      <meta property="og:url" content="https://www.ovika.co.in/tmluxe" />
+      <title>OvikaLiving Signature Stays | Luxury Nightly Rentals in Noida & Greater Noida</title>
+      <meta name="description" content="Experience OvikaLiving Signature — premium luxury nightly stays in Noida & Greater Noida. Fully furnished, verified, self check-in apartments. Perfect for short stays, corporate visits & weekend getaways." />
+      <meta name="keywords" content="ovikaliving signature stays, luxury nightly stays noida, premium short stay noida, luxury apartment noida, serviced apartments noida, short stay greater noida, corporate stay noida, studio stay noida, luxury furnished apartment noida, best nightly stay noida, ovika luxe noida, premium rental noida" />
+      <meta name="robots" content="index, follow" />
+      <link rel="canonical" href="https://www.ovikaliving.com/tmluxe" />
+      <meta property="og:title" content="OvikaLiving Signature Stays | Luxury Nightly Rentals Noida" />
+      <meta property="og:description" content="Premium luxury nightly stays in Noida. Fully furnished, verified, self check-in. Book OvikaLiving Signature now!" />
+      <meta property="og:url" content="https://www.ovikaliving.com/tmluxe" />
       <meta property="og:type" content="website" />
-      <meta property="og:image" content="https://www.ovika.co.in/images/tmluxe-cover.jpg" />
-
-      {/* 🔹 Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content="Ovika Luxe – Premium Apartments for Rent" />
-      <meta
-        name="twitter:description"
-        content="Premium Airbnb-style apartments in Delhi NCR. Ovika Luxe offers stylish, fully furnished rentals for short & long stays."
-      />
-      <meta name="twitter:image" content="https://www.ovika.co.in/images/tmluxe-cover.jpg" />
+      <meta name="twitter:title" content="OvikaLiving Signature Stays | Noida" />
+      <meta name="twitter:description" content="Luxury nightly stays in Noida. Verified, fully furnished, self check-in. Book now!" />
     </Helmet>
     <LuxeHeroTM/>
     <TMLuxeWhyChoose/>

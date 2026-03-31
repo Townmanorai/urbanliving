@@ -1,10 +1,23 @@
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import './TermsAndConditions.css';
 
 const TermsAndConditions = () => {
   return (
     <div className="terms-conditions">
+      <Helmet>
+        <title>Terms & Conditions | OvikaLiving – PG & Co-Living Platform Noida</title>
+        <meta name="description" content="Read OvikaLiving's Terms and Conditions for booking PG, co-living spaces, furnished apartments and rental stays in Noida & Greater Noida. Understand your rights and responsibilities." />
+        <meta name="keywords" content="ovikaliving terms and conditions, ovika terms of service, pg booking terms noida, co-living terms noida, rental agreement noida, ovika user agreement, नियम और शर्तें ओविका, पीजी बुकिंग नियम नोएडा, किराया नियम नोएडा, ओविका लिविंग नियम" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.ovikaliving.com/terms-and-conditions" />
+        <meta property="og:title" content="Terms & Conditions | OvikaLiving Noida" />
+        <meta property="og:description" content="OvikaLiving Terms and Conditions for PG, co-living and rental bookings in Noida & Greater Noida." />
+        <meta property="og:url" content="https://www.ovikaliving.com/terms-and-conditions" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Terms & Conditions | OvikaLiving" />
+      </Helmet>
       <h1 className="page-title">
         Terms and Conditions
         <span className="title-underline"></span>

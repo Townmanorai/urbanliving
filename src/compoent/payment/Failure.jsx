@@ -1,8 +1,15 @@
 import React from 'react'
+import { Helmet } from 'react-helmet'
 import './Failure.css'
 function Failure() {
   return (
     <>
+     <Helmet>
+       <title>Payment Failed | OvikaLiving – Try Again</title>
+       <meta name="description" content="Your payment could not be processed. Please try again to book your PG, co-living space or rental stay with OvikaLiving in Noida & Greater Noida." />
+       <meta name="keywords" content="payment failed ovikaliving, booking failed noida, retry payment pg noida, ovika payment error, पेमेंट फेल नोएडा, बुकिंग फेल" />
+       <meta name="robots" content="noindex, nofollow" />
+     </Helmet>
      <main className="failure-page" role="main" aria-label="Failure notification">
       <section className="failure-card" role="alert" aria-live="assertive">
         {/* Gradient ring with white inner circle */}

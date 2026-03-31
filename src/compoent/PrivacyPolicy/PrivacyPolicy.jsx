@@ -569,6 +569,7 @@
 // export default PrivacyPolicy;
 
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 
 const PrivacyPolicy = () => {
@@ -583,6 +584,18 @@ const PrivacyPolicy = () => {
       margin: 0,
       padding: 0
     }}>
+      <Helmet>
+        <title>Privacy Policy | OvikaLiving – PG & Co-Living Platform Noida</title>
+        <meta name="description" content="Read OvikaLiving's Privacy Policy. Learn how we collect, use and protect your personal data when you use our PG, co-living and rental platform in Noida & Greater Noida." />
+        <meta name="keywords" content="ovikaliving privacy policy, ovika data privacy, pg booking privacy noida, ovika user data, personal data protection noida, गोपनीयता नीति ओविका, ओविका प्राइवेसी पॉलिसी, पर्सनल डेटा सुरक्षा नोएडा, ओविका लिविंग प्राइवेसी" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.ovikaliving.com/privacy-policy" />
+        <meta property="og:title" content="Privacy Policy | OvikaLiving" />
+        <meta property="og:description" content="OvikaLiving's Privacy Policy for PG and co-living platform users in Noida & Greater Noida." />
+        <meta property="og:url" content="https://www.ovikaliving.com/privacy-policy" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Privacy Policy | OvikaLiving" />
+      </Helmet>
       {/* Hero Header */}
       <div style={{
         width: '100%',

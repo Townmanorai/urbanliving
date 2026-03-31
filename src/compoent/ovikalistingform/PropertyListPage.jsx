@@ -489,9 +489,18 @@ const PropertyListPage = () => {
   return (
     <div style={{ minHeight: '100vh', background: '#f7f7f7', fontFamily: "'Inter', -apple-system, sans-serif" }}>
       <Helmet>
-        <title>Furnished Apartments for Rent in Noida & Greater Noida</title>
-        <meta name="description" content="Explore luxury studios, homestays, and fully furnished apartments for rent in Noida & Greater Noida. Flexible short-term and monthly rental options available." />
-        <meta name="keywords" content="near India Expo Mart, apartments for rent in Noida, apartments for rent in Greater Noida, furnished apartments Noida, rental homes Greater Noida, studio apartment Noida, short stay apartments Noida, co living spaces Noida, smart rental homes Noida, rental housing Greater Noida, managed rental apartments Noida, furnished apartments for rent, studio apartments for rent, smart rental homes" />
+        <title>PG, Co-Living & Furnished Rentals in Noida & Greater Noida | OvikaLiving</title>
+        <meta name="description" content="Browse verified PG, co-living spaces & furnished apartments in Noida & Greater Noida. Best accommodation for working professionals, students & families. Filter by location, amenities & budget. No brokerage!" />
+        <meta name="keywords" content="pg in noida, pg in greater noida, co living in noida, furnished apartment noida, pg for working professionals noida, pg for students noida, pg with food noida, pg with wifi noida, pg with ac noida, furnished apartment greater noida, best pg noida, verified pg noida, no brokerage pg noida, short term stay noida, monthly rentals noida, pg near metro noida, co living spaces noida, studio apartment noida, affordable pg noida, premium pg noida" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.ovikaliving.com/properties" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="PG & Co-Living in Noida | OvikaLiving" />
+        <meta property="og:description" content="Verified PG, co-living & furnished stays in Noida. No brokerage. Filter by location & amenities. Book now!" />
+        <meta property="og:url" content="https://www.ovikaliving.com/properties" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="PG & Co-Living Noida | OvikaLiving" />
+        <meta name="twitter:description" content="Best PG, co-living & furnished rentals in Noida & Greater Noida. Verified, no brokerage!" />
       </Helmet>
 
       {/* ── HERO HEADER ── */}

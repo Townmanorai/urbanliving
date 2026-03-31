@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet';
 
 // ─── Responsive hook ──────────────────────────────────────────────────────────
 const useViewport = () => {
@@ -352,6 +353,18 @@ const OvikaVerified = () => {
   // ── MOBILE layout ────────────────────────────────────────────────────────────
   return (
     <div style={{ fontFamily:'"Poppins", sans-serif', background: C.bg, minHeight:'100vh', color: C.textDark }}>
+      <Helmet>
+        <title>OvikaLiving Verified | Trusted & Physically Verified Properties in Noida</title>
+        <meta name="description" content="OvikaLiving Verified is our premium property verification program. Every verified listing is physically inspected by our team. Find verified PG, co-living & furnished apartments in Noida & Greater Noida." />
+        <meta name="keywords" content="ovikaliving verified, verified pg noida, trusted pg noida, verified co living noida, physically verified properties noida, verified rental homes noida, ovika verified listing, best verified pg in noida, safe verified accommodation noida" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.ovikaliving.com/ovika-verified" />
+        <meta property="og:title" content="OvikaLiving Verified | Trusted Properties in Noida" />
+        <meta property="og:description" content="Physically verified PG, co-living & furnished stays in Noida. OvikaLiving Verified = trusted, safe & quality assured." />
+        <meta property="og:url" content="https://www.ovikaliving.com/ovika-verified" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="OvikaLiving Verified Properties | Noida" />
+      </Helmet>
 
       {/* Hero */}
       <section style={{

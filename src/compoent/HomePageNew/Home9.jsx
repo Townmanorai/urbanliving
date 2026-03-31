@@ -1,4 +1,5 @@
 import React from "react";
+import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
 import "./Home9.css";
 
@@ -33,6 +34,19 @@ const Home9 = () => {
   const navigate = useNavigate();
 
   return (
+    <>
+    <Helmet>
+      <title>Nightly Stays in Noida & Greater Noida | OvikaLiving Signature</title>
+      <meta name="description" content="Book premium nightly stays in Noida & Greater Noida with OvikaLiving. Fully furnished, OvikaLiving Verified properties with self check-in. Best short-term stay options for travelers & corporate guests." />
+      <meta name="keywords" content="nightly stays noida, short term stay noida, short stay apartments noida, nightly rental noida, studio stay noida, corporate stay noida, serviced stay noida, ovikaliving signature stays, premium nightly stay greater noida, business stay noida, furnished short stay noida" />
+      <meta name="robots" content="index, follow" />
+      <link rel="canonical" href="https://www.ovikaliving.com/nightly-stays" />
+      <meta property="og:title" content="Nightly Stays in Noida | OvikaLiving Signature" />
+      <meta property="og:description" content="Premium nightly stays in Noida & Greater Noida. Verified, fully furnished with self check-in. Book now!" />
+      <meta property="og:url" content="https://www.ovikaliving.com/nightly-stays" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content="Nightly Stays in Noida | OvikaLiving" />
+    </Helmet>
     <section className="nightly-stays">
       <div className="nightly-stays__header">
         <h1 className="nightly-stays__title">
@@ -86,6 +100,7 @@ const Home9 = () => {
         ))}
       </div>
     </section>
+    </>
   );
 };
 

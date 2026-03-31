@@ -98,6 +98,7 @@
 
 
 import React, { useState, useEffect } from 'react'
+import { Helmet } from 'react-helmet'
 import { useNavigate } from 'react-router-dom'
 import emailjs from '@emailjs/browser'
 import { format, differenceInDays } from 'date-fns'
@@ -380,6 +381,12 @@ function Sucess() {
 
   return (
     <>
+      <Helmet>
+        <title>Booking Confirmed! | OvikaLiving – Your Stay is Booked</title>
+        <meta name="description" content="Your booking with OvikaLiving is confirmed! Get ready for your stay in Noida or Greater Noida. Check your email for booking details." />
+        <meta name="keywords" content="booking confirmed ovikaliving, ovika booking success, pg booking confirmed noida, stay booked noida, बुकिंग कन्फर्म नोएडा, ओविका बुकिंग सफल, पीजी बुकिंग कन्फर्म" />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <main className="success-page" role="main" aria-label="Success confirmation">
         <section className="success-card" role="status" aria-live="polite">
           {/* Gradient ring with white inner circle */}

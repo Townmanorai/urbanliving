@@ -35,6 +35,7 @@ import {
   MapPin as MapPinIcon
 } from 'lucide-react';
 import { MdCurrencyRupee, MdOutlineCurrencyRupee } from 'react-icons/md';
+import { Helmet } from 'react-helmet';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import Cookies from 'js-cookie';
@@ -1395,6 +1396,20 @@ const PropertyDetailPage = () => {
 
   return (
     <div className="detail-page-wrapper">
+      <Helmet>
+        <title>{property.property_name ? `${property.property_name} | PG & Rental in Noida | OvikaLiving` : 'Property | OvikaLiving'}</title>
+        <meta name="description" content={`${property.property_name || 'Premium property'} in ${property.city || 'Noida'}. ${(property.description || '').substring(0, 130)}... Book verified PG, co-living & furnished stay with OvikaLiving.`} />
+        <meta name="keywords" content={`${property.property_name || ''}, pg in ${property.city || 'noida'}, co living ${property.city || 'noida'}, furnished apartment ${property.city || 'noida'}, verified rental ${property.city || 'noida'}, ovikaliving`} />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={`https://www.ovikaliving.com/property/${property.id}`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={`${property.property_name || 'Property'} | OvikaLiving`} />
+        <meta property="og:description" content={`${property.property_name || 'Premium stay'} in ${property.city || 'Noida'}. Verified, furnished. Book now on OvikaLiving!`} />
+        <meta property="og:url" content={`https://www.ovikaliving.com/property/${property.id}`} />
+        {property.photos?.[0] && <meta property="og:image" content={property.photos[0]} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${property.property_name || 'Property'} | OvikaLiving`} />
+      </Helmet>
       {alertMessage && <CustomAlert message={alertMessage} onClose={closeAlert} />}
       
       {showRequestSentPopup && (

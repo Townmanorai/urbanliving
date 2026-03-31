@@ -327,6 +327,7 @@
 // }
 // src/Login/AuthPage.jsx
 import React, { useContext, useState } from "react";
+import { Helmet } from "react-helmet";
 import "./AuthPage.css";
 import { useNavigate, useLocation } from "react-router";
 import { AuthContext } from "./AuthContext";
@@ -578,6 +579,12 @@ export default function AuthPage() {
   // ---------- JSX ----------
   return (
     <div className="auth-container">
+      <Helmet>
+        <title>Login / Sign Up | OvikaLiving – Book PG & Co-Living in Noida</title>
+        <meta name="description" content="Sign in or create your OvikaLiving account to book PG, co-living spaces and furnished stays in Noida & Greater Noida. Fast, secure login for tenants and property owners." />
+        <meta name="keywords" content="ovikaliving login, ovika sign up, pg booking login noida, co-living login noida, ovika account, tenant login noida, property owner login ovika, लॉगिन ओविका, ओविका अकाउंट बनाएं, पीजी बुकिंग लॉगिन नोएडा, किरायेदार लॉगिन नोएडा, नोएडा पीजी साइन अप, ओविका लिविंग लॉगिन" />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="auth-illustration">
         <img src="/ill.webp" alt="illustration" />
       </div>

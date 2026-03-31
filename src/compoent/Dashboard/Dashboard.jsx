@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Helmet } from "react-helmet";
 import axios from "axios";
 import {
   FaHome,
@@ -253,7 +254,13 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      
+      <Helmet>
+        <title>My Dashboard | OvikaLiving – Bookings & Profile</title>
+        <meta name="description" content="Manage your OvikaLiving account — view bookings, track stay history, update profile and manage notifications from your personal dashboard." />
+        <meta name="keywords" content="ovikaliving dashboard, my bookings ovika, ovika account dashboard, pg booking history noida, tenant dashboard ovika, मेरा डैशबोर्ड ओविका, बुकिंग हिस्ट्री नोएडा, ओविका अकाउंट" />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+
       {/* SIDEBAR */}
       <aside className={`dashboard-sidebar ${isMobileMenuOpen ? "open" : ""}`}>
         <button

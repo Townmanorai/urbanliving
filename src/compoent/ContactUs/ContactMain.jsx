@@ -649,9 +649,15 @@ const ContactMain = () => {
       minHeight: '100vh'
     }}>
       <Helmet>
-        <title>Contact OvikaLiving – Managed Rental Services & Property Income Management</title>
-        <meta name="description" content="Reach out to OvikaLiving for support with bookings, property hosting, and managed rental services in Noida and Greater Noida." />
-        <meta name="keywords" content="near India Expo Mart, Contact OvikaLiving, managed rental support, property income management Noida, rental services help" />
+        <title>Contact OvikaLiving | PG & Co-Living Support in Noida</title>
+        <meta name="description" content="Contact OvikaLiving for support with PG bookings, co-living queries, property listing, and managed rental services in Noida & Greater Noida. We're here to help!" />
+        <meta name="keywords" content="contact ovikaliving, ovikaliving support noida, pg booking help noida, co living support noida, ovikaliving contact number, property listing support, managed rental help noida, ovikaliving customer care" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.ovikaliving.com/contactus" />
+        <meta property="og:title" content="Contact OvikaLiving | PG & Co-Living Support Noida" />
+        <meta property="og:url" content="https://www.ovikaliving.com/contactus" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Contact OvikaLiving | Noida" />
       </Helmet>
       {/* Header Section */}
       <div style={{

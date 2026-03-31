@@ -1,11 +1,24 @@
 
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import './RefundAndCancellation.css';
 
 const RefundAndCancellation = () => {
   return (
     <div className="refund-policy-wrapper-unique">
+      <Helmet>
+        <title>Refund & Cancellation Policy | OvikaLiving – Noida PG & Rentals</title>
+        <meta name="description" content="Learn about OvikaLiving's Refund and Cancellation Policy for PG, co-living, and rental bookings in Noida & Greater Noida. Understand cancellation timelines and refund process." />
+        <meta name="keywords" content="ovikaliving refund policy, cancellation policy pg noida, refund pg booking noida, ovika cancellation, co-living cancellation policy, rental refund noida, ovika money back, रिफंड नीति नोएडा, पीजी बुकिंग कैंसिलेशन नोएडा, ओविका रिफंड पॉलिसी, पैसे वापसी पीजी नोएडा, किराया रद्द नोएडा" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.ovikaliving.com/refund-cancellation-policy" />
+        <meta property="og:title" content="Refund & Cancellation Policy | OvikaLiving" />
+        <meta property="og:description" content="OvikaLiving's refund and cancellation policy for PG and co-living bookings in Noida & Greater Noida." />
+        <meta property="og:url" content="https://www.ovikaliving.com/refund-cancellation-policy" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Refund & Cancellation Policy | OvikaLiving" />
+      </Helmet>
       {/* Hero Header */}
       <div className="refund-hero-section-unique">
         <h1 className="refund-main-title-unique">Refund & Cancellation Policy</h1>

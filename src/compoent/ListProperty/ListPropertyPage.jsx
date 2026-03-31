@@ -71,9 +71,16 @@ const ListPropertyPage = () => {
   return (
     <div className="list-property-page">
       <Helmet>
-        <title>Host Your Property & Earn More with OvikaLiving</title>
-        <meta name="description" content="List your property with OvikaLiving in Noida & Greater Noida. We handle management, tenants, and payouts so you can earn passive rental income effortlessly." />
-        <meta name="keywords" content="near India Expo Mart, host your property, property hosting, rental property management, earn income from property, Airbnb property management Noida" />
+        <title>List Your PG / Property in Noida & Earn Rental Income | OvikaLiving</title>
+        <meta name="description" content="List your PG, co-living space or rental property with OvikaLiving in Noida & Greater Noida. We handle tenants, management & payouts. Earn passive rental income. Get OvikaLiving Verified badge for more bookings!" />
+        <meta name="keywords" content="list property noida, host property noida, pg listing noida, property owner noida, earn from property noida, rental income noida, managed property noida, list co living noida, list pg greater noida, ovikaliving property listing, property management noida, no brokerage property listing noida, ovika verified listing" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.ovikaliving.com/list-property" />
+        <meta property="og:title" content="List Your Property & Earn | OvikaLiving Noida" />
+        <meta property="og:description" content="List your PG or property in Noida & earn rental income. OvikaLiving handles everything. Get verified & earn more!" />
+        <meta property="og:url" content="https://www.ovikaliving.com/list-property" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="List Property Noida | OvikaLiving" />
       </Helmet>
       {/* Hero Section */}
       <div className="hero-section">

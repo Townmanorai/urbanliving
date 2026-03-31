@@ -18,17 +18,13 @@ function Home() {
    <>
    <Helmet>
      <title>OVIKA – Premium Living Spaces in Noida & Greater Noida | Smart Urban Living</title>
-     <meta
-       name="description"
-       content="From shared to stylish – OVIKA offers premium living spaces in Noida & Greater Noida. Explore Luxe, Stay & Hive or partner with us to list your property."
-     />
-     <meta
-       name="keywords"
-       content="ovika, ovika noida, ovika greater noida, ovika smart urban living, tm luxe noida, tm luxe greater noida, luxe 1 studio noida, luxe 2 suite noida, premium serviced apartments noida, premium studio stay noida, short term stays noida, corporate stay noida, co-living noida, tm stay noida, tm hive noida, premium pg noida, business stay greater noida, premium living spaces noida, luxury rentals noida, list your property ovika, lease property ovika, managed rental solutions noida, property management noida, premium 1bhk apartments noida, elegant stay noida"
-     />
-     <meta name="robots" content="index,follow" />
+     <meta name="description" content="From shared to stylish – OVIKA offers premium living spaces in Noida & Greater Noida. Explore Luxe, Stay & Hive or partner with us to list your property." />
+     <meta name="keywords" content="ovika, ovika noida, ovika greater noida, ovika smart urban living, tm luxe noida, tm luxe greater noida, premium serviced apartments noida, premium studio stay noida, short term stays noida, corporate stay noida, co-living noida, premium pg noida, luxury rentals noida, list your property ovika, managed rental solutions noida, property management noida, ovika living, ovikaliving, नोएडा में पीजी, पीजी इन नोएडा, ग्रेटर नोएडा पीजी, को लिविंग नोएडा, नोएडा में किराये का कमरा, फर्निश्ड फ्लैट नोएडा, लग्जरी पीजी नोएडा, स्मार्ट लिविंग नोएडा, नोएडा में सर्विस्ड अपार्टमेंट, प्रीमियम स्टे नोएडा, छात्रों के लिए पीजी नोएडा, नौकरीपेशा लोगों के लिए पीजी, वाईफाई वाला पीजी नोएडा, कॉर्पोरेट स्टे नोएडा" />
+     <meta name="robots" content="index, follow" />
+     <link rel="canonical" href="https://www.ovikaliving.com/home" />
      <meta property="og:title" content="OVIKA – Premium Living Spaces in Noida & Greater Noida" />
-     <meta property="og:description" content="From shared to stylish – OVIKA offers premium living spaces. Experience smart urban living with Luxe, Stay & Hive collections." />
+     <meta property="og:description" content="From shared to stylish – OVIKA offers premium living spaces. Experience smart urban living with Luxe, Stay & Hive collections in Noida & Greater Noida." />
+     <meta property="og:url" content="https://www.ovikaliving.com/home" />
      <meta property="og:type" content="website" />
      <meta name="twitter:card" content="summary_large_image" />
      <meta name="twitter:title" content="OVIKA – Premium Living Spaces in Noida & Greater Noida" />

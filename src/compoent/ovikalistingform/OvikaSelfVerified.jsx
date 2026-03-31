@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import './OvikaSelfVerified.css';
 
 // ─── SVG Shield ──────────────────────────────────────────────────────────────
@@ -55,6 +56,18 @@ const stats = [
 export default function OvikaSelfVerified({ onOpenForm }) {
   return (
     <div className="svp-root">
+      <Helmet>
+        <title>Property Self-Verification | List Your Property on OvikaLiving</title>
+        <meta name="description" content="Get your property Property Self-Verified on OvikaLiving. Display the Property Self-Verified badge on your listing and attract more tenants in Noida & Greater Noida. Start your property self-verification today." />
+        <meta name="keywords" content="property self verification noida, list property noida, ovika self verified, verified listing noida, pg listing noida, co living listing noida, property verification badge noida, list your pg noida, ovikaliving property self verified, property owner noida" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.ovikaliving.com/ovika-self-verified" />
+        <meta property="og:title" content="Property Self-Verification | OvikaLiving" />
+        <meta property="og:description" content="Get your property Self-Verified on OvikaLiving. Display the badge & attract more tenants in Noida." />
+        <meta property="og:url" content="https://www.ovikaliving.com/ovika-self-verified" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Property Self-Verification | OvikaLiving" />
+      </Helmet>
 
       {/* ══════════════════════════════════════════════
           HERO — 2-column desktop

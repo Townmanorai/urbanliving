@@ -764,7 +764,7 @@
 // }
 
 import React from 'react'
-
+import { Helmet } from 'react-helmet'
 import C1 from './C1'
 // import C2 from './C2'
 
@@ -772,6 +772,18 @@ import C1 from './C1'
 export default function ColivingSpace() {
   return (
     <div>
+      <Helmet>
+        <title>Co-Living Spaces in Noida & Greater Noida | OvikaLiving</title>
+        <meta name="description" content="Discover premium co-living spaces in Noida & Greater Noida with OvikaLiving. Modern community living for working professionals and students. Fully furnished, managed, flexible lease. No brokerage!" />
+        <meta name="keywords" content="co living in noida, co living spaces noida, best co living noida, premium co living spaces, managed co living spaces noida, co living for working professionals noida, co living for students noida, community living spaces noida, modern co living greater noida, affordable co living noida, co living with wifi noida, tech enabled co living noida, flexible co living spaces noida, co living near metro noida" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.ovikaliving.com/coliving-space" />
+        <meta property="og:title" content="Co-Living Spaces in Noida | OvikaLiving" />
+        <meta property="og:description" content="Premium co-living spaces in Noida & Greater Noida. Modern community living, fully furnished. No brokerage!" />
+        <meta property="og:url" content="https://www.ovikaliving.com/coliving-space" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Co-Living Spaces Noida | OvikaLiving" />
+      </Helmet>
         <C1/>
         {/* <C2/> */}
     </div>
