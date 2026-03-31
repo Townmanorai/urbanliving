@@ -483,18 +483,30 @@ const PropertyListPage = () => {
   return (
     <div style={{ minHeight: '100vh', background: '#f7f7f7', fontFamily: "'Inter', -apple-system, sans-serif" }}>
       <Helmet>
-        <title>PG, Co-Living & Furnished Rentals in Noida & Greater Noida | OvikaLiving</title>
-        <meta name="description" content="Browse verified PG, co-living spaces & furnished apartments in Noida & Greater Noida. Best accommodation for working professionals, students & families. Filter by location, amenities & budget. No brokerage!" />
-        <meta name="keywords" content="pg in noida, pg in greater noida, co living in noida, furnished apartment noida, pg for working professionals noida, pg for students noida, pg with food noida, pg with wifi noida, pg with ac noida, furnished apartment greater noida, best pg noida, verified pg noida, no brokerage pg noida, short term stay noida, monthly rentals noida, pg near metro noida, co living spaces noida, studio apartment noida, affordable pg noida, premium pg noida" />
+        <title>Browse All PG, Co-Living & Furnished Rentals in Noida & Greater Noida | OvikaLiving Properties</title>
+        <meta name="description" content="Browse all verified PG, co-living spaces & furnished apartments in Noida & Greater Noida on OvikaLiving. Filter by sector, budget & amenities. Best PG under ₹10K, ₹15K & ₹20K. No brokerage. Book now!" />
+        <meta name="keywords" content="ovikaliving properties, browse pg noida, all pg noida, pg listing noida, co living noida, furnished apartment noida, pg for working professionals noida, pg for students noida, pg with food noida, pg with wifi noida, pg with ac noida, furnished apartment greater noida, best pg noida, verified pg noida, no brokerage pg noida, short term stay noida, monthly rentals noida, pg near metro noida, co living spaces noida, studio apartment noida, affordable pg noida, premium pg noida, short-term rentals noida, co-living spaces noida, monthly rental apartments noida, remote workers noida, startup founders noida, interns noida, corporate employees noida, freelancers noida, digital nomads noida, IT professionals noida, MBA students noida, working professionals noida, pg sector 62 noida, pg sector 63 noida, pg sector 18 noida, pg sector 16 noida, pg sector 50 noida, pg sector 51 noida, pg sector 52 noida, pg sector 44 noida, pg sector 45 noida, pg sector 46 noida, pg sector 47 noida, pg sector 48 noida, pg sector 49 noida, pg sector 15 noida, pg sector 22 noida, pg sector 27 noida, pg sector 29 noida, pg sector 30 noida, pg sector 32 noida, pg sector 33 noida, pg sector 34 noida, pg sector 35 noida, pg sector 36 noida, pg sector 37 noida, pg sector 38 noida, pg sector 39 noida, pg sector 40 noida, pg sector 41 noida, pg sector 42 noida, pg sector 43 noida, pg sector 53 noida, pg sector 54 noida, pg sector 55 noida, pg sector 56 noida, pg sector 57 noida, pg sector 58 noida, pg sector 59 noida, pg sector 60 noida, pg sector 61 noida, pg sector 64 noida, pg sector 65 noida, pg sector 66 noida, pg sector 68 noida, pg sector 70 noida, pg sector 71 noida, pg sector 72 noida, pg sector 74 noida, pg sector 75 noida, pg sector 76 noida, pg sector 77 noida, pg sector 78 noida, pg sector 100 noida, pg sector 104 noida, pg sector 105 noida, pg sector 107 noida, pg sector 108 noida, pg sector 110 noida, pg sector 119 noida, pg sector 120 noida, pg sector 121 noida, pg sector 122 noida, pg sector 125 noida, pg sector 126 noida, pg sector 128 noida, pg sector 130 noida, pg sector 131 noida, pg sector 132 noida, pg sector 133 noida, pg sector 134 noida, pg sector 135 noida, pg sector 136 noida, pg sector 137 noida, pg knowledge park greater noida, pg alpha greater noida, pg beta greater noida, pg gamma greater noida, pg delta greater noida, pg omega greater noida, pg pari chowk greater noida, pg sector pi greater noida, pg chi greater noida, pg sigma greater noida, pg mu greater noida, pg xi greater noida, pg tau greater noida, pg phi greater noida, pg eta greater noida, pg zeta greater noida, pg theta greater noida, pg greater noida west, pg noida extension, नोएडा में पीजी, को लिविंग नोएडा, किराये का कमरा, फर्निश्ड फ्लैट, मासिक किराया, शॉर्ट स्टे, रिमोट वर्कर नोएडा, स्टार्टअप फाउंडर नोएडा, इंटर्न के लिए पीजी, नोएडा में किराया, सस्ता पीजी नोएडा, वाईफाई वाला पीजी, खाने वाला पीजी, लड़कों के लिए पीजी, लड़कियों के लिए पीजी, ग्रेटर नोएडा पीजी, नोएडा में कमरा किराये पर, फर्निश्ड अपार्टमेंट नोएडा, को-लिविंग स्पेस नोएडा, मंथली रेंटल नोएडा, pg under 10000 noida, pg under 15000 noida, pg under 20000 noida, furnished flat under 25000 noida, studio apartment noida, 1bhk noida, 2bhk noida, fully furnished apartment noida, semi-furnished apartment noida, serviced apartment noida, co-living noida, paying guest noida, shared accommodation noida, private room noida, shared room noida, single occupancy pg noida, double occupancy pg noida, wifi included pg noida, meals included pg noida, ac room pg noida, gym pg noida, housekeeping pg noida, laundry pg noida, parking pg noida, security pg noida, cctv pg noida, power backup pg noida, best pg in noida under 20000, fully furnished pg noida no brokerage, verified pg noida, best co-living noida under 20000" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://www.ovikaliving.com/properties" />
+        <meta name="author" content="OvikaLiving" />
+        <meta name="rating" content="general" />
+        <meta name="revisit-after" content="7 days" />
+        <meta name="language" content="en" />
+        <meta name="geo.region" content="IN-UP" />
+        <meta name="geo.placename" content="Noida" />
+        <meta name="geo.position" content="28.5355;77.3910" />
+        <meta name="ICBM" content="28.5355, 77.3910" />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="PG & Co-Living in Noida | OvikaLiving" />
-        <meta property="og:description" content="Verified PG, co-living & furnished stays in Noida. No brokerage. Filter by location & amenities. Book now!" />
+        <meta property="og:title" content="Browse PG, Co-Living & Furnished Rentals in Noida | OvikaLiving Properties" />
+        <meta property="og:description" content="All verified PG, co-living & furnished stays in Noida & Greater Noida. Filter by sector, budget & amenities. No brokerage. Book now!" />
         <meta property="og:url" content="https://www.ovikaliving.com/properties" />
+        <meta property="og:site_name" content="OvikaLiving" />
+        <meta property="og:image" content="https://www.ovikaliving.com/og-image.jpg" />
+        <meta property="og:locale" content="en_IN" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="PG & Co-Living Noida | OvikaLiving" />
-        <meta name="twitter:description" content="Best PG, co-living & furnished rentals in Noida & Greater Noida. Verified, no brokerage!" />
+        <meta name="twitter:title" content="Browse All PG & Co-Living in Noida | OvikaLiving" />
+        <meta name="twitter:description" content="Best PG, co-living & furnished rentals in Noida & Greater Noida. All sectors covered. Verified, no brokerage!" />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/og-image.jpg" />
       </Helmet>
 
       {/* ── HERO HEADER ── */}

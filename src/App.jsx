@@ -109,7 +109,7 @@ function App() {
         {/* All Routes */}
         <Routes>
           {/* Main Website Pages */}
-          <Route path="/home" element={<Home />} />
+          <Route path="/home" element={<Home />} /> 
           <Route path="/" element={<HomeMain />} />
           <Route path="/tmluxe" element={<LuxeMain />} />
           <Route path="/tmluxespecific/:id" element={<ThirdMain />} />

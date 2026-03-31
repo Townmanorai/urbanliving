@@ -649,15 +649,30 @@ const ContactMain = () => {
       minHeight: '100vh'
     }}>
       <Helmet>
-        <title>Contact OvikaLiving | PG & Co-Living Support in Noida</title>
-        <meta name="description" content="Contact OvikaLiving for support with PG bookings, co-living queries, property listing, and managed rental services in Noida & Greater Noida. We're here to help!" />
-        <meta name="keywords" content="contact ovikaliving, ovikaliving support noida, pg booking help noida, co living support noida, ovikaliving contact number, property listing support, managed rental help noida, ovikaliving customer care" />
+        <title>Contact OvikaLiving | PG, Co-Living & Flexible Stay Support in Noida</title>
+        <meta name="description" content="Contact OvikaLiving for support with PG bookings, co-living queries, property listing, and managed rental services in Noida & Greater Noida. 24/7 customer support. We're here to help!" />
+        <meta name="keywords" content="contact ovikaliving, ovikaliving support noida, pg booking help noida, co living support noida, ovikaliving contact number, property listing support noida, managed rental help noida, ovikaliving customer care, ovikaliving helpline, ovikaliving email, ovikaliving phone number, ovikaliving whatsapp, pg support noida, co living support noida, furnished apartment support noida, nightly stay support noida, monthly rental support noida, flexible stay support noida, ovikaliving customer service, ovikaliving help center, ovikaliving query noida, ovikaliving complaint noida, ovikaliving feedback, property owner support ovikaliving, host support ovikaliving, tenant support ovikaliving, booking support ovikaliving, cancellation support ovikaliving, refund support ovikaliving, check in support ovikaliving, check out support ovikaliving, ovikaliving noida contact, ovikaliving greater noida contact, pg sector 62 noida support, pg sector 63 noida support, pg sector 18 noida support, pg greater noida support, pg knowledge park support, pg alpha greater noida support, pg greater noida west support, ओविका लिविंग से संपर्क करें, ओविका लिविंग सपोर्ट नोएडा, पीजी सपोर्ट नोएडा, को लिविंग सपोर्ट नोएडा, ओविका हेल्पलाइन, ओविका कस्टमर केयर, ओविका फोन नंबर, नोएडा पीजी सहायता, ओविका व्हाट्सएप, ओविका ईमेल, ओविका शिकायत, ओविका फीडबैक, ovikaliving office address noida, ovikaliving office location noida, reach ovikaliving noida, connect with ovikaliving, talk to ovikaliving, ovikaliving response time, remote worker support noida, startup founder query noida, intern pg help noida, student pg support noida, corporate stay support noida, digital nomad stay help noida, property owner query noida, earn rental income support noida, renovation support noida" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://www.ovikaliving.com/contactus" />
+        <meta name="author" content="OvikaLiving" />
+        <meta name="rating" content="general" />
+        <meta name="revisit-after" content="7 days" />
+        <meta name="language" content="en" />
+        <meta name="geo.region" content="IN-UP" />
+        <meta name="geo.placename" content="Noida" />
+        <meta name="geo.position" content="28.5355;77.3910" />
+        <meta name="ICBM" content="28.5355, 77.3910" />
         <meta property="og:title" content="Contact OvikaLiving | PG & Co-Living Support Noida" />
+        <meta property="og:description" content="Contact OvikaLiving for PG, co-living & flexible stay support in Noida & Greater Noida. 24/7 customer care. We're here to help!" />
         <meta property="og:url" content="https://www.ovikaliving.com/contactus" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="OvikaLiving" />
+        <meta property="og:image" content="https://www.ovikaliving.com/og-image.jpg" />
+        <meta property="og:locale" content="en_IN" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Contact OvikaLiving | Noida" />
+        <meta name="twitter:title" content="Contact OvikaLiving | PG & Co-Living Help Noida" />
+        <meta name="twitter:description" content="Contact OvikaLiving for support with PG, co-living & flexible stays in Noida & Greater Noida. 24/7 customer care." />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/og-image.jpg" />
       </Helmet>
       {/* Header Section */}
       <div style={{

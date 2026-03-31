@@ -28,13 +28,30 @@ const FAQ = () => {
   return (
     <div className="faq-page-container-unique">
       <Helmet>
-        <title>FAQ – PG, Co-Living & Rentals in Noida | OvikaLiving</title>
-        <meta name="description" content="Got questions about PG, co-living or furnished rentals in Noida & Greater Noida? Find answers to all your questions about OvikaLiving — booking process, security deposit, check-in, amenities & more." />
-        <meta name="keywords" content="faq pg noida, pg questions noida, co living faq noida, ovikaliving faq, pg booking process noida, security deposit pg noida, furnished pg questions, how to book pg noida, ovikaliving help" />
+        <title>FAQ – PG, Co-Living & Flexible Stays in Noida | OvikaLiving Help Center</title>
+        <meta name="description" content="Got questions about PG, co-living or furnished rentals in Noida & Greater Noida? Find all answers — booking process, security deposit, check-in, cancellation policy, amenities, pet policy & more. OvikaLiving Help Center." />
+        <meta name="keywords" content="faq pg noida, pg questions noida, co living faq noida, ovikaliving faq, pg booking process noida, security deposit pg noida, furnished pg questions, how to book pg noida, ovikaliving help, pg noida frequently asked questions, co living noida questions, flexible stay faq noida, short term stay faq noida, monthly rental faq noida, furnished apartment faq noida, how to book co living noida, how to book furnished flat noida, ovikaliving booking process, ovikaliving check in process, ovikaliving cancellation policy, ovikaliving refund policy, pg amenities noida, co living amenities noida, pg rules noida, co living rules noida, pg security deposit noida, co living security deposit noida, pg lease noida, co living lease noida, pg food policy noida, co living food policy noida, pg guest policy noida, pg pet policy noida, pg maintenance noida, co living maintenance noida, pg wifi noida, pg ac noida, pg parking noida, pg housekeeping noida, pg laundry noida, pg 24x7 security noida, how does ovikaliving work, what is ovikaliving, ovikaliving for remote workers faq, ovikaliving for startup founders faq, ovikaliving for interns faq, ovikaliving for students faq, ovikaliving for working professionals faq, ovikaliving for corporate employees faq, pg under 10000 noida questions, pg under 15000 noida questions, pg under 20000 noida questions, how to list property ovikaliving, ovikaliving verified badge faq, ovikaliving self verified faq, pg sector 62 noida questions, pg sector 63 noida questions, pg sector 18 noida questions, pg greater noida questions, pg knowledge park questions, पीजी के बारे में सवाल नोएडा, को लिविंग सवाल नोएडा, ओविका लिविंग सहायता, पीजी बुकिंग प्रोसेस नोएडा, सिक्योरिटी डिपॉजिट पीजी नोएडा, पीजी कैंसिलेशन पॉलिसी, को लिविंग नियम नोएडा, पीजी एमेनिटीज नोएडा, नोएडा में पीजी कैसे बुक करें, फर्निश्ड फ्लैट सवाल नोएडा, ओविका मदद" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://www.ovikaliving.com/faq" />
-        <meta property="og:title" content="FAQ | OvikaLiving – PG & Co-Living Noida" />
+        <meta name="author" content="OvikaLiving" />
+        <meta name="rating" content="general" />
+        <meta name="revisit-after" content="7 days" />
+        <meta name="language" content="en" />
+        <meta name="geo.region" content="IN-UP" />
+        <meta name="geo.placename" content="Noida" />
+        <meta name="geo.position" content="28.5355;77.3910" />
+        <meta name="ICBM" content="28.5355, 77.3910" />
+        <meta property="og:title" content="FAQ | OvikaLiving – PG, Co-Living & Flexible Stays Noida" />
+        <meta property="og:description" content="All your questions answered — OvikaLiving FAQ for PG, co-living & furnished rentals in Noida & Greater Noida. Booking, cancellation, amenities & more." />
         <meta property="og:url" content="https://www.ovikaliving.com/faq" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="OvikaLiving" />
+        <meta property="og:image" content="https://www.ovikaliving.com/og-image.jpg" />
+        <meta property="og:locale" content="en_IN" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="FAQ | OvikaLiving PG & Co-Living Help Center Noida" />
+        <meta name="twitter:description" content="All answers about OvikaLiving PG, co-living & flexible stays in Noida. Booking, cancellation, amenities, policies & more." />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/og-image.jpg" />
       </Helmet>
       <div className="faq-page-header-unique">
         <h1>Frequently Asked Questions</h1>

@@ -71,16 +71,30 @@ const ListPropertyPage = () => {
   return (
     <div className="list-property-page">
       <Helmet>
-        <title>List Your PG / Property in Noida & Earn Rental Income | OvikaLiving</title>
+        <title>List Your PG / Property in Noida & Earn Rental Income | OvikaLiving Verified</title>
         <meta name="description" content="List your PG, co-living space or rental property with OvikaLiving in Noida & Greater Noida. We handle tenants, management & payouts. Earn passive rental income. Get OvikaLiving Verified badge for more bookings!" />
-        <meta name="keywords" content="list property noida, host property noida, pg listing noida, property owner noida, earn from property noida, rental income noida, managed property noida, list co living noida, list pg greater noida, ovikaliving property listing, property management noida, no brokerage property listing noida, ovika verified listing" />
+        <meta name="keywords" content="list property noida, host property noida, pg listing noida, property owner noida, earn from property noida, rental income noida, managed property noida, list co living noida, list pg greater noida, ovikaliving property listing, property management noida, no brokerage property listing noida, ovika verified listing, list furnished apartment noida, earn passive income noida, property owner earn noida, rent out property noida, list studio apartment noida, list 1bhk noida, list 2bhk noida, list villa noida, list pg rooms noida, list co living space noida, property listing platform noida, ovikaliving host, property management services noida, tenant management noida, rental management noida, earn from unused property noida, short term rental listing noida, monthly rental listing noida, list property sector 62 noida, list property sector 63 noida, list property sector 18 noida, list property sector 16 noida, list property sector 50 noida, list property sector 51 noida, list property sector 52 noida, list property sector 44 noida, list property sector 45 noida, list property sector 46 noida, list property sector 47 noida, list property sector 48 noida, list property sector 49 noida, list property sector 15 noida, list property sector 22 noida, list property sector 27 noida, list property sector 29 noida, list property sector 30 noida, list property sector 62 noida, list property sector 100 noida, list property sector 119 noida, list property sector 120 noida, list property sector 121 noida, list property sector 122 noida, list property sector 125 noida, list property knowledge park greater noida, list property alpha greater noida, list property beta greater noida, list property gamma greater noida, list property delta greater noida, list property omega greater noida, list property pari chowk greater noida, list property greater noida west, list property noida extension, अपनी प्रॉपर्टी लिस्ट करें नोएडा, नोएडा में किराया से कमाई, प्रॉपर्टी मैनेजमेंट नोएडा, पीजी लिस्ट करें नोएडा, को-लिविंग लिस्ट करें नोएडा, किराये से पैसिव इनकम नोएडा, मकान किराये पर दें नोएडा, ओविका होस्ट नोएडा, ओविका वेरिफाइड लिस्टिंग, प्रॉपर्टी ऑनर नोएडा, किराया मैनेजमेंट नोएडा, खाली प्रॉपर्टी से कमाई नोएडा, free property listing noida, paid property listing noida, premium property listing noida, ovika verified badge noida, get more bookings noida property, increase rental income noida, property owner platform noida, best property listing site noida, earn from pg noida, earn from co living noida, earn from furnished flat noida, earn from studio apartment noida, host pg noida, host co living noida, host furnished apartment noida, property income noida, rental yield noida, maximise rental income noida" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://www.ovikaliving.com/list-property" />
-        <meta property="og:title" content="List Your Property & Earn | OvikaLiving Noida" />
-        <meta property="og:description" content="List your PG or property in Noida & earn rental income. OvikaLiving handles everything. Get verified & earn more!" />
+        <meta name="author" content="OvikaLiving" />
+        <meta name="rating" content="general" />
+        <meta name="revisit-after" content="7 days" />
+        <meta name="language" content="en" />
+        <meta name="geo.region" content="IN-UP" />
+        <meta name="geo.placename" content="Noida" />
+        <meta name="geo.position" content="28.5355;77.3910" />
+        <meta name="ICBM" content="28.5355, 77.3910" />
+        <meta property="og:title" content="List Your Property & Earn Rental Income | OvikaLiving Noida" />
+        <meta property="og:description" content="List your PG or property in Noida & earn rental income. OvikaLiving handles tenants, bookings & payouts. Get verified & earn more!" />
         <meta property="og:url" content="https://www.ovikaliving.com/list-property" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="OvikaLiving" />
+        <meta property="og:image" content="https://www.ovikaliving.com/og-image.jpg" />
+        <meta property="og:locale" content="en_IN" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="List Property Noida | OvikaLiving" />
+        <meta name="twitter:title" content="List Property Noida & Earn | OvikaLiving" />
+        <meta name="twitter:description" content="List your PG or property in Noida. OvikaLiving handles everything — earn passive rental income. Get OvikaLiving Verified!" />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/og-image.jpg" />
       </Helmet>
       {/* Hero Section */}
       <div className="hero-section">
