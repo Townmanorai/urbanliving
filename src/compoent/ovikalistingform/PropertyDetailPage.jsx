@@ -1275,12 +1275,13 @@ const PropertyDetailPage = () => {
   const verifyIdWithGemini = async (base64, mimeType) => {
     const prompt = `You are a strict document classifier for an Indian housing platform.
 
-TASK: Look at this image and classify it into exactly ONE of these 5 categories:
+TASK: Look at this image and classify it into exactly ONE of these 6 categories:
 
 AADHAAR   → image shows a real Aadhaar card (must have UIDAI logo, masked 12-digit number like XXXX XXXX 1234, "Government of India" or "भारत सरकार")
 PAN       → image shows a real PAN card (must have "INCOME TAX DEPARTMENT" header, 10-character PAN like ABCDE1234F)
 LICENCE   → image shows a real Indian Driving Licence (must have "Driving Licence" text, state transport dept name, licence number)
 VOTERID   → image shows a real Voter ID / EPIC card (must have "Election Commission of India" text, EPIC number)
+PASSPORT  → image shows a real Indian Passport (must have "Republic of India" or "भारत गणराज्य", passport number, MRZ lines at bottom, navy blue cover or data page)
 INVALID   → everything else: selfie, person photo, nature/scenery, cartoon, screenshot, blurry image, non-Indian ID, any image where the required text is NOT clearly visible
 
 STRICT RULES:
@@ -1289,7 +1290,7 @@ STRICT RULES:
 - If you have ANY doubt → INVALID
 - A photo of a person holding an ID card but card is not the main focus → INVALID
 
-Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, or INVALID`;
+Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
 
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
@@ -1317,7 +1318,7 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, or INVALID`;
     console.log('[GovID] Gemini raw response:', JSON.stringify(json).slice(0, 300));
     if (json.promptFeedback?.blockReason) throw new Error(`Blocked: ${json.promptFeedback.blockReason}`);
     const answer = (json?.candidates?.[0]?.content?.parts?.[0]?.text || '').trim().toUpperCase().replace(/[^A-Z]/g, '');
-    const VALID_TYPES = { AADHAAR: 'Aadhaar Card', PAN: 'PAN Card', LICENCE: 'Driving Licence', VOTERID: 'Voter ID' };
+    const VALID_TYPES = { AADHAAR: 'Aadhaar Card', PAN: 'PAN Card', LICENCE: 'Driving Licence', VOTERID: 'Voter ID', PASSPORT: 'Passport' };
     const detected = VALID_TYPES[answer] || null;
     console.log('[GovID] Detected type:', answer, '→', detected);
     return detected; // null if INVALID
@@ -1357,7 +1358,7 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, or INVALID`;
         const detectedType = await verifyIdWithGemini(base64, file.type);
         if (!detectedType) {
           setGovIdStatus('invalid');
-          setGovIdError('Not a valid government ID. Please upload a clear, well-lit photo of your Aadhaar Card, PAN Card, Driving Licence, or Voter ID — not a selfie or random image.');
+          setGovIdError('Not a valid government ID. Please upload a clear, well-lit photo of your Aadhaar Card, PAN Card, Driving Licence, Voter ID, or Passport — not a selfie or random image.');
           setGovIdPreview('');
           return;
         }
@@ -1934,7 +1935,7 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, or INVALID`;
                     To secure your booking, a valid government-issued photo ID is required. Please upload a clear image of any one of the following:
                   </p>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 10px', marginBottom: '1.4rem' }}>
-                    {['Masked Aadhaar Card', 'PAN Card', 'Driving License', 'Voter ID'].map(label => (
+                    {['Masked Aadhaar Card', 'PAN Card', 'Driving Licence', 'Voter ID', 'Passport'].map(label => (
                       <span key={label} style={{ background: '#fff5f5', border: '1px solid #f5c6c6', color: '#8b0000', fontSize: '0.78rem', fontWeight: 600, padding: '3px 10px', borderRadius: 20 }}>{label}</span>
                     ))}
                   </div>
