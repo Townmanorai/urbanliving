@@ -862,6 +862,12 @@ const PropertyDetailPage = () => {
   const [isPassportLoading, setIsPassportLoading] = useState(false);
   const [passportError, setPassportError] = useState('');
   const [passportInput, setPassportInput] = useState('');
+  const [govIdType, setGovIdType] = useState('');
+  const [govIdPreview, setGovIdPreview] = useState('');
+  const [govIdStatus, setGovIdStatus] = useState('idle'); // idle | scanning | valid | invalid
+  const [govIdError, setGovIdError] = useState('');
+  const [govIdDetectedType, setGovIdDetectedType] = useState('');
+  const govIdInputRef = useRef(null);
   const [bookingType, setBookingType] = useState(0);
   const [ownerApprovalStatus, setOwnerApprovalStatus] = useState(null);
   const [acceptedBookingId, setAcceptedBookingId] = useState(null);
@@ -1015,9 +1021,9 @@ const PropertyDetailPage = () => {
     const allStepsComplete =
       (formData.checkInDate && formData.checkOutDate && pricing.total > 0) &&
       (formData.aadhaarVerified || formData.passportVerified) &&
-      formData.uploadedPhoto;
+      govIdStatus === 'valid';
     setIsPayNowEnabled(allStepsComplete);
-  }, [formData, pricing]);
+  }, [formData, pricing, govIdStatus]);
 
   useEffect(() => {
     if (showPaymentModal && step === 3) {
@@ -1168,7 +1174,7 @@ const PropertyDetailPage = () => {
       if (!(formData.aadhaarVerified || formData.passportVerified)) { showAlert('Please verify your ID first.'); return; }
       if (!formData.mobileVerified) { showAlert('Please verify your mobile number.'); return; }
     }
-    if (step === 5 && !formData.uploadedPhoto) return;
+    if (step === 5 && govIdStatus !== 'valid') { showAlert('Please upload a valid government ID to continue.'); return; }
     if (step < steps.length) setStep(step + 1);
   };
 
@@ -1192,6 +1198,201 @@ const PropertyDetailPage = () => {
       showAlert('Failed to upload photo. ' + (error.message || 'Unknown error'));
     } finally {
       setIsPhotoUploading(false);
+    }
+  };
+
+  const GOV_ID_TYPES = [
+    { id: 'pan', label: 'PAN Card' },
+    { id: 'aadhaar', label: 'Masked Aadhaar' },
+    { id: 'license', label: 'Driving License' },
+    { id: 'voter', label: 'Voter ID' },
+  ];
+
+  // ── AI-based ID verification via Gemini ────────────────────────────────────
+  const GEMINI_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
+
+  const toBase64 = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  // Canvas heuristic: detect if image looks like a document (fallback when no Gemini key)
+  const canvasHeuristicCheck = (file) => new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      try {
+        const ratio = img.width / img.height;
+        // ID cards are roughly 1.4–1.75 ratio (85.6mm × 54mm = 1.586)
+        if (ratio < 1.1 || ratio > 2.0) { resolve({ ok: false, reason: 'Not a card-shaped document. Expected horizontal card format.' }); return; }
+        if (img.width < 350 || img.height < 200) { resolve({ ok: false, reason: 'Image resolution too low. Please upload a clearer photo of your ID.' }); return; }
+
+        const canvas = document.createElement('canvas');
+        const scale = Math.min(1, 200 / img.width);
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        let totalR = 0, totalG = 0, totalB = 0;
+        let highSatCount = 0;
+        const px = data.length / 4;
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i], g = data[i + 1], b = data[i + 2];
+          totalR += r; totalG += g; totalB += b;
+          const max = Math.max(r, g, b), min = Math.min(r, g, b);
+          const saturation = max === 0 ? 0 : (max - min) / max;
+          if (saturation > 0.7) highSatCount++;
+        }
+        const avgR = totalR / px, avgG = totalG / px, avgB = totalB / px;
+        // Cartoons/illustrations have very high saturation pixel count (>40% of pixels)
+        const highSatRatio = highSatCount / px;
+        // IDs typically have avg brightness 120–220 (not too dark, not washed out)
+        const avgBright = (avgR + avgG + avgB) / 3;
+        // Very vivid cartoon colors: high saturation + often cyan/lime/pink dominant
+        const isTooCartoon = highSatRatio > 0.40;
+        const isTooDark = avgBright < 60;
+        const isTooBright = avgBright > 245;
+
+        if (isTooCartoon) { resolve({ ok: false, reason: 'This looks like an illustration or cartoon — not a government ID. Please upload a real photo of your ID.' }); return; }
+        if (isTooDark) { resolve({ ok: false, reason: 'Image is too dark. Please upload a well-lit photo of your government ID.' }); return; }
+        if (isTooBright) { resolve({ ok: false, reason: 'Image is overexposed. Please upload a clearer photo of your government ID.' }); return; }
+
+        resolve({ ok: true });
+      } catch {
+        resolve({ ok: true }); // allow on canvas error
+      }
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve({ ok: false, reason: 'Could not read image file.' }); };
+    img.src = url;
+  });
+
+  // Returns detected doc type string or null if not a valid gov ID
+  const verifyIdWithGemini = async (base64, mimeType) => {
+    const prompt = `You are a strict document classifier for an Indian housing platform.
+
+TASK: Look at this image and classify it into exactly ONE of these 5 categories:
+
+AADHAAR   → image shows a real Aadhaar card (must have UIDAI logo, masked 12-digit number like XXXX XXXX 1234, "Government of India" or "भारत सरकार")
+PAN       → image shows a real PAN card (must have "INCOME TAX DEPARTMENT" header, 10-character PAN like ABCDE1234F)
+LICENCE   → image shows a real Indian Driving Licence (must have "Driving Licence" text, state transport dept name, licence number)
+VOTERID   → image shows a real Voter ID / EPIC card (must have "Election Commission of India" text, EPIC number)
+INVALID   → everything else: selfie, person photo, nature/scenery, cartoon, screenshot, blurry image, non-Indian ID, any image where the required text is NOT clearly visible
+
+STRICT RULES:
+- If you cannot clearly read the required text markers → INVALID
+- If it looks like a government ID but text is unclear → INVALID
+- If you have ANY doubt → INVALID
+- A photo of a person holding an ID card but card is not the main focus → INVALID
+
+Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, or INVALID`;
+
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ inline_data: { mime_type: mimeType, data: base64 } }, { text: prompt }] }],
+          generationConfig: { maxOutputTokens: 10, temperature: 0, thinkingConfig: { thinkingBudget: 0 } },
+          safetySettings: [
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+          ],
+        }),
+      }
+    );
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      console.error('[GovID] Gemini HTTP error:', res.status, errText);
+      throw new Error(`Gemini HTTP ${res.status}`);
+    }
+    const json = await res.json();
+    console.log('[GovID] Gemini raw response:', JSON.stringify(json).slice(0, 300));
+    if (json.promptFeedback?.blockReason) throw new Error(`Blocked: ${json.promptFeedback.blockReason}`);
+    const answer = (json?.candidates?.[0]?.content?.parts?.[0]?.text || '').trim().toUpperCase().replace(/[^A-Z]/g, '');
+    const VALID_TYPES = { AADHAAR: 'Aadhaar Card', PAN: 'PAN Card', LICENCE: 'Driving Licence', VOTERID: 'Voter ID' };
+    const detected = VALID_TYPES[answer] || null;
+    console.log('[GovID] Detected type:', answer, '→', detected);
+    return detected; // null if INVALID
+  };
+
+  const handleGovIdFile = async (file) => {
+    setGovIdError('');
+    setGovIdStatus('idle');
+    setGovIdPreview('');
+    setGovIdDetectedType('');
+    setFormData(prev => ({ ...prev, uploadedPhoto: '' }));
+    console.log('[GovID] GEMINI_KEY present:', !!GEMINI_KEY, '| length:', GEMINI_KEY.length);
+
+    const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowed.includes(file.type)) {
+      setGovIdStatus('invalid');
+      setGovIdError('Please upload a photo of your ID (JPG or PNG). PDFs are not accepted — take a clear photo of your physical ID card.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setGovIdStatus('invalid');
+      setGovIdError('File too large. Maximum size is 5MB.');
+      return;
+    }
+
+    // Show preview
+    const reader = new FileReader();
+    reader.onload = (e) => setGovIdPreview(e.target.result);
+    reader.readAsDataURL(file);
+
+    setGovIdStatus('scanning');
+
+    if (GEMINI_KEY) {
+      // ── AI path: Gemini vision ────────────────────────────────────
+      try {
+        const base64 = await toBase64(file);
+        const detectedType = await verifyIdWithGemini(base64, file.type);
+        if (!detectedType) {
+          setGovIdStatus('invalid');
+          setGovIdError('Not a valid government ID. Please upload a clear, well-lit photo of your Aadhaar Card, PAN Card, Driving Licence, or Voter ID — not a selfie or random image.');
+          setGovIdPreview('');
+          return;
+        }
+        setGovIdDetectedType(detectedType);
+      } catch (err) {
+        console.error('[GovID] Gemini error:', err.message);
+        setGovIdStatus('invalid');
+        setGovIdError(`Verification failed: ${err.message}. Please check your connection and try again.`);
+        setGovIdPreview('');
+        return;
+      }
+    } else {
+      // ── Fallback: canvas heuristic (no Gemini key configured) ─────
+      const result = await canvasHeuristicCheck(file);
+      if (!result.ok) {
+        setGovIdStatus('invalid');
+        setGovIdError(result.reason);
+        setGovIdPreview('');
+        return;
+      }
+    }
+
+    // Upload to server
+    try {
+      const fd = new FormData();
+      fd.append('images', file);
+      const response = await fetch('https://www.townmanor.ai/api/image/aws-upload-owner-images', { method: 'POST', body: fd });
+      const data = await response.json();
+      if (!data?.fileUrls?.length) throw new Error('Upload failed');
+      setFormData(prev => ({ ...prev, uploadedPhoto: data.fileUrls[0] }));
+      setGovIdStatus('valid');
+    } catch {
+      setGovIdStatus('invalid');
+      setGovIdError('Upload failed. Please try again.');
+      setGovIdPreview('');
     }
   };
 
@@ -1724,16 +1925,85 @@ const PropertyDetailPage = () => {
 
               {step === 5 && (
                 <div>
-                  <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Photo Upload</h2>
-                  <div onDragOver={(e) => e.preventDefault()} onDrop={handleFileDrop} onClick={() => !isPhotoUploading && fileInputRef.current.click()} style={{ padding: '4rem 2rem', border: '3px dashed #ddd', borderRadius: '12px', textAlign: 'center', cursor: isPhotoUploading ? 'not-allowed' : 'pointer', background: '#f8fafc' }}>
-                    {isPhotoUploading ? <><Loader size={56} className="animate-spin" style={{ margin: '0 auto 1rem', color: '#8b0000' }} /><p>Uploading...</p></> : <><UploadCloud size={56} style={{ margin: '0 auto 1rem', color: '#8b0000' }} /><p>Drag and drop your photo here</p><p style={{ color: '#666' }}>or click to browse</p></>}
+                  {/* Header */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '0.4rem' }}>
+                    <h2 style={{ fontSize: '1.4rem', margin: 0 }}>Government ID Verification</h2>
+                    <span style={{ background: '#dc2626', color: '#fff', fontSize: '0.7rem', fontWeight: 700, padding: '2px 8px', borderRadius: 50, letterSpacing: '0.05em' }}>MANDATORY</span>
                   </div>
-                  <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange} accept="image/*" />
-                  {formData.uploadedPhoto && (
-                    <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-                      <img src={formData.uploadedPhoto} alt="Preview" style={{ maxWidth: '300px', maxHeight: '300px', borderRadius: '12px', border: '2px solid #22c55e' }} />
+                  <p style={{ color: '#555', fontSize: '0.88rem', marginBottom: '0.6rem', lineHeight: 1.55 }}>
+                    To secure your booking, a valid government-issued photo ID is required. Please upload a clear image of any one of the following:
+                  </p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 10px', marginBottom: '1.4rem' }}>
+                    {['Masked Aadhaar Card', 'PAN Card', 'Driving License', 'Voter ID'].map(label => (
+                      <span key={label} style={{ background: '#fff5f5', border: '1px solid #f5c6c6', color: '#8b0000', fontSize: '0.78rem', fontWeight: 600, padding: '3px 10px', borderRadius: 20 }}>{label}</span>
+                    ))}
+                  </div>
+
+                  {/* Upload Zone */}
+                  <div
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (e.dataTransfer.files[0]) handleGovIdFile(e.dataTransfer.files[0]); }}
+                    onClick={() => govIdStatus !== 'scanning' && govIdInputRef.current.click()}
+                    style={{
+                      padding: '2.5rem 1.5rem', border: `2.5px dashed ${govIdStatus === 'valid' ? '#22c55e' : govIdStatus === 'invalid' ? '#dc2626' : '#d1d5db'}`,
+                      borderRadius: 12, textAlign: 'center',
+                      cursor: govIdStatus === 'scanning' ? 'not-allowed' : 'pointer',
+                      background: govIdStatus === 'valid' ? '#f0fdf4' : govIdStatus === 'invalid' ? '#fef2f2' : '#f8fafc',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    {govIdStatus === 'scanning' ? (
+                      <>
+                        <style>{`@keyframes scanLine{0%{top:0%}100%{top:100%}}`}</style>
+                        <div style={{ position: 'relative', width: 80, height: 55, margin: '0 auto 1rem', border: '2px solid #8b0000', borderRadius: 6, overflow: 'hidden', background: '#fff' }}>
+                          <div style={{ position: 'absolute', left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#8b0000,transparent)', animation: 'scanLine 1s linear infinite' }} />
+                        </div>
+                        <p style={{ fontWeight: 600, color: '#8b0000' }}>Scanning document…</p>
+                        <p style={{ color: '#888', fontSize: '0.82rem' }}>Verifying your government ID…</p>
+                      </>
+                    ) : govIdStatus === 'valid' ? (
+                      <>
+                        <CheckCircle size={48} style={{ color: '#22c55e', margin: '0 auto 0.75rem', display: 'block' }} />
+                        <p style={{ fontWeight: 700, color: '#16a34a', fontSize: '1rem' }}>
+                          {govIdDetectedType ? `${govIdDetectedType} Verified` : 'Government ID Verified'}
+                        </p>
+                        <p style={{ fontSize: '0.8rem', color: '#888', marginTop: 4 }}>Click to re-upload if needed</p>
+                      </>
+                    ) : govIdStatus === 'invalid' ? (
+                      <>
+                        <XCircle size={48} style={{ color: '#dc2626', margin: '0 auto 0.75rem', display: 'block' }} />
+                        <p style={{ fontWeight: 700, color: '#dc2626' }}>Invalid Document</p>
+                        <p style={{ fontSize: '0.82rem', color: '#dc2626', marginTop: 4 }}>{govIdError}</p>
+                        <p style={{ fontSize: '0.78rem', color: '#888', marginTop: 6 }}>Click to try again</p>
+                      </>
+                    ) : (
+                      <>
+                        <UploadCloud size={48} style={{ margin: '0 auto 0.75rem', display: 'block', color: '#8b0000' }} />
+                        <p style={{ fontWeight: 600, color: '#333', fontSize: '0.95rem' }}>Click to upload your Government ID</p>
+                        <p style={{ color: '#999', fontSize: '0.8rem', marginTop: 4 }}>Drag & drop or click to browse · JPG or PNG · Max 5MB</p>
+                      </>
+                    )}
+                  </div>
+
+                  <input
+                    type="file"
+                    ref={govIdInputRef}
+                    style={{ display: 'none' }}
+                    accept="image/jpeg,image/jpg,image/png,image/webp"
+                    onChange={(e) => { if (e.target.files[0]) handleGovIdFile(e.target.files[0]); e.target.value = ''; }}
+                  />
+
+                  {/* Preview */}
+                  {govIdPreview && govIdPreview !== 'pdf' && (
+                    <div style={{ marginTop: '1.25rem', textAlign: 'center' }}>
+                      <img src={govIdPreview} alt="ID Preview" style={{ maxWidth: 280, maxHeight: 180, borderRadius: 10, border: `2px solid ${govIdStatus === 'valid' ? '#22c55e' : '#ddd'}`, objectFit: 'cover' }} />
                     </div>
                   )}
+
+                  {/* Info note */}
+                  <div style={{ marginTop: '1rem', padding: '10px 14px', background: '#fffbeb', borderRadius: 8, border: '1px solid #fde68a', fontSize: '0.8rem', color: '#92400e' }}>
+                    🔒 Your ID is encrypted and stored securely. It is used only for identity verification and will not be shared.
+                  </div>
                 </div>
               )}
 
