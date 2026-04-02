@@ -200,6 +200,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
     { id: 2, title: "Details", icon: <FileText size={18} /> },
     { id: 3, title: "Amenities", icon: <Wifi size={18} /> },
     { id: 4, title: "Local Guide", icon: <MapPin size={18} /> },
+    
     { id: 5, title: "Photos", icon: <Camera size={18} /> },
     { id: 6, title: "Pricing / Review", icon: <CreditCard size={18} /> },
   ];
@@ -676,6 +677,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
                   <label>Postal Code</label>
                   <input name="postalCode" value={form.postalCode} onChange={handleChange} placeholder="6 Digits" />
                 </div>
+               
               </div>
             </div>
           )}
