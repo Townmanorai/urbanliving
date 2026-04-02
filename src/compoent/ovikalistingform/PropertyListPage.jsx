@@ -624,7 +624,7 @@ const PropertyListPage = () => {
               marginTop: window.innerWidth < 768 ? 20 : 0,
             }}>
               <button
-                onClick={() => setRentalType(rentalType === 'short' ? null : 'short')}
+                onClick={() => { const val = rentalType === 'short' ? null : 'short'; setRentalType(val); sessionStorage.setItem('ovika_rental_type', val || 'short'); }}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 5,
                   padding: '5px 12px', borderRadius: 50, border: 'none',
@@ -640,7 +640,7 @@ const PropertyListPage = () => {
                 <span>Nightly</span>
               </button>
               <button
-                onClick={() => setRentalType(rentalType === 'long' ? null : 'long')}
+                onClick={() => { const val = rentalType === 'long' ? null : 'long'; setRentalType(val); sessionStorage.setItem('ovika_rental_type', val || 'short'); }}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 5,
                   padding: '5px 12px', borderRadius: 50, border: 'none',

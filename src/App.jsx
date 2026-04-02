@@ -86,13 +86,39 @@ function ProtectedAdminLayout() {
   return <AdminDashboardLayout />;
 }
 
-// 🔄 Scroll to Top Component
-function ScrollToTop() {
-  const { pathname } = useLocation();
+// 🔄 Smart Scroll Restoration
+// - Back/Forward: restores exact scroll position
+// - Fresh navigation: scrolls to top
+function ScrollRestoration() {
+  const { key } = useLocation();
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    const storageKey = `scroll_${key}`;
+    const saved = sessionStorage.getItem(storageKey);
+
+    // Restore saved position or scroll to top — small delay for async content
+    const restoreTimer = setTimeout(() => {
+      window.scrollTo({ top: saved !== null ? parseInt(saved, 10) : 0, behavior: 'instant' });
+    }, 50);
+
+    // Track scroll position as user scrolls
+    let scrollTimer;
+    const onScroll = () => {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        sessionStorage.setItem(storageKey, String(Math.round(window.scrollY)));
+      }, 150);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    return () => {
+      clearTimeout(restoreTimer);
+      clearTimeout(scrollTimer);
+      window.removeEventListener('scroll', onScroll);
+      // Final save on unmount (before navigation completes)
+      sessionStorage.setItem(storageKey, String(Math.round(window.scrollY)));
+    };
+  }, [key]);
 
   return null;
 }
@@ -101,7 +127,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <ScrollToTop />
+        <ScrollRestoration />
         <AnalyticsTracker />
         {/* Top Navbar */}
         <Navbar />

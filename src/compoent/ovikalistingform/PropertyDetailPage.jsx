@@ -856,6 +856,7 @@ const PropertyDetailPage = () => {
   const [selectedRoomForLead, setSelectedRoomForLead] = useState(null);
   const [calendarViewMonth, setCalendarViewMonth] = useState(new Date());
   const [monthlyDuration, setMonthlyDuration] = useState(1);
+  const [monthPickerYear, setMonthPickerYear] = useState(new Date().getFullYear());
   const [bookingRequestStatus, setBookingRequestStatus] = useState(null);
   const [userBookingRequests, setUserBookingRequests] = useState([]);
   const [passportFile, setPassportFile] = useState(null);
@@ -1089,6 +1090,13 @@ const PropertyDetailPage = () => {
 
   const handleRoomBookNow = (room) => {
     if (!user) { navigate('/login', { state: { from: location } }); return; }
+    const isOvika = !!(property?.property_name?.includes('TM Luxe') || property?.property_name?.toLowerCase()?.includes('ovika') || [77, 78, 79, 80, 81].includes(Number(property?.id)));
+    // Monthly mode: non-Ovika properties → show lead/enquiry form
+    if (pricingMode === 'monthly' && !isOvika) {
+      setSelectedRoomForLead(room?.type || null);
+      setShowLeadModal(true);
+      return;
+    }
     let roomPrice;
     if (pricingMode === 'monthly') {
       if (showDistinctRoomPrices && room?.price) {
@@ -1130,6 +1138,13 @@ const PropertyDetailPage = () => {
 
   const handleReserveClick = () => {
     if (!user) { navigate('/login', { state: { from: location } }); return; }
+    const isOvika = !!(property?.property_name?.includes('TM Luxe') || property?.property_name?.toLowerCase()?.includes('ovika') || [77, 78, 79, 80, 81].includes(Number(property?.id)));
+    // Monthly mode: non-Ovika properties → show lead/enquiry form
+    if (pricingMode === 'monthly' && !isOvika) {
+      setSelectedRoomForLead(null);
+      setShowLeadModal(true);
+      return;
+    }
     setAvailabilityRequested(false);
     setOwnerApprovalStatus(bookingRequestStatus === 'accepted' ? 'accepted' : null);
     setShowPaymentModal(true);
@@ -1886,18 +1901,74 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                   <div className="pm-dates-grid">
                     <div>
                       {pricingMode === 'monthly' ? (
-                        /* ── Monthly Booking Date UI ── */
+                        /* ── Monthly Booking: Month Grid Picker ── */
                         <div>
-                          {/* Check-in Date */}
+                          {/* Month Grid Picker */}
                           <div style={{ marginBottom: '1.5rem' }}>
-                            <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', color: '#1a1a1a' }}>Check-in Date</label>
-                            <input
-                              type="date"
-                              min={new Date().toISOString().split('T')[0]}
-                              value={formData.checkInDate}
-                              onChange={(e) => handleMonthlyCheckInChange(e.target.value)}
-                              style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1.5px solid #ddd', fontSize: '1rem', boxSizing: 'border-box' }}
-                            />
+                            <label style={{ display: 'block', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>Select Move-in Month</label>
+                            {/* Year navigation */}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                              <button
+                                onClick={() => setMonthPickerYear(y => y - 1)}
+                                disabled={monthPickerYear <= new Date().getFullYear()}
+                                style={{ background: 'none', border: '1.5px solid #ddd', borderRadius: '8px', padding: '6px 14px', cursor: monthPickerYear <= new Date().getFullYear() ? 'not-allowed' : 'pointer', color: monthPickerYear <= new Date().getFullYear() ? '#ccc' : '#333', fontWeight: '600' }}>
+                                ‹ Prev
+                              </button>
+                              <span style={{ fontWeight: '700', fontSize: '1.05rem', color: '#1a1a1a' }}>{monthPickerYear}</span>
+                              <button
+                                onClick={() => setMonthPickerYear(y => y + 1)}
+                                disabled={monthPickerYear >= new Date().getFullYear() + 2}
+                                style={{ background: 'none', border: '1.5px solid #ddd', borderRadius: '8px', padding: '6px 14px', cursor: monthPickerYear >= new Date().getFullYear() + 2 ? 'not-allowed' : 'pointer', color: monthPickerYear >= new Date().getFullYear() + 2 ? '#ccc' : '#333', fontWeight: '600' }}>
+                                Next ›
+                              </button>
+                            </div>
+                            {/* Month grid */}
+                            {(() => {
+                              const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                              const today = new Date();
+                              const selectedIn = formData.checkInDate ? new Date(formData.checkInDate + 'T00:00:00') : null;
+                              const selectedOut = formData.checkOutDate ? new Date(formData.checkOutDate + 'T00:00:00') : null;
+                              return (
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+                                  {MONTHS.map((m, idx) => {
+                                    const isPast = monthPickerYear < today.getFullYear() || (monthPickerYear === today.getFullYear() && idx < today.getMonth());
+                                    const isCheckin = selectedIn && selectedIn.getFullYear() === monthPickerYear && selectedIn.getMonth() === idx;
+                                    const isCheckout = selectedOut && selectedOut.getFullYear() === monthPickerYear && selectedOut.getMonth() === idx;
+                                    const isInRange = selectedIn && selectedOut && (() => {
+                                      const d = new Date(monthPickerYear, idx, 1);
+                                      return d > selectedIn && d < selectedOut;
+                                    })();
+                                    return (
+                                      <button
+                                        key={m}
+                                        disabled={isPast}
+                                        onClick={() => {
+                                          if (isPast) return;
+                                          const checkIn = `${monthPickerYear}-${String(idx + 1).padStart(2, '0')}-01`;
+                                          handleMonthlyCheckInChange(checkIn);
+                                        }}
+                                        style={{
+                                          padding: '12px 6px',
+                                          borderRadius: '10px',
+                                          border: isCheckin ? '2px solid #8b0000' : isCheckout ? '2px solid #16a34a' : isInRange ? '1.5px solid #bbf7d0' : '1.5px solid #e5e5e5',
+                                          background: isCheckin ? '#8b0000' : isCheckout ? '#16a34a' : isInRange ? '#f0fdf4' : isPast ? '#f9fafb' : '#fff',
+                                          color: isCheckin || isCheckout ? '#fff' : isPast ? '#ccc' : '#222',
+                                          fontWeight: isCheckin || isCheckout ? '700' : '500',
+                                          fontSize: '0.88rem',
+                                          cursor: isPast ? 'not-allowed' : 'pointer',
+                                          transition: 'all 0.15s',
+                                          position: 'relative',
+                                        }}
+                                      >
+                                        {m}
+                                        {isCheckin && <span style={{ display: 'block', fontSize: '0.6rem', marginTop: '2px', opacity: 0.85 }}>Move-in</span>}
+                                        {isCheckout && <span style={{ display: 'block', fontSize: '0.6rem', marginTop: '2px', opacity: 0.85 }}>Move-out</span>}
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              );
+                            })()}
                           </div>
 
                           {/* Duration selector */}
@@ -1906,25 +1977,34 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                               Duration (Months)
                             </label>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                              {[1,2,3,4,5,6,7,8,9,10,11,12].map(n => (
+                              {[1,2,3,4,5,6,7,8,9,10,11].map(n => (
                                 <button
                                   key={n}
                                   onClick={() => handleMonthlyDurationChange(n)}
                                   style={{
-                                    padding: '8px 14px',
-                                    borderRadius: '8px',
+                                    padding: '8px 14px', borderRadius: '8px',
                                     border: monthlyDuration === n ? '2px solid #8b0000' : '1.5px solid #ddd',
                                     background: monthlyDuration === n ? '#8b0000' : '#fff',
                                     color: monthlyDuration === n ? '#fff' : '#333',
                                     fontWeight: monthlyDuration === n ? '700' : '500',
-                                    fontSize: '0.9rem',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.15s',
+                                    fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.15s',
                                   }}
                                 >
-                                  {n} {n === 1 ? 'Mo' : 'Mo'}
+                                  {n}M
                                 </button>
                               ))}
+                              <button
+                                onClick={() => handleMonthlyDurationChange(12)}
+                                style={{
+                                  padding: '8px 14px', borderRadius: '8px',
+                                  border: monthlyDuration >= 12 ? '2px solid #f97316' : '1.5px solid #ddd',
+                                  background: monthlyDuration >= 12 ? '#fff7ed' : '#fff',
+                                  color: monthlyDuration >= 12 ? '#9a3412' : '#333',
+                                  fontWeight: '600', fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.15s',
+                                }}
+                              >
+                                12M+
+                              </button>
                             </div>
                           </div>
 
@@ -1934,39 +2014,32 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                               <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
                                 <span style={{ fontSize: '1.4rem', flexShrink: 0 }}>⚠️</span>
                                 <div>
-                                  <p style={{ fontWeight: '700', color: '#9a3412', marginBottom: '6px', fontSize: '0.95rem' }}>
-                                    Rental Agreement Required
-                                  </p>
+                                  <p style={{ fontWeight: '700', color: '#9a3412', marginBottom: '6px', fontSize: '0.95rem' }}>Rental Agreement Required</p>
                                   <p style={{ color: '#7c2d12', fontSize: '0.875rem', lineHeight: '1.5', marginBottom: '8px' }}>
-                                    As per the <strong>Rent Control Act</strong>, stays exceeding <strong>11 months</strong> require a formal registered rental agreement. Booking cannot proceed without completing this process.
+                                    As per the <strong>Rent Control Act</strong>, stays exceeding <strong>11 months</strong> require a formal registered rental agreement.
                                   </p>
-                                  <p style={{ color: '#7c2d12', fontSize: '0.875rem', lineHeight: '1.5' }}>
-                                    📞 Please contact us to initiate the agreement process before booking:
-                                  </p>
-                                  <p style={{ fontWeight: '700', color: '#9a3412', fontSize: '0.95rem', marginTop: '6px' }}>
-                                    +91 9310292309
-                                  </p>
+                                  <p style={{ fontWeight: '700', color: '#9a3412', fontSize: '0.95rem', marginTop: '6px' }}>📞 +91 9310292309</p>
                                 </div>
                               </div>
                             </div>
                           )}
 
-                          {/* Check-in / Check-out summary */}
+                          {/* Summary bar */}
                           {formData.checkInDate && formData.checkOutDate && monthlyDuration <= 11 && (
-                            <div style={{ padding: '14px', background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '8px', display: 'flex', gap: '2rem' }}>
+                            <div style={{ padding: '14px 16px', background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '10px', display: 'flex', flexWrap: 'wrap', gap: '1.5rem' }}>
                               <div>
-                                <p style={{ fontSize: '0.78rem', color: '#166534', fontWeight: '600', marginBottom: '2px' }}>CHECK-IN</p>
-                                <p style={{ fontWeight: '700', color: '#14532d' }}>{new Date(formData.checkInDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                                <p style={{ fontSize: '0.72rem', color: '#166534', fontWeight: '700', marginBottom: '2px', letterSpacing: '0.04em' }}>MOVE-IN</p>
+                                <p style={{ fontWeight: '700', color: '#14532d', fontSize: '0.95rem' }}>{new Date(formData.checkInDate + 'T00:00:00').toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}</p>
                               </div>
                               <div style={{ width: '1px', background: '#86efac' }} />
                               <div>
-                                <p style={{ fontSize: '0.78rem', color: '#166534', fontWeight: '600', marginBottom: '2px' }}>CHECK-OUT</p>
-                                <p style={{ fontWeight: '700', color: '#14532d' }}>{new Date(formData.checkOutDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                                <p style={{ fontSize: '0.72rem', color: '#166534', fontWeight: '700', marginBottom: '2px', letterSpacing: '0.04em' }}>MOVE-OUT</p>
+                                <p style={{ fontWeight: '700', color: '#14532d', fontSize: '0.95rem' }}>{new Date(formData.checkOutDate + 'T00:00:00').toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}</p>
                               </div>
                               <div style={{ width: '1px', background: '#86efac' }} />
                               <div>
-                                <p style={{ fontSize: '0.78rem', color: '#166534', fontWeight: '600', marginBottom: '2px' }}>DURATION</p>
-                                <p style={{ fontWeight: '700', color: '#14532d' }}>{monthlyDuration} {monthlyDuration === 1 ? 'Month' : 'Months'}</p>
+                                <p style={{ fontSize: '0.72rem', color: '#166534', fontWeight: '700', marginBottom: '2px', letterSpacing: '0.04em' }}>DURATION</p>
+                                <p style={{ fontWeight: '700', color: '#14532d', fontSize: '0.95rem' }}>{monthlyDuration} {monthlyDuration === 1 ? 'Month' : 'Months'}</p>
                               </div>
                             </div>
                           )}
@@ -2388,7 +2461,8 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                             const minMonthly = Math.min(...property.parsedBedrooms.map(r => Number(r.price) || Infinity).filter(p => p < Infinity));
                             return minMonthly < Infinity ? `₹${minMonthly.toLocaleString('en-IN')}/month` : 'On Request';
                           } else {
-                            const minNightly = Math.min(...property.parsedBedrooms.map(r => Number(r.perNightPrice) || Number(r.nightlyPrice) || Infinity).filter(p => p < Infinity));
+                            const propNightly = Number(property.meta?.perNightPrice) || 0;
+                            const minNightly = Math.min(...property.parsedBedrooms.map(r => Number(r.perNightPrice) || Number(r.nightlyPrice) || propNightly || Infinity).filter(p => p < Infinity));
                             return minNightly < Infinity ? `₹${minNightly.toLocaleString('en-IN')}/night` : 'On Request';
                           }
                         })()}
@@ -2423,9 +2497,11 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                     </thead>
                     <tbody>
                       {property.parsedBedrooms.map((room, i) => {
+                        // For nightly: only use nightly-specific prices, NOT monthly price as fallback
+                        const propertyNightlyPrice = Number(property.meta?.perNightPrice) || 0;
                         const displayPrice = pricingMode === 'monthly'
                           ? (Number(room.price) || 0)
-                          : (Number(room.perNightPrice) || Number(room.nightlyPrice) || 0);
+                          : (Number(room.perNightPrice) || Number(room.nightlyPrice) || propertyNightlyPrice);
                         const priceUnit = pricingMode === 'monthly' ? '/mo' : '/night';
                         const isLast = i === property.parsedBedrooms.length - 1;
                         return (
@@ -2645,10 +2721,18 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
 
                   <div style={{ margin: '1.5rem 0' }}>
                     <button className="reserve-btn" onClick={handleReserveClick}>
-                      {bookingType === 1 && pricingMode !== 'monthly' && bookingRequestStatus !== 'accepted' ? 'Send Booking Request' : 'Book Now'}
+                      {pricingMode === 'monthly' && !isOvikaOwnProperty
+                        ? 'Enquire Now'
+                        : bookingType === 1 && pricingMode !== 'monthly' && bookingRequestStatus !== 'accepted'
+                          ? 'Send Booking Request'
+                          : 'Book Now'}
                     </button>
                     <p className="hint" style={{ marginBottom: '8px' }}>
-                      {bookingType === 1 && pricingMode !== 'monthly' && bookingRequestStatus !== 'accepted' ? 'Request needed first' : "You won't be charged yet"}
+                      {pricingMode === 'monthly' && !isOvikaOwnProperty
+                        ? 'Our team will contact you shortly'
+                        : bookingType === 1 && pricingMode !== 'monthly' && bookingRequestStatus !== 'accepted'
+                          ? 'Request needed first'
+                          : "You won't be charged yet"}
                     </p>
                     {(property.securityDeposit > 0 || isOvikaOwnProperty) && (
                       <div style={{ display:'flex', alignItems:'center', gap:'5px', padding:'6px 10px', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'6px', fontSize:'0.75rem', color:'#166534' }}>
