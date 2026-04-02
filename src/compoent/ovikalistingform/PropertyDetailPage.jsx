@@ -42,7 +42,6 @@ import Cookies from 'js-cookie';
 import { format } from 'date-fns';
 import './PropertyDetailPage.css';
 import { AuthContext } from '../Login/AuthContext';
-import Tesseract from 'tesseract.js';
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
@@ -2372,8 +2371,8 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
             </>
           )}
 
-          {/* S3: PG / HOSTEL — monthly */}
-          {property.parsedBedrooms?.length > 0 && isPG && pricingMode === 'monthly' && (
+          {/* S3: PG / HOSTEL — both monthly & nightly */}
+          {property.parsedBedrooms?.length > 0 && isPG && (
             <>
               <div className="divider"></div>
               <div className="text-section">
@@ -2384,21 +2383,28 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                     <p style={{ fontSize:'0.82rem', color:'#64748b', margin:'2px 0 0' }}>
                       {property.parsedBedrooms.length} room type{property.parsedBedrooms.length > 1 ? 's' : ''} · Starting{' '}
                       <strong>
-                        ₹{Math.min(...property.parsedBedrooms.map(r => Number(r.price) || Infinity).filter(p => p < Infinity)).toLocaleString('en-IN')}/month
+                        {(() => {
+                          if (pricingMode === 'monthly') {
+                            const minMonthly = Math.min(...property.parsedBedrooms.map(r => Number(r.price) || Infinity).filter(p => p < Infinity));
+                            return minMonthly < Infinity ? `₹${minMonthly.toLocaleString('en-IN')}/month` : 'On Request';
+                          } else {
+                            const minNightly = Math.min(...property.parsedBedrooms.map(r => Number(r.perNightPrice) || Number(r.nightlyPrice) || Infinity).filter(p => p < Infinity));
+                            return minNightly < Infinity ? `₹${minNightly.toLocaleString('en-IN')}/night` : 'On Request';
+                          }
+                        })()}
                       </strong>
                     </p>
                   </div>
                   <div className="rm-section-stats">
                     <div className="rm-stat-box">
-                      {/* bedroom count — consistent source */}
                       <span className="rm-stat-num">{bedCount}</span>
                       <span className="rm-stat-lbl">Types</span>
                     </div>
                     <div className="rm-stat-box rm-stat-box--gold">
                       <span className="rm-stat-num" style={{ fontSize:'0.78rem' }}>
-                        ₹{Math.min(...property.parsedBedrooms.map(r => Number(r.price) || Infinity).filter(p => p < Infinity)).toLocaleString('en-IN')}
+                        {pricingMode === 'monthly' ? '/mo' : '/night'}
                       </span>
-                      <span className="rm-stat-lbl">From</span>
+                      <span className="rm-stat-lbl">Rate</span>
                     </div>
                   </div>
                 </div>
@@ -2410,14 +2416,17 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                         <th className="rm-th rm-th--room">Room Type</th>
                         <th className="rm-th">Bathroom</th>
                         <th className="rm-th">Area</th>
-                        <th className="rm-th rm-th--price">Price / Month</th>
+                        <th className="rm-th rm-th--price">{pricingMode === 'monthly' ? 'Price / Month' : 'Price / Night'}</th>
                         <th className="rm-th">Available</th>
                         <th className="rm-th rm-th--action"></th>
                       </tr>
                     </thead>
                     <tbody>
                       {property.parsedBedrooms.map((room, i) => {
-                        const monthlyPrice = Number(room.price) || 0;
+                        const displayPrice = pricingMode === 'monthly'
+                          ? (Number(room.price) || 0)
+                          : (Number(room.perNightPrice) || Number(room.nightlyPrice) || 0);
+                        const priceUnit = pricingMode === 'monthly' ? '/mo' : '/night';
                         const isLast = i === property.parsedBedrooms.length - 1;
                         return (
                           <tr key={i} className={`rm-row ${isLast ? 'rm-row--last' : ''}`}>
@@ -2437,13 +2446,13 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                             <td className="rm-td"><BathBadge attached={room.attachedBathroom} /></td>
                             <td className="rm-td"><span className="rm-area-val">{room.areaSqFt ? `${room.areaSqFt} sqft` : '—'}</span></td>
                             <td className="rm-td rm-td--price">
-                              {monthlyPrice > 0 ? (
+                              {displayPrice > 0 ? (
                                 <div className="rm-price-cell">
                                   <div style={{ display:'flex', alignItems:'baseline', gap:'2px' }}>
-                                    <span className="rm-price-main">₹{monthlyPrice.toLocaleString('en-IN')}</span>
-                                    <span className="rm-price-unit">/mo</span>
+                                    <span className="rm-price-main">₹{displayPrice.toLocaleString('en-IN')}</span>
+                                    <span className="rm-price-unit">{priceUnit}</span>
                                   </div>
-                                  {room.securityDeposit && (
+                                  {pricingMode === 'monthly' && room.securityDeposit && (
                                     <div className="rm-deposit">Security Deposit: ₹{Number(room.securityDeposit).toLocaleString('en-IN')}</div>
                                   )}
                                 </div>
@@ -2462,7 +2471,7 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
 
                 <RoomTablePerRoomMobile
                   rooms={property.parsedBedrooms}
-                  pricingMode="monthly"
+                  pricingMode={pricingMode}
                   propertyPrice={0}
                   onBookNow={handleRoomBookNow}
                   onEnquire={null}
