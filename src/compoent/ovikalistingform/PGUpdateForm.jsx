@@ -41,7 +41,7 @@ const WINDOW_TYPES = ["Normal", "Large / Full Sized", "French Windows", "Bay Win
 
 const FURNISHING_STATUS = ["Unfurnished", "Semi-Furnished", "Fully Furnished"];
 const SHARING_TYPES = ["Private Room", "Double Sharing", "Triple Sharing", "Four Sharing", "Five Sharing", "Dormitory"];
-const TENANT_PREFERENCES = ["Bachelors (Any)", "Bachelors (Female Only)", "Bachelors (Male Only)", "Family", "Working Professionals", "Students Only", "No Preference"];
+const TENANT_PREFERENCES = ["Bachelors (Any)", "Bachelors (Female Only)", "Bachelors (Male Only)", "Family", "Working Professionals", "Student", "No Preference"];
 const CANCELLATION_POLICIES = ["Flexible: Full refund 1 day prior", "Moderate: Full refund 5 days prior", "Strict: 50% refund 7 days prior", "No Refund"];
 const FACING_OPTIONS = ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"];
 
@@ -298,12 +298,17 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
           if (typeof meta.preferredTenants === 'string') {
             try { const p = JSON.parse(meta.preferredTenants); return Array.isArray(p) ? p : []; } catch { return []; }
           }
-          // Reconstruct from guest_policy as fallback
+          // Check preferredTenants saved directly in guest_policy JSON
+          if (Array.isArray(guestPolicy.preferredTenants) && guestPolicy.preferredTenants.length > 0) return guestPolicy.preferredTenants;
+          // Reconstruct from guest_policy boolean flags as last fallback
           const tenants = [];
           if (guestPolicy.family_allowed) tenants.push("Family");
           if (guestPolicy.bachelors_allowed) tenants.push("Bachelors (Any)");
           return tenants;
         })();
+
+        // furnishing: check meta first, then guest_policy (where update form saves it)
+        const furnishingValue = meta.furnishing || guestPolicy.furnishing || FURNISHING_STATUS[0];
 
         const updatedForm = {
           ...prevForm,
@@ -320,9 +325,8 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
           bedroomDetails: sanitizedBedrooms,
           bathroomDetails: parsedBathroomDetails,
           owner_id: data.owner_id || meta.owner_id || "",
-          // ── Pre-fill fields that were missing ──────────────────────────────
           area: data.area || meta.area || prevForm.area || "",
-          furnishing: meta.furnishing || data.furnishing || prevForm.furnishing || FURNISHING_STATUS[1],
+          furnishing: furnishingValue,
           preferredTenants: preferredTenantsFromMeta.length > 0 ? preferredTenantsFromMeta : (prevForm.preferredTenants || []),
         };
 
@@ -569,11 +573,8 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
           family_allowed: form.preferredTenants?.includes("Family"),
           unmarried_couple_allowed: form.houseRules?.includes("Couple Friendly"),
           bachelors_allowed: form.preferredTenants?.some(t => t.includes("Bachelors")),
-        }),
-        meta: JSON.stringify({
-          ...form,
-          furnishing: form.furnishing,
-          preferredTenants: form.preferredTenants,
+          preferredTenants: form.preferredTenants || [],
+          furnishing: form.furnishing || "",
         }),
       };
 
