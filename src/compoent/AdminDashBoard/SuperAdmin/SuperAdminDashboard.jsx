@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './SuperAdmin.css';
+import ImageClassificationModal from './ImageClassificationModal';
 import { Line, Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -86,6 +87,7 @@ export default function SuperAdminDashboard() {
   const [derivedGuests, setDerivedGuests] = useState([]); // Users aggregated from bookings (Guests)
   const [editingProp, setEditingProp] = useState(null); // For edit modal
   const [isCreatingProp, setIsCreatingProp] = useState(false); // Mode for property modal
+  const [classifyProperty, setClassifyProperty] = useState(null); // For image classification modal
   
   /* User Management State */
   const [editingUser, setEditingUser] = useState(null); 
@@ -883,14 +885,21 @@ export default function SuperAdminDashboard() {
                                             </span>
                                         </td>
                                         <td>
-                                            <div className="sa-actions" style={{ display: 'flex', gap: '8px' }}>
+                                            <div className="sa-actions" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                                 <button className="sa-btn-primary" onClick={() => handleEditClick(p)}>Edit</button>
-                                                <button 
-                                                  className="sa-btn-primary" 
-                                                  style={{ backgroundColor: '#8b5cf6' }} 
+                                                <button
+                                                  className="sa-btn-primary"
+                                                  style={{ backgroundColor: '#8b5cf6' }}
                                                   onClick={() => window.open(`/update-pg/${p.id || p._id}`, '_blank')}
                                                 >
                                                   PG Listing Update
+                                                </button>
+                                                <button
+                                                  className="sa-btn-primary"
+                                                  style={{ backgroundColor: '#0ea5e9' }}
+                                                  onClick={() => setClassifyProperty(p)}
+                                                >
+                                                  View Images
                                                 </button>
                                             </div>
                                         </td>
@@ -2282,6 +2291,14 @@ export default function SuperAdminDashboard() {
             )}
         </div>
       </div>
+
+      {/* Image Classification Modal */}
+      {classifyProperty && (
+        <ImageClassificationModal
+          property={classifyProperty}
+          onClose={() => setClassifyProperty(null)}
+        />
+      )}
     </div>
   );
 }

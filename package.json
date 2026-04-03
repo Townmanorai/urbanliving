@@ -22,6 +22,7 @@
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.540.0",
+    "onnxruntime-web": "^1.24.3",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^18.3.1",
@@ -36,7 +37,9 @@
     "slick-carousel": "^1.8.1",
     "socket.io-client": "^4.8.3",
     "swiper": "^11.2.10",
-    "tesseract.js": "^7.0.0"
+    "tesseract.js": "^7.0.0",
+    "vite-plugin-top-level-await": "^1.6.0",
+    "vite-plugin-wasm": "^3.6.0"
   },
   "devDependencies": {
     "@eslint/js": "^8.57.0",
