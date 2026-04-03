@@ -16,7 +16,7 @@
 
 // export default AdminDashboardLayout;
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
 import Sidebar from "./Sidebar/Sidebar";
@@ -24,6 +24,11 @@ import "./AdminDashboardLayout.css";
 
 const AdminDashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = sidebarOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [sidebarOpen]);
 
   return (
     <div className="admin-dashboard-layout">

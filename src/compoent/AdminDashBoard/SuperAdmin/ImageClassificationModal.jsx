@@ -105,6 +105,12 @@ export default function ImageClassificationModal({ property, onClose }) {
   const [expandedUrl, setExpandedUrl] = useState(null);
   const sessionRef = useRef(null);
 
+  // Scroll lock
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
   // ── Load ONNX model once ──────────────────────────────────────────────────
   useEffect(() => {
     (async () => {

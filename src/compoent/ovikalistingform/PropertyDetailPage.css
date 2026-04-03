@@ -2157,7 +2157,7 @@ table {
 
   .pm-card {
     border-radius: 20px 20px 0 0;
-    padding: 1.25rem 1rem 1.5rem;
+    padding: 3.5rem 1rem 1.5rem;
     min-height: 92vh;
     margin: 0;
     max-width: 100%;
@@ -2166,6 +2166,7 @@ table {
   .pm-close {
     top: 0.85rem;
     right: 0.85rem;
+    z-index: 10;
   }
 
   /* Step bar — hide text labels, show dots only */

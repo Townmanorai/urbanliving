@@ -854,6 +854,13 @@ const PropertyDetailPage = () => {
   const [hostImage, setHostImage] = useState(null);
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [selectedRoomForLead, setSelectedRoomForLead] = useState(null);
+
+  // Scroll lock when any modal is open
+  useEffect(() => {
+    const anyOpen = !!(showImageViewer || showPaymentModal || showLeadModal);
+    document.body.style.overflow = anyOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [showImageViewer, showPaymentModal, showLeadModal]);
   const [calendarViewMonth, setCalendarViewMonth] = useState(new Date());
   const [monthlyDuration, setMonthlyDuration] = useState(1);
   const [monthPickerYear, setMonthPickerYear] = useState(new Date().getFullYear());

@@ -1377,6 +1377,7 @@ import styles from "./Dashboard.module.css";
 import { AuthContext } from "../../Login/AuthContext";
 import { Home, Plus, Loader, Moon, Calendar } from "lucide-react";
 import PGUpdateForm from "../../ovikalistingform/PGUpdateForm";
+import ImageClassificationModal from "../SuperAdmin/ImageClassificationModal";
 
 function KeyItem({ text, filetype = "pdf" }) {
   const isXlsx = filetype === "xlsx";
@@ -2169,7 +2170,7 @@ function EditPropertyModal({ property, onClose, onRefresh }) {
   );
 }
 
-function PropertyCard({ photoUrl, name, location, priceText, details, onEdit, onDelete, onView }) {
+function PropertyCard({ photoUrl, name, location, priceText, details, onEdit, onDelete, onView, onViewImages }) {
   return (
     <div className={styles.propertyCard}>
       <img src={photoUrl} alt={name} className={styles.propertyImage} onClick={onView} style={{ cursor: "pointer" }} />
@@ -2184,6 +2185,9 @@ function PropertyCard({ photoUrl, name, location, priceText, details, onEdit, on
           </button>
           <button type="button" onClick={onDelete} style={{ border: '1px solid #fdd', background: '#fff5f5', color: '#d32f2f', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <i className="fa-solid fa-trash" /> Delete
+          </button>
+          <button type="button" onClick={onViewImages} style={{ border: 'none', background: '#0ea5e9', color: '#fff', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <i className="fa-regular fa-image" /> View Images
           </button>
         </div>
       </div>
@@ -2288,6 +2292,13 @@ export default function DashBoardAdmin() {
   const [editingProperty, setEditingProperty] = useState(null);
   const [editingMonthlyProperty, setEditingMonthlyProperty] = useState(null);
   const [activeTab, setActiveTab] = useState("monthly");
+  const [classifyProperty, setClassifyProperty] = useState(null);
+
+  useEffect(() => {
+    const anyOpen = !!(editingProperty || editingMonthlyProperty || classifyProperty);
+    document.body.style.overflow = anyOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [editingProperty, editingMonthlyProperty, classifyProperty]);
 
   const resolveOwnerIdFromSources = useCallback(() => {
     const idFromContext = extractIdFromObj(user);
@@ -2426,6 +2437,7 @@ export default function DashBoardAdmin() {
             setProperties(prev => prev.filter(p => (p.id || p._id) !== id));
           } catch (e) { alert("Failed to delete property"); console.error(e); }
         }}
+        onViewImages={() => setClassifyProperty(prop)}
       />
     );
   };
@@ -2512,6 +2524,13 @@ export default function DashBoardAdmin() {
           </div>
         )}
       </main>
+
+      {classifyProperty && (
+        <ImageClassificationModal
+          property={classifyProperty}
+          onClose={() => setClassifyProperty(null)}
+        />
+      )}
 
       <div style={{ display: 'none', position: 'fixed', bottom: 0, left: 0, right: 0, background: '#fff', borderTop: '1px solid #e5e7eb', padding: '8px 16px 12px', zIndex: 100, gap: '8px' }} className={styles.mobileTabBar}>
         {[

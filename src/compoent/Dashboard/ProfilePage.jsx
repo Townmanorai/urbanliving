@@ -24,6 +24,11 @@ const ProfilePage = () => {
 
   // modal & editable profile fields
   const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = showModal ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [showModal]);
   const [editUsername, setEditUsername] = useState(user?.username || "");
   const [editEmail, setEditEmail] = useState(user?.email || "");
   const [editPhone, setEditPhone] = useState(user?.phone_number || "");

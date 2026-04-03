@@ -92,6 +92,11 @@ export default function WelcomePopup({
     if (!seen) setVisible(true);
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = visible ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [visible]);
+
   const handleSelect = (type) => {
     sessionStorage.setItem('ovika_rental_type', type);
     sessionStorage.setItem('ovika_popup_seen', 'true');

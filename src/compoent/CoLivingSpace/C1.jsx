@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const styles = {
   root: {
@@ -317,6 +317,11 @@ export default function OvikaLiving() {
   const [showPartnerModal, setShowPartnerModal] = useState(false);
   const [partnerForm, setPartnerForm] = useState({ name: "", phone_number: "", message: "" });
   const [partnerStatus, setPartnerStatus] = useState("");
+
+  useEffect(() => {
+    document.body.style.overflow = showPartnerModal ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [showPartnerModal]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

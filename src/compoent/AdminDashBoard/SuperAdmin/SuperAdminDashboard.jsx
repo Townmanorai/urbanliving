@@ -88,10 +88,17 @@ export default function SuperAdminDashboard() {
   const [editingProp, setEditingProp] = useState(null); // For edit modal
   const [isCreatingProp, setIsCreatingProp] = useState(false); // Mode for property modal
   const [classifyProperty, setClassifyProperty] = useState(null); // For image classification modal
-  
+
   /* User Management State */
-  const [editingUser, setEditingUser] = useState(null); 
+  const [editingUser, setEditingUser] = useState(null);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+
+  // Scroll lock when any modal is open
+  useEffect(() => {
+    const anyOpen = !!(editingProp || isCreatingProp || classifyProperty || isUserModalOpen);
+    document.body.style.overflow = anyOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [editingProp, isCreatingProp, classifyProperty, isUserModalOpen]);
   const [userForm, setUserForm] = useState({ username: '', email: '', phone_number: '', role: 'user', password: '' });
   const [searchTerm, setSearchTerm] = useState("");
   const [userSearch, setUserSearch] = useState(""); // Search for Users

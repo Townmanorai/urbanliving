@@ -696,6 +696,13 @@ export default function Navbar() {
     navigate(path);
   };
 
+  // Scroll lock when any menu/popup is open
+  useEffect(() => {
+    const anyOpen = hamburgerMenuOpen || sideMenuOpen || rentalCategoryPopup;
+    document.body.style.overflow = anyOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [hamburgerMenuOpen, sideMenuOpen, rentalCategoryPopup]);
+
   const handleLogout = () => {
     setSideMenuOpen(false);
     setHamburgerMenuOpen(false);
@@ -734,7 +741,7 @@ export default function Navbar() {
       <>
         <style>{globalCSS}</style>
 
-        <div style={{ position: "relative", zIndex: 99999, fontFamily: "Poppins, sans-serif", background: "#fff", borderBottom: "1px solid #f0e8d8" }}>
+        <div style={{ position: "relative", zIndex: 100, fontFamily: "Poppins, sans-serif", background: "#fff", borderBottom: "1px solid #f0e8d8" }}>
 
           {/* ── ROW 1: Hamburger | Logo | User ── */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px 4px 16px" }}>
@@ -964,7 +971,7 @@ export default function Navbar() {
     <>
       <style>{globalCSS}</style>
 
-      <div style={{ position: "relative", zIndex: 99999, fontFamily: "Poppins, sans-serif", background: "#fff", borderBottom: "1px solid #f0e8d8", boxShadow: "0 2px 18px rgba(71,38,9,0.09)" }}>
+      <div style={{ position: "relative", zIndex: 100, fontFamily: "Poppins, sans-serif", background: "#fff", borderBottom: "1px solid #f0e8d8", boxShadow: "0 2px 18px rgba(71,38,9,0.09)" }}>
 
         {/* ── ROW 1 ── */}
         <div style={{ display: "flex", alignItems: "center", padding: "10px 36px 6px 36px", position: "relative" }}>
