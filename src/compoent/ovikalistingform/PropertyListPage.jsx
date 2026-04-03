@@ -255,22 +255,24 @@ const PropertyCard = ({ property, rentalType }) => {
           </span>
         </div>
 
-        {/* Specs — using shared getBedCount / getBathCount helpers */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#717171', fontSize: 13 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <BiBed style={{ fontSize: 15 }} />
-            <span>{bedCount > 0 ? bedCount : '—'} Bed{bedCount !== 1 ? 's' : ''}</span>
+        {/* Specs — hide for monthly/PG rentals */}
+        {!isMonthly && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#717171', fontSize: 13 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <BiBed style={{ fontSize: 15 }} />
+              <span>{bedCount > 0 ? bedCount : '—'} Bed{bedCount !== 1 ? 's' : ''}</span>
+            </div>
+            <span style={{ color: '#ddd' }}>•</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <BiBath style={{ fontSize: 15 }} />
+              <span>{bathCount > 0 ? bathCount : '—'} Bath{bathCount !== 1 ? 's' : ''}</span>
+            </div>
+            <span style={{ color: '#ddd' }}>•</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <BiArea style={{ fontSize: 15 }} /><span>{property.area || 0} sqft</span>
+            </div>
           </div>
-          <span style={{ color: '#ddd' }}>•</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <BiBath style={{ fontSize: 15 }} />
-            <span>{bathCount > 0 ? bathCount : '—'} Bath{bathCount !== 1 ? 's' : ''}</span>
-          </div>
-          <span style={{ color: '#ddd' }}>•</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <BiArea style={{ fontSize: 15 }} /><span>{property.area || 0} sqft</span>
-          </div>
-        </div>
+        )}
 
         {/* Amenities */}
         {Array.isArray(property.amenities) && property.amenities.length > 0 && (
