@@ -1015,7 +1015,8 @@ import {
   Trash2,
   CheckCircle2,
   ToggleLeft,
-  ToggleRight
+  ToggleRight,
+  Plus
 } from "lucide-react";
 
 const API_BASE = "https://www.townmanor.ai/api";
@@ -1069,6 +1070,9 @@ const BOOKING_TYPES = [
   { id: 0, label: "Instant Booking", desc: "Guests can book instantly without waiting for approval." },
   { id: 1, label: "Request to Book", desc: "You review and accept or decline booking requests." }
 ];
+
+const BATHROOM_TYPES = ["Attached", "Common", "En-suite", "Jack & Jill", "Separate", "Other"];
+const defaultBathroomEntry = () => ({ type: "Attached", count: 1 });
 
 // ─── isPG helper ─────────────────────────────────────────────────────────────
 const isPGCategory = (cat) => cat === "PG";
@@ -1134,6 +1138,7 @@ const PGListingForm = () => {
     
     bedrooms: 2,
     bathrooms: 2,
+    bathroomDetails: [defaultBathroomEntry()],
     balconies: 1,
     floorNo: "",
     totalFloors: "",
@@ -1280,6 +1285,20 @@ const PGListingForm = () => {
     });
   };
 
+  const handleAddBathroom = () => {
+    setForm(f => ({ ...f, bathroomDetails: [...(f.bathroomDetails || []), defaultBathroomEntry()] }));
+  };
+  const handleRemoveBathroom = (idx) => {
+    setForm(f => ({ ...f, bathroomDetails: (f.bathroomDetails || []).filter((_, i) => i !== idx) }));
+  };
+  const handleBathroomChange = (idx, key, val) => {
+    setForm(f => {
+      const list = [...(f.bathroomDetails || [])];
+      list[idx] = { ...list[idx], [key]: val };
+      return { ...f, bathroomDetails: list };
+    });
+  };
+
   const handleSendOtp = async () => {
     if (!phoneNumber || phoneNumber.length < 10) {
       alert("Please enter a valid phone number");
@@ -1395,7 +1414,7 @@ const PGListingForm = () => {
       fd.append("booking_type", String(form.bookingType));
       fd.append("owner_id", user?.id || "99");
       fd.append("bedrooms", JSON.stringify(form.bedroomDetails));
-      fd.append("bathrooms", JSON.stringify([{ type: "Attached", count: form.bathrooms }]));
+      fd.append("bathrooms", JSON.stringify((form.bathroomDetails || []).length > 0 ? form.bathroomDetails : [{ type: "Attached", count: form.bathrooms }]));
       fd.append("amenities", JSON.stringify(Object.keys(form.amenities).filter(k => form.amenities[k])));
       fd.append("beds", String(totalBeds));
 
@@ -1682,9 +1701,9 @@ const PGListingForm = () => {
 
                     <button className="add-btn-wide" onClick={() => {
                       const newId = Date.now();
-                      setForm(f => ({ ...f, bedroomDetails: [...f.bedroomDetails, { 
-                        id: newId, 
-                        type: isPG ? SHARING_TYPES[0] : ROOM_CATEGORIES[0], 
+                      setForm(f => ({ ...f, bedroomDetails: [...f.bedroomDetails, {
+                        id: newId,
+                        type: isPG ? SHARING_TYPES[0] : ROOM_CATEGORIES[0],
                         roomNumber: "",
                         bedType: BED_TYPES[1],
                         bedCount: 1,
@@ -1696,14 +1715,140 @@ const PGListingForm = () => {
                         securityDeposit: "",
                         maintenanceCharge: "",
                         maintenanceCycle: "Monthly",
-                        areaSqFt: ""
+                        areaSqFt: "",
                       }] }));
                     }}>
                       <Users size={18} /> Add Another Room Configuration
                     </button>
                   </div>
                 </div>
-                
+
+                {/* ── BATHROOM CONFIGURATION ── */}
+                <div className="field-group full">
+                  <div className="section-subtitle" style={{ marginTop: '24px' }}>
+                    Bathroom Configuration
+                  </div>
+                  <div style={{
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '10px',
+                    padding: '16px',
+                    background: '#fafafa',
+                    marginBottom: '12px',
+                  }}>
+                    {(form.bathroomDetails || []).map((bath, idx) => (
+                      <div key={idx} style={{
+                        display: 'flex',
+                        gap: '10px',
+                        alignItems: 'center',
+                        marginBottom: '10px',
+                        padding: '10px',
+                        background: '#fff',
+                        borderRadius: '8px',
+                        border: '1px solid #e5e7eb',
+                      }}>
+                        {/* Badge */}
+                        <div style={{
+                          minWidth: '32px', height: '32px',
+                          background: '#c98b3e', color: '#fff',
+                          borderRadius: '50%', display: 'flex',
+                          alignItems: 'center', justifyContent: 'center',
+                          fontSize: '13px', fontWeight: '700', flexShrink: 0,
+                        }}>
+                          {idx + 1}
+                        </div>
+
+                        {/* Type selector */}
+                        <div style={{ flex: 2 }}>
+                          <label style={{ fontSize: '12px', color: '#6b7280', display: 'block', marginBottom: '4px' }}>
+                            Bathroom Type
+                          </label>
+                          <select
+                            value={bath.type}
+                            onChange={(e) => handleBathroomChange(idx, 'type', e.target.value)}
+                            style={{
+                              width: '100%', padding: '8px 10px',
+                              borderRadius: '6px', border: '1px solid #d1d5db',
+                              fontSize: '14px', background: '#fff',
+                            }}
+                          >
+                            {BATHROOM_TYPES.map(t => (
+                              <option key={t} value={t}>{t}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* Count input */}
+                        <div style={{ flex: 1 }}>
+                          <label style={{ fontSize: '12px', color: '#6b7280', display: 'block', marginBottom: '4px' }}>
+                            Count
+                          </label>
+                          <input
+                            type="number"
+                            min="1"
+                            max="20"
+                            value={bath.count}
+                            onChange={(e) => handleBathroomChange(idx, 'count', Number(e.target.value))}
+                            style={{
+                              width: '100%', padding: '8px 10px',
+                              borderRadius: '6px', border: '1px solid #d1d5db',
+                              fontSize: '14px',
+                            }}
+                          />
+                        </div>
+
+                        {/* Remove button */}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveBathroom(idx)}
+                          disabled={(form.bathroomDetails || []).length <= 1}
+                          style={{
+                            width: '36px', height: '36px', flexShrink: 0,
+                            background: (form.bathroomDetails || []).length <= 1 ? '#f3f4f6' : '#fff5f5',
+                            border: `1px solid ${(form.bathroomDetails || []).length <= 1 ? '#e5e7eb' : '#fca5a5'}`,
+                            color: (form.bathroomDetails || []).length <= 1 ? '#d1d5db' : '#ef4444',
+                            borderRadius: '6px',
+                            cursor: (form.bathroomDetails || []).length <= 1 ? 'not-allowed' : 'pointer',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}
+                          title="Remove bathroom"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    ))}
+
+                    {/* Add bathroom button */}
+                    <button
+                      type="button"
+                      onClick={handleAddBathroom}
+                      style={{
+                        width: '100%', padding: '10px',
+                        border: '1.5px dashed #c98b3e',
+                        borderRadius: '8px', background: '#fffbf5',
+                        color: '#c98b3e', fontSize: '14px', fontWeight: '600',
+                        cursor: 'pointer', display: 'flex',
+                        alignItems: 'center', justifyContent: 'center', gap: '6px',
+                      }}
+                    >
+                      <Plus size={16} /> Add Bathroom Type
+                    </button>
+
+                    {/* Summary */}
+                    <div style={{
+                      marginTop: '12px', padding: '10px 14px',
+                      background: '#f0fdf4', borderRadius: '8px',
+                      border: '1px solid #bbf7d0',
+                      fontSize: '13px', color: '#16a34a', fontWeight: '500',
+                    }}>
+                      Total bathrooms: <strong>
+                        {(form.bathroomDetails || []).reduce((sum, b) => sum + (Number(b.count) || 0), 0)}
+                      </strong>
+                      {' '}({(form.bathroomDetails || []).map(b => `${b.count} ${b.type}`).join(', ')})
+                    </div>
+                  </div>
+                </div>
+                {/* ── END BATHROOM SECTION ── */}
+
                 <div className="field-group">
                   <label>Total Built-up Area (Sq Ft) *</label>
                   <input type="number" name="area" value={form.area} onChange={handleChange} placeholder="Total house area" />
