@@ -11,57 +11,7 @@ function BannerMobile() {
   
   return (
     <div className='tm-banner-container'>
-    {/* <div className='tm-banner-left'>
-
     
-      <div className='tm-category-box'>
-        <div className='tm-image-stay'>
-          <img src="/1.png" alt='TM Stay' />
-        </div>
-        <div className='tm-category-content'>
-          <h3>
-            <span className="tm-logo">TM</span> <span className="tm-stay">Stay</span>
-          </h3>
-          <p>For PG</p>
-          <span className='tm-arrow-circle'>
-            <IoArrowForwardSharp size={25} />
-          </span>
-        </div>
-      </div>
-
-      
-      <div className='tm-category-box tm-hive-box'>
-        <div className='tm-image-hive'>
-          <img src="/2.png" alt='TM Hive' />
-        </div>
-        <div className='tm-category-content'>
-          <h3>
-            <span className="tm-logo">TM</span> <span className="tm-hive">Hive</span>
-          </h3>
-          <p>For Co-living</p>
-          <span className='tm-arrow-circle'>
-            <IoArrowForwardSharp size={25} />
-          </span>
-        </div>
-      </div>
-
-      
-      <div className='tm-category-box tm-luxe-box'>
-        <div className='tm-image-luxe'>
-          <img src="/4.png" alt='TM Luxe' />
-        </div>
-        <div className='tm-category-content'>
-          <h3>
-            <span className="tm-logo">TM</span> <span className="tm-luxe">Luxe</span>
-          </h3>
-          <p>For Luxury apartments</p>
-          <span className='tm-arrow-circle' onClick={() => navigate('/tmluxe')}>
-            <IoArrowForwardSharp size={25} />
-          </span>
-        </div>
-      </div>
-
-    </div> */}
 
     <div className='tm-banner-right'>
       <div className='tm-banner-content'>

@@ -1,40 +1,4 @@
 
-// import React from "react";
-// import "./About.css";
-
-// const AboutUs = () => {
-//   return (
-//     <section className="about-container">
-//       <h1 className="about-title">About OVIKA</h1>
-
-//       <p className="about-text">
-//         OVIKA is a technology-driven marketplace for short-term stays and
-//         hosting, built to simplify how people book quality accommodations and
-//         how property owners earn from their homes.
-//       </p>
-
-//       <p className="about-text">
-//         For guests, OVIKA offers thoughtfully curated short-term rental homes
-//         designed for comfort, convenience, and reliability—whether for business
-//         travel, leisure, or extended stays.
-//       </p>
-
-//       <p className="about-text">
-//         For property owners, OVIKA provides a simple and transparent platform to
-//         list, manage, and monetize properties through short-term rentals, with
-//         professional support and end-to-end assistance.
-//       </p>
-
-//       <p className="about-text">
-//         Our mission is to create a trusted ecosystem where guests enjoy seamless
-//         stays and hosts unlock better returns—powered by technology, local
-//         expertise, and a focus on quality.
-//       </p>
-//     </section>
-//   );
-// };
-
-// export default AboutUs;
 import React from "react";
 import { Helmet } from "react-helmet";
 import "./About.css";
