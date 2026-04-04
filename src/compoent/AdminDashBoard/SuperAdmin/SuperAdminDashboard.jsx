@@ -334,8 +334,8 @@ export default function SuperAdminDashboard() {
   const handleSALogin = (e) => {
     e.preventDefault();
     // Setting hardcoded credentials as requested for "id/password" protection
-    const ADMIN_EMAIL = "townmanoritteam@gmail.com";
-    const ADMIN_PASS = "urban@2024"; // You can change this or I can make it dynamic
+    const ADMIN_EMAIL = "mishra.ankush2001@gmail.com";
+    const ADMIN_PASS = "ankushmishra@2609";
 
     if (loginForm.email === ADMIN_EMAIL && loginForm.password === ADMIN_PASS) {
       setIsSuperAdminAuthenticated(true);
@@ -523,6 +523,19 @@ export default function SuperAdminDashboard() {
         console.error("Save Error Details:", e);
         const errMsg = e.response?.data?.message || e.response?.data?.error || e.message;
         alert("Operation failed: " + errMsg);
+    }
+  };
+
+  // --- Delete Property ---
+  const handleDeleteProperty = async (prop) => {
+    const id = prop.id || prop._id;
+    if (!window.confirm(`Are you sure you want to delete "${prop.property_name || prop.name}"? This cannot be undone.`)) return;
+    try {
+      await axios.delete(`https://www.townmanor.ai/api/ovika/properties/${id}`);
+      alert("Property deleted successfully.");
+      fetchAllProperties();
+    } catch (e) {
+      alert("Failed to delete property: " + (e.response?.data?.message || e.message));
     }
   };
 
@@ -912,6 +925,13 @@ export default function SuperAdminDashboard() {
                                                   onClick={() => setClassifyProperty(p)}
                                                 >
                                                   View Images
+                                                </button>
+                                                <button
+                                                  className="sa-btn-danger"
+                                                  style={{ backgroundColor: '#ef4444', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px' }}
+                                                  onClick={() => handleDeleteProperty(p)}
+                                                >
+                                                  Delete
                                                 </button>
                                             </div>
                                         </td>
