@@ -40,7 +40,7 @@ const WINDOW_TYPES = ["Normal", "Large / Full Sized", "French Windows", "Bay Win
 
 const FURNISHING_STATUS = ["Unfurnished", "Semi-Furnished", "Fully Furnished"];
 const SHARING_TYPES = ["Private Room", "Double Sharing", "Triple Sharing", "Four Sharing", "Five Sharing", "Dormitory"];
-const TENANT_PREFERENCES = ["Bachelors (Any)", "Bachelors (Female Only)", "Bachelors (Male Only)", "Family Only", "Working Professionals", "Students Only", "No Preference"];
+const TENANT_PREFERENCES = ["Bachelors (Any)", "Bachelors (Female Only)", "Bachelors (Male Only)", "Family", "Working Professionals", "Students Only", "No Preference"];
 const CANCELLATION_POLICIES = ["Flexible: Full refund 1 day prior", "Moderate: Full refund 5 days prior", "Strict: 50% refund 7 days prior", "No Refund"];
 const FACING_OPTIONS = ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"];
 
@@ -444,11 +444,12 @@ const PGListingForm = () => {
       
       fd.append("meta", JSON.stringify(meta));
       fd.append("guest_policy", JSON.stringify({
-        family_allowed: form.preferredTenants.includes("Family Only"),
+        family_allowed: form.preferredTenants.includes("Family"),
         unmarried_couple_allowed: form.houseRules.includes("Couple Friendly"),
         bachelors_allowed: form.preferredTenants.some(t => t.includes("Bachelors")),
+        preferredTenants: form.preferredTenants || [],
       }));
-      fd.append("coverPhotoIndex", String(coverIndex));
+      fd.append("cover_photo_index", String(coverIndex));
 
       photoPreviews.previews.forEach((p) => {
         if(p.file) fd.append("photos", p.file);

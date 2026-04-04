@@ -309,8 +309,10 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
           return tenants;
         })();
 
-        // furnishing: check meta first, then guest_policy (where update form saves it)
-        const furnishingValue = meta.furnishing || guestPolicy.furnishing || FURNISHING_STATUS[0];
+        // furnishing: normalize value to match dropdown options exactly
+        const rawFurnishing = meta.furnishing || guestPolicy.furnishing || data.furnishing || '';
+        const furnishingNormalized = rawFurnishing.toLowerCase().replace(/[\s-]/g, '');
+        const furnishingValue = FURNISHING_STATUS.find(s => s.toLowerCase().replace(/[\s-]/g, '') === furnishingNormalized) || FURNISHING_STATUS[0];
 
         const updatedForm = {
           ...prevForm,

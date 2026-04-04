@@ -203,6 +203,10 @@ function EditPropertyModal({ property, onClose, onRefresh }) {
 
   const [photoList, setPhotoList] = useState(getInitialPhotos());
   const [newFiles, setNewFiles] = useState([]);
+  const [coverIndex, setCoverIndex] = useState(() => {
+    const idx = Number(property.cover_photo_index);
+    return !isNaN(idx) && idx >= 0 ? idx : 0;
+  });
 
   const [formData, setFormData] = useState({
     property_name: property.property_name || property.name || "",
@@ -283,8 +287,15 @@ function EditPropertyModal({ property, onClose, onRefresh }) {
     }
   };
 
-  const removePhoto = (index) => setPhotoList(prev => prev.filter((_, i) => i !== index));
-  const removeNewFile = (index) => setNewFiles(prev => prev.filter((_, i) => i !== index));
+  const removePhoto = (index) => {
+    setPhotoList(prev => prev.filter((_, i) => i !== index));
+    setCoverIndex(prev => prev === index ? 0 : prev > index ? prev - 1 : prev);
+  };
+  const removeNewFile = (index) => {
+    const globalIdx = photoList.length + index;
+    setNewFiles(prev => prev.filter((_, i) => i !== index));
+    setCoverIndex(prev => prev === globalIdx ? 0 : prev > globalIdx ? prev - 1 : prev);
+  };
 
   const handleSave = async () => {
     setLoading(true);
@@ -352,6 +363,7 @@ function EditPropertyModal({ property, onClose, onRefresh }) {
         bedrooms: JSON.stringify(formData.bedrooms || []),
         bathrooms: JSON.stringify(formData.bathrooms || []),
         photos: JSON.stringify(finalAllPhotos),
+        cover_photo_index: Math.min(coverIndex, finalAllPhotos.length - 1),
         amenities: JSON.stringify(formData.amenities || []),
         guest_policy: JSON.stringify({
           family_allowed: Boolean(formData.familyAllowed),
@@ -482,17 +494,32 @@ function EditPropertyModal({ property, onClose, onRefresh }) {
         <div style={{ marginBottom: '16px' }}>
           <div style={photoGrid}>
             {photoList.map((url, i) => (
-              <div key={`exist-${i}`} style={photoFrame}>
+              <div key={`exist-${i}`} style={{ ...photoFrame, outline: coverIndex === i ? '2.5px solid #c2772b' : 'none', borderRadius: '7px' }}>
                 <img src={url} alt="prop" style={photoImg} onError={e => e.target.src = 'https://via.placeholder.com/70?text=Err'} />
                 <button type="button" onClick={() => removePhoto(i)} style={deleteBtn}>&times;</button>
+                <div
+                  onClick={() => setCoverIndex(i)}
+                  style={{ position:'absolute', bottom:0, left:0, right:0, background: coverIndex === i ? '#c2772b' : 'rgba(0,0,0,0.45)', color:'#fff', fontSize:'10px', fontWeight:'600', textAlign:'center', padding:'2px 0', cursor:'pointer', borderRadius:'0 0 6px 6px' }}
+                >
+                  {coverIndex === i ? '★ Cover' : 'Set Cover'}
+                </div>
               </div>
             ))}
-            {newFiles.map((file, i) => (
-              <div key={`new-${i}`} style={photoFrame}>
-                <img src={URL.createObjectURL(file)} alt="new" style={photoImg} />
-                <button type="button" onClick={() => removeNewFile(i)} style={deleteBtn}>&times;</button>
-              </div>
-            ))}
+            {newFiles.map((file, i) => {
+              const globalIdx = photoList.length + i;
+              return (
+                <div key={`new-${i}`} style={{ ...photoFrame, outline: coverIndex === globalIdx ? '2.5px solid #c2772b' : 'none', borderRadius: '7px' }}>
+                  <img src={URL.createObjectURL(file)} alt="new" style={photoImg} />
+                  <button type="button" onClick={() => removeNewFile(i)} style={deleteBtn}>&times;</button>
+                  <div
+                    onClick={() => setCoverIndex(globalIdx)}
+                    style={{ position:'absolute', bottom:0, left:0, right:0, background: coverIndex === globalIdx ? '#c2772b' : 'rgba(0,0,0,0.45)', color:'#fff', fontSize:'10px', fontWeight:'600', textAlign:'center', padding:'2px 0', cursor:'pointer', borderRadius:'0 0 6px 6px' }}
+                  >
+                    {coverIndex === globalIdx ? '★ Cover' : 'Set Cover'}
+                  </div>
+                </div>
+              );
+            })}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <label htmlFor="modal-file-upload" style={{ ...btnStyle, padding: '8px 16px', background: '#fff8f0', color: '#c2772b', border: '1px solid #f6d4a8', display: 'inline-block', fontSize: '13px', cursor: 'pointer' }}>

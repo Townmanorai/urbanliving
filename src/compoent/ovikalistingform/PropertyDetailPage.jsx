@@ -162,6 +162,7 @@ const transformPropertyData = (data) => {
     ...data,
     ...parsedMeta,
     meta: parsedMeta,
+    cover_photo_index: data.cover_photo_index ?? parsedMeta.cover_photo_index ?? 0,
   };
 
   // ── Bedroom resolution ──────────────────────────────────────────────────────
@@ -197,7 +198,11 @@ const transformPropertyData = (data) => {
     parsedBedrooms,
     parsedBathrooms: parseJsonField(data.bathrooms || parsedMeta.bathrooms),
     guidebook: combined.guidebook || parsedMeta.guidebook || {},
-    guest_policy: combined.guest_policy || parsedMeta.guest_policy || {}
+    guest_policy: (() => {
+      const raw = combined.guest_policy || parsedMeta.guest_policy || {};
+      if (typeof raw === 'string') { try { return JSON.parse(raw); } catch { return {}; } }
+      return raw;
+    })()
   };
 };
 
@@ -950,6 +955,10 @@ const PropertyDetailPage = () => {
           const data = response.data;
           const transformed = transformPropertyData(data?.data || data);
           setProperty(transformed);
+          const coverIdx = Number(transformed.cover_photo_index);
+          if (!isNaN(coverIdx) && coverIdx > 0 && Array.isArray(transformed.photos) && coverIdx < transformed.photos.length) {
+            setActiveImg(coverIdx);
+          }
           setBookingType(Number(transformed.booking_type || 0));
           const storedRentalType = sessionStorage.getItem('ovika_rental_type') || 'short';
           setPricingMode(storedRentalType === 'long' ? 'monthly' : 'daily');
@@ -1600,7 +1609,38 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
     } finally { setIsAadhaarLoading(false); }
   };
 
-  const guestPolicy = property?.guest_policy || {};
+  const guestPolicy = (() => {
+    const raw = property?.guest_policy;
+    if (!raw) return {};
+    if (typeof raw === 'string') { try { return JSON.parse(raw); } catch { return {}; } }
+    return raw;
+  })();
+  const preferredTenants = (() => {
+    const parseAny = (raw) => {
+      if (!raw) return null;
+      if (Array.isArray(raw) && raw.length > 0) return raw;
+      if (typeof raw === 'string') { try { const p = JSON.parse(raw); if (Array.isArray(p) && p.length > 0) return p; } catch {} }
+      return null;
+    };
+    const parseObj = (raw) => {
+      if (!raw) return {};
+      if (typeof raw === 'string') { try { return JSON.parse(raw); } catch { return {}; } }
+      return raw;
+    };
+    // 1. guest_policy.preferredTenants
+    const gp = parseObj(property?.guest_policy);
+    const fromGP = parseAny(gp.preferredTenants);
+    if (fromGP) return fromGP;
+    // 2. meta.preferredTenants
+    const meta = parseObj(property?.meta);
+    const fromMeta = parseAny(meta.preferredTenants);
+    if (fromMeta) return fromMeta;
+    // 3. property.preferredTenants directly (meta fields get spread onto property)
+    const fromProp = parseAny(property?.preferredTenants);
+    if (fromProp) return fromProp;
+    console.log('[DEBUG preferredTenants] guest_policy:', property?.guest_policy, 'meta:', property?.meta);
+    return [];
+  })();
 
   const handlePassportFileSelect = (e) => { const f = e.target.files?.[0]; if (f) { setPassportFile(f); setPassportError(''); } };
 
@@ -2668,6 +2708,12 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
               <div className="amenity-card rule-card"><div className="rule-icon">{guestPolicy.family_allowed ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Family</span><strong>{guestPolicy.family_allowed ? 'Allowed' : 'Not allowed'}</strong></div></div>
               <div className="amenity-card rule-card"><div className="rule-icon">{guestPolicy.unmarried_couple_allowed ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Unmarried Couples</span><strong>{guestPolicy.unmarried_couple_allowed ? 'Allowed' : 'Not allowed'}</strong></div></div>
               <div className="amenity-card rule-card"><div className="rule-icon">{(guestPolicy.bachelors_allowed || guestPolicy.Bechelors) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Bachelor</span><strong>{(guestPolicy.bachelors_allowed || guestPolicy.Bechelors) ? 'Allowed' : 'Not allowed'}</strong></div></div>
+              {preferredTenants.map((t, i) => (
+                <div key={i} className="amenity-card rule-card">
+                  <div className="rule-icon"><FiCheck className="text-green" /></div>
+                  <div className="rule-info"><span className="rule-label">Preferred</span><strong>{t}</strong></div>
+                </div>
+              ))}
               {(property.noticePeriod != null || property.meta?.noticePeriod != null) && <div className="amenity-card rule-card"><div className="rule-icon"><FiInfo style={{ color: '#3b82f6' }} /></div><div className="rule-info"><span className="rule-label">Notice Period</span><strong>{Number(property.noticePeriod ?? property.meta?.noticePeriod) === 0 ? 'Nil' : `${property.noticePeriod ?? property.meta?.noticePeriod} Days`}</strong></div></div>}
               {(property.electricityCharges || property.meta?.electricityCharges) && <div className="amenity-card rule-card"><div className="rule-icon"><FiZap style={{ color: '#eab308' }} /></div><div className="rule-info"><span className="rule-label">Electricity</span><strong>{property.electricityCharges || property.meta?.electricityCharges}</strong></div></div>}
               {(property.gateClosingTime || property.meta?.gateClosingTime) && <div className="amenity-card rule-card"><div className="rule-icon"><Clock size={18} color="#ef4444" /></div><div className="rule-info"><span className="rule-label">Gate Closing</span><strong>{property.gateClosingTime || property.meta?.gateClosingTime}</strong></div></div>}

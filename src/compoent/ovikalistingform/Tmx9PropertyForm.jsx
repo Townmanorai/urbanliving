@@ -607,7 +607,7 @@ console.log("booking_type:", fd.get("booking_type"));
       });
 
       if (selfieFile) fd.append("selfie", selfieFile, selfieFile.name);
-      if (coverIndex !== null && coverIndex !== undefined) fd.append("coverPhotoIndex", String(coverIndex));
+      if (coverIndex !== null && coverIndex !== undefined) fd.append("cover_photo_index", String(coverIndex));
 
       const response = await fetch(`${API_BASE}/ovika/properties/upload`, {
         method: "POST",
