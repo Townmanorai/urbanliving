@@ -64,8 +64,8 @@ const PG_AMENITIES = {
 };
 
 const DEFAULT_CANCELLATION_POLICIES = ["Flexible", "Moderate", "Strict"];
-const DEFAULT_PROPERTY_CATEGORIES = ["Apartment", "House", "Villa", "Cabin", "Bungalow", "Studio", "Suite", "PG", "Other"];
-const PROPERTY_TYPES = ["Entire place", "Private room"];
+const DEFAULT_PROPERTY_CATEGORIES = ["Apartment", "House", "Villa", "Cabin", "Bungalow", "Studio", "Suite", "Hotel room", "PG", "Other"];
+const PROPERTY_TYPES = ["Entire place", "Private room", "Shared room", "Hotel room", "Homestay"];
 const PG_TYPES = ["Boys PG", "Girls PG", "Co-ed PG"];
 const SHARING_TYPES = ["Single Room", "Double Sharing", "Triple Sharing", "Four Sharing", "Dormitory"];
 

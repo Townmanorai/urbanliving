@@ -255,8 +255,8 @@ const PropertyCard = ({ property, rentalType }) => {
           </span>
         </div>
 
-        {/* Specs — hide for monthly/PG rentals */}
-        {!isMonthly && (
+        {/* Specs — hide for PG only */}
+        {property.property_category !== 'PG' && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#717171', fontSize: 13 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <BiBed style={{ fontSize: 15 }} />
@@ -333,9 +333,9 @@ const PropertyListPage = () => {
   const location = useLocation();
 
   const SHORT_TERM_TYPES = [
-    'Entire place', 'Private room', 'Shared room', 'Hotel room', 'Homestay'
+    'entire place', 'private room', 'shared room', 'hotel room', 'homestay'
   ];
-  const isLongTermProperty = (p) => !SHORT_TERM_TYPES.includes(p.property_type);
+  const isLongTermProperty = (p) => !SHORT_TERM_TYPES.includes((p.property_type || '').toLowerCase());
 
   const getPgNightlyPrice = (p) => {
     const meta = (() => {

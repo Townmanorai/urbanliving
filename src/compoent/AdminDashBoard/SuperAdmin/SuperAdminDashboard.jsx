@@ -105,7 +105,12 @@ export default function SuperAdminDashboard() {
   const [bookingFilter, setBookingFilter] = useState("ALL");
   const [filterType, setFilterType] = useState("ALL");
   const [propertyTypes, setPropertyTypes] = useState([
-    "PG", "Hostel", "Hotel Room", "Apartment", "House", "Villa", "Flat", "Commercial Shop", "Office Space", "Land / Plot"
+    // ── Nightly / Short-term types ──
+    "Entire place", "Private room", "Shared room", "Hotel room", "Homestay",
+    // ── Monthly / Long-term types ──
+    "Apartment", "House", "Villa", "Flat", "Commercial Shop", "Office Space", "Land / Plot",
+    // ── PG / Hostel ──
+    "PG", "Hostel",
   ]);
   
   // Settings State
@@ -1757,19 +1762,43 @@ export default function SuperAdminDashboard() {
                                  </div>
                                  
                                  <div className="sa-input-group">
-                                     <label>Category</label>
-                                     <select 
-                                        name="property_type" 
-                                        value={editingProp.property_type || editingProp.property_category || ""} 
+                                     <label>Property Type <span style={{ fontSize: '11px', color: '#888', fontWeight: 400 }}>(determines Nightly vs Monthly listing)</span></label>
+                                     <select
+                                        name="property_type"
+                                        value={editingProp.property_type || editingProp.property_category || ""}
                                         onChange={handleEditChange}
                                         className="sa-search-input"
-                                        style={{ width: '100%', marginBottom: '15px' }}
+                                        style={{ width: '100%', marginBottom: '4px' }}
                                      >
-                                        <option value="">Select Category</option>
-                                        {propertyTypes.map(t => (
-                                            <option key={t} value={t}>{t}</option>
-                                        ))}
+                                        <option value="">Select Type</option>
+                                        <optgroup label="🌙 Nightly / Short-term">
+                                          <option value="Entire place">Entire place</option>
+                                          <option value="Private room">Private room</option>
+                                          <option value="Shared room">Shared room</option>
+                                          <option value="Hotel room">Hotel room</option>
+                                          <option value="Homestay">Homestay</option>
+                                        </optgroup>
+                                        <optgroup label="📅 Monthly / Long-term">
+                                          <option value="Apartment">Apartment</option>
+                                          <option value="House">House</option>
+                                          <option value="Villa">Villa</option>
+                                          <option value="Flat">Flat</option>
+                                          <option value="Commercial Shop">Commercial Shop</option>
+                                          <option value="Office Space">Office Space</option>
+                                          <option value="Land / Plot">Land / Plot</option>
+                                        </optgroup>
+                                        <optgroup label="🏠 PG / Hostel">
+                                          <option value="PG">PG</option>
+                                          <option value="Hostel">Hostel</option>
+                                        </optgroup>
                                      </select>
+                                     <div style={{ fontSize: '11px', color: editingProp.property_type && ['Entire place','Private room','Shared room','Hotel room','Homestay'].includes(editingProp.property_type) ? '#16a34a' : '#c2772b', marginBottom: '12px', fontWeight: 600 }}>
+                                       {editingProp.property_type && ['Entire place','Private room','Shared room','Hotel room','Homestay'].includes(editingProp.property_type)
+                                         ? '✓ This property will appear in Nightly listings'
+                                         : editingProp.property_type
+                                           ? '✓ This property will appear in Monthly listings'
+                                           : ''}
+                                     </div>
                                  </div>
 
                                  <div className="sa-input-group">
