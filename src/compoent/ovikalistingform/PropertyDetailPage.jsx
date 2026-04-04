@@ -288,7 +288,7 @@ const PriceCell = ({ price, unit }) => {
 };
 
 // ─── SCENARIO 1 / 4: Whole property, single Book Now ─────────────────────────
-const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookNow, showDeposit, depositAmount }) => {
+const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookNow, showDeposit, depositAmount, showMonthlyDeposit }) => {
   const rowCount = rooms.length;
   return (
     <div className="rm-table-outer">
@@ -353,6 +353,12 @@ const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookN
                 {isFirst && (
                   <td className="rm-td rm-td--price" rowSpan={rowCount} style={{ verticalAlign:'middle' }}>
                     <PriceCell price={price} unit={priceUnit} />
+                    {showMonthlyDeposit && (
+                      <div style={{ marginTop:'5px', fontSize:'0.69rem', lineHeight:'1.4', color:'#8b0000', fontWeight:'600' }}>
+                        +₹{formatCurrency(price)} Deposit
+                        <span style={{ display:'block', background:'#dcfce7', color:'#166534', padding:'1px 6px', borderRadius:'20px', fontSize:'0.64rem', fontWeight:'600', marginTop:'2px', width:'fit-content' }}>1 Month · Refundable</span>
+                      </div>
+                    )}
                   </td>
                 )}
                 {isFirst && showDeposit && (
@@ -1016,8 +1022,12 @@ const PropertyDetailPage = () => {
       const isOvikaProperty = isOvikaOwnProperty;
       const perNightPrice = selectedPrice || Number(property?.meta?.perNightPrice) || Number(property?.price) || 0;
       const gst = isMonthlyBooking ? 0 : afterDiscount * 0.05;
+      const isMonthlyOvika = [315, 316, 317, 323].includes(Number(property?.id));
+      const oneMonthRent = isMonthlyBooking && isMonthlyOvika
+        ? (selectedPrice || Number(property?.meta?.perMonthPrice) || Number(property?.meta?.monthlyPrice) || Number(property?.monthly_price) || Number(property?.price) || 0)
+        : 0;
       const securityDeposit = isMonthlyBooking
-        ? (Number(property?.securityDeposit) || 0)
+        ? (oneMonthRent > 0 ? oneMonthRent : Number(property?.securityDeposit) || 0)
         : (!isMonthlyBooking && isOvikaProperty ? perNightPrice : 0);
       computedTotal = afterDiscount + gst + securityDeposit;
       setPricing({ subtotal, discount: discountAmount, discountPercentage, gst, securityDeposit, total: computedTotal, daysNeededForNextTier, nextTierPercentage });
@@ -1769,6 +1779,9 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
     [77, 78, 79, 80, 81].includes(Number(property.id))
   );
 
+  // ── OvikaLiving monthly rental properties with 1-month deposit ───────────
+  const isOvikaMonthlyProperty = [315, 316, 317, 323].includes(Number(property.id));
+
   // ── CONSISTENT BED/BATH COUNTS (same helpers as PropertyListPage) ──────────
   const bedCount  = getBedCount(property.bedrooms, property.parsedBedrooms);
   const bathCount = getBathCount(property.bathrooms, property.parsedBathrooms);
@@ -2081,7 +2094,7 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                         )}
                         {pricing.securityDeposit > 0 && (
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid #e5e5e5', color: '#0369a1' }}>
-                            <span>Security Deposit {pricingMode !== 'monthly' ? '(1 night · Refundable)' : '(Refundable)'}</span>
+                            <span>Security Deposit {pricingMode !== 'monthly' ? '(1 night · Refundable)' : isOvikaMonthlyProperty ? '(1 Month · Refundable)' : '(Refundable)'}</span>
                             <span><MdCurrencyRupee style={{ display: 'inline' }} />{pricing.securityDeposit.toLocaleString('en-IN')}</span>
                           </div>
                         )}
@@ -2256,7 +2269,7 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                       <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid #e5e5e5', marginBottom: '0.5rem' }}><span>Property:</span><strong>{property.property_name}</strong></div>
                       {pricing.securityDeposit > 0 && (
                         <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '0.5rem', borderTop: '1px solid #e5e5e5', color: '#0369a1', fontSize: '0.9rem' }}>
-                          <span>Security Deposit {pricingMode !== 'monthly' ? '(1 night · Refundable)' : '(Refundable)'}:</span>
+                          <span>Security Deposit {pricingMode !== 'monthly' ? '(1 night · Refundable)' : isOvikaMonthlyProperty ? '(1 Month · Refundable)' : '(Refundable)'}:</span>
                           <strong>₹{pricing.securityDeposit.toLocaleString('en-IN')}</strong>
                         </div>
                       )}
@@ -2414,6 +2427,7 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                       onBookNow={handleRoomBookNow}
                       showDeposit={!!(isOvikaOwnProperty && pricingMode !== 'monthly')}
                       depositAmount={displayBasePrice}
+                      showMonthlyDeposit={!!(isOvikaMonthlyProperty && pricingMode === 'monthly')}
                     />
                     <RoomTableSingleMobile
                       rooms={property.parsedBedrooms}
@@ -2629,7 +2643,7 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
               <div className="amenity-card rule-card"><div className="rule-icon">{guestPolicy.family_allowed ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Family</span><strong>{guestPolicy.family_allowed ? 'Allowed' : 'Not allowed'}</strong></div></div>
               <div className="amenity-card rule-card"><div className="rule-icon">{guestPolicy.unmarried_couple_allowed ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Unmarried Couples</span><strong>{guestPolicy.unmarried_couple_allowed ? 'Allowed' : 'Not allowed'}</strong></div></div>
               <div className="amenity-card rule-card"><div className="rule-icon">{(guestPolicy.bachelors_allowed || guestPolicy.Bechelors) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Bachelor</span><strong>{(guestPolicy.bachelors_allowed || guestPolicy.Bechelors) ? 'Allowed' : 'Not allowed'}</strong></div></div>
-              {(property.noticePeriod || property.meta?.noticePeriod) && <div className="amenity-card rule-card"><div className="rule-icon"><FiInfo style={{ color: '#3b82f6' }} /></div><div className="rule-info"><span className="rule-label">Notice Period</span><strong>{property.noticePeriod || property.meta?.noticePeriod} Days</strong></div></div>}
+              {(property.noticePeriod != null || property.meta?.noticePeriod != null) && <div className="amenity-card rule-card"><div className="rule-icon"><FiInfo style={{ color: '#3b82f6' }} /></div><div className="rule-info"><span className="rule-label">Notice Period</span><strong>{Number(property.noticePeriod ?? property.meta?.noticePeriod) === 0 ? 'Nil' : `${property.noticePeriod ?? property.meta?.noticePeriod} Days`}</strong></div></div>}
               {(property.electricityCharges || property.meta?.electricityCharges) && <div className="amenity-card rule-card"><div className="rule-icon"><FiZap style={{ color: '#eab308' }} /></div><div className="rule-info"><span className="rule-label">Electricity</span><strong>{property.electricityCharges || property.meta?.electricityCharges}</strong></div></div>}
               {(property.gateClosingTime || property.meta?.gateClosingTime) && <div className="amenity-card rule-card"><div className="rule-icon"><Clock size={18} color="#ef4444" /></div><div className="rule-info"><span className="rule-label">Gate Closing</span><strong>{property.gateClosingTime || property.meta?.gateClosingTime}</strong></div></div>}
             </div>
@@ -2722,7 +2736,7 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                     </div>
                     <div className="date-box">
                       <label>{pricingMode === 'monthly' ? 'NOTICE PERIOD' : 'CHECK-OUT TIME'}</label>
-                      <span>{pricingMode === 'monthly' ? (property.property_name?.toLowerCase().includes('signature') ? '0 Days' : `${property.noticePeriod || property.meta?.noticePeriod || 30} Days`) : (property.check_out_time || property.meta?.check_out_time || '11:00')}</span>
+                      <span>{pricingMode === 'monthly' ? (() => { const np = property.noticePeriod ?? property.meta?.noticePeriod; return (property.property_name?.toLowerCase().includes('signature') || Number(np) === 0) ? 'Nil' : `${np || 30} Days`; })() : (property.check_out_time || property.meta?.check_out_time || '11:00')}</span>
                     </div>
                   </div>
 
@@ -2741,13 +2755,13 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                           ? 'Request needed first'
                           : "You won't be charged yet"}
                     </p>
-                    {(property.securityDeposit > 0 || isOvikaOwnProperty) && (
+                    {(property.securityDeposit > 0 || isOvikaOwnProperty || isOvikaMonthlyProperty) && (
                       <div style={{ display:'flex', alignItems:'center', gap:'5px', padding:'6px 10px', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'6px', fontSize:'0.75rem', color:'#166534' }}>
                         <FiLock size={12} />
                         <span>
                           <strong>Security Deposit: </strong>
                           {pricingMode === 'monthly'
-                            ? (property.securityDeposit > 0 ? `₹${formatCurrency(property.securityDeposit)}` : 'As applicable')
+                            ? (isOvikaMonthlyProperty ? `1 Month's Rent` : property.securityDeposit > 0 ? `₹${formatCurrency(property.securityDeposit)}` : 'As applicable')
                             : (isOvikaOwnProperty ? `1 night's rent` : `₹${formatCurrency(property.securityDeposit)}`)}
                           {' '}(Refundable)
                         </span>
