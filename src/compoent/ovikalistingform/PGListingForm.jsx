@@ -207,8 +207,9 @@ const PGListingForm = () => {
     essentialsNearby: { grocery: "", medical: "", shopping: "" },
     cafesRestaurants: [{ name: "", distance: "" }],
     houseSpecificTips: [""],
-    discount90Days: "", 
+    discount90Days: "",
     discount180Days: "",
+    maxGuests: 1,
   });
 
   const photoPreviews = useFilePreviews();
@@ -419,6 +420,7 @@ const PGListingForm = () => {
       fd.append("bathrooms", JSON.stringify((form.bathroomDetails || []).length > 0 ? form.bathroomDetails : [{ type: "Attached", count: form.bathrooms }]));
       fd.append("amenities", JSON.stringify(Object.keys(form.amenities).filter(k => form.amenities[k])));
       fd.append("beds", String(totalBeds));
+      fd.append("max_guests", String(Number(form.maxGuests) || totalBeds || 1));
 
       const guidebook = {
         transport_tips: form.transportTips,
@@ -850,6 +852,50 @@ const PGListingForm = () => {
                   </div>
                 </div>
                 {/* ── END BATHROOM SECTION ── */}
+
+                {/* ── MAXIMUM GUESTS ── */}
+                <div className="field-group full">
+                  <div className="section-subtitle" style={{ marginTop: '24px' }}>
+                    Maximum Guests Allowed
+                  </div>
+                  <div style={{
+                    border: '1px solid #e5e7eb', borderRadius: '10px',
+                    padding: '16px', background: '#fafafa',
+                  }}>
+                    <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '12px' }}>
+                      How many guests can stay at this property at once?
+                    </p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                      <button
+                        type="button"
+                        onClick={() => setForm(f => ({ ...f, maxGuests: Math.max(1, (Number(f.maxGuests) || 1) - 1) }))}
+                        disabled={form.maxGuests <= 1}
+                        style={{
+                          width: '40px', height: '40px', borderRadius: '50%',
+                          border: '1.5px solid #d1d5db', background: '#fff',
+                          fontSize: '1.3rem', cursor: form.maxGuests <= 1 ? 'not-allowed' : 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontWeight: '700', color: form.maxGuests <= 1 ? '#ccc' : '#374151',
+                        }}
+                      >−</button>
+                      <span style={{ fontSize: '1.5rem', fontWeight: '700', minWidth: '2.5rem', textAlign: 'center', color: '#1e293b' }}>
+                        {form.maxGuests || 1}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setForm(f => ({ ...f, maxGuests: (Number(f.maxGuests) || 1) + 1 }))}
+                        style={{
+                          width: '40px', height: '40px', borderRadius: '50%',
+                          border: '1.5px solid #c98b3e', background: '#c98b3e',
+                          fontSize: '1.3rem', cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontWeight: '700', color: '#fff',
+                        }}
+                      >+</button>
+                      <span style={{ fontSize: '13px', color: '#6b7280' }}>guests</span>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="field-group">
                   <label>Total Built-up Area (Sq Ft) *</label>

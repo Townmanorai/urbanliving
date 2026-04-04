@@ -161,8 +161,9 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
     essentialsNearby: { grocery: "", medical: "", shopping: "" },
     cafesRestaurants: [{ name: "", distance: "" }],
     houseSpecificTips: [""],
-    discount90Days: "", 
+    discount90Days: "",
     discount180Days: "",
+    maxGuests: 1,
   });
 
   const [aadhaarNumber, setAadhaarNumber] = useState("");
@@ -329,6 +330,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
           area: data.area || meta.area || prevForm.area || "",
           furnishing: furnishingValue,
           preferredTenants: preferredTenantsFromMeta.length > 0 ? preferredTenantsFromMeta : (prevForm.preferredTenants || []),
+          maxGuests: Number(data.max_guests) || 1,
         };
 
         if (updatedForm.transportTips) {
@@ -548,7 +550,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
         property_category: form.propertyCategory || "PG",
         area: form.area || "",
         beds: Number(totalBeds) || 0,
-        max_guests: Number(totalBeds) || 1,
+        max_guests: Number(form.maxGuests) || Number(totalBeds) || 1,
         booking_type: String(form.bookingType || "0"),
         owner_id: form.owner_id || user?.id || "admin",
         
@@ -1140,6 +1142,24 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
                 <div className="field-group">
                   <label>Base Price / Monthly Rental (₹)</label>
                   <input type="number" name="baseRate" value={form.baseRate} onChange={handleChange} placeholder="e.g. 15000" />
+                </div>
+                <div className="field-group">
+                  <label>Maximum Guests Allowed</label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '6px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setForm(f => ({ ...f, maxGuests: Math.max(1, (Number(f.maxGuests) || 1) - 1) }))}
+                      style={{ width: '36px', height: '36px', borderRadius: '50%', border: '1.5px solid #d1d5db', background: '#fff', fontSize: '1.2rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: form.maxGuests <= 1 ? '#ccc' : '#333' }}
+                      disabled={form.maxGuests <= 1}
+                    >−</button>
+                    <span style={{ fontSize: '1.3rem', fontWeight: '700', minWidth: '1.8rem', textAlign: 'center' }}>{form.maxGuests || 1}</span>
+                    <button
+                      type="button"
+                      onClick={() => setForm(f => ({ ...f, maxGuests: (Number(f.maxGuests) || 1) + 1 }))}
+                      style={{ width: '36px', height: '36px', borderRadius: '50%', border: '1.5px solid #c98b3e', background: '#c98b3e', fontSize: '1.2rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: '#fff' }}
+                    >+</button>
+                    <span style={{ fontSize: '0.8rem', color: '#6b7280' }}>guests</span>
+                  </div>
                 </div>
                 <div className="field-group">
                   <label>Security Deposit (₹)</label>

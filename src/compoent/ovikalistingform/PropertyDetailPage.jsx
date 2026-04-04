@@ -839,6 +839,7 @@ const PropertyDetailPage = () => {
   });
   const [bookingFor, setBookingFor] = useState('me');
   const [guestDetails, setGuestDetails] = useState({ name: '', address: '', phone: '' });
+  const [numGuests, setNumGuests] = useState(1);
   const [availabilityRequested, setAvailabilityRequested] = useState(false);
   const [aadhaarNumber, setAadhaarNumber] = useState('');
   const [isAadhaarLoading, setIsAadhaarLoading] = useState(false);
@@ -1695,7 +1696,8 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
           aadhar_number: aadhaarNumber || passportInput || 'NOT_PROVIDED',
           user_photo: formData.uploadedPhoto || '', terms_verified: true,
           email: userEmail, total_price: pricing.total, subtotal: pricing.subtotal,
-          gst_amount: pricing.gst, nights, discount_amount: pricing.discount || 0
+          gst_amount: pricing.gst, nights, discount_amount: pricing.discount || 0,
+          num_guests: pricingMode === 'monthly' ? numGuests : undefined
         });
 
         console.log('Booking Creation API Response:', data);
@@ -1876,6 +1878,29 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                       </div>
                     )}
                   </div>
+
+                  {pricingMode === 'monthly' && (
+                    <div style={{ marginBottom: '1.5rem', padding: '1.5rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                      <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Number of Guests</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <button
+                          type="button"
+                          onClick={() => setNumGuests(g => Math.max(1, g - 1))}
+                          style={{ width: '38px', height: '38px', borderRadius: '50%', border: '1.5px solid #cbd5e1', background: '#fff', fontSize: '1.3rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: numGuests <= 1 ? '#ccc' : '#333' }}
+                          disabled={numGuests <= 1}
+                        >−</button>
+                        <span style={{ fontSize: '1.4rem', fontWeight: '700', minWidth: '2rem', textAlign: 'center' }}>{numGuests}</span>
+                        <button
+                          type="button"
+                          onClick={() => setNumGuests(g => Math.min(property.max_guests || 20, g + 1))}
+                          style={{ width: '38px', height: '38px', borderRadius: '50%', border: '1.5px solid #8b0000', background: '#8b0000', fontSize: '1.3rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: '#fff' }}
+                        >+</button>
+                        {property.max_guests > 0 && (
+                          <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Max {property.max_guests} guests allowed</span>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="pm-property-card">
                     <img src={getPhotoUrl(property.photos?.[0]) || 'https://via.placeholder.com/300x200'} alt="Property" className="pm-property-img" />
