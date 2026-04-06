@@ -1,6 +1,8 @@
 
 
 import React, { useState, useEffect, useRef, useContext } from 'react';
+import * as ort from 'onnxruntime-web';
+ort.env.wasm.numThreads = 1;
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { UserCircle } from "lucide-react";
 
@@ -65,11 +67,7 @@ const formatCurrency = (num) => {
   return Number(num).toLocaleString('en-IN');
 };
 
-// ─── SHARED BED/BATH HELPERS (same logic as PropertyListPage) ─────────────────
 
-/**
- * Parse any field that could be a JSON string, array, or number into an array.
- */
 const parseJsonFieldForCount = (field) => {
   if (!field) return [];
   if (Array.isArray(field)) return field;
@@ -87,14 +85,7 @@ const parseJsonFieldForCount = (field) => {
   return [];
 };
 
-/**
- * Get bedroom COUNT — consistent with ListPage's getBedCount():
- *   - If parsed array has items → use its length
- *   - Otherwise fall back to Number(raw)
- *
- * Also accepts a pre-parsed array as second argument (parsedBedrooms from transformPropertyData).
- * When parsedBedrooms is provided and non-empty, it takes priority.
- */
+
 const getBedCount = (rawBedrooms, parsedBedrooms) => {
   // Priority 1: already-parsed array from transformPropertyData
   if (Array.isArray(parsedBedrooms) && parsedBedrooms.length > 0) return parsedBedrooms.length;
@@ -106,14 +97,7 @@ const getBedCount = (rawBedrooms, parsedBedrooms) => {
   return isNaN(n) ? 0 : Math.max(0, n);
 };
 
-/**
- * Get bathroom COUNT — consistent with ListPage's getBathCount():
- *   - If parsed array has { type, count } items → sum all count values
- *   - If parsed array has plain items → use length
- *   - Otherwise fall back to Number(raw)
- *
- * Also accepts a pre-parsed array as second argument (parsedBathrooms from transformPropertyData).
- */
+
 const getBathCount = (rawBathrooms, parsedBathrooms) => {
   // Priority 1: already-parsed array from transformPropertyData
   const arr = Array.isArray(parsedBathrooms) && parsedBathrooms.length > 0
@@ -666,6 +650,362 @@ const ImageViewer = ({ images, initialIndex, onClose }) => {
   );
 };
 
+// ─── PHOTO GALLERY SLIDER  (ONNX — exact same as ImageClassificationModal) ──
+const GALLERY_CLASSES = ['bathroom','bedroom','dining','gaming','kitchen','laundry','living','office','terrace','yard'];
+const GALLERY_COLORS  = { bathroom:'#3b82f6', bedroom:'#8b5cf6', dining:'#f97316', gaming:'#ef4444', kitchen:'#22c55e', laundry:'#06b6d4', living:'#14b8a6', office:'#6366f1', terrace:'#eab308', yard:'#84cc16' };
+const GALLERY_ICONS   = { bathroom:'🚿', bedroom:'🛏️', dining:'🍽️', gaming:'🎮', kitchen:'🍳', laundry:'👕', living:'🛋️', office:'💼', terrace:'🌇', yard:'🌿' };
+const GALLERY_LABELS  = { bathroom:'Bathroom', bedroom:'Bedroom', dining:'Dining Area', gaming:'Gaming Room', kitchen:'Kitchen', laundry:'Laundry', living:'Living Room', office:'Office / Study', terrace:'Terrace', yard:'Yard / Garden' };
+const GALLERY_MEAN    = [0.485, 0.456, 0.406];
+const GALLERY_STD     = [0.229, 0.224, 0.225];
+
+// ── Exact copy of ImageClassificationModal's softmax ──
+function gallerySoftmax(arr) {
+  const max  = Math.max(...arr);
+  const exps = arr.map(v => Math.exp(v - max));
+  const sum  = exps.reduce((a, b) => a + b, 0);
+  return exps.map(v => v / sum);
+}
+
+// ── imageToTensor — fetch→blob to avoid browser-cache CORS taint issue ──
+// Problem: property page shows images WITHOUT crossOrigin → browser caches them
+// without CORS headers. Then classifying with crossOrigin='anonymous' hits the
+// cached non-CORS version → SecurityError. Fix: fetch as blob (same-origin blob
+// URL → canvas reads freely, no taint).
+async function galleryImageToTensor(url) {
+  const MEAN = GALLERY_MEAN, STD = GALLERY_STD;
+
+  const buildTensor = (img) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 224;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, 224, 224);
+    const { data } = ctx.getImageData(0, 0, 224, 224);
+    const tensor = new Float32Array(3 * 224 * 224);
+    for (let i = 0; i < 224 * 224; i++) {
+      tensor[i]               = (data[i*4]   / 255 - MEAN[0]) / STD[0];
+      tensor[224*224 + i]     = (data[i*4+1] / 255 - MEAN[1]) / STD[1];
+      tensor[224*224*2 + i]   = (data[i*4+2] / 255 - MEAN[2]) / STD[2];
+    }
+    return tensor;
+  };
+
+  const loadFrom = (src, useCors) => new Promise((res, rej) => {
+    const img = new Image();
+    if (useCors) img.crossOrigin = 'anonymous';
+    img.onload  = () => { try { res(buildTensor(img)); } catch(e) { rej(e); } };
+    img.onerror = rej;
+    img.src = src;
+  });
+
+  // Strategy 1: fetch → blob URL (bypasses cache taint — most reliable)
+  try {
+    const resp   = await fetch(url, { cache: 'no-store' });
+    const blob   = await resp.blob();
+    const objUrl = URL.createObjectURL(blob);
+    try   { const t = await loadFrom(objUrl, false); return t; }
+    finally { URL.revokeObjectURL(objUrl); }
+  } catch { /* fall through */ }
+
+  // Strategy 2: cache-bust + crossOrigin (forces fresh CORS-aware request)
+  try {
+    const bust = url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
+    return await loadFrom(bust, true);
+  } catch { /* fall through */ }
+
+  // Strategy 3: direct crossOrigin (works if not cached yet)
+  return loadFrom(url, true);
+}
+
+// ── Exact copy of ImageClassificationModal's classifyImage ──
+async function galleryClassifyOne(session, url) {
+  const tensorData  = await galleryImageToTensor(url);
+  const inputTensor = new ort.Tensor('float32', tensorData, [1, 3, 224, 224]);
+  const feeds       = { input: inputTensor };
+  const results     = await session.run(feeds);
+  const outputKey   = Object.keys(results)[0];
+  const logits      = Array.from(results[outputKey].data);
+  const probs       = gallerySoftmax(logits);
+  const sorted      = probs
+    .map((p, i) => ({ label: GALLERY_CLASSES[i], confidence: p }))
+    .sort((a, b) => b.confidence - a.confidence);
+  return { label: sorted[0].label, confidence: sorted[0].confidence, top3: sorted.slice(0, 3) };
+}
+
+const PhotoGallerySlider = ({ property, onClose }) => {
+  const [results,     setResults]     = useState({});
+  const [photos,      setPhotos]      = useState([]);
+  const [done,        setDone]        = useState(0);
+  const [modelStatus, setModelStatus] = useState('loading');
+  const [activeTab,   setActiveTab]   = useState('all');
+  const [lightbox,    setLightbox]    = useState({ open: false, urls: [], idx: 0 });
+  const [visible,     setVisible]     = useState(false);
+  const sessionRef  = useRef(null);
+  const closingRef  = useRef(false);
+
+  // Slide up on mount
+  useEffect(() => {
+    const t = setTimeout(() => setVisible(true), 10);
+    return () => clearTimeout(t);
+  }, []);
+
+  // Push history state so browser/Android back button closes slider instead of navigating away
+  useEffect(() => {
+    window.history.pushState({ photoGallery: true }, '');
+    const onPopState = () => {
+      if (!closingRef.current) {
+        closingRef.current = true;
+        setVisible(false);
+        setTimeout(onClose, 300);
+      }
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        if (lightbox.open) { setLightbox(l => ({ ...l, open: false })); return; }
+        handleClose();
+      }
+      if (lightbox.open) {
+        if (e.key === 'ArrowRight') setLightbox(l => ({ ...l, idx: Math.min(l.idx + 1, l.urls.length - 1) }));
+        if (e.key === 'ArrowLeft')  setLightbox(l => ({ ...l, idx: Math.max(l.idx - 1, 0) }));
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [lightbox]);
+
+  // ── Load ONNX model (exact same as ImageClassificationModal) ──
+  useEffect(() => {
+    (async () => {
+      try {
+        setModelStatus('loading');
+        sessionRef.current = await ort.InferenceSession.create('/bestmodel.onnx', {
+          executionProviders: ['wasm'],
+        });
+        setModelStatus('ready');
+      } catch (e) {
+        console.error('ONNX model load failed:', e);
+        setModelStatus('error');
+      }
+    })();
+  }, []);
+
+  // ── Start classifying once model is ready (exact same as ImageClassificationModal) ──
+  useEffect(() => {
+    if (modelStatus !== 'ready') return;
+
+    // getPhotos logic — exact copy from ImageClassificationModal
+    let list = [];
+    if (Array.isArray(property.photos)) list = property.photos;
+    else if (typeof property.photos === 'string') {
+      try { list = JSON.parse(property.photos); }
+      catch { list = property.photos.split(','); }
+    }
+    list = list.map(p => (typeof p === 'string' ? p.trim() : '')).filter(Boolean);
+
+    setPhotos(list);
+    setDone(0);
+    setActiveTab('all');
+
+    const initial = {};
+    list.forEach(url => { initial[url] = { loading: true }; });
+    setResults(initial);
+
+    let completed = 0;
+    list.forEach(async (url) => {
+      try {
+        const res = await galleryClassifyOne(sessionRef.current, url);
+        setResults(prev => ({ ...prev, [url]: { ...res, loading: false } }));
+      } catch (e) {
+        console.warn('classify failed for', url, e);
+        setResults(prev => ({ ...prev, [url]: { error: true, loading: false } }));
+      }
+      completed++;
+      setDone(completed);
+    });
+  }, [modelStatus, property]);
+
+  const handleClose = () => {
+    if (closingRef.current) return;
+    closingRef.current = true;
+    setVisible(false);
+    window.history.back(); // pop the state we pushed on mount
+    setTimeout(onClose, 300);
+  };
+
+  // Build groups
+  const grouped = {};
+  photos.forEach(url => {
+    const r = results[url];
+    if (!r || r.loading) return;
+    const lbl = r.error ? '_other' : (r.label || '_other');
+    if (!grouped[lbl]) grouped[lbl] = [];
+    grouped[lbl].push(url);
+  });
+
+  const classifying   = done < photos.length;
+  const knownGroups   = GALLERY_CLASSES.filter(g => grouped[g]?.length > 0);
+  const otherPhotos   = grouped['_other'] || [];
+  const displayGroups = activeTab === 'all' ? knownGroups : (knownGroups.includes(activeTab) ? [activeTab] : []);
+
+  const openLightbox = (url, urlList) => setLightbox({ open: true, urls: urlList, idx: urlList.indexOf(url) });
+
+  return (
+    <div
+      className="pgs-overlay"
+      style={{ transform: visible ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.3s cubic-bezier(0.32,0.72,0,1)' }}
+    >
+      {/* ── Close Button (top-right) ── */}
+      <button className="pgs-close-btn" onClick={handleClose}>✕</button>
+
+      {/* ── Header ── */}
+      <div className="pgs-header">
+        <div>
+          <div className="pgs-title">All Photos</div>
+          <div className="pgs-sub">
+            {property.property_name} &nbsp;·&nbsp; {photos.length} photos
+            {modelStatus === 'loading' && <span className="pgs-badge pgs-badge--load">⏳ Loading AI model...</span>}
+            {modelStatus === 'error'   && <span className="pgs-badge pgs-badge--err">⚠ Model unavailable</span>}
+            {modelStatus === 'ready' && classifying  && <span className="pgs-badge pgs-badge--prog">{done}/{photos.length} classified</span>}
+            {modelStatus === 'ready' && !classifying && photos.length > 0 && <span className="pgs-badge pgs-badge--done">✓ Done</span>}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Progress bar ── */}
+      {modelStatus === 'ready' && classifying && (
+        <div className="pgs-progress-track">
+          <div className="pgs-progress-fill" style={{ width: `${photos.length ? (done/photos.length)*100 : 0}%` }} />
+        </div>
+      )}
+
+      {/* ── Category Tabs (after classification done) ── */}
+      {modelStatus === 'ready' && !classifying && knownGroups.length > 0 && (
+        <div className="pgs-tabs">
+          <button className={`pgs-tab${activeTab==='all'?' pgs-tab--active':''}`} onClick={() => setActiveTab('all')}>
+            All ({photos.length - otherPhotos.length})
+          </button>
+          {knownGroups.map(g => (
+            <button
+              key={g}
+              className={`pgs-tab${activeTab===g?' pgs-tab--active':''}`}
+              onClick={() => setActiveTab(g)}
+            >
+              <img src={getPhotoUrl(grouped[g][0])} className="pgs-tab-thumb" alt="" />
+              {GALLERY_ICONS[g]} {GALLERY_LABELS[g]} ({grouped[g].length})
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* ── Body ── */}
+      <div className="pgs-body">
+
+        {/* Connecting */}
+        {modelStatus === 'loading' && (
+          <div className="pgs-loading-state">
+            <div className="pgs-spinner" />
+            <p>Loading AI model (first time may take a moment)...</p>
+          </div>
+        )}
+
+        {modelStatus === 'error' && (
+          <div className="pgs-loading-state">
+            <div style={{ fontSize: 32 }}>⚠️</div>
+            <p style={{ color: '#ef4444', fontWeight: 600 }}>AI model could not be loaded</p>
+            <p style={{ color: '#64748b', fontSize: 13 }}>Make sure <code>bestmodel.onnx</code> is in the <code>/public</code> folder.</p>
+          </div>
+        )}
+
+        {modelStatus === 'ready' && classifying && (
+          <div className="pgs-section">
+            <div className="pgs-section-hdr">
+              <span className="pgs-section-name">All Images</span>
+              <span className="pgs-section-cnt">{photos.length}</span>
+            </div>
+            <div className="pgs-grid">
+              {photos.map((url, i) => {
+                const r = results[url];
+                return (
+                  <div key={i} className="pgs-card" onClick={() => openLightbox(url, photos)}>
+                    <img src={getPhotoUrl(url)} alt="" loading="lazy" />
+                    <div className="pgs-card-tag pgs-card-tag--classifying">
+                      {!r || r.loading ? '⏳ Classifying...'
+                        : r.error ? 'Other'
+                        : `${GALLERY_ICONS[r.label]} ${GALLERY_LABELS[r.label]}`}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* After classification — grouped sections */}
+        {modelStatus === 'ready' && !classifying && (
+          <>
+            {displayGroups.map(group => (
+              <div key={group} className="pgs-section">
+                <div className="pgs-section-hdr">
+                  <span className="pgs-section-name">{GALLERY_ICONS[group]} {GALLERY_LABELS[group]}</span>
+                  <span className="pgs-section-cnt">{grouped[group].length}</span>
+                </div>
+                <div className="pgs-grid">
+                  {grouped[group].map((url, i) => (
+                    <div key={i} className="pgs-card"
+                      onClick={() => openLightbox(url, grouped[group])}>
+                      <img src={getPhotoUrl(url)} alt={GALLERY_LABELS[group]} loading="lazy" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            {/* Other / unclassified */}
+            {activeTab === 'all' && otherPhotos.length > 0 && (
+              <div className="pgs-section">
+                <div className="pgs-section-hdr">
+                  <span className="pgs-section-name">Other Images</span>
+                  <span className="pgs-section-cnt">{otherPhotos.length}</span>
+                </div>
+                <div className="pgs-grid">
+                  {otherPhotos.map((url, i) => (
+                    <div key={i} className="pgs-card pgs-card--other" onClick={() => openLightbox(url, otherPhotos)}>
+                      <img src={getPhotoUrl(url)} alt="Other" loading="lazy" />
+                      <div className="pgs-card-tag pgs-card-tag--other">Other</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* ── Lightbox ── */}
+      {lightbox.open && (
+        <div className="pgs-lightbox" onClick={() => setLightbox(l => ({ ...l, open: false }))}>
+          <button className="pgs-lb-close" onClick={() => setLightbox(l => ({ ...l, open: false }))}>✕</button>
+          {lightbox.idx > 0 && (
+            <button className="pgs-lb-nav pgs-lb-prev"
+              onClick={e => { e.stopPropagation(); setLightbox(l => ({ ...l, idx: l.idx - 1 })); }}>‹</button>
+          )}
+          <img src={getPhotoUrl(lightbox.urls[lightbox.idx])} alt="" onClick={e => e.stopPropagation()} />
+          {lightbox.idx < lightbox.urls.length - 1 && (
+            <button className="pgs-lb-nav pgs-lb-next"
+              onClick={e => { e.stopPropagation(); setLightbox(l => ({ ...l, idx: l.idx + 1 })); }}>›</button>
+          )}
+          <div className="pgs-lb-counter">{lightbox.idx + 1} / {lightbox.urls.length}</div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ─── CALENDAR ────────────────────────────────────────────────────────────────
 const Calendar = ({ selectedDates, onDateSelect, minDate = new Date(), disabledDateSet = new Set(), onInvalidRange, currentMonth, setCurrentMonth }) => {
   const [checkInDate, setCheckInDate] = useState(selectedDates.checkInDate ? new Date(selectedDates.checkInDate) : null);
@@ -866,13 +1206,14 @@ const PropertyDetailPage = () => {
   const [hostImage, setHostImage] = useState(null);
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [selectedRoomForLead, setSelectedRoomForLead] = useState(null);
+  const [showPhotoGallery, setShowPhotoGallery] = useState(false);
 
   // Scroll lock when any modal is open
   useEffect(() => {
-    const anyOpen = !!(showImageViewer || showPaymentModal || showLeadModal);
+    const anyOpen = !!(showImageViewer || showPaymentModal || showLeadModal || showPhotoGallery);
     document.body.style.overflow = anyOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
-  }, [showImageViewer, showPaymentModal, showLeadModal]);
+  }, [showImageViewer, showPaymentModal, showLeadModal, showPhotoGallery]);
   const [calendarViewMonth, setCalendarViewMonth] = useState(new Date());
   const [monthlyDuration, setMonthlyDuration] = useState(1);
   const [monthPickerYear, setMonthPickerYear] = useState(new Date().getFullYear());
@@ -1858,6 +2199,7 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
       )}
 
       {showImageViewer && <ImageViewer images={photos} initialIndex={viewerImageIndex} onClose={() => setShowImageViewer(false)} />}
+      {showPhotoGallery && <PhotoGallerySlider property={property} onClose={() => setShowPhotoGallery(false)} />}
 
       <LeadGenerationModal isOpen={showLeadModal} onClose={() => setShowLeadModal(false)} propertyName={property.property_name} propertyId={property.id} user={user} roomType={selectedRoomForLead} />
 
@@ -2381,28 +2723,56 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
       </section>
 
       <section className="image-gallery">
-        <div className="main-frame" onClick={handleMainImageClick} style={{ cursor: 'pointer', position: 'relative' }}>
-          <img src={getPhotoUrl(photos[activeImg]) || 'https://via.placeholder.com/800x500'} alt="Main Property" />
-          {property.property_name?.toLowerCase().includes('signature') && (
-            <img 
-              src="/ovikaver.png" 
-              alt="Verified" 
-              style={{
-                position: 'absolute',
-                top: -25,
-                left: -25,
-                width: 180,
-                height: 'auto',
-                filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
-                pointerEvents: 'none',
-                zIndex: 20
-              }}
-            />
-          )}
+        {/* ── Airbnb-style gallery grid ── */}
+        <div className="gallery-airbnb">
+
+          {/* LEFT — big main image */}
+          <div className="gallery-main" onClick={handleMainImageClick}>
+            <img src={getPhotoUrl(photos[0]) || 'https://via.placeholder.com/800x500'} alt="Main Property" />
+            {property.property_name?.toLowerCase().includes('signature') && (
+              <img src="/ovikaver.png" alt="Verified" className="gallery-verified-badge" />
+            )}
+          </div>
+
+          {/* RIGHT — 2 stacked images */}
+          <div className="gallery-side">
+            <div
+              className="gallery-side-cell gallery-side-top"
+              onClick={() => { if (photos[1]) { setViewerImageIndex(1); setShowImageViewer(true); } }}
+            >
+              {photos[1]
+                ? <img src={getPhotoUrl(photos[1])} alt="Property 2" />
+                : <div className="gallery-empty-cell" />}
+            </div>
+            <div
+              className="gallery-side-cell gallery-side-bottom"
+              onClick={() => { if (photos[2]) { setViewerImageIndex(2); setShowImageViewer(true); } }}
+            >
+              {photos[2]
+                ? <img src={getPhotoUrl(photos[2])} alt="Property 3" />
+                : <div className="gallery-empty-cell" />}
+            </div>
+          </div>
+
+          {/* "Show all photos" button — absolute on whole grid bottom-right */}
+          <button className="gallery-show-all-btn" onClick={() => setShowPhotoGallery(true)}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+            </svg>
+            <span className="gallery-show-all-text">Show all photos</span>
+          </button>
+
         </div>
+
+        {/* Mobile-only thumbnail strip */}
         <div className="thumbnail-strip">
           {photos.map((p, idx) => (
-            <div key={idx} className={`thumb-item ${activeImg === idx ? 'active' : ''}`} onClick={() => { setActiveImg(idx); handleThumbnailClick(idx); }} style={{ cursor: 'pointer' }}>
+            <div
+              key={idx}
+              className={`thumb-item ${activeImg === idx ? 'active' : ''}`}
+              onClick={() => { setActiveImg(idx); handleThumbnailClick(idx); }}
+            >
               <img src={getPhotoUrl(p)} alt={`Thumb ${idx}`} />
             </div>
           ))}
