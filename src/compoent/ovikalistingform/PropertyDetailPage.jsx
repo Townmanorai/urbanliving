@@ -181,7 +181,12 @@ const transformPropertyData = (data) => {
     photos: Array.isArray(data.photos) ? data.photos : (data.photos ? [data.photos] : []),
     parsedBedrooms,
     parsedBathrooms: parseJsonField(data.bathrooms || parsedMeta.bathrooms),
-    guidebook: combined.guidebook || parsedMeta.guidebook || {},
+    guidebook: (() => {
+      const raw = combined.guidebook || parsedMeta.guidebook || null;
+      if (!raw) return null;
+      if (typeof raw === 'string') { try { return JSON.parse(raw); } catch { return null; } }
+      return raw;
+    })(),
     guest_policy: (() => {
       const raw = combined.guest_policy || parsedMeta.guest_policy || {};
       if (typeof raw === 'string') { try { return JSON.parse(raw); } catch { return {}; } }
@@ -294,11 +299,11 @@ const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookN
         <thead>
           <tr>
             <th className="rm-th rm-th--room">Room</th>
-            <th className="rm-th">Bathroom</th>
-            <th className="rm-th">Area</th>
+            <th className="rm-th rm-col--bath">Bathroom</th>
+            <th className="rm-th rm-col--area">Area</th>
             <th className="rm-th rm-th--price">Price / {priceUnit}</th>
-            {showDeposit && <th className="rm-th">Security Deposit</th>}
-            <th className="rm-th">Available</th>
+            {showDeposit && <th className="rm-th rm-col--deposit">Security Deposit</th>}
+            <th className="rm-th rm-col--avail">Available</th>
             <th className="rm-th rm-th--action"></th>
           </tr>
         </thead>
@@ -310,7 +315,7 @@ const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookN
               <tr key={i} className={`rm-row${isLast ? ' rm-row--last' : ''}`}>
                 <td className="rm-td rm-td--room">
                   <div style={{ display:'flex', alignItems:'flex-start', gap:10 }}>
-                    <div style={{ width:32, height:24, flexShrink:0, background:'#f1f5f9', borderRadius:4, border:'1px solid #e2e8f0', display:'flex', alignItems:'center', justifyContent:'center', marginTop:2 }}>
+                    <div className="rm-room-icon" style={{ width:32, height:24, flexShrink:0, background:'#f1f5f9', borderRadius:4, border:'1px solid #e2e8f0', display:'flex', alignItems:'center', justifyContent:'center', marginTop:2 }}>
                       <svg width="18" height="13" viewBox="0 0 18 13" fill="none">
                         <rect x="1" y="5" width="16" height="7" rx="1.5" fill="#94a3b8"/>
                         <rect x="1" y="1" width="4" height="5" rx="1" fill="#cbd5e1"/>
@@ -331,11 +336,11 @@ const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookN
                     </div>
                   </div>
                 </td>
-                <td className="rm-td">
+                <td className="rm-td rm-col--bath">
                   <BathBadge attached={room.attachedBathroom} />
                 </td>
                 {isFirst && (
-                  <td className="rm-td" rowSpan={rowCount} style={{ verticalAlign:'middle' }}>
+                  <td className="rm-td rm-col--area" rowSpan={rowCount} style={{ verticalAlign:'middle' }}>
                     <span className="rm-area-val">{area || '—'}</span>
                   </td>
                 )}
@@ -351,14 +356,14 @@ const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookN
                   </td>
                 )}
                 {isFirst && showDeposit && (
-                  <td className="rm-td" rowSpan={rowCount} style={{ verticalAlign:'middle' }}>
+                  <td className="rm-td rm-col--deposit" rowSpan={rowCount} style={{ verticalAlign:'middle' }}>
                     <div style={{ fontSize:'0.8rem', fontWeight:'600', color:'#8b0000' }}>₹{formatCurrency(depositAmount)}</div>
                     <div style={{ fontSize:'0.7rem', color:'#64748b' }}>1 night</div>
                     <span style={{ display:'inline-block', marginTop:'3px', background:'#dcfce7', color:'#166534', padding:'1px 7px', borderRadius:'20px', fontSize:'0.68rem', fontWeight:'600' }}>Refundable</span>
                   </td>
                 )}
                 {isFirst && (
-                  <td className="rm-td" rowSpan={rowCount} style={{ verticalAlign:'middle' }}>
+                  <td className="rm-td rm-col--avail" rowSpan={rowCount} style={{ verticalAlign:'middle' }}>
                     <AvailBadge date={availableFrom} />
                   </td>
                 )}
@@ -1185,6 +1190,9 @@ const PropertyDetailPage = () => {
   const [bookingFor, setBookingFor] = useState('me');
   const [guestDetails, setGuestDetails] = useState({ name: '', address: '', phone: '' });
   const [numGuests, setNumGuests] = useState(1);
+  const [descExpanded, setDescExpanded] = useState(false);
+  const [amenitiesExpanded, setAmenitiesExpanded] = useState(false);
+  const [guidebookExpanded, setGuidebookExpanded] = useState(false);
   const [availabilityRequested, setAvailabilityRequested] = useState(false);
   const [aadhaarNumber, setAadhaarNumber] = useState('');
   const [isAadhaarLoading, setIsAadhaarLoading] = useState(false);
@@ -2820,7 +2828,18 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
           <div className="text-section about-mobile-wrap">
             <h3>About this space</h3>
             <div className="about-mobile-card">
-              <p>{cleanDescription(property.description) || "No description provided."}</p>
+              <p style={{
+                display: '-webkit-box',
+                WebkitLineClamp: descExpanded ? 'unset' : 4,
+                WebkitBoxOrient: 'vertical',
+                overflow: descExpanded ? 'visible' : 'hidden',
+                margin: 0
+              }}>{cleanDescription(property.description) || "No description provided."}</p>
+              {(cleanDescription(property.description) || '').length > 200 && (
+                <button onClick={() => setDescExpanded(e => !e)} style={{ marginTop: '6px', background: 'none', border: 'none', color: '#c98b3e', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer', padding: 0 }}>
+                  {descExpanded ? 'Show less ▲' : 'Read more ▼'}
+                </button>
+              )}
             </div>
           </div>
 
@@ -3050,190 +3069,89 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
             </>
           )}
 
-          {/* Amenities */}
-          <div className="text-section">
-            <h3>Amenities & Features</h3>
-            <div className="amenities-container-premium">
-              {Object.entries(groupedAmenities).length > 0 ? (
-                Object.entries(groupedAmenities).map(([group, list]) => (
-                  <div key={group} className="amenity-group-detail">
-                    <h4 className="amenity-group-title">{group}</h4>
-                    <div className="amenities-grid">
-                      {list.map((am, i) => <div key={i} className="amenity-item"><FiCheck className="check-icon" /> {am}</div>)}
-                    </div>
-                  </div>
-                ))
-              ) : <p>No specific amenities listed.</p>}
-            </div>
-          </div>
+        </div>
 
-          <div className="divider"></div>
-
-          {/* House Rules */}
-          <div className="text-section">
-            <h3>House Rules & Policies</h3>
-            <div className="amenities-grid">
-              <div className="amenity-card rule-card"><div className="rule-icon">{(property.smoking_allowed || property.smokingAllowed || property.meta?.smokingAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Smoking</span><strong>{(property.smoking_allowed || property.smokingAllowed || property.meta?.smokingAllowed) ? 'Allowed' : 'Not allowed'}</strong></div></div>
-              <div className="amenity-card rule-card"><div className="rule-icon">{(property.pets_allowed || property.petsAllowed || property.meta?.petsAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Pets</span><strong>{(property.pets_allowed || property.petsAllowed || property.meta?.petsAllowed) ? 'Allowed' : 'Not allowed'}</strong></div></div>
-              <div className="amenity-card rule-card"><div className="rule-icon">{(property.events_allowed || property.eventsAllowed || property.meta?.eventsAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Events</span><strong>{(property.events_allowed || property.eventsAllowed || property.meta?.eventsAllowed) ? 'Allowed' : 'Not allowed'}</strong></div></div>
-              <div className="amenity-card rule-card"><div className="rule-icon">{(property.drinking_allowed || property.drinkingAllowed || property.meta?.drinkingAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Alcohol</span><strong>{(property.drinking_allowed || property.drinkingAllowed || property.meta?.drinkingAllowed) ? 'Allowed' : 'Not allowed'}</strong></div></div>
-              <div className="amenity-card rule-card"><div className="rule-icon">{guestPolicy.family_allowed ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Family</span><strong>{guestPolicy.family_allowed ? 'Allowed' : 'Not allowed'}</strong></div></div>
-              <div className="amenity-card rule-card"><div className="rule-icon">{guestPolicy.unmarried_couple_allowed ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Unmarried Couples</span><strong>{guestPolicy.unmarried_couple_allowed ? 'Allowed' : 'Not allowed'}</strong></div></div>
-              <div className="amenity-card rule-card"><div className="rule-icon">{(guestPolicy.bachelors_allowed || guestPolicy.Bechelors) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Bachelor</span><strong>{(guestPolicy.bachelors_allowed || guestPolicy.Bechelors) ? 'Allowed' : 'Not allowed'}</strong></div></div>
-              {preferredTenants.map((t, i) => (
-                <div key={i} className="amenity-card rule-card">
-                  <div className="rule-icon"><FiCheck className="text-green" /></div>
-                  <div className="rule-info"><span className="rule-label">Preferred</span><strong>{t}</strong></div>
-                </div>
-              ))}
-              {(property.noticePeriod != null || property.meta?.noticePeriod != null) && <div className="amenity-card rule-card"><div className="rule-icon"><FiInfo style={{ color: '#3b82f6' }} /></div><div className="rule-info"><span className="rule-label">Notice Period</span><strong>{Number(property.noticePeriod ?? property.meta?.noticePeriod) === 0 ? 'Nil' : `${property.noticePeriod ?? property.meta?.noticePeriod} Days`}</strong></div></div>}
-              {(property.electricityCharges || property.meta?.electricityCharges) && <div className="amenity-card rule-card"><div className="rule-icon"><FiZap style={{ color: '#eab308' }} /></div><div className="rule-info"><span className="rule-label">Electricity</span><strong>{property.electricityCharges || property.meta?.electricityCharges}</strong></div></div>}
-              {(property.gateClosingTime || property.meta?.gateClosingTime) && <div className="amenity-card rule-card"><div className="rule-icon"><Clock size={18} color="#ef4444" /></div><div className="rule-info"><span className="rule-label">Gate Closing</span><strong>{property.gateClosingTime || property.meta?.gateClosingTime}</strong></div></div>}
-            </div>
-            {(property.cancellation_policy && property.cancellation_policy !== 'undefined') && (
-              <div style={{ marginTop: '1rem', padding: '12px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                <strong style={{ display: 'block', marginBottom: '6px', fontSize: '0.9rem' }}>Cancellation Policy</strong>
-                <span style={{ color: '#475569' }}>{property.cancellation_policy} <a href="/refund-cancellation-policy" target="_blank" rel="noopener noreferrer" style={{ marginLeft: '6px', color: '#8b0000', fontWeight: '600' }}>Read full policy</a></span>
-              </div>
-            )}
-          </div>
-
-          {/* Guidebook */}
-          {property?.guidebook && (
-            <>
-              <div className="divider"></div>
-              <section className="gbWrap">
-                {/* <div className="gbHeader">
-                  <div><h3 className="gbTitle">Local Guide</h3><p className="gbSubTitle">Helpful local information for your stay.</p></div>
-                </div> */}
-                <div className="gbGrid">
-                  {property.guidebook?.transport_tips && (
-                    <div className="gbCard">
-                      <div className="gbCardHeader"><div className="gbIconWrap"><Car size={18} /></div><div className="gbCardHeaderText"><div className="gbCardTitle">Transport</div><div className="gbCardMeta">Getting around nearby</div></div></div>
-                      <div className="gbRows">
-                        {property.guidebook.transport_tips.metro && <div className="gbRow"><div className="gbRowLeft"><Train size={16} className="gbRowIcon" /><span className="gbRowLabel">Metro</span></div><div className="gbRowValue">{property.guidebook.transport_tips.metro}</div></div>}
-                        {property.guidebook.transport_tips.bus && <div className="gbRow"><div className="gbRowLeft"><Bus size={16} className="gbRowIcon" /><span className="gbRowLabel">Bus Stop</span></div><div className="gbRowValue">{property.guidebook.transport_tips.bus}</div></div>}
-                      </div>
-                    </div>
-                  )}
-                  {Array.isArray(property.guidebook?.cafes_restaurants) && property.guidebook.cafes_restaurants.length > 0 && (
-                    <div className="gbCard gbCardWide">
-                      <div className="gbCardHeader"><div className="gbIconWrap"><UtensilsCrossed size={18} /></div><div className="gbCardHeaderText"><div className="gbCardTitle">Cafes & Restaurants</div><div className="gbCardMeta">{property.guidebook.cafes_restaurants.length} nearby</div></div></div>
-                      <div className="gbTableWrap">
-                        <table className="gbTable">
-                          <thead><tr><th>Name</th><th className="gbThRight">Distance</th></tr></thead>
-                          <tbody>{property.guidebook.cafes_restaurants.map((item, idx) => <tr key={idx}><td className="gbTdName">{item?.name || '-'}</td><td className="gbTdRight">{item?.distance || item?.distance_m || '-'}</td></tr>)}</tbody>
-                        </table>
-                      </div>
-                    </div>
-                  )}
-                  {property.guidebook?.essentials_nearby && (
-                    <div className="gbCard">
-                      <div className="gbCardHeader"><div className="gbIconWrap"><ShoppingBasket size={18} /></div><div className="gbCardHeaderText"><div className="gbCardTitle">Essentials Nearby</div><div className="gbCardMeta">Daily needs</div></div></div>
-                      <div className="gbRows">
-                        {property.guidebook.essentials_nearby.grocery && <div className="gbRow"><div className="gbRowLeft"><ShoppingBasket size={16} className="gbRowIcon" /><span className="gbRowLabel">Grocery</span></div><div className="gbRowValue">{property.guidebook.essentials_nearby.grocery}</div></div>}
-                        {property.guidebook.essentials_nearby.medical && <div className="gbRow"><div className="gbRowLeft"><HeartPulse size={16} className="gbRowIcon" /><span className="gbRowLabel">Medical</span></div><div className="gbRowValue">{property.guidebook.essentials_nearby.medical}</div></div>}
-                        {property.guidebook.essentials_nearby.shopping && <div className="gbRow"><div className="gbRowLeft"><ShoppingBag size={16} className="gbRowIcon" /><span className="gbRowLabel">Shopping</span></div><div className="gbRowValue">{property.guidebook.essentials_nearby.shopping}</div></div>}
-                      </div>
-                    </div>
-                  )}
-                  {Array.isArray(property.guidebook?.house_specific_tips) && property.guidebook.house_specific_tips.length > 0 && (
-                    <div className="gbCard gbCardWide">
-                      <div className="gbCardHeader"><div className="gbIconWrap"><Lightbulb size={18} /></div><div className="gbCardHeaderText"><div className="gbCardTitle">House Tips</div><div className="gbCardMeta">{property.guidebook.house_specific_tips.length} tips from host</div></div></div>
-                      <ul className="gbTips">{property.guidebook.house_specific_tips.map((tip, idx) => <li key={idx} className="gbTip"><span className="gbTipDot" /><span className="gbTipText">{tip}</span></li>)}</ul>
-                    </div>
-                  )}
-                </div>
-              </section>
-            </>
-          )}
-
-          <div className="divider"></div>
-
-          {/* Booking card */}
+        {/* ── RIGHT SIDEBAR — sticky booking card + host ── */}
+        <div className="booking-sidebar">
           {!(isPG && pricingMode === 'monthly') && (
-            <div style={{ margin: '2rem 0' }}>
-              <div className="booking-card" style={{ position: 'static', maxWidth: 'none', boxShadow: 'none', border: '1px solid #e2e8f0', background: '#f8fafc' }}>
-                <div className="card-header">
-                  <div className="price-area">
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                        <span className="amount">₹{formatCurrency(displayBasePrice)}</span>
-                        <span className="unit">/{pricingMode === 'monthly' ? 'month' : (property.billing_cycle || 'night')}</span>
-                      </div>
-                      {showDistinctRoomPrices && (
-                        <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.8)', marginTop: '2px' }}>
-                          {selectedPrice ? `Selected room: ₹${formatCurrency(selectedPrice)}` : 'Select a room above'}
-                        </span>
-                      )}
+            <div className="booking-card">
+              <div className="card-header">
+                <div className="price-area">
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                      <span className="amount">₹{formatCurrency(displayBasePrice)}</span>
+                      <span className="unit">/{pricingMode === 'monthly' ? 'month' : (property.billing_cycle || 'night')}</span>
                     </div>
-                  </div>
-                  <div className="review-badge"><FiStar /> <span>New</span></div>
-                </div>
-
-                <div className="booking-details">
-                  <div className="date-picker-mock">
-                    <div className="date-box">
-                      <label>{pricingMode === 'monthly' ? 'CHECK-IN TIME' : 'CHECK-IN'}</label>
-                      <span>{formData.checkInDate ? new Date(formData.checkInDate).toLocaleDateString() : (property.check_in_time || 'Select Date')}</span>
-                    </div>
-                    <div className="date-box">
-                      <label>{pricingMode === 'monthly' ? 'NOTICE PERIOD' : 'CHECK-OUT TIME'}</label>
-                      <span>{pricingMode === 'monthly' ? (() => { const np = property.noticePeriod ?? property.meta?.noticePeriod; return (property.property_name?.toLowerCase().includes('signature') || Number(np) === 0) ? 'Nil' : `${np || 30} Days`; })() : (property.check_out_time || property.meta?.check_out_time || '11:00')}</span>
-                    </div>
-                  </div>
-
-                  <div style={{ margin: '1.5rem 0' }}>
-                    <button className="reserve-btn" onClick={handleReserveClick}>
-                      {pricingMode === 'monthly' && !isOvikaOwnProperty
-                        ? 'Enquire Now'
-                        : bookingType === 1 && pricingMode !== 'monthly' && bookingRequestStatus !== 'accepted'
-                          ? 'Send Booking Request'
-                          : 'Book Now'}
-                    </button>
-                    <p className="hint" style={{ marginBottom: '8px' }}>
-                      {pricingMode === 'monthly' && !isOvikaOwnProperty
-                        ? 'Our team will contact you shortly'
-                        : bookingType === 1 && pricingMode !== 'monthly' && bookingRequestStatus !== 'accepted'
-                          ? 'Request needed first'
-                          : "You won't be charged yet"}
-                    </p>
-                    {(property.securityDeposit > 0 || isOvikaOwnProperty || isOvikaMonthlyProperty) && (
-                      <div style={{ display:'flex', alignItems:'center', gap:'5px', padding:'6px 10px', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'6px', fontSize:'0.75rem', color:'#166534' }}>
-                        <FiLock size={12} />
-                        <span>
-                          <strong>Security Deposit: </strong>
-                          {pricingMode === 'monthly'
-                            ? (isOvikaMonthlyProperty ? `1 Month's Rent` : property.securityDeposit > 0 ? `₹${formatCurrency(property.securityDeposit)}` : 'As applicable')
-                            : (isOvikaOwnProperty ? `1 night's rent` : `₹${formatCurrency(property.securityDeposit)}`)}
-                          {' '}(Refundable)
-                        </span>
-                      </div>
+                    {showDistinctRoomPrices && (
+                      <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.8)', marginTop: '2px' }}>
+                        {selectedPrice ? `Selected room: ₹${formatCurrency(selectedPrice)}` : 'Select a room above'}
+                      </span>
                     )}
                   </div>
+                </div>
+                <div className="review-badge"><FiStar /> <span>New</span></div>
+              </div>
 
-                  {bookingType === 1 && (
-                    <div style={{ padding: '10px', background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: '6px', fontSize: '0.8rem', color: '#92400e' }}>
-                      {bookingRequestStatus === 'pending' ? (
-                        <span>⏳ <strong>Request Pending</strong> — Waiting for owner approval.</span>
-                      ) : bookingRequestStatus === 'accepted' ? (
-                        <span>✅ <strong>Request Accepted!</strong> — Proceed to book.</span>
-                      ) : (
-                        <span>⚠️ <strong>Owner approval required</strong> — Send a request first.</span>
-                      )}
+              <div className="booking-details">
+                <div className="date-picker-mock">
+                  <div className="date-box">
+                    <label>{pricingMode === 'monthly' ? 'CHECK-IN TIME' : 'CHECK-IN'}</label>
+                    <span>{formData.checkInDate ? new Date(formData.checkInDate).toLocaleDateString() : (property.check_in_time || 'Select Date')}</span>
+                  </div>
+                  <div className="date-box">
+                    <label>{pricingMode === 'monthly' ? 'NOTICE PERIOD' : 'CHECK-OUT TIME'}</label>
+                    <span>{pricingMode === 'monthly' ? (() => { const np = property.noticePeriod ?? property.meta?.noticePeriod; return (property.property_name?.toLowerCase().includes('signature') || Number(np) === 0) ? 'Nil' : `${np || 30} Days`; })() : (property.check_out_time || property.meta?.check_out_time || '11:00')}</span>
+                  </div>
+                </div>
+
+                <div style={{ margin: '1rem 0' }}>
+                  <button className="reserve-btn" onClick={handleReserveClick}>
+                    {pricingMode === 'monthly' && !isOvikaOwnProperty
+                      ? 'Enquire Now'
+                      : bookingType === 1 && pricingMode !== 'monthly' && bookingRequestStatus !== 'accepted'
+                        ? 'Send Booking Request'
+                        : 'Book Now'}
+                  </button>
+                  <p className="hint" style={{ marginBottom: '8px' }}>
+                    {pricingMode === 'monthly' && !isOvikaOwnProperty
+                      ? 'Our team will contact you shortly'
+                      : bookingType === 1 && pricingMode !== 'monthly' && bookingRequestStatus !== 'accepted'
+                        ? 'Request needed first'
+                        : "You won't be charged yet"}
+                  </p>
+                  {(property.securityDeposit > 0 || isOvikaOwnProperty || isOvikaMonthlyProperty) && (
+                    <div style={{ display:'flex', alignItems:'center', gap:'5px', padding:'6px 10px', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'6px', fontSize:'0.75rem', color:'#166534' }}>
+                      <FiLock size={12} />
+                      <span>
+                        <strong>Security Deposit: </strong>
+                        {pricingMode === 'monthly'
+                          ? (isOvikaMonthlyProperty ? `1 Month's Rent` : property.securityDeposit > 0 ? `₹${formatCurrency(property.securityDeposit)}` : 'As applicable')
+                          : (isOvikaOwnProperty ? `1 night's rent` : `₹${formatCurrency(property.securityDeposit)}`)}
+                        {' '}(Refundable)
+                      </span>
                     </div>
                   )}
                 </div>
 
-                <div className="card-footer">
-                  <FiShield className="shield-icon"/>
-                  <span>Secure Booking Guaranteed</span>
-                </div>
+                {bookingType === 1 && (
+                  <div style={{ padding: '10px', background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: '6px', fontSize: '0.8rem', color: '#92400e' }}>
+                    {bookingRequestStatus === 'pending' ? (
+                      <span>⏳ <strong>Request Pending</strong> — Waiting for owner approval.</span>
+                    ) : bookingRequestStatus === 'accepted' ? (
+                      <span>✅ <strong>Request Accepted!</strong> — Proceed to book.</span>
+                    ) : (
+                      <span>⚠️ <strong>Owner approval required</strong> — Send a request first.</span>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <div className="card-footer">
+                <FiShield className="shield-icon"/>
+                <span>Secure Booking Guaranteed</span>
               </div>
             </div>
           )}
-
-          <div className="divider"></div>
 
           {/* Host Card */}
           <div className="host-card">
@@ -3246,7 +3164,165 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
             </div>
           </div>
         </div>
+      </div>{/* end content-grid */}
+
+      {/* ── FULL WIDTH: Amenities + House Rules side by side ── */}
+      <div className="divider"></div>
+      <div className="amenities-rules-row">
+        <div className="amenities-rules-col">
+          <h3>Amenities & Features</h3>
+          {Object.entries(groupedAmenities).length > 0 ? (
+            <div className="rules-grid amenities-card-grid">
+              {Object.values(groupedAmenities).flat().map((am, i) => (
+                <div key={i} className="amenity-card rule-card">
+                  <div className="rule-icon"><FiCheck className="text-green" /></div>
+                  <div className="rule-info"><strong>{am}</strong></div>
+                </div>
+              ))}
+            </div>
+          ) : <p style={{ color: '#9ca3af', fontSize: '0.85rem' }}>No amenities listed.</p>}
+        </div>
+
+        <div className="amenities-rules-divider"></div>
+
+        <div className="amenities-rules-col">
+          <h3>House Rules & Policies</h3>
+          <div className="rules-grid">
+            <div className="amenity-card rule-card"><div className="rule-icon">{(property.smoking_allowed || property.smokingAllowed || property.meta?.smokingAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Smoking</span><strong>{(property.smoking_allowed || property.smokingAllowed || property.meta?.smokingAllowed) ? 'Allowed' : 'Not allowed'}</strong></div></div>
+            <div className="amenity-card rule-card"><div className="rule-icon">{(property.pets_allowed || property.petsAllowed || property.meta?.petsAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Pets</span><strong>{(property.pets_allowed || property.petsAllowed || property.meta?.petsAllowed) ? 'Allowed' : 'Not allowed'}</strong></div></div>
+            <div className="amenity-card rule-card"><div className="rule-icon">{(property.events_allowed || property.eventsAllowed || property.meta?.eventsAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Events</span><strong>{(property.events_allowed || property.eventsAllowed || property.meta?.eventsAllowed) ? 'Allowed' : 'Not allowed'}</strong></div></div>
+            <div className="amenity-card rule-card"><div className="rule-icon">{(property.drinking_allowed || property.drinkingAllowed || property.meta?.drinkingAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Alcohol</span><strong>{(property.drinking_allowed || property.drinkingAllowed || property.meta?.drinkingAllowed) ? 'Allowed' : 'Not allowed'}</strong></div></div>
+            <div className="amenity-card rule-card"><div className="rule-icon">{guestPolicy.family_allowed ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Family</span><strong>{guestPolicy.family_allowed ? 'Allowed' : 'Not allowed'}</strong></div></div>
+            <div className="amenity-card rule-card"><div className="rule-icon">{guestPolicy.unmarried_couple_allowed ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Unmarried Couples</span><strong>{guestPolicy.unmarried_couple_allowed ? 'Allowed' : 'Not allowed'}</strong></div></div>
+            <div className="amenity-card rule-card"><div className="rule-icon">{(guestPolicy.bachelors_allowed || guestPolicy.Bechelors) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Bachelor</span><strong>{(guestPolicy.bachelors_allowed || guestPolicy.Bechelors) ? 'Allowed' : 'Not allowed'}</strong></div></div>
+            {preferredTenants.map((t, i) => (
+              <div key={i} className="amenity-card rule-card">
+                <div className="rule-icon"><FiCheck className="text-green" /></div>
+                <div className="rule-info"><span className="rule-label">Preferred</span><strong>{t}</strong></div>
+              </div>
+            ))}
+            {(property.noticePeriod != null || property.meta?.noticePeriod != null) && <div className="amenity-card rule-card"><div className="rule-icon"><FiInfo style={{ color: '#3b82f6' }} /></div><div className="rule-info"><span className="rule-label">Notice Period</span><strong>{Number(property.noticePeriod ?? property.meta?.noticePeriod) === 0 ? 'Nil' : `${property.noticePeriod ?? property.meta?.noticePeriod} Days`}</strong></div></div>}
+            {(property.electricityCharges || property.meta?.electricityCharges) && <div className="amenity-card rule-card"><div className="rule-icon"><FiZap style={{ color: '#eab308' }} /></div><div className="rule-info"><span className="rule-label">Electricity</span><strong>{property.electricityCharges || property.meta?.electricityCharges}</strong></div></div>}
+            {(property.gateClosingTime || property.meta?.gateClosingTime) && <div className="amenity-card rule-card"><div className="rule-icon"><Clock size={18} color="#ef4444" /></div><div className="rule-info"><span className="rule-label">Gate Closing</span><strong>{property.gateClosingTime || property.meta?.gateClosingTime}</strong></div></div>}
+          </div>
+          {(property.cancellation_policy && property.cancellation_policy !== 'undefined') && (
+            <div style={{ marginTop: '0.75rem', padding: '0.6rem 0.85rem', background: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span style={{ fontSize: '0.78rem', color: '#374151' }}><strong>Cancellation:</strong> {property.cancellation_policy}</span>
+              <a href="/refund-cancellation-policy" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.75rem', color: '#c98b3e', fontWeight: 700, whiteSpace: 'nowrap' }}>Read policy →</a>
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* ── FULL WIDTH: Local Guide ── bulletproof renderer ── */}
+      {(() => {
+        // Step 1: get raw value
+        let gb = property?.guidebook;
+        // Step 2: if still a string (double-encoded), parse it
+        if (typeof gb === 'string') { try { gb = JSON.parse(gb); } catch { gb = null; } }
+        // Step 3: if string again (triple-encoded edge case), parse once more
+        if (typeof gb === 'string') { try { gb = JSON.parse(gb); } catch { gb = null; } }
+        // Step 4: must be a non-null, non-array object with at least one key
+        if (!gb || typeof gb !== 'object' || Array.isArray(gb)) return null;
+        const keys = Object.keys(gb);
+        if (keys.length === 0) return null;
+
+        // Helper: render a value as readable text
+        const renderVal = (val) => {
+          if (val === null || val === undefined) return null;
+          if (typeof val === 'string' || typeof val === 'number') return String(val);
+          if (Array.isArray(val)) return val.map(v => typeof v === 'object' ? JSON.stringify(v) : String(v)).join(', ');
+          if (typeof val === 'object') return Object.entries(val).map(([k,v]) => `${k}: ${v}`).join(' · ');
+          return String(val);
+        };
+
+        // Known card configs
+        const CARD_ICONS = {
+          transport_tips: <Car size={16} />,
+          cafes_restaurants: <UtensilsCrossed size={16} />,
+          essentials_nearby: <ShoppingBasket size={16} />,
+          house_specific_tips: <Lightbulb size={16} />,
+        };
+        const CARD_LABELS = {
+          transport_tips: 'Transport Tips',
+          cafes_restaurants: 'Cafes & Restaurants',
+          essentials_nearby: 'Essentials Nearby',
+          house_specific_tips: 'House Tips',
+        };
+
+        return (
+          <>
+            <div className="divider"></div>
+            <div className="text-section">
+              <h3>Local Guide</h3>
+              <div className="gbGrid">
+                {keys.map((key) => {
+                  const val = gb[key];
+                  if (val === null || val === undefined) return null;
+                  const label = CARD_LABELS[key] || key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                  const icon = CARD_ICONS[key] || <FiInfo size={16} />;
+
+                  // Array of objects → table
+                  if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'object') {
+                    const cols = Object.keys(val[0]);
+                    return (
+                      <div key={key} className="gbCard gbCardWide">
+                        <div className="gbCardHeader"><div className="gbIconWrap">{icon}</div><div className="gbCardHeaderText"><div className="gbCardTitle">{label}</div><div className="gbCardMeta">{val.length} items</div></div></div>
+                        <div className="gbTableWrap">
+                          <table className="gbTable">
+                            <thead><tr>{cols.map(c => <th key={c} className={c !== cols[0] ? 'gbThRight' : ''}>{c.replace(/_/g,' ')}</th>)}</tr></thead>
+                            <tbody>{val.map((item, idx) => <tr key={idx}>{cols.map((c,ci) => <td key={c} className={ci > 0 ? 'gbTdRight' : 'gbTdName'}>{item[c] ?? '-'}</td>)}</tr>)}</tbody>
+                          </table>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // Array of strings → tips list
+                  if (Array.isArray(val) && val.length > 0) {
+                    return (
+                      <div key={key} className="gbCard gbCardWide">
+                        <div className="gbCardHeader"><div className="gbIconWrap">{icon}</div><div className="gbCardHeaderText"><div className="gbCardTitle">{label}</div><div className="gbCardMeta">{val.length} tips</div></div></div>
+                        <ul className="gbTips">{val.map((tip, idx) => <li key={idx} className="gbTip"><span className="gbTipDot" /><span className="gbTipText">{typeof tip === 'object' ? JSON.stringify(tip) : String(tip)}</span></li>)}</ul>
+                      </div>
+                    );
+                  }
+
+                  // Object → rows
+                  if (typeof val === 'object' && !Array.isArray(val)) {
+                    const entries = Object.entries(val).filter(([,v]) => v);
+                    if (entries.length === 0) return null;
+                    return (
+                      <div key={key} className="gbCard">
+                        <div className="gbCardHeader"><div className="gbIconWrap">{icon}</div><div className="gbCardHeaderText"><div className="gbCardTitle">{label}</div></div></div>
+                        <div className="gbRows">
+                          {entries.map(([k, v]) => (
+                            <div key={k} className="gbRow">
+                              <div className="gbRowLeft"><span className="gbRowLabel">{k.replace(/_/g,' ').replace(/\b\w/g, c=>c.toUpperCase())}</span></div>
+                              <div className="gbRowValue">{renderVal(v)}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // Primitive → single row
+                  const text = renderVal(val);
+                  if (!text) return null;
+                  return (
+                    <div key={key} className="gbCard">
+                      <div className="gbCardHeader"><div className="gbIconWrap">{icon}</div><div className="gbCardHeaderText"><div className="gbCardTitle">{label}</div></div></div>
+                      <div className="gbRows"><div className="gbRow"><div className="gbRowValue">{text}</div></div></div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </>
+        );
+      })()}
+
     </div>
   );
 };
