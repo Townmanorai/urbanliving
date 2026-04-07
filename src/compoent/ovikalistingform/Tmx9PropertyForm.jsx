@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import "./tmx9pf-form.css";
 import { AuthContext } from "../Login/AuthContext";
+import CityDropdown, { addressContainsCityOrState } from "./CityDropdown";
 
 const API_BASE = "https://www.townmanor.ai/api";
 const STORAGE_KEY = "user";
@@ -166,6 +167,7 @@ const Tmx9PropertyForm = () => {
     const newErrors = {};
     if (s === 0) {
       if (!form.address?.trim()) newErrors.address = "Address is required";
+      else { const hit = addressContainsCityOrState(form.address); if (hit) newErrors.address = `City/state name "${hit}" not allowed in address. Use the City field below.`; }
       if (!form.city?.trim()) newErrors.city = "City is required";
       if (!form.postalCode?.trim()) newErrors.postalCode = "Postal code is required";
       if (!form.country?.trim()) newErrors.country = "Country is required";
@@ -764,7 +766,13 @@ console.log("Property saved as:", data?.data);
 
               <div className="tmx9pf-field">
                 <label className="tmx9pf-label">City *</label>
-                <input name="city" value={form.city} onChange={handleChange} className={`tmx9pf-input ${errors.city ? "tmx9pf-input--error" : ""}`} />
+                <CityDropdown
+                  value={form.city}
+                  onChange={handleChange}
+                  className="tmx9pf-input"
+                  hasError={!!errors.city}
+                  placeholder="Select City"
+                />
                 {renderError("city")}
               </div>
 

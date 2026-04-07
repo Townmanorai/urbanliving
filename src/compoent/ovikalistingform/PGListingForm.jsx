@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
-import "./pg-listing-form.css"; 
+import "./pg-listing-form.css";
 import { AuthContext } from "../Login/AuthContext";
+import CityDropdown, { addressContainsCityOrState } from "./CityDropdown";
 import { 
   Building, 
   Home, 
@@ -257,6 +258,7 @@ const PGListingForm = () => {
       if (!form.title.trim()) err.title = "Required";
       if (!form.city.trim()) err.city = "Required";
       if (!form.address.trim()) err.address = "Required";
+      else { const hit = addressContainsCityOrState(form.address); if (hit) err.address = `City/state name "${hit}" not allowed in address. Use the City field below.`; }
     }
     setErrors(err);
     return Object.keys(err).length === 0;
@@ -539,11 +541,18 @@ const PGListingForm = () => {
                 </div>
                 <div className="field-group full">
                   <label>Full Address *</label>
-                  <textarea name="address" value={form.address} onChange={handleChange} rows="3" placeholder="Street, Sector, Locality..." />
+                  <textarea name="address" value={form.address} onChange={handleChange} rows="3" placeholder="Street, Sector, Locality..." style={errors.address ? { borderColor: '#ef4444' } : {}} />
+                  {errors.address && <span style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px', display: 'block' }}>{errors.address}</span>}
                 </div>
                 <div className="field-group">
                   <label>City *</label>
-                  <input name="city" value={form.city} onChange={handleChange} placeholder="e.g. Gurugram" />
+                  <CityDropdown
+                    value={form.city}
+                    onChange={handleChange}
+                    className="pg-city-trigger"
+                    hasError={!!errors.city}
+                    placeholder="Select City"
+                  />
                 </div>
                 <div className="field-group">
                   <label>Postal Code</label>

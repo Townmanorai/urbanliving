@@ -2730,7 +2730,7 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
           <div className="gallery-main" onClick={handleMainImageClick}>
             <img src={getPhotoUrl(photos[0]) || 'https://via.placeholder.com/800x500'} alt="Main Property" />
             {property.property_name?.toLowerCase().includes('signature') && (
-              <img src="/ovikaver.png" alt="Verified" className="gallery-verified-badge" />
+              <img src="/ovikaver.png" alt="Verified" className="gallery-verified-badge" style={{ position: 'absolute', top: '8px', left: '8px', width: '60px', height: 'auto', zIndex: 5, pointerEvents: 'none', opacity: 0.92 }} />
             )}
           </div>
 
@@ -2781,37 +2781,39 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
 
       <div className="content-grid">
         <div className="details-column">
-          {/* features-bar — uses shared getBedCount/getBathCount helpers */}
-          <div className="features-bar">
-            <div className="feature-box">
-              <BiBed className="f-icon"/>
-              <div>
-                <strong>{bedCount}</strong>
-                <span>{isPG ? 'Room Type' : 'Bedroom'}</span>
-              </div>
-            </div>
-            <div className="feature-box">
-              <BiBath className="f-icon"/>
-              <div>
-                <strong>{bathCount}</strong>
-                <span>Bathroom</span>
-              </div>
-            </div>
-            {property.balconies > 0 && <div className="feature-box"><FiWind className="f-icon"/><div><strong>{property.balconies}</strong><span>Balcony</span></div></div>}
-            <div className="feature-box"><BiArea className="f-icon"/><div><strong>{property.area || 'N/A'}</strong><span>Sq Ft</span></div></div>
-            {property.max_guests > 0 && <div className="feature-box"><FiUser className="f-icon"/><div><strong>{property.max_guests}</strong><span>Guests</span></div></div>}
-            {property.facing && <div className="feature-box"><FiCompass className="f-icon"/><div><strong>{property.facing}</strong><span>Facing</span></div></div>}
-            {isOvikaOwnProperty && pricingMode !== 'monthly' && (
-              <div className="feature-box" style={{ borderLeft: '3px solid #16a34a' }}>
-                <FiLock className="f-icon" style={{ color: '#16a34a' }}/>
+          {/* features-bar — hidden for nightly PG */}
+          {!(isPG && pricingMode !== 'monthly') && (
+            <div className="features-bar">
+              <div className="feature-box">
+                <BiBed className="f-icon"/>
                 <div>
-                  <strong style={{ color: '#16a34a' }}>1 night</strong>
-                  <span style={{ color: '#16a34a' }}>Security Deposit</span>
-                  <span style={{ fontSize: '0.65rem', color: '#64748b', display: 'block' }}>Refundable</span>
+                  <strong>{bedCount}</strong>
+                  <span>{isPG ? 'Room Type' : 'Bedroom'}</span>
                 </div>
               </div>
-            )}
-          </div>
+              <div className="feature-box">
+                <BiBath className="f-icon"/>
+                <div>
+                  <strong>{bathCount}</strong>
+                  <span>Bathroom</span>
+                </div>
+              </div>
+              {property.balconies > 0 && <div className="feature-box"><FiWind className="f-icon"/><div><strong>{property.balconies}</strong><span>Balcony</span></div></div>}
+              <div className="feature-box"><BiArea className="f-icon"/><div><strong>{property.area || 'N/A'}</strong><span>Sq Ft</span></div></div>
+              {property.max_guests > 0 && !isPG && <div className="feature-box"><FiUser className="f-icon"/><div><strong>{property.max_guests}</strong><span>Guests</span></div></div>}
+              {property.facing && <div className="feature-box"><FiCompass className="f-icon"/><div><strong>{property.facing}</strong><span>Facing</span></div></div>}
+              {isOvikaOwnProperty && pricingMode !== 'monthly' && (
+                <div className="feature-box" style={{ borderLeft: '3px solid #16a34a' }}>
+                  <FiLock className="f-icon" style={{ color: '#16a34a' }}/>
+                  <div>
+                    <strong style={{ color: '#16a34a' }}>1 night</strong>
+                    <span style={{ color: '#16a34a' }}>Security Deposit</span>
+                    <span style={{ fontSize: '0.65rem', color: '#64748b', display: 'block' }}>Refundable</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="divider"></div>
 
@@ -2900,8 +2902,8 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
             </>
           )}
 
-          {/* S3: PG / HOSTEL — both monthly & nightly */}
-          {property.parsedBedrooms?.length > 0 && isPG && (
+          {/* S3: PG / HOSTEL — monthly only (hide for nightly PG) */}
+          {property.parsedBedrooms?.length > 0 && isPG && pricingMode === 'monthly' && (
             <>
               <div className="divider"></div>
               <div className="text-section">

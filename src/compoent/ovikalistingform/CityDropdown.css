@@ -1,0 +1,133 @@
+.city-dd-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.city-dd-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  user-select: none;
+}
+
+.city-dd-trigger:hover,
+.city-dd-trigger:focus {
+  border-color: #c9a84c;
+  outline: none;
+}
+
+.city-dd-wrap--error .city-dd-trigger {
+  border-color: #ef4444;
+}
+
+.city-dd-value {
+  color: #1e293b;
+}
+
+.city-dd-placeholder {
+  color: #94a3b8;
+}
+
+.city-dd-arrow {
+  color: #94a3b8;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.city-dd-arrow--open {
+  transform: rotate(180deg);
+}
+
+.city-dd-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 999;
+  overflow: hidden;
+}
+
+.city-dd-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.city-dd-search {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 13px;
+  color: #1e293b;
+  background: transparent;
+}
+
+.city-dd-search::placeholder {
+  color: #94a3b8;
+}
+
+.city-dd-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.city-dd-list::-webkit-scrollbar {
+  width: 4px;
+}
+.city-dd-list::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 4px;
+}
+
+.city-dd-item {
+  padding: 9px 14px;
+  font-size: 13.5px;
+  color: #334155;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.city-dd-item:hover {
+  background: #fdf6e3;
+}
+
+.city-dd-item--active {
+  background: #fef3c7;
+  color: #b45309;
+  font-weight: 600;
+}
+
+.city-dd-empty {
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #94a3b8;
+  text-align: center;
+}
+
+/* ── tmx9 form compatibility ── */
+.tmx9pf-input.city-dd-trigger {
+  font-family: inherit;
+}
+
+/* ── pg-listing form compatibility ── */
+.pg-city-trigger {
+  min-height: 42px;
+}

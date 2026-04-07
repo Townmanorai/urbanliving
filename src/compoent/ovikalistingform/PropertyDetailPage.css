@@ -184,13 +184,22 @@ table {
 
 .gallery-verified-badge {
   position: absolute;
-  top: -18px;
-  left: -18px;
-  width: 150px;
+  top: 8px;
+  left: 8px;
+  width: 64px;
   height: auto;
   pointer-events: none;
   z-index: 5;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+  opacity: 0.92;
+}
+
+@media (max-width: 768px) {
+  .gallery-verified-badge {
+    width: 44px;
+    top: 6px;
+    left: 6px;
+  }
 }
 
 /* RIGHT — 2 stacked */
