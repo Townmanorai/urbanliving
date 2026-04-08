@@ -332,6 +332,7 @@ const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookN
                         {room.bedType   && <RoomBadge>{room.bedType}</RoomBadge>}
                         {room.ac        && <RoomBadge color="ac">❄ AC</RoomBadge>}
                         {room.furnished && <RoomBadge color="green">Furnished</RoomBadge>}
+                        {!room.bedType && !room.ac && !room.furnished && <RoomBadge>Standard</RoomBadge>}
                       </div>
                     </div>
                   </div>
@@ -506,6 +507,7 @@ const RoomTablePerRoom = ({ rooms, pricingMode, propertyPrice, propertyArea, onB
                         {room.bedType   && <span className="rm-tag">{room.bedType}</span>}
                         {room.ac        && <span className="rm-tag rm-tag--ac">❄ AC</span>}
                         {room.furnished && <span className="rm-tag">Furnished</span>}
+                        {!room.bedType && !room.ac && !room.furnished && <span className="rm-tag">Standard</span>}
                       </div>
                     </div>
                   </div>
@@ -2789,9 +2791,7 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
 
       <div className="content-grid">
         <div className="details-column">
-          {/* features-bar — hidden for nightly PG */}
-          {!(isPG && pricingMode !== 'monthly') && (
-            <div className="features-bar">
+          <div className="features-bar">
               <div className="feature-box">
                 <BiBed className="f-icon"/>
                 <div>
@@ -2821,7 +2821,6 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                 </div>
               )}
             </div>
-          )}
 
           <div className="divider"></div>
 
@@ -2992,6 +2991,7 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                                     {room.bedType   && <span className="rm-tag">{room.bedType}</span>}
                                     {room.ac        && <span className="rm-tag rm-tag--ac">❄ AC</span>}
                                     {room.furnished && <span className="rm-tag">Furnished</span>}
+                                    {!room.bedType && !room.ac && !room.furnished && <span className="rm-tag">Standard</span>}
                                   </div>
                                 </div>
                               </div>
@@ -3034,11 +3034,98 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
             </>
           )}
 
-          <div className="divider"></div>
+          {/* NIGHTLY PG — stay details highlights (no room table, it's confusing for nightly PG) */}
+          {isPG && pricingMode !== 'monthly' && (
+            <>
+              <div className="divider"></div>
+              <div className="text-section">
+                <div className="rm-section-header">
+                  <div className="rm-section-left">
+                    <span className="rm-pill">Stay Details</span>
+                    <h3 className="rm-section-title">Nightly Stay Info</h3>
+                    <p style={{ fontSize:'0.82rem', color:'#64748b', margin:'2px 0 0' }}>Key details for your stay</p>
+                  </div>
+                </div>
+                <div className="nightly-stay-grid">
+                  {(Number(property.meta?.perNightPrice) > 0 || Number(property.price) > 0) && (
+                    <div className="amenity-card rule-card">
+                      <div className="rule-icon"><MdCurrencyRupee color="#c98b3e" size={18} /></div>
+                      <div className="rule-info"><span className="rule-label">Price / Night</span><span>₹{formatCurrency(Number(property.meta?.perNightPrice) || Number(property.price))}</span></div>
+                    </div>
+                  )}
+                  {(property.check_in_time || property.meta?.check_in_time) && (
+                    <div className="amenity-card rule-card">
+                      <div className="rule-icon"><Clock size={18} color="#6366f1" /></div>
+                      <div className="rule-info"><span className="rule-label">Check-In</span><span>{property.check_in_time || property.meta?.check_in_time}</span></div>
+                    </div>
+                  )}
+                  {(property.check_out_time || property.meta?.check_out_time) && (
+                    <div className="amenity-card rule-card">
+                      <div className="rule-icon"><Clock size={18} color="#16a34a" /></div>
+                      <div className="rule-info"><span className="rule-label">Check-Out</span><span>{property.check_out_time || property.meta?.check_out_time}</span></div>
+                    </div>
+                  )}
+                  {(property.securityDeposit > 0 || isOvikaOwnProperty) && (
+                    <div className="amenity-card rule-card">
+                      <div className="rule-icon"><FiLock color="#8b0000" size={18} /></div>
+                      <div className="rule-info">
+                        <span className="rule-label">Security Deposit</span>
+                        <span>{isOvikaOwnProperty ? '1 night\'s rent' : `₹${formatCurrency(property.securityDeposit)}`}</span>
+                        <span style={{ fontSize:'0.68rem', color:'#16a34a', display:'block' }}>Refundable</span>
+                      </div>
+                    </div>
+                  )}
+                  {property.area && (
+                    <div className="amenity-card rule-card">
+                      <div className="rule-icon"><BiArea color="#94a3b8" size={18} /></div>
+                      <div className="rule-info"><span className="rule-label">Area</span><span>{property.area} sqft</span></div>
+                    </div>
+                  )}
+                  {property.facing && (
+                    <div className="amenity-card rule-card">
+                      <div className="rule-icon"><FiCompass color="#6366f1" size={18} /></div>
+                      <div className="rule-info"><span className="rule-label">Facing</span><span>{property.facing}</span></div>
+                    </div>
+                  )}
+                  {property.carParking && (
+                    <div className="amenity-card rule-card">
+                      <div className="rule-icon"><Car size={18} color="#334155" /></div>
+                      <div className="rule-info"><span className="rule-label">Parking</span><span>{property.carParking}</span></div>
+                    </div>
+                  )}
+                  {(property.availableFrom || property.meta?.availableFrom) && (
+                    <div className="amenity-card rule-card">
+                      <div className="rule-icon"><FiCalendar color="#0ea5e9" size={18} /></div>
+                      <div className="rule-info"><span className="rule-label">Available From</span><span>{new Date(property.availableFrom || property.meta?.availableFrom).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}</span></div>
+                    </div>
+                  )}
+                  {(property.electricityCharges || property.meta?.electricityCharges) && (
+                    <div className="amenity-card rule-card">
+                      <div className="rule-icon"><FiZap color="#eab308" size={18} /></div>
+                      <div className="rule-info"><span className="rule-label">Electricity</span><span>{property.electricityCharges || property.meta?.electricityCharges}</span></div>
+                    </div>
+                  )}
+                  {(property.gateClosingTime || property.meta?.gateClosingTime) && (
+                    <div className="amenity-card rule-card">
+                      <div className="rule-icon"><Clock size={18} color="#ef4444" /></div>
+                      <div className="rule-info"><span className="rule-label">Gate Closing</span><span>{property.gateClosingTime || property.meta?.gateClosingTime}</span></div>
+                    </div>
+                  )}
+                  {(property.noticePeriod != null || property.meta?.noticePeriod != null) && (
+                    <div className="amenity-card rule-card">
+                      <div className="rule-icon"><FiInfo style={{ color: '#3b82f6' }} size={18} /></div>
+                      <div className="rule-info"><span className="rule-label">Notice Period</span><span>{Number(property.noticePeriod ?? property.meta?.noticePeriod) === 0 ? 'Nil' : `${property.noticePeriod ?? property.meta?.noticePeriod} Days`}</span></div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Building & Infrastructure */}
           {(property.waterSupply || property.electricityStatus || property.floorType || property.propertyAge || property.floorNo) && (
             <>
+              <div className="divider"></div>
               <div className="text-section">
                 <h3>Building & Infrastructure</h3>
                 <div className="amenities-grid">
@@ -3057,6 +3144,7 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
           {/* Financials */}
           {(property.securityDeposit || property.maintenanceCharge || property.availableFrom) && (
             <>
+              <div className="divider"></div>
               <div className="text-section">
                 <h3>Financials & Availability</h3>
                 <div className="amenities-grid">
@@ -3065,7 +3153,6 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                   {property.availableFrom && <div className="amenity-card rule-card"><div className="rule-icon"><FiCalendar color="#16a34a" /></div><div className="rule-info"><span className="rule-label">Available From</span><strong>{new Date(property.availableFrom).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</strong></div></div>}
                 </div>
               </div>
-              <div className="divider"></div>
             </>
           )}
 
@@ -3073,6 +3160,40 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
 
         {/* ── RIGHT SIDEBAR — sticky booking card + host ── */}
         <div className="booking-sidebar">
+          {(isPG && pricingMode === 'monthly') && (
+            <div className="booking-card">
+              <div className="card-header">
+                <div className="price-area">
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                      <span className="amount">
+                        ₹{formatCurrency(
+                          (() => {
+                            const prices = property.parsedBedrooms?.map(r => Number(r.price) || Infinity).filter(p => p < Infinity) ?? [];
+                            return prices.length > 0 ? Math.min(...prices) : (displayBasePrice || 0);
+                          })()
+                        )}
+                      </span>
+                      <span className="unit">/month</span>
+                    </div>
+                    <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.7)', marginTop: '2px' }}>Starting price</span>
+                  </div>
+                </div>
+                <div className="review-badge"><FiStar /> <span>New</span></div>
+              </div>
+              <div style={{ padding: '1rem 0.5rem', textAlign: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: '#64748b', fontSize: '0.82rem', marginBottom: '0.5rem' }}>
+                  <FiInfo size={14} />
+                  <span>Select a room from the table to book</span>
+                </div>
+                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Each room has its own pricing & availability</div>
+              </div>
+              <div className="card-footer">
+                <FiShield className="shield-icon"/>
+                <span>Secure Booking Guaranteed</span>
+              </div>
+            </div>
+          )}
           {!(isPG && pricingMode === 'monthly') && (
             <div className="booking-card">
               <div className="card-header">
@@ -3123,7 +3244,7 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                     <div style={{ display:'flex', alignItems:'center', gap:'5px', padding:'6px 10px', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'6px', fontSize:'0.75rem', color:'#166534' }}>
                       <FiLock size={12} />
                       <span>
-                        <strong>Security Deposit: </strong>
+                        Security Deposit:{' '}
                         {pricingMode === 'monthly'
                           ? (isOvikaMonthlyProperty ? `1 Month's Rent` : property.securityDeposit > 0 ? `₹${formatCurrency(property.securityDeposit)}` : 'As applicable')
                           : (isOvikaOwnProperty ? `1 night's rent` : `₹${formatCurrency(property.securityDeposit)}`)}
@@ -3136,11 +3257,11 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                 {bookingType === 1 && (
                   <div style={{ padding: '10px', background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: '6px', fontSize: '0.8rem', color: '#92400e' }}>
                     {bookingRequestStatus === 'pending' ? (
-                      <span>⏳ <strong>Request Pending</strong> — Waiting for owner approval.</span>
+                      <span>⏳ Request Pending — Waiting for owner approval.</span>
                     ) : bookingRequestStatus === 'accepted' ? (
-                      <span>✅ <strong>Request Accepted!</strong> — Proceed to book.</span>
+                      <span>✅ Request Accepted! — Proceed to book.</span>
                     ) : (
-                      <span>⚠️ <strong>Owner approval required</strong> — Send a request first.</span>
+                      <span>⚠️ Owner approval required — Send a request first.</span>
                     )}
                   </div>
                 )}
@@ -3222,9 +3343,15 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
         if (typeof gb === 'string') { try { gb = JSON.parse(gb); } catch { gb = null; } }
         // Step 3: if string again (triple-encoded edge case), parse once more
         if (typeof gb === 'string') { try { gb = JSON.parse(gb); } catch { gb = null; } }
-        // Step 4: must be a non-null, non-array object with at least one key
+        // Step 4: must be a non-null, non-array object with at least one key that has real data
         if (!gb || typeof gb !== 'object' || Array.isArray(gb)) return null;
-        const keys = Object.keys(gb);
+        const hasValue = (v) => {
+          if (v === null || v === undefined || v === '') return false;
+          if (Array.isArray(v)) return v.length > 0;
+          if (typeof v === 'object') return Object.values(v).some(x => x !== null && x !== undefined && x !== '');
+          return true;
+        };
+        const keys = Object.keys(gb).filter(k => hasValue(gb[k]));
         if (keys.length === 0) return null;
 
         // Helper: render a value as readable text

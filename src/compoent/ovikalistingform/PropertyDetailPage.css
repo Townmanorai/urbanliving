@@ -932,6 +932,16 @@ table {
 }
 
 /* ══════════════════════════════════════════════════════
+   NIGHTLY STAY GRID
+══════════════════════════════════════════════════════ */
+.nightly-stay-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: 0.55rem;
+  margin-top: 0.85rem;
+}
+
+/* ══════════════════════════════════════════════════════
    RULE CARDS
 ══════════════════════════════════════════════════════ */
 .amenity-card {
@@ -1060,7 +1070,7 @@ table {
 
 .amount {
   font-size: 1.6rem;
-  font-weight: 800;
+  font-weight: 500;
   color: #fff;
   letter-spacing: -0.02em;
 }
@@ -1107,7 +1117,7 @@ table {
 
 .date-box label {
   font-size: 0.6rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -1116,7 +1126,7 @@ table {
 .date-box span {
   font-size: 0.85rem;
   color: #111827;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .hint {
@@ -1168,17 +1178,18 @@ table {
 
 .gbGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.6rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
   width: 100%;
 }
 
-.gbCardWide { grid-column: 1 / -1; }
+/* wide cards (tables / tip lists) span 2 columns */
+.gbCardWide { grid-column: span 2; }
 
 .gbCard {
   background: #fff;
   border: 1px solid #e5e7eb;
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -1187,16 +1198,16 @@ table {
 .gbCardHeader {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.6rem 0.85rem;
+  gap: 0.45rem;
+  padding: 0.45rem 0.7rem;
   border-bottom: 1px solid #f3f4f6;
   background: #fafafa;
 }
 
 .gbIconWrap {
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
   display: grid;
   place-items: center;
   background: #f3f4f6;
@@ -1205,49 +1216,66 @@ table {
 }
 
 .gbCardHeaderText { min-width: 0; }
-.gbCardTitle { font-size: 0.82rem; font-weight: 700; color: #111827; margin: 0; }
-.gbCardMeta { font-size: 0.7rem; color: #9ca3af; font-weight: 500; margin: 0.1rem 0 0; }
+.gbCardTitle { font-size: 0.78rem; font-weight: 600; color: #111827; margin: 0; }
+.gbCardMeta { font-size: 0.65rem; color: #9ca3af; font-weight: 500; margin: 0.05rem 0 0; }
 
-.gbRows { padding: 0.6rem 0.85rem; display: grid; gap: 0.35rem; }
+/* rows inside object-type cards — flex-wrap horizontal */
+.gbRows {
+  padding: 0.4rem 0.65rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
 
 .gbRow {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.4rem 0.6rem;
-  border-radius: 6px;
+  gap: 0.4rem;
+  padding: 0.28rem 0.5rem;
+  border-radius: 5px;
   background: #f9fafb;
+  flex: 1 0 auto;
+  min-width: 110px;
 }
 
-.gbRowLeft { display: flex; align-items: center; gap: 0.4rem; flex: 1; }
-.gbRowLabel { font-weight: 600; color: #374151; font-size: 0.75rem; white-space: nowrap; }
-.gbRowValue { font-weight: 600; color: #111827; font-size: 0.75rem; text-align: right; max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gbRowLeft { display: flex; align-items: center; gap: 0.3rem; flex: 1; min-width: 0; }
+.gbRowLabel { font-weight: 500; color: #374151; font-size: 0.7rem; white-space: nowrap; }
+.gbRowValue { font-weight: 500; color: #111827; font-size: 0.7rem; text-align: right; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.gbTableWrap { width: 100%; overflow-x: auto; padding: 0.6rem 0.85rem; }
+.gbTableWrap { width: 100%; overflow-x: auto; padding: 0.4rem 0.65rem; }
 
-.gbTable { width: 100%; border-collapse: collapse; min-width: 260px; }
-.gbTable thead th { padding: 0.4rem 0.6rem; font-size: 0.7rem; font-weight: 700; color: #6b7280; border-bottom: 1.5px solid #e5e7eb; background: #f9fafb; text-align: left; }
-.gbTable tbody td { padding: 0.5rem 0.6rem; border-bottom: 1px solid #f3f4f6; color: #4b5563; font-size: 0.78rem; }
+.gbTable { width: 100%; border-collapse: collapse; min-width: 200px; }
+.gbTable thead th { padding: 0.3rem 0.5rem; font-size: 0.65rem; font-weight: 600; color: #6b7280; border-bottom: 1.5px solid #e5e7eb; background: #f9fafb; text-align: left; }
+.gbTable tbody td { padding: 0.35rem 0.5rem; border-bottom: 1px solid #f3f4f6; color: #4b5563; font-size: 0.72rem; }
 .gbTdName { font-weight: 600; color: #111827; }
 .gbThRight, .gbTdRight { text-align: right !important; white-space: nowrap; }
 
-.gbList { padding: 0.6rem 0.85rem; display: grid; gap: 0.4rem; }
-.gbListItem { border: 1px solid #e5e7eb; border-radius: 7px; padding: 0.55rem 0.75rem; background: #fff; }
-.gbListItemTitle { font-weight: 700; color: #111827; font-size: 0.8rem; }
-.gbListItemMeta { margin-top: 0.3rem; display: flex; gap: 0.4rem; color: #6b7280; font-size: 0.73rem; }
+.gbList { padding: 0.4rem 0.65rem; display: grid; gap: 0.3rem; }
+.gbListItem { border: 1px solid #e5e7eb; border-radius: 6px; padding: 0.4rem 0.65rem; background: #fff; }
+.gbListItemTitle { font-weight: 600; color: #111827; font-size: 0.75rem; }
+.gbListItemMeta { margin-top: 0.2rem; display: flex; gap: 0.4rem; color: #6b7280; font-size: 0.68rem; }
 
-.gbTips { list-style: none; margin: 0; padding: 0.6rem 0.85rem; display: grid; gap: 0.35rem; }
+/* tips list — 2-column grid inside the card */
+.gbTips {
+  list-style: none;
+  margin: 0;
+  padding: 0.4rem 0.65rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem;
+}
 
 .gbTip {
   display: flex;
-  gap: 0.5rem;
-  padding: 0.45rem 0.65rem;
-  border-radius: 6px;
+  gap: 0.4rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 5px;
   background: #f9fafb;
 }
 
-.gbTipDot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent-gold); margin-top: 0.42rem; flex: 0 0 auto; }
-.gbTipText { color: #4b5563; font-size: 0.78rem; }
+.gbTipDot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent-gold); margin-top: 0.38rem; flex: 0 0 auto; }
+.gbTipText { color: #4b5563; font-size: 0.72rem; line-height: 1.45; }
 
 /* ══════════════════════════════════════════════════════
    ROOM TABLE — DESKTOP
@@ -2199,11 +2227,11 @@ table {
   }
 
   .gbGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .gbCardWide {
-    grid-column: auto;
+    grid-column: span 2;
   }
 }
 
@@ -2377,26 +2405,33 @@ table {
   }
 
   .gbGrid {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .gbCard {
-    border-radius: 13px;
-  }
-
-  .gbCardHeader {
-    padding: 0.85rem 1rem;
-  }
-
-  .gbRows {
-    padding: 0.85rem 1rem;
+    grid-template-columns: 1fr 1fr;
     gap: 0.5rem;
   }
 
+  .gbCardWide {
+    grid-column: 1 / -1;
+  }
+
+  .gbCard {
+    border-radius: 8px;
+  }
+
+  .gbCardHeader {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .gbRows {
+    padding: 0.45rem 0.75rem;
+    gap: 0.3rem;
+  }
+
   .gbRow {
-    padding: 0.6rem 0.8rem;
+    padding: 0.3rem 0.5rem;
+  }
+
+  .gbTips {
+    grid-template-columns: 1fr;
   }
 
   .ivImg {
@@ -2930,11 +2965,31 @@ table {
   .title-section h1 { font-size: 1.15rem; }
   .amenities-grid { grid-template-columns: repeat(2, 1fr); }
   .amenity-card { grid-template-columns: repeat(2, 1fr); }
-  .gbGrid { grid-template-columns: 1fr; }
+  .gbGrid { grid-template-columns: 1fr 1fr; }
+  .gbCardWide { grid-column: 1 / -1; }
   .amenities-rules-row { flex-direction: column; gap: 1.5rem; }
   .amenities-rules-col { padding: 0 !important; }
   .amenities-rules-divider { width: 100%; height: 1px; align-self: auto; }
   .amenity-list { grid-template-columns: 1fr 1fr; }
+
+  /* nightly stay grid — 2 compact cubic boxes per row */
+  .nightly-stay-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem;
+    margin-top: 0.65rem;
+  }
+  .nightly-stay-grid .rule-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+    padding: 0.55rem 0.65rem;
+    min-height: 68px;
+  }
+  .nightly-stay-grid .rule-info span:not(.rule-label) {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1f2937;
+  }
 
   /* 3 per row on mobile for amenities and house rules */
   .rules-grid,
