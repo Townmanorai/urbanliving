@@ -1,0 +1,522 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --ovf-primary:      #E8600A;
+  --ovf-primary-dark: #C44E08;
+  --ovf-gold:         #D4920A;
+  --ovf-success:      #16A34A;
+  --ovf-error:        #DC2626;
+  --ovf-warn:         #D97706;
+  --ovf-bg:           #FFFAF5;
+  --ovf-card:         #FFFFFF;
+  --ovf-border:       rgba(232,96,10,0.15);
+  --ovf-text:         #1A0E00;
+  --ovf-text-mid:     #6B3D10;
+  --ovf-text-light:   #A06030;
+  --ovf-shadow:       0 8px 32px rgba(232,96,10,0.10);
+}
+
+* { box-sizing: border-box; }
+
+/* ── Root ─────────────────────────────────────────────────────────────────── */
+.ovf-root {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--ovf-bg);
+  min-height: 100vh;
+  padding: 32px 16px 64px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.ovf-container {
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+.ovf-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.ovf-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1.5px solid var(--ovf-border);
+  color: var(--ovf-primary);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.ovf-back-btn:hover { background: rgba(232,96,10,0.06); }
+
+.ovf-header-text h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ovf-text);
+  margin-bottom: 4px;
+}
+.ovf-header-text p {
+  font-size: 14px;
+  color: var(--ovf-text-light);
+}
+
+/* ── Step Bar ─────────────────────────────────────────────────────────────── */
+.ovf-stepbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  row-gap: 12px;
+}
+
+.ovf-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.ovf-step-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2.5px solid var(--ovf-border);
+  background: #fff;
+  color: var(--ovf-text-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.3s;
+}
+
+.ovf-step.active .ovf-step-circle {
+  border-color: var(--ovf-primary);
+  background: var(--ovf-primary);
+  color: #fff;
+}
+.ovf-step.done .ovf-step-circle {
+  border-color: var(--ovf-success);
+  background: var(--ovf-success);
+  color: #fff;
+}
+
+.ovf-step-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ovf-text-light);
+  text-align: center;
+  max-width: 80px;
+}
+.ovf-step.active .ovf-step-label { color: var(--ovf-primary); }
+.ovf-step.done .ovf-step-label   { color: var(--ovf-success); }
+
+.ovf-step-line {
+  width: 48px;
+  height: 2.5px;
+  background: var(--ovf-border);
+  margin-top: -22px;
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+.ovf-step-line.done { background: var(--ovf-success); }
+
+/* ── Error Banner ─────────────────────────────────────────────────────────── */
+.ovf-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: var(--ovf-error);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+/* ── Card ─────────────────────────────────────────────────────────────────── */
+.ovf-card {
+  background: var(--ovf-card);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: var(--ovf-shadow);
+  border: 1px solid var(--ovf-border);
+}
+
+.ovf-card-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+  line-height: 1;
+}
+
+.ovf-card h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ovf-text);
+  margin-bottom: 6px;
+}
+
+.ovf-card-desc {
+  font-size: 14px;
+  color: var(--ovf-text-light);
+  margin-bottom: 24px;
+}
+
+/* ── Fields ───────────────────────────────────────────────────────────────── */
+.ovf-field {
+  margin-bottom: 20px;
+}
+
+.ovf-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ovf-text-mid);
+  margin-bottom: 7px;
+}
+
+.ovf-req { color: var(--ovf-primary); margin-left: 2px; }
+
+.ovf-label-hint {
+  font-weight: 400;
+  color: var(--ovf-text-light);
+  font-size: 12px;
+}
+
+.ovf-field input[type="text"],
+.ovf-field input[type="tel"] {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--ovf-border);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--ovf-text);
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.ovf-field input:focus { border-color: var(--ovf-primary); }
+
+.ovf-field-warn {
+  font-size: 12px;
+  color: var(--ovf-warn);
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+/* Phone row */
+.ovf-phone-row {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--ovf-border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.ovf-phone-row:focus-within { border-color: var(--ovf-primary); }
+
+.ovf-phone-code {
+  padding: 11px 12px;
+  background: #FFF3E8;
+  color: var(--ovf-primary);
+  font-weight: 700;
+  font-size: 14px;
+  border-right: 1.5px solid var(--ovf-border);
+  white-space: nowrap;
+}
+
+.ovf-phone-row input {
+  flex: 1;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 11px 12px;
+}
+.ovf-phone-row input:focus { border: none; }
+
+/* OTP */
+.ovf-otp-hint {
+  font-size: 13px;
+  color: var(--ovf-text-light);
+  margin-bottom: 14px;
+}
+
+.ovf-otp-input {
+  letter-spacing: 6px;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  text-align: center;
+}
+
+.ovf-otp-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.ovf-verified-msg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  color: var(--ovf-success);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 12px 16px;
+  border-radius: 10px;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+.ovf-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--ovf-primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+.ovf-btn-primary:hover:not(:disabled) { background: var(--ovf-primary-dark); }
+.ovf-btn-primary:active:not(:disabled) { transform: scale(0.98); }
+.ovf-btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+.ovf-btn-primary.full { width: 100%; }
+
+.ovf-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1.5px solid var(--ovf-border);
+  color: var(--ovf-text-mid);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 12px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.ovf-btn-ghost:hover:not(:disabled) { background: rgba(232,96,10,0.05); }
+.ovf-btn-ghost:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Upload Box ───────────────────────────────────────────────────────────── */
+.ovf-upload-box {
+  border: 2px dashed var(--ovf-border);
+  border-radius: 12px;
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  background: #FFFAF5;
+}
+.ovf-upload-box:hover { border-color: var(--ovf-primary); background: #FFF3E8; }
+.ovf-upload-box.has-files { border-color: var(--ovf-success); background: #F0FDF4; border-style: solid; }
+
+.ovf-upload-icon {
+  color: var(--ovf-text-light);
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+}
+.ovf-upload-box.has-files .ovf-upload-icon { color: var(--ovf-success); }
+
+.ovf-upload-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ovf-text-mid);
+  margin-bottom: 4px;
+}
+
+.ovf-upload-hint {
+  font-size: 12px;
+  color: var(--ovf-text-light);
+  margin-bottom: 14px;
+}
+
+.ovf-upload-btn {
+  background: var(--ovf-primary);
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.ovf-upload-btn:hover { background: var(--ovf-primary-dark); }
+.ovf-upload-btn.change { background: #6B3D10; margin-top: 10px; }
+
+.ovf-file-list {
+  text-align: left;
+}
+.ovf-file-count {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ovf-success);
+  margin-bottom: 8px;
+}
+.ovf-file-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 4px;
+}
+.ovf-file-list li {
+  font-size: 12px;
+  color: var(--ovf-text-mid);
+  padding: 2px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Locate Button ────────────────────────────────────────────────────────── */
+.ovf-locate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #EFF6FF;
+  border: 1.5px solid #BFDBFE;
+  color: #1D4ED8;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: background 0.2s;
+}
+.ovf-locate-btn:hover { background: #DBEAFE; }
+
+/* ── Two-column row ───────────────────────────────────────────────────────── */
+.ovf-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ── Summary ──────────────────────────────────────────────────────────────── */
+.ovf-summary {
+  background: #FFFAF5;
+  border: 1px solid var(--ovf-border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+.ovf-summary h4 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ovf-text-mid);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.ovf-summary ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ovf-summary li {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--ovf-text-mid);
+}
+.ovf-summary li span.ok {
+  color: var(--ovf-success);
+  font-weight: 600;
+  max-width: 220px;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ovf-summary li span.pending {
+  color: var(--ovf-warn);
+  font-weight: 600;
+}
+
+/* ── Nav Row ──────────────────────────────────────────────────────────────── */
+.ovf-nav-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* ── Success Screen ───────────────────────────────────────────────────────── */
+.ovf-success {
+  max-width: 480px;
+  margin: 80px auto 0;
+  text-align: center;
+  background: var(--ovf-card);
+  border-radius: 20px;
+  padding: 48px 36px;
+  box-shadow: var(--ovf-shadow);
+  border: 1px solid var(--ovf-border);
+}
+
+.ovf-success-icon {
+  width: 80px;
+  height: 80px;
+  background: #F0FDF4;
+  border: 2px solid #BBF7D0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  color: var(--ovf-success);
+}
+
+.ovf-success h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ovf-text);
+  margin-bottom: 12px;
+}
+
+.ovf-success p {
+  font-size: 14px;
+  color: var(--ovf-text-light);
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 540px) {
+  .ovf-card { padding: 24px 18px; }
+  .ovf-row  { grid-template-columns: 1fr; }
+  .ovf-stepbar { gap: 0; }
+  .ovf-step-line { width: 28px; }
+  .ovf-step-label { font-size: 10px; max-width: 64px; }
+  .ovf-header { flex-direction: column; gap: 10px; }
+}

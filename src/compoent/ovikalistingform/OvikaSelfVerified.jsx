@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
+import { useNavigate } from 'react-router-dom';
 import './OvikaSelfVerified.css';
 
 // ─── SVG Shield ──────────────────────────────────────────────────────────────
@@ -54,6 +55,8 @@ const stats = [
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function OvikaSelfVerified({ onOpenForm }) {
+  const navigate = useNavigate();
+  const handleOpenForm = onOpenForm || (() => navigate('/owner-verification'));
   return (
     <div className="svp-root">
       <Helmet>
@@ -93,7 +96,7 @@ export default function OvikaSelfVerified({ onOpenForm }) {
             </p>
 
             <div className="svp-hero-actions">
-              <button className="svp-btn-primary" onClick={onOpenForm}>
+              <button className="svp-btn-primary" onClick={handleOpenForm}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -250,7 +253,7 @@ export default function OvikaSelfVerified({ onOpenForm }) {
           </div>
           <h2>Ready to Get <span className="svp-accent-gold">Verified?</span></h2>
           <p className="svp-cta-sub">Fill in your details and get your badge within minutes.</p>
-          <button className="svp-btn-cta" onClick={onOpenForm}>
+          <button className="svp-btn-cta" onClick={handleOpenForm}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
