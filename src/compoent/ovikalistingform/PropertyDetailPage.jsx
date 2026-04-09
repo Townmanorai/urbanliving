@@ -1602,244 +1602,17 @@ const PropertyDetailPage = () => {
     { id: 'voter', label: 'Voter ID' },
   ];
 
-  // ── AI-based ID verification via Gemini + Claude fallback ───────────────────
-  const GEMINI_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
-  const CLAUDE_KEY = import.meta.env.VITE_CLAUDE_API_KEY || '';
-
-  const toBase64 = (file) => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-
-  // Basic sanity check: only reject completely blank/black images
-  const canvasHeuristicCheck = (file) => new Promise((resolve) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      try {
-        if (img.width < 100 || img.height < 100) {
-          resolve({ ok: false, reason: 'Image is too small. Please upload a proper photo of your ID.' });
-          return;
-        }
-        const canvas = document.createElement('canvas');
-        canvas.width = 100; canvas.height = 100;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, 100, 100);
-        const { data } = ctx.getImageData(0, 0, 100, 100);
-        let total = 0;
-        for (let i = 0; i < data.length; i += 4) total += (data[i] + data[i+1] + data[i+2]) / 3;
-        const avg = total / (data.length / 4);
-        if (avg < 15) { resolve({ ok: false, reason: 'Image is completely dark. Please upload a clear, well-lit photo of your ID.' }); return; }
-        if (avg > 250) { resolve({ ok: false, reason: 'Image is blank. Please upload a photo of your government ID.' }); return; }
-        resolve({ ok: true });
-      } catch { resolve({ ok: true }); }
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); resolve({ ok: false, reason: 'Could not read image file.' }); };
-    img.src = url;
-  });
-
-  // Preprocess image: grayscale + contrast boost so Tesseract reads better
-  const preprocessForOCR = (file) => new Promise((resolve) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      const MAX = 1400;
-      const scale = Math.min(1, MAX / Math.max(img.width, img.height));
-      const canvas = document.createElement('canvas');
-      canvas.width  = Math.round(img.width  * scale);
-      canvas.height = Math.round(img.height * scale);
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const id = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const d  = id.data;
-      for (let i = 0; i < d.length; i += 4) {
-        // Grayscale
-        const g = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-        // Contrast boost (factor 1.8)
-        const c = Math.min(255, Math.max(0, (g - 128) * 1.8 + 128));
-        d[i] = d[i + 1] = d[i + 2] = c;
-      }
-      ctx.putImageData(id, 0, 0);
-      canvas.toBlob(resolve, 'image/png');
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
-    img.src = url;
-  });
-
-  // OCR-based verification using Tesseract.js (free, runs in browser, no API needed)
-  const verifyIdWithOCR = async (file) => {
-    const processedBlob = await preprocessForOCR(file);
-    const { data: { text } } = await Tesseract.recognize(processedBlob, 'eng+hin', { logger: () => {} });
-    const t = text.toUpperCase();
-    console.log('[GovID] OCR text:', t.slice(0, 500));
-
-    // Highly specific keywords — unique to each document, won't appear on random images
-    const ID_KEYWORDS = {
-      'Aadhaar Card':    ['UIDAI', 'AADHAAR', 'AADHAR', 'UNIQUE IDENTIFICATION AUTHORITY OF INDIA'],
-      'PAN Card':        ['INCOME TAX DEPARTMENT', 'PERMANENT ACCOUNT NUMBER CARD'],
-      'Driving Licence': ['DRIVING LICENCE', 'DRIVING LICENSE', 'MOTOR VEHICLES ACT', 'SARATHI'],
-      'Voter ID':        ['ELECTION COMMISSION OF INDIA', 'ELECTORS PHOTO IDENTITY', 'EPIC NO'],
-      'Passport':        ['REPUBLIC OF INDIA', 'DATE OF EXPIRY', 'PLACE OF BIRTH', 'DATE OF ISSUE'],
-    };
-
-    // Very strict number patterns — exact format unique to each ID
-    // IMPORTANT: removed /\d{12}/ (too generic — matches phone numbers, bank accounts)
-    const ID_PATTERNS = {
-      'Passport':        [/P<IND[A-Z<]{5,}/, /[A-Z]\d{7}<\d[A-Z]{3}/],  // MRZ lines only
-      'PAN Card':        [/\b[A-Z]{5}[0-9]{4}[A-Z]\b/],                  // GHZPM0141Q (exact)
-      'Aadhaar Card':    [/\b\d{4}\s\d{4}\s\d{4}\b/],                    // 4 4 4 WITH spaces only
-      'Voter ID':        [/\b[A-Z]{3}\d{7}\b/],                          // ABC1234567
-      'Driving Licence': [/\b[A-Z]{2}\d{2}[- ]\d{11}\b/],               // exact DL format
-    };
-
-    // Scoring: keyword = 3pts, pattern = 4pts
-    // Rule: must have EITHER a pattern match OR at least 2 keyword matches to be valid
-    const scores = {};
-    const keyHits = {};
-    const patHits = {};
-
-    for (const [docType, kws] of Object.entries(ID_KEYWORDS)) {
-      const hits = kws.filter(kw => t.includes(kw)).length;
-      keyHits[docType] = hits;
-      scores[docType] = (scores[docType] || 0) + hits * 3;
-    }
-    for (const [docType, pats] of Object.entries(ID_PATTERNS)) {
-      const hits = pats.filter(p => p.test(t)).length;
-      patHits[docType] = hits;
-      scores[docType] = (scores[docType] || 0) + hits * 4;
-    }
-
-    console.log('[GovID] OCR scores:', scores, '| keyHits:', keyHits, '| patHits:', patHits);
-
-    const best = Object.entries(scores).sort((a, b) => b[1] - a[1])[0];
-    if (!best || best[1] === 0) return null;
-
-    const [bestType, bestScore] = best;
-    const hasPattern = (patHits[bestType] || 0) > 0;
-    const hasMultipleKeywords = (keyHits[bestType] || 0) >= 2;
-    const hasSingleStrongKeyword = (keyHits[bestType] || 0) >= 1 && bestScore >= 3;
-
-    // Accept only if: pattern found, OR 2+ keyword matches, OR 1 strong multi-word keyword
-    if (hasPattern || hasMultipleKeywords || hasSingleStrongKeyword) {
-      console.log('[GovID] OCR verified:', bestType, 'score:', bestScore);
-      return bestType;
-    }
-    return null;
-  };
-
-  // Returns detected doc type string or null if not a valid gov ID
-  const verifyIdWithGemini = async (base64, mimeType) => {
-    const prompt = `You are a strict document classifier for an Indian housing platform.
-
-TASK: Look at this image and classify it into exactly ONE of these 6 categories:
-
-AADHAAR   → image shows a real Aadhaar card (must have UIDAI logo, masked 12-digit number like XXXX XXXX 1234, "Government of India" or "भारत सरकार")
-PAN       → image shows a real PAN card (must have "INCOME TAX DEPARTMENT" header, 10-character PAN like ABCDE1234F)
-LICENCE   → image shows a real Indian Driving Licence (must have "Driving Licence" text, state transport dept name, licence number)
-VOTERID   → image shows a real Voter ID / EPIC card (must have "Election Commission of India" text, EPIC number)
-PASSPORT  → image shows a real Indian Passport (must have "Republic of India" or "भारत गणराज्य", passport number, MRZ lines at bottom, navy blue cover or data page)
-INVALID   → everything else: selfie, person photo, nature/scenery, cartoon, screenshot, blurry image, non-Indian ID, any image where the required text is NOT clearly visible
-
-STRICT RULES:
-- If you cannot clearly read the required text markers → INVALID
-- If it looks like a government ID but text is unclear → INVALID
-- If you have ANY doubt → INVALID
-- A photo of a person holding an ID card but card is not the main focus → INVALID
-
-Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
-
-    const geminiBody = JSON.stringify({
-      contents: [{ parts: [{ inline_data: { mime_type: mimeType, data: base64 } }, { text: prompt }] }],
-      generationConfig: { maxOutputTokens: 10, temperature: 0 },
-      safetySettings: [
-        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-      ],
-    });
-
-    let res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
-      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: geminiBody }
-    );
-
-    // Auto-retry once on 429 after a short delay
-    if (res.status === 429) {
-      console.warn('[GovID] Rate limited (429), retrying in 5s…');
-      await new Promise(r => setTimeout(r, 5000));
-      res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
-        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: geminiBody }
-      );
-    }
-
-    if (!res.ok) {
-      const errText = await res.text().catch(() => '');
-      console.error('[GovID] Gemini HTTP error:', res.status, errText);
-      if (res.status === 429) throw new Error('Too many requests. Please wait a moment and try again.');
-      throw new Error(`Gemini HTTP ${res.status}`);
-    }
-    const json = await res.json();
-    console.log('[GovID] Gemini raw response:', JSON.stringify(json).slice(0, 300));
-    if (json.promptFeedback?.blockReason) throw new Error(`Blocked: ${json.promptFeedback.blockReason}`);
-    const answer = (json?.candidates?.[0]?.content?.parts?.[0]?.text || '').trim().toUpperCase().replace(/[^A-Z]/g, '');
-    const VALID_TYPES = { AADHAAR: 'Aadhaar Card', PAN: 'PAN Card', LICENCE: 'Driving Licence', VOTERID: 'Voter ID', PASSPORT: 'Passport' };
-    const detected = VALID_TYPES[answer] || null;
-    console.log('[GovID] Detected type:', answer, '→', detected);
-    return detected; // null if INVALID
-  };
-
-  const verifyIdWithClaude = async (base64, mimeType) => {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': CLAUDE_KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 10,
-        messages: [{
-          role: 'user',
-          content: [
-            { type: 'image', source: { type: 'base64', media_type: mimeType, data: base64 } },
-            { type: 'text', text: `You are a strict document classifier for an Indian housing platform.\nLook at this image and classify it into exactly ONE of these categories:\nAADHAAR → Aadhaar card (UIDAI, masked number)\nPAN → PAN card (Income Tax, 10-char alphanumeric)\nLICENCE → Driving licence (RTO, DL number)\nVOTERID → Voter ID (Election Commission)\nPASSPORT → Indian passport (dark blue cover or bio-data page)\nINVALID → anything else (selfie, logo, random photo, blank)\nReply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID` }
-          ]
-        }]
-      })
-    });
-    if (!res.ok) {
-      const err = await res.text().catch(() => '');
-      console.error('[GovID] Claude HTTP error:', res.status, err);
-      throw new Error(`Claude HTTP ${res.status}`);
-    }
-    const json = await res.json();
-    const answer = (json?.content?.[0]?.text || '').trim().toUpperCase().replace(/[^A-Z]/g, '');
-    const VALID_TYPES = { AADHAAR: 'Aadhaar Card', PAN: 'PAN Card', LICENCE: 'Driving Licence', VOTERID: 'Voter ID', PASSPORT: 'Passport' };
-    const detected = VALID_TYPES[answer] || null;
-    console.log('[GovID] Claude detected:', answer, '→', detected);
-    return detected;
-  };
-
   const handleGovIdFile = async (file) => {
     setGovIdError('');
     setGovIdStatus('idle');
     setGovIdPreview('');
     setGovIdDetectedType('');
     setFormData(prev => ({ ...prev, uploadedPhoto: '' }));
-    console.log('[GovID] GEMINI_KEY present:', !!GEMINI_KEY, '| length:', GEMINI_KEY.length);
 
     const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!allowed.includes(file.type)) {
       setGovIdStatus('invalid');
-      setGovIdError('Please upload a photo of your ID (JPG or PNG). PDFs are not accepted — take a clear photo of your physical ID card.');
+      setGovIdError('Please upload a JPG or PNG image.');
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
@@ -1855,61 +1628,7 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
 
     setGovIdStatus('scanning');
 
-    if (GEMINI_KEY) {
-      // ── AI path: Gemini vision ────────────────────────────────────
-      try {
-        const base64 = await toBase64(file);
-        const detectedType = await verifyIdWithGemini(base64, file.type);
-        if (!detectedType) {
-          setGovIdStatus('invalid');
-          setGovIdError('Not a valid government ID. Please upload a clear, well-lit photo of your Aadhaar Card, PAN Card, Driving Licence, Voter ID, or Passport — not a selfie or random image.');
-          setGovIdPreview('');
-          return;
-        }
-        setGovIdDetectedType(detectedType);
-      } catch (err) {
-        console.error('[GovID] Gemini error:', err.message);
-        if (err.message.includes('Too many requests') || err.message.includes('429')) {
-          // Gemini quota exhausted — try OCR fallback
-          console.warn('[GovID] Gemini quota exhausted, trying OCR fallback');
-          try {
-            const detectedType = await verifyIdWithOCR(file);
-            if (detectedType) {
-              setGovIdDetectedType(detectedType);
-              // fall through to upload
-            } else {
-              // OCR could not verify — do NOT allow bypass, ask user to retry later
-              setGovIdStatus('invalid');
-              setGovIdError('AI verification is temporarily unavailable. Please upload a clearer, well-lit photo of your ID and try again, or come back in a few minutes.');
-              setGovIdPreview('');
-              return;
-            }
-          } catch (ocrErr) {
-            console.error('[GovID] OCR error:', ocrErr.message);
-            setGovIdStatus('invalid');
-            setGovIdError('Verification temporarily unavailable. Please try again in a few minutes.');
-            setGovIdPreview('');
-            return;
-          }
-        } else {
-          setGovIdStatus('invalid');
-          setGovIdError(`Verification failed: ${err.message}. Please check your connection and try again.`);
-          setGovIdPreview('');
-          return;
-        }
-      }
-    } else {
-      // ── Fallback: canvas heuristic (no Gemini key configured) ─────
-      const result = await canvasHeuristicCheck(file);
-      if (!result.ok) {
-        setGovIdStatus('invalid');
-        setGovIdError(result.reason);
-        setGovIdPreview('');
-        return;
-      }
-    }
-
-    // Upload to server
+    // Upload directly — no AI verification
     try {
       const fd = new FormData();
       fd.append('images', file);
@@ -2592,27 +2311,19 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
 
               {step === 5 && (
                 <div>
-                  {/* Header */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '0.4rem' }}>
-                    <h2 style={{ fontSize: '1.4rem', margin: 0 }}>Government ID Verification</h2>
-                    <span style={{ background: '#dc2626', color: '#fff', fontSize: '0.7rem', fontWeight: 700, padding: '2px 8px', borderRadius: 50, letterSpacing: '0.05em' }}>MANDATORY</span>
-                  </div>
-                  <p style={{ color: '#555', fontSize: '0.88rem', marginBottom: '0.6rem', lineHeight: 1.55 }}>
-                    To secure your booking, a valid government-issued photo ID is required. Please upload a clear image of any one of the following:
+                  <h2 style={{ fontSize: '1.4rem', marginBottom: '0.5rem' }}>Upload Government ID</h2>
+                  <p style={{ color: '#555', fontSize: '0.88rem', marginBottom: '1.4rem', lineHeight: 1.55 }}>
+                    Please upload a photo of any government-issued ID — Aadhaar Card, PAN Card, Driving Licence, Voter ID, or Passport.
                   </p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 10px', marginBottom: '1.4rem' }}>
-                    {['Masked Aadhaar Card', 'PAN Card', 'Driving Licence', 'Voter ID', 'Passport'].map(label => (
-                      <span key={label} style={{ background: '#fff5f5', border: '1px solid #f5c6c6', color: '#8b0000', fontSize: '0.78rem', fontWeight: 600, padding: '3px 10px', borderRadius: 20 }}>{label}</span>
-                    ))}
-                  </div>
 
                   {/* Upload Zone */}
                   <div
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (e.dataTransfer.files[0]) handleGovIdFile(e.dataTransfer.files[0]); }}
-                    onClick={() => govIdStatus !== 'scanning' && govIdStatus !== 'manual' && govIdInputRef.current.click()}
+                    onClick={() => govIdStatus !== 'scanning' && govIdInputRef.current.click()}
                     style={{
-                      padding: '2.5rem 1.5rem', border: `2.5px dashed ${govIdStatus === 'valid' ? '#22c55e' : govIdStatus === 'invalid' ? '#dc2626' : '#d1d5db'}`,
+                      padding: '2.5rem 1.5rem',
+                      border: `2.5px dashed ${govIdStatus === 'valid' ? '#22c55e' : govIdStatus === 'invalid' ? '#dc2626' : '#d1d5db'}`,
                       borderRadius: 12, textAlign: 'center',
                       cursor: govIdStatus === 'scanning' ? 'not-allowed' : 'pointer',
                       background: govIdStatus === 'valid' ? '#f0fdf4' : govIdStatus === 'invalid' ? '#fef2f2' : '#f8fafc',
@@ -2621,25 +2332,19 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                   >
                     {govIdStatus === 'scanning' ? (
                       <>
-                        <style>{`@keyframes scanLine{0%{top:0%}100%{top:100%}}`}</style>
-                        <div style={{ position: 'relative', width: 80, height: 55, margin: '0 auto 1rem', border: '2px solid #8b0000', borderRadius: 6, overflow: 'hidden', background: '#fff' }}>
-                          <div style={{ position: 'absolute', left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#8b0000,transparent)', animation: 'scanLine 1s linear infinite' }} />
-                        </div>
-                        <p style={{ fontWeight: 600, color: '#8b0000' }}>Scanning document…</p>
-                        <p style={{ color: '#888', fontSize: '0.82rem' }}>Verifying your government ID…</p>
+                        <Loader size={40} style={{ margin: '0 auto 0.75rem', display: 'block', color: '#8b0000' }} />
+                        <p style={{ fontWeight: 600, color: '#8b0000' }}>Uploading…</p>
                       </>
                     ) : govIdStatus === 'valid' ? (
                       <>
                         <CheckCircle size={48} style={{ color: '#22c55e', margin: '0 auto 0.75rem', display: 'block' }} />
-                        <p style={{ fontWeight: 700, color: '#16a34a', fontSize: '1rem' }}>
-                          {govIdDetectedType ? `${govIdDetectedType} Verified` : 'Government ID Verified'}
-                        </p>
+                        <p style={{ fontWeight: 700, color: '#16a34a', fontSize: '1rem' }}>Government ID Uploaded</p>
                         <p style={{ fontSize: '0.8rem', color: '#888', marginTop: 4 }}>Click to re-upload if needed</p>
                       </>
                     ) : govIdStatus === 'invalid' ? (
                       <>
                         <XCircle size={48} style={{ color: '#dc2626', margin: '0 auto 0.75rem', display: 'block' }} />
-                        <p style={{ fontWeight: 700, color: '#dc2626' }}>Invalid Document</p>
+                        <p style={{ fontWeight: 700, color: '#dc2626' }}>Upload Failed</p>
                         <p style={{ fontSize: '0.82rem', color: '#dc2626', marginTop: 4 }}>{govIdError}</p>
                         <p style={{ fontSize: '0.78rem', color: '#888', marginTop: 6 }}>Click to try again</p>
                       </>
@@ -2661,15 +2366,14 @@ Reply with ONLY one word: AADHAAR, PAN, LICENCE, VOTERID, PASSPORT, or INVALID`;
                   />
 
                   {/* Preview */}
-                  {govIdPreview && govIdPreview !== 'pdf' && (
+                  {govIdPreview && (
                     <div style={{ marginTop: '1.25rem', textAlign: 'center' }}>
                       <img src={govIdPreview} alt="ID Preview" style={{ maxWidth: 280, maxHeight: 180, borderRadius: 10, border: `2px solid ${govIdStatus === 'valid' ? '#22c55e' : '#ddd'}`, objectFit: 'cover' }} />
                     </div>
                   )}
 
-                  {/* Info note */}
                   <div style={{ marginTop: '1rem', padding: '10px 14px', background: '#fffbeb', borderRadius: 8, border: '1px solid #fde68a', fontSize: '0.8rem', color: '#92400e' }}>
-                    🔒 Your ID is encrypted and stored securely. It is used only for identity verification and will not be shared.
+                    🔒 Your ID is stored securely and used only for identity verification.
                   </div>
                 </div>
               )}
