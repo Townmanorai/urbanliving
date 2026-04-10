@@ -207,7 +207,7 @@ const PropertyCard = ({ property, rentalType }) => {
             position: 'absolute', top: 10, left: 10,
             background: categoryColor.bg, color: categoryColor.text,
             padding: '4px 10px', borderRadius: 20,
-            fontSize: 11, fontWeight: 700, letterSpacing: '0.03em',
+            fontSize: 11, fontWeight: 400, letterSpacing: '0.01em',
             boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
           }}>
             {categoryLabel}
@@ -220,7 +220,7 @@ const PropertyCard = ({ property, rentalType }) => {
           background: isMonthly ? 'rgba(201,139,62,0.92)' : 'rgba(15,15,15,0.75)',
           color: '#fff',
           padding: '4px 10px', borderRadius: 20, fontSize: 11,
-          fontWeight: 700, backdropFilter: 'blur(4px)',
+          fontWeight: 400, backdropFilter: 'blur(4px)',
         }}>
           {isMonthly ? 'Monthly' : 'Nightly'}
         </span>
@@ -369,8 +369,8 @@ const PropertyCard = ({ property, rentalType }) => {
               width: '100%', padding: '9px 0',
               background: '#C98B3E', color: '#fff',
               border: 'none', borderRadius: 10,
-              fontWeight: 700, fontSize: 13, cursor: 'pointer',
-              fontFamily: 'inherit', letterSpacing: '0.02em',
+              fontWeight: 400, fontSize: 13, cursor: 'pointer',
+              fontFamily: 'inherit', letterSpacing: '0.01em',
               transition: 'background 0.2s ease, transform 0.15s ease',
               boxShadow: '0 2px 8px rgba(201,139,62,0.3)',
             }}
@@ -1093,8 +1093,8 @@ const PropertyListPage = () => {
           to   { transform: translateX(0); }
         }
         @keyframes slideUp {
-          from { transform: translateY(100%); opacity: 0.6; }
-          to   { transform: translateY(0); opacity: 1; }
+          from { transform: translate(-50%, -50%) scale(0.92); opacity: 0; }
+          to   { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
         @keyframes fadeInBg {
           from { opacity: 0; }
@@ -1217,33 +1217,32 @@ const PropertyListPage = () => {
           <div style={{
             position: 'fixed',
             top: '50%', left: '50%',
-            transform: 'translate(-50%, -50%)',
             background: '#fff',
             zIndex: 401,
-            borderRadius: 20,
-            width: 'min(480px, 92vw)',
-            boxShadow: '0 24px 80px rgba(0,0,0,0.22)',
-            animation: 'slideUp 0.25s cubic-bezier(0.32, 0.72, 0, 1)',
+            borderRadius: 16,
+            width: 'min(420px, 92vw)',
+            boxShadow: '0 16px 48px rgba(0,0,0,0.2)',
+            animation: 'slideUp 0.22s ease-out forwards',
             overflow: 'hidden',
           }}>
             {/* Header bar */}
             <div style={{
               background: 'linear-gradient(135deg, #C98B3E 0%, #a06a28 100%)',
-              padding: '20px 22px 18px',
+              padding: '16px 20px 14px',
               position: 'relative',
               textAlign: 'center',
             }}>
-              <h3 style={{ fontSize: 18, fontWeight: 800, color: '#fff', margin: 0, letterSpacing: '0.01em' }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff', margin: 0, letterSpacing: '0.01em' }}>
                 Listing Category
               </h3>
               <button
                 onClick={() => setListPopupOpen(false)}
                 style={{
-                  position: 'absolute', top: 14, right: 14,
+                  position: 'absolute', top: 10, right: 12,
                   background: 'rgba(255,255,255,0.2)', border: 'none',
-                  borderRadius: '50%', width: 30, height: 30,
+                  borderRadius: '50%', width: 28, height: 28,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: 'pointer', color: '#fff', fontSize: 15,
+                  cursor: 'pointer', color: '#fff', fontSize: 13,
                   backdropFilter: 'blur(4px)',
                   transition: 'background 0.18s ease',
                 }}
@@ -1256,22 +1255,22 @@ const PropertyListPage = () => {
 
             {/* Two cards */}
             <div style={{
-              padding: '22px 20px 24px',
+              padding: '16px 16px 18px',
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
-              gap: 14,
+              gap: 12,
             }}>
               {[
                 {
                   img: '🏠',
                   title: 'Short Term Rental',
-                  desc: 'PG, apartments, houses, and farmhouse accommodations · Nightly Rental',
+                  desc: 'Nightly stays & PG',
                   path: '/listed1',
                 },
                 {
                   img: '🏢',
                   title: 'Long Term Rental',
-                  desc: 'PG, apartments, houses, and farmhouse accommodations · Monthly Rental',
+                  desc: 'Monthly rentals & PG',
                   path: '/list-pg',
                 },
               ].map(opt => (
@@ -1281,27 +1280,27 @@ const PropertyListPage = () => {
                     background: '#fff',
                     border: '1.5px solid #e8d9c0',
                     borderRadius: 14,
-                    padding: '18px 14px 16px',
+                    padding: '16px 12px 14px',
                     display: 'flex', flexDirection: 'column', alignItems: 'center',
-                    gap: 10, textAlign: 'center',
-                    boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+                    gap: 9, textAlign: 'center',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
                   }}
                 >
                   {/* Icon circle */}
                   <div style={{
-                    width: 64, height: 64, borderRadius: '50%',
+                    width: 54, height: 54, borderRadius: '50%',
                     background: '#FFF6EE',
                     border: '1.5px solid rgba(201,139,62,0.2)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 28,
+                    fontSize: 26,
                   }}>
                     {opt.img}
                   </div>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a', marginBottom: 6, lineHeight: 1.3 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a', marginBottom: 4, lineHeight: 1.3 }}>
                       {opt.title}
                     </div>
-                    <div style={{ fontSize: 11.5, color: '#9ca3af', lineHeight: 1.5 }}>
+                    <div style={{ fontSize: 11.5, color: '#9ca3af', lineHeight: 1.4 }}>
                       {opt.desc}
                     </div>
                   </div>
@@ -1310,17 +1309,17 @@ const PropertyListPage = () => {
                     onMouseEnter={e => e.currentTarget.style.background = '#AF7834'}
                     onMouseLeave={e => e.currentTarget.style.background = '#C98B3E'}
                     style={{
-                      width: '100%', padding: '10px 0',
+                      width: '100%', padding: '9px 0',
                       background: '#C98B3E', color: '#fff',
-                      border: 'none', borderRadius: 10,
-                      fontWeight: 700, fontSize: 13,
+                      border: 'none', borderRadius: 9,
+                      fontWeight: 600, fontSize: 12.5,
                       cursor: 'pointer', fontFamily: 'inherit',
                       marginTop: 'auto',
-                      boxShadow: '0 3px 10px rgba(201,139,62,0.35)',
+                      boxShadow: '0 2px 8px rgba(201,139,62,0.3)',
                       transition: 'background 0.2s ease',
                     }}
                   >
-                    List Properties
+                    List Property
                   </button>
                 </div>
               ))}

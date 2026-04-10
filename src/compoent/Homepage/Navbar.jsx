@@ -178,7 +178,6 @@ export default function Navbar() {
             {/* Logo — left */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", cursor: "pointer" }} onClick={() => navigate("/")}>
               <img src="/ovikaliving_logo_clean.png" alt="OvikaLiving" style={{ height: 26, objectFit: "contain", background: "transparent", display: "block" }} />
-              <span style={{ fontSize: 8, color: "#a06020", fontWeight: 500, marginTop: 1, letterSpacing: "0.2px", opacity: 1 }}>A flagship rental brand of Townmonor Technologies Pvt. Ltd.</span>
             </div>
 
             {/* Right: Host button + menu icon */}
@@ -207,31 +206,25 @@ export default function Navbar() {
         {/* ── RENTAL CATEGORY POPUP ── */}
         {rentalCategoryPopup && (
           <>
-            <div onClick={() => setRentalCategoryPopup(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000005, animation: "fadeIn 0.3s ease-out" }} />
-            <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "90%", maxHeight: "90vh", background: "#fff", borderRadius: 24, boxShadow: "0 20px 60px rgba(0,0,0,0.3)", zIndex: 1000006, overflow: "hidden", animation: "scaleIn 0.3s ease-out" }}>
-              <button onClick={() => setRentalCategoryPopup(false)} style={{ position: "absolute", top: 20, right: 20, border: "none", background: "#f3f3f3", width: 36, height: 36, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, cursor: "pointer", zIndex: 10 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "#e0e0e0"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "#f3f3f3"; }}>✕</button>
-              <div style={{ background: "linear-gradient(135deg, #c2772b 0%, #a85e1f 100%)", padding: "30px 20px", textAlign: "center" }}>
-                <h2 style={{ fontSize: 24, fontWeight: 700, color: "#1f1f1f", margin: 0 }}>Listing Category</h2>
+            <div onClick={() => setRentalCategoryPopup(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000005 }} />
+            <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(320px, 90vw)", background: "#fff", borderRadius: 16, boxShadow: "0 16px 48px rgba(0,0,0,0.2)", zIndex: 1000006, overflow: "hidden" }}>
+              <div style={{ background: "linear-gradient(135deg, #C98B3E 0%, #a06a28 100%)", padding: "12px 16px 10px", textAlign: "center", position: "relative" }}>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: "#fff", margin: 0 }}>Listing Category</h3>
+                <button onClick={() => setRentalCategoryPopup(false)} style={{ position: "absolute", top: 8, right: 10, border: "none", background: "rgba(255,255,255,0.2)", width: 24, height: 24, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, cursor: "pointer", color: "#fff" }}>✕</button>
               </div>
-              <div style={{ padding: "30px 20px", display: "grid", gridTemplateColumns: "1fr", gap: 20 }}>
+              <div style={{ padding: "12px 12px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 {[
-                  { title: "Short Term Rental", desc: "PG, apartments, houses, and farmhouse accommodations - Nightly Rental", emoji: "🏠", bg: "linear-gradient(135deg, #fff4e6 0%, #ffe4cc 100%)", path: "/listed1" },
-                  { title: "Long Term Rental", desc: "PG, apartments, houses, and farmhouse accommodations - Monthly Rental", emoji: "🏢", bg: "linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)", path: "/list-pg" },
+                  { title: "Short Term Rental", desc: "Nightly stays & PG", emoji: "🏠", path: "/listed1" },
+                  { title: "Long Term Rental", desc: "Monthly rentals & PG", emoji: "🏢", path: "/list-pg" },
                 ].map((item) => (
                   <div key={item.title}
-                    style={{ border: "2px solid #e0e0e0", borderRadius: 20, padding: "30px 20px", textAlign: "center", transition: "all 0.3s", cursor: "pointer", background: "#fff" }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#c2772b"; e.currentTarget.style.transform = "translateY(-5px)"; e.currentTarget.style.boxShadow = "0 10px 30px rgba(194,119,43,0.15)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e0e0e0"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
+                    style={{ border: "1.5px solid #e8d9c0", borderRadius: 12, padding: "12px 10px 10px", textAlign: "center", cursor: "pointer", background: "#fff", display: "flex", flexDirection: "column", alignItems: "center", gap: 7 }}
                     onClick={() => handleRentalCategorySelect(item.path)}
                   >
-                    <div style={{ width: 80, height: 80, margin: "0 auto 20px", background: item.bg, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>{item.emoji}</div>
-                    <h3 style={{ fontSize: 20, fontWeight: 600, color: "#232323", marginBottom: 12 }}>{item.title}</h3>
-                    <p style={{ fontSize: 14, color: "#666", lineHeight: 1.6, marginBottom: 25 }}>{item.desc}</p>
-                    <button style={{ border: "none", background: "linear-gradient(135deg, #c2772b 0%, #c2772b 100%)", color: "#fff", fontWeight: 600, fontSize: 14, borderRadius: 12, padding: "12px 24px", cursor: "pointer", width: "100%", transition: "all 0.3s" }}
-                      onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.05)"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}>List Properties</button>
+                    <div style={{ width: 42, height: 42, background: "#FFF6EE", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, border: "1.5px solid rgba(201,139,62,0.2)" }}>{item.emoji}</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: "#1a1a1a", lineHeight: 1.3 }}>{item.title}</div>
+                    <div style={{ fontSize: 10.5, color: "#9ca3af", lineHeight: 1.4 }}>{item.desc}</div>
+                    <button style={{ border: "none", background: "#C98B3E", color: "#fff", fontWeight: 600, fontSize: 11.5, borderRadius: 8, padding: "7px 0", cursor: "pointer", width: "100%" }}>List Property</button>
                   </div>
                 ))}
               </div>
@@ -265,8 +258,8 @@ export default function Navbar() {
               <div style={{ display: "flex", flexDirection: "column", gap: 2, padding: "12px 12px 8px", flex: 1 }}>
                 {[
                   { icon: "🏠", label: "Home", sub: "Return to homepage", action: () => { closeMobileMenu(); navigate("/"); } },
-                  { icon: "🌙", label: "Nightly Rentals", sub: "Short stays & nightly bookings", action: () => { closeMobileMenu(); navigate("/nightly-stays"); } },
-                  { icon: "📅", label: "Monthly Stay", sub: "Long term & monthly rentals", action: () => { closeMobileMenu(); navigate("/monthly-rentals"); } },
+                  { icon: "🌙", label: "Nightly Stays", sub: "Short stays & nightly bookings", action: () => { closeMobileMenu(); navigate("/nightly-stays"); } },
+                  { icon: "📅", label: "Monthly Rental", sub: "Long term & monthly rentals", action: () => { closeMobileMenu(); navigate("/monthly-rentals"); } },
                   { icon: "✨", label: "Signature Stays", sub: "Our curated premium properties", action: () => { closeMobileMenu(); handleSignatureStaysClick(); } },
                   { icon: "🏘️", label: "List Property", sub: "List your property and earn", action: () => { closeMobileMenu(); setRentalCategoryPopup(true); } },
                   { icon: "📊", label: "Profile", sub: "View your bookings & performance", action: () => { closeMobileMenu(); navigate("/dashboard"); } },
@@ -335,16 +328,13 @@ export default function Navbar() {
               alt="OvikaLiving"
               style={{ height: 28, objectFit: "contain", background: "transparent", display: "block" }}
             />
-            <span style={{ fontSize: 9, color: "#a06020", fontWeight: 500, letterSpacing: "0.2px", opacity: 1, whiteSpace: "nowrap", fontFamily: "Poppins, sans-serif", marginTop: 1 }}>
-              A flagship rental brand of Townmonor Technologies Pvt. Ltd.
-            </span>
           </div>
 
           {/* RIGHT-ALIGNED: Nav text links */}
           <nav style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: "auto" }}>
             {[
-              { label: "Nightly Rentals", action: () => navigate("/nightly-stays") },
-              { label: "Monthly Stay",    action: () => navigate("/monthly-rentals") },
+              { label: "Nightly Stays",   action: () => navigate("/nightly-stays") },
+              { label: "Monthly Rental", action: () => navigate("/monthly-rentals") },
               { label: "List Property",   action: handleBecomeHostClick },
               { label: "Signature Stays", action: handleSignatureStaysClick },
             ].map(({ label, action }) => (
@@ -390,31 +380,25 @@ export default function Navbar() {
       {/* ── RENTAL CATEGORY POPUP (Desktop) ── */}
       {rentalCategoryPopup && (
         <>
-          <div onClick={() => setRentalCategoryPopup(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000005, animation: "fadeIn 0.3s ease-out" }} />
-          <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(950px, 90vw)", maxHeight: "90vh", background: "#fff", borderRadius: 24, boxShadow: "0 20px 60px rgba(0,0,0,0.3)", zIndex: 1000006, overflow: "hidden", animation: "scaleIn 0.3s ease-out" }}>
-            <button onClick={() => setRentalCategoryPopup(false)} style={{ position: "absolute", top: 20, right: 20, border: "none", background: "#f3f3f3", width: 36, height: 36, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, cursor: "pointer", zIndex: 10 }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "#e0e0e0"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "#f3f3f3"; }}>✕</button>
-            <div style={{ background: "linear-gradient(135deg, #c2772b 0%, #a85e1f 100%)", padding: "40px 30px", textAlign: "center" }}>
-              <h2 style={{ fontSize: 32, fontWeight: 700, color: "#1f1f1f", margin: 0 }}>Listing Category</h2>
+          <div onClick={() => setRentalCategoryPopup(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000005 }} />
+          <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(420px, 92vw)", background: "#fff", borderRadius: 16, boxShadow: "0 16px 48px rgba(0,0,0,0.2)", zIndex: 1000006, overflow: "hidden" }}>
+            <div style={{ background: "linear-gradient(135deg, #C98B3E 0%, #a06a28 100%)", padding: "16px 20px 14px", textAlign: "center", position: "relative" }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", margin: 0 }}>Listing Category</h3>
+              <button onClick={() => setRentalCategoryPopup(false)} style={{ position: "absolute", top: 10, right: 12, border: "none", background: "rgba(255,255,255,0.2)", width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, cursor: "pointer", color: "#fff" }}>✕</button>
             </div>
-            <div style={{ padding: "50px 40px", display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 30 }}>
+            <div style={{ padding: "16px 16px 18px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               {[
-                { title: "Short Term Rental", desc: "PG, apartments, houses, and farmhouse accommodations - Nightly Rental", emoji: "🏠", bg: "linear-gradient(135deg, #fff4e6 0%, #ffe4cc 100%)", path: "/listed1" },
-                { title: "Long Term Rental", desc: "PG, apartments, houses, and farmhouse accommodations - Monthly Rental", emoji: "🏢", bg: "linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)", path: "/list-pg" },
+                { title: "Short Term Rental", desc: "Nightly stays & PG", emoji: "🏠", path: "/listed1" },
+                { title: "Long Term Rental", desc: "Monthly rentals & PG", emoji: "🏢", path: "/list-pg" },
               ].map((item) => (
                 <div key={item.title}
-                  style={{ border: "2px solid #e0e0e0", borderRadius: 20, padding: "40px 30px", textAlign: "center", transition: "all 0.3s", cursor: "pointer", background: "#fff" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#c2772b"; e.currentTarget.style.transform = "translateY(-5px)"; e.currentTarget.style.boxShadow = "0 10px 30px rgba(194,119,43,0.15)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e0e0e0"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
+                  style={{ border: "1.5px solid #e8d9c0", borderRadius: 14, padding: "16px 12px 14px", textAlign: "center", cursor: "pointer", background: "#fff", display: "flex", flexDirection: "column", alignItems: "center", gap: 9 }}
                   onClick={() => handleRentalCategorySelect(item.path)}
                 >
-                  <div style={{ width: 100, height: 100, margin: "0 auto 20px", background: item.bg, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 50 }}>{item.emoji}</div>
-                  <h3 style={{ fontSize: 24, fontWeight: 600, color: "#232323", marginBottom: 12 }}>{item.title}</h3>
-                  <p style={{ fontSize: 16, color: "#666", lineHeight: 1.6, marginBottom: 25 }}>{item.desc}</p>
-                  <button style={{ border: "none", background: "linear-gradient(135deg, #c2772b 0%, #c2772b 100%)", color: "#fff", fontWeight: 600, fontSize: 16, borderRadius: 12, padding: "14px 32px", cursor: "pointer", width: "100%", transition: "all 0.3s" }}
-                    onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.05)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}>List Properties</button>
+                  <div style={{ width: 54, height: 54, background: "#FFF6EE", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, border: "1.5px solid rgba(201,139,62,0.2)" }}>{item.emoji}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#1a1a1a", lineHeight: 1.3 }}>{item.title}</div>
+                  <div style={{ fontSize: 11.5, color: "#9ca3af", lineHeight: 1.4 }}>{item.desc}</div>
+                  <button style={{ border: "none", background: "#C98B3E", color: "#fff", fontWeight: 600, fontSize: 12.5, borderRadius: 9, padding: "9px 0", cursor: "pointer", width: "100%" }}>List Property</button>
                 </div>
               ))}
             </div>
@@ -437,8 +421,8 @@ export default function Navbar() {
             <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
               {[
                 { icon: "🏠", label: "Home", sub: "Return to homepage", action: () => { setHamburgerMenuOpen(false); navigate("/"); } },
-                { icon: "🌙", label: "Nightly Rentals", sub: "Short stays & nightly bookings", action: () => { setHamburgerMenuOpen(false); navigate("/nightly-stays"); } },
-                { icon: "📅", label: "Monthly Stay", sub: "Long term & monthly rentals", action: () => { setHamburgerMenuOpen(false); navigate("/monthly-rentals"); } },
+                { icon: "🌙", label: "Nightly Stays", sub: "Short stays & nightly bookings", action: () => { setHamburgerMenuOpen(false); navigate("/nightly-stays"); } },
+                { icon: "📅", label: "Monthly Rental", sub: "Long term & monthly rentals", action: () => { setHamburgerMenuOpen(false); navigate("/monthly-rentals"); } },
                 { icon: "✨", label: "Signature Stays", sub: "Our curated premium properties", action: handleSignatureStaysClick },
                 { icon: "🏘️", label: "List Property", sub: "List your property and earn", action: () => { setHamburgerMenuOpen(false); setRentalCategoryPopup(true); } },
                 { icon: "📊", label: "Profile", sub: "View your bookings & performance", action: () => { setHamburgerMenuOpen(false); navigate("/dashboard"); } },
