@@ -168,7 +168,7 @@ export default function Navbar() {
       <>
         <style>{globalCSS}</style>
 
-        <div style={{ position: "relative", zIndex: 100, fontFamily: "Poppins, sans-serif", background: "#fff", borderBottom: "1px solid #f0e8d8" }}>
+        <div style={{ position: "sticky", top: 0, zIndex: 100, fontFamily: "Poppins, sans-serif", background: "#fff", borderBottom: "1px solid #f0e8d8" }}>
 
           {/* ── ROW 1: Hamburger | Logo | User ── */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px 4px 16px" }}>
@@ -199,8 +199,16 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* User / Sign In */}
-            <div>
+            {/* Right: Become a Host + User icon */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <button
+                onClick={handleBecomeHostClick}
+                style={{ border: "1.5px solid rgba(194,119,43,0.6)", background: "#fdf8f2", color: "#8B5E2A", fontWeight: 600, fontSize: 11, borderRadius: 20, padding: "5px 11px", height: 30, display: "flex", alignItems: "center", cursor: "pointer", fontFamily: "Poppins, sans-serif", whiteSpace: "nowrap", transition: "all 0.2s ease" }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "#c2772b"; e.currentTarget.style.color = "#fff"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "#fdf8f2"; e.currentTarget.style.color = "#8B5E2A"; }}
+              >
+                Host
+              </button>
               {user ? (
                 <button
                   onClick={() => setSideMenuOpen(true)}
@@ -217,25 +225,6 @@ export default function Navbar() {
                 </button>
               )}
             </div>
-          </div>
-
-          {/* ── ROW 2: Nav Buttons ── */}
-          <div style={{ background: "linear-gradient(135deg, #2a1a08 0%, #3a2410 50%, #2a1a08 100%)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "9px 12px" }}>
-            {[
-              { label: "Book a Stay", action: () => navigate("/properties") },
-              { label: "Signature Stays", action: handleSignatureStaysClick },
-              { label: "Become a Host", action: handleBecomeHostClick },
-            ].map((btn) => (
-              <button
-                key={btn.label}
-                onClick={btn.action}
-                style={{ border: "1.5px solid rgba(194,119,43,0.75)", background: "transparent", color: "#e8d5a3", fontWeight: 500, fontSize: 11, borderRadius: 20, padding: "5px 12px", height: 30, display: "flex", alignItems: "center", cursor: "pointer", fontFamily: "Poppins, sans-serif", letterSpacing: "0.2px", transition: "all 0.25s ease", whiteSpace: "nowrap" }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(194,119,43,0.18)"; e.currentTarget.style.borderColor = "#c2772b"; e.currentTarget.style.color = "#fff"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(194,119,43,0.75)"; e.currentTarget.style.color = "#e8d5a3"; }}
-              >
-                {btn.label}
-              </button>
-            ))}
           </div>
         </div>
 
@@ -398,7 +387,7 @@ export default function Navbar() {
     <>
       <style>{globalCSS}</style>
 
-      <div style={{ position: "relative", zIndex: 100, fontFamily: "Poppins, sans-serif", background: "#fff", borderBottom: "1px solid #f0e8d8", boxShadow: "0 2px 18px rgba(71,38,9,0.09)" }}>
+      <div style={{ position: "sticky", top: 0, zIndex: 100, fontFamily: "Poppins, sans-serif", background: "#fff", borderBottom: "1px solid #f0e8d8", boxShadow: "0 2px 18px rgba(71,38,9,0.09)" }}>
 
         {/* ── ROW 1 ── */}
         <div style={{ display: "flex", alignItems: "center", padding: "10px 36px 6px 36px", position: "relative" }}>
@@ -439,8 +428,18 @@ export default function Navbar() {
             <span style={{ fontSize: 9, color: "#c2772b", fontWeight: 400, letterSpacing: "0.3px", opacity: 0.7, whiteSpace: "nowrap", fontFamily: "Poppins, sans-serif" }}>A flagship rental brand of Townmonor Technologies Pvt. Ltd.</span>
           </div>
 
-          {/* RIGHT auth */}
-          <div style={{ width: 200, display: "flex", alignItems: "center", justifyContent: "flex-end", flexShrink: 0, marginLeft: "auto" }}>
+          {/* RIGHT: Become a Host + auth */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "flex-end", flexShrink: 0, marginLeft: "auto" }}>
+            {/* Become a Host */}
+            <button
+              onClick={handleBecomeHostClick}
+              style={{ border: "1.5px solid rgba(194,119,43,0.6)", background: "#fdf8f2", color: "#8B5E2A", fontWeight: 600, fontSize: 12, borderRadius: 22, padding: "6px 16px", height: 34, display: "flex", alignItems: "center", cursor: "pointer", fontFamily: "Poppins, sans-serif", letterSpacing: "0.2px", transition: "all 0.22s ease", whiteSpace: "nowrap" }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "#c2772b"; e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "#c2772b"; e.currentTarget.style.boxShadow = "0 3px 10px rgba(194,119,43,0.25)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "#fdf8f2"; e.currentTarget.style.color = "#8B5E2A"; e.currentTarget.style.borderColor = "rgba(194,119,43,0.6)"; e.currentTarget.style.boxShadow = "none"; }}
+            >
+              Become a Host
+            </button>
+            {/* User / Sign In */}
             {user ? (
               <button
                 onClick={() => setSideMenuOpen(true)}
@@ -463,25 +462,6 @@ export default function Navbar() {
               </button>
             )}
           </div>
-        </div>
-
-        {/* ── ROW 2: Nav strip ── */}
-        <div style={{ background: "linear-gradient(135deg, #2a1a08 0%, #3a2410 50%, #2a1a08 100%)", display: "flex", alignItems: "center", justifyContent: "center", gap: 16, padding: "8px 44px 9px 44px" }}>
-          {[
-            { label: "Book a Stay", action: () => navigate("/properties") },
-            { label: "Signature Stays", action: handleSignatureStaysClick },
-            { label: "Become a Host", action: handleBecomeHostClick },
-          ].map((btn) => (
-            <button
-              key={btn.label}
-              onClick={btn.action}
-              style={{ border: "1.5px solid rgba(194,119,43,0.75)", background: "transparent", color: "#e8d5a3", fontWeight: 500, fontSize: 13, borderRadius: 22, padding: "6px 24px", height: 34, display: "flex", alignItems: "center", cursor: "pointer", fontFamily: "Poppins, sans-serif", letterSpacing: "0.3px", transition: "all 0.25s ease", whiteSpace: "nowrap" }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(194,119,43,0.18)"; e.currentTarget.style.borderColor = "#c2772b"; e.currentTarget.style.color = "#fff"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(194,119,43,0.75)"; e.currentTarget.style.color = "#e8d5a3"; e.currentTarget.style.transform = "translateY(0)"; }}
-            >
-              {btn.label}
-            </button>
-          ))}
         </div>
       </div>
 

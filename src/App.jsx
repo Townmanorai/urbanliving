@@ -136,8 +136,9 @@ function App() {
         {/* All Routes */}
         <Routes>
           {/* Main Website Pages */}
-          <Route path="/home" element={<Home />} /> 
-          <Route path="/" element={<HomeMain />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/home-main" element={<HomeMain />} />
+          <Route path="/" element={<PropertyListPage />} />
           <Route path="/tmluxe" element={<LuxeMain />} />
           <Route path="/tmluxespecific/:id" element={<ThirdMain />} />
           <Route path="/payment" element={<Payment />} />
