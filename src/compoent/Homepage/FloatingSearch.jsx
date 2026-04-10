@@ -28,6 +28,7 @@ function FloatingSearch({ onSelect }) {
     setOpen(false);
   };
   const navigate = useNavigate();
+  
   return (
     <div className="tm-fab-container">
       <button

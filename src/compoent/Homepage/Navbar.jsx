@@ -163,67 +163,43 @@ export default function Navbar() {
   // ─────────────────────────────────────────────
   // MOBILE LAYOUT
   // ─────────────────────────────────────────────
+  // close helper for single mobile panel
+  const closeMobileMenu = () => { setSideMenuOpen(false); setHamburgerMenuOpen(false); };
+
   if (isMobile) {
     return (
       <>
         <style>{globalCSS}</style>
 
+        {/* ── NAVBAR: Logo | Host + Menu icon ── */}
         <div style={{ position: "sticky", top: 0, zIndex: 100, fontFamily: "Poppins, sans-serif", background: "#fff", borderBottom: "1px solid #f0e8d8" }}>
+          <div style={{ display: "flex", alignItems: "center", padding: "0 16px", height: 52 }}>
 
-          {/* ── ROW 1: Hamburger | Logo | User ── */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px 4px 16px" }}>
-
-            {/* Hamburger */}
-            <button
-              onClick={() => setHamburgerMenuOpen(true)}
-              style={{ border: "none", background: "transparent", cursor: "pointer", fontSize: 22, padding: "4px 6px", display: "flex", alignItems: "center", color: "#232323" }}
-            >
-              ☰
-            </button>
-
-            {/* Logo center */}
-            <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer" }} onClick={() => navigate("/")}>
-                {/* ── LOGO IMAGE (transparent background) ── */}
-                <img
-                  src="/ovikaliving_logo_clean.png"
-                  alt="OvikaLiving"
-                  style={{
-                    height: 28,
-                    objectFit: "contain",
-                    background: "transparent",
-                    display: "block",
-                  }}
-                />
-                <span style={{ fontSize: 8, color: "#c2772b", fontWeight: 400, marginTop: 1, letterSpacing: "0.2px", opacity: 0.85 }}>A flagship rental brand of Townmonor Technologies Pvt. Ltd.</span>
-              </div>
+            {/* Logo — left */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", cursor: "pointer" }} onClick={() => navigate("/")}>
+              <img src="/ovikaliving_logo_clean.png" alt="OvikaLiving" style={{ height: 26, objectFit: "contain", background: "transparent", display: "block" }} />
+              <span style={{ fontSize: 8, color: "#a06020", fontWeight: 500, marginTop: 1, letterSpacing: "0.2px", opacity: 1 }}>A flagship rental brand of Townmonor Technologies Pvt. Ltd.</span>
             </div>
 
-            {/* Right: Become a Host + User icon */}
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {/* Right: Host button + menu icon */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: "auto" }}>
               <button
                 onClick={handleBecomeHostClick}
-                style={{ border: "1.5px solid rgba(194,119,43,0.6)", background: "#fdf8f2", color: "#8B5E2A", fontWeight: 600, fontSize: 11, borderRadius: 20, padding: "5px 11px", height: 30, display: "flex", alignItems: "center", cursor: "pointer", fontFamily: "Poppins, sans-serif", whiteSpace: "nowrap", transition: "all 0.2s ease" }}
+                style={{ border: "1.5px solid rgba(194,119,43,0.6)", background: "#fdf8f2", color: "#8B5E2A", fontWeight: 600, fontSize: 11, borderRadius: 20, padding: "5px 12px", height: 30, display: "flex", alignItems: "center", cursor: "pointer", fontFamily: "Poppins, sans-serif", whiteSpace: "nowrap", transition: "all 0.2s ease" }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = "#c2772b"; e.currentTarget.style.color = "#fff"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = "#fdf8f2"; e.currentTarget.style.color = "#8B5E2A"; }}
               >
                 Host
               </button>
-              {user ? (
-                <button
-                  onClick={() => setSideMenuOpen(true)}
-                  style={{ border: "none", background: "transparent", cursor: "pointer", padding: "4px 6px", display: "flex", alignItems: "center", color: "#c2772b" }}
-                >
-                  <UserCircle2 size={26} strokeWidth={1.5} color="#1a1a1a" />
-                </button>
-              ) : (
-                <button
-                  onClick={handleLogin}
-                  style={{ border: "none", background: "transparent", cursor: "pointer", padding: "4px 6px", display: "flex", alignItems: "center" }}
-                >
-                  <UserCircle2 size={26} strokeWidth={1.5} color="#1a1a1a" />
-                </button>
-              )}
+              {/* Single menu icon — opens right panel */}
+              <button
+                onClick={() => setSideMenuOpen(true)}
+                style={{ border: "1px solid #f0e8d8", background: "#fdf8f2", cursor: "pointer", width: 34, height: 34, borderRadius: 10, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4 }}
+              >
+                <span style={{ display: "block", width: 16, height: 1.5, background: "#3a2410", borderRadius: 2 }} />
+                <span style={{ display: "block", width: 12, height: 1.5, background: "#c2772b", borderRadius: 2 }} />
+                <span style={{ display: "block", width: 16, height: 1.5, background: "#3a2410", borderRadius: 2 }} />
+              </button>
             </div>
           </div>
         </div>
@@ -263,115 +239,72 @@ export default function Navbar() {
           </>
         )}
 
-        {/* ── HAMBURGER PANEL (Mobile) ── */}
-        {hamburgerMenuOpen && (
+        {/* ── SINGLE RIGHT PANEL — all items ── */}
+        {sideMenuOpen && (
           <>
-            <div onClick={() => setHamburgerMenuOpen(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.25)", zIndex: 1000000 }} />
-            <div style={{ position: "fixed", top: 0, left: 0, height: "100vh", width: "min(280px, 75vw)", background: "#fff", borderRadius: "0 24px 24px 0", boxShadow: "0 10px 40px rgba(0,0,0,0.18)", padding: "18px 16px 24px", zIndex: 1000003, display: "flex", flexDirection: "column", animation: "slideDownSidebar .28s ease-out", overflowY: "auto" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-                <div>
-                  <div style={{ fontSize: 18, fontWeight: 600, color: "#1f1f1f" }}>Menu</div>
-                  <div style={{ fontSize: 12, color: "#777", marginTop: 4 }}>Navigate through Ovika</div>
-                </div>
-                <button onClick={() => setHamburgerMenuOpen(false)} style={{ border: "none", background: "#f3f3f3", width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, cursor: "pointer" }}>✕</button>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
-                {[
-                  { icon: "🏠", label: "Home", sub: "Return to homepage", action: () => { setHamburgerMenuOpen(false); navigate("/"); } },
-                  { icon: "🏖️", label: "Book a Stay", sub: "Browse and book properties", action: () => { setHamburgerMenuOpen(false); navigate("/properties"); } },
-                  { icon: "✨", label: "Signature Stays", sub: "Our curated premium properties", action: handleSignatureStaysClick },
-                  { icon: "🏘️", label: "Become a Host", sub: "List your property and earn", action: () => { setHamburgerMenuOpen(false); setRentalCategoryPopup(true); } },
-                  { icon: "📊", label: "Profile", sub: "View your bookings & performance", action: () => { setHamburgerMenuOpen(false); navigate("/dashboard"); } },
-                  { icon: "🛡️", label: "Owner Dashboard", sub: "Access owner controls", action: () => { setHamburgerMenuOpen(false); navigate("/admindashboard"); } },
-                  { icon: "💬", label: "Subscription Plan", sub: "Grow Faster With the Right Plan", action: () => { setHamburgerMenuOpen(false); navigate("/subsription"); } },
-                  { icon: "📞", label: "Contact / Support", sub: "Get help and assistance", action: () => { setHamburgerMenuOpen(false); navigate("/contactus"); } },
-                  { icon: "💼", label: "Career", sub: "Join our growing team", action: goCareer },
-                  { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: '20px', height: 'auto' }} />, label: "OvikaLiving Verified", sub: "Know about our verification process", action: goOvikaVerified },
-                  { icon: "✅", label: "Property Self Verification", sub: "Verify your property yourself", action: goSelfVerified },
-                  { icon: "🗺️", label: "Explore Townmanor", sub: "Discover amazing places", action: () => { setHamburgerMenuOpen(false); window.open("https://www.townmanor.ai/", "_blank"); } },
-                ].map((item) => (
-                  <button key={item.label} onClick={item.action} style={{ ...panelButtonStyle, padding: "8px 4px" }}>
-                    <span style={{
-                      ...iconBoxStyle,
-                      width: 28,
-                      height: 28,
-                      borderRadius: 12,
-                      fontSize: 14
-                    }}>
-                      {item.icon}
-                    </span>
-                    <div style={{ textAlign: "left" }}>
-                      <div style={{ fontSize: 13, fontWeight: 500, color: "#232323" }}>{item.label}</div>
-                      <div style={{ fontSize: 11, color: "#8a8a8a" }}>{item.sub}</div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
+            <div onClick={closeMobileMenu} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.3)", zIndex: 1000000 }} />
+            <div style={{ position: "fixed", top: 0, right: 0, height: "100vh", width: "min(290px, 82vw)", background: "#fff", borderRadius: "20px 0 0 20px", boxShadow: "0 10px 40px rgba(0,0,0,0.18)", zIndex: 1000003, display: "flex", flexDirection: "column", animation: "slideDownSidebar .28s ease-out", overflowY: "auto" }}>
 
-        {/* ── RIGHT USER PANEL (Mobile) ── */}
-        {user && sideMenuOpen && (
-          <>
-            <div onClick={() => setSideMenuOpen(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.25)", zIndex: 1000000 }} />
-            <div style={{ position: "fixed", top: 0, right: 0, height: "100vh", width: "min(280px, 80vw)", background: "#fff", borderRadius: "24px 0 0 24px", boxShadow: "0 10px 40px rgba(0,0,0,0.18)", padding: "18px 16px 24px", zIndex: 1000003, display: "flex", flexDirection: "column", animation: "slideDownSidebar .28s ease-out", overflowY: "auto" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <div style={{ position: "relative" }}>
-                    <div style={{ width: 38, height: 38, borderRadius: "50%", background: "linear-gradient(135deg, #c2772b, #a85e1f)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 700 }}>{user.username?.[0]?.toUpperCase() || "U"}</div>
-                    <div style={{ position: "absolute", bottom: 1, right: 1, width: 10, height: 10, borderRadius: "50%", background: "#c2772b", border: "2px solid #fff" }} />
+              {/* Header */}
+              <div style={{ background: "#fdf8f2", borderBottom: "1px solid #f0e8d8", padding: "16px 16px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 1 }}>
+                {user ? (
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: "50%", background: "linear-gradient(135deg, #c2772b, #a85e1f)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 700, flexShrink: 0 }}>{user.username?.[0]?.toUpperCase() || "U"}</div>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#1a1a1a" }}>{user.username}</div>
+                      <div style={{ fontSize: 10, color: "#c2772b", fontWeight: 500 }}>● Logged in</div>
+                    </div>
                   </div>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#1a1a1a" }}>{user.username}</div>
-                    <div style={{ fontSize: 10, color: "#c2772b", fontWeight: 500, display: "flex", alignItems: "center", gap: 3 }}>● Logged in</div>
-                  </div>
-                </div>
-                <button onClick={() => setSideMenuOpen(false)} style={{ border: "none", background: "#f3f3f3", width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, cursor: "pointer" }}>✕</button>
+                ) : (
+                  <div style={{ fontSize: 15, fontWeight: 700, color: "#1a1a1a" }}>Menu</div>
+                )}
+                <button onClick={closeMobileMenu} style={{ border: "none", background: "#f3f3f3", width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, cursor: "pointer", flexShrink: 0 }}>✕</button>
               </div>
-              <div style={{ background: "#fbf5ec", borderRadius: 18, padding: "12px 12px 14px", marginBottom: 14 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4, color: "#3a2c18" }}>Manage your hosting</div>
-                <div style={{ fontSize: 11, color: "#7a6b57", lineHeight: 1.5 }}>Quickly access your dashboard, listings and account actions.</div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
+
+              {/* All nav items */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 2, padding: "12px 12px 8px", flex: 1 }}>
                 {[
-                  { icon: "🏖️", label: "Book a Stay", sub: "Browse and book properties", action: () => { setSideMenuOpen(false); navigate("/properties"); } },
-                  { icon: "✨", label: "Signature Stays", sub: "Our curated premium properties", action: handleSignatureStaysClick },
-                  { icon: "🏘️", label: "Become a Host", sub: "List your property and earn", action: goListingPage },
-                  { icon: "📊", label: "Profile", sub: "View your bookings & performance", action: goDashboard },
-                  { icon: "🛡️", label: "Owner Dashboard", sub: "Access owner controls", action: goOwnerDashboard },
-                  { icon: "💼", label: "Career", sub: "Join our growing team", action: goCareer },
-                  { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: '20px', height: 'auto' }} />, label: "OvikaLiving Verified", sub: "Know about our verification process", action: goOvikaVerified },
-                  { icon: "✅", label: "Property Self Verification", sub: "Verify your property yourself", action: goSelfVerified },
+                  { icon: "🏠", label: "Home", sub: "Return to homepage", action: () => { closeMobileMenu(); navigate("/"); } },
+                  { icon: "🌙", label: "Nightly Rentals", sub: "Short stays & nightly bookings", action: () => { closeMobileMenu(); navigate("/nightly-stays"); } },
+                  { icon: "📅", label: "Monthly Stay", sub: "Long term & monthly rentals", action: () => { closeMobileMenu(); navigate("/monthly-rentals"); } },
+                  { icon: "✨", label: "Signature Stays", sub: "Our curated premium properties", action: () => { closeMobileMenu(); handleSignatureStaysClick(); } },
+                  { icon: "🏘️", label: "List Property", sub: "List your property and earn", action: () => { closeMobileMenu(); setRentalCategoryPopup(true); } },
+                  { icon: "📊", label: "Profile", sub: "View your bookings & performance", action: () => { closeMobileMenu(); navigate("/dashboard"); } },
+                  { icon: "🛡️", label: "Owner Dashboard", sub: "Access owner controls", action: () => { closeMobileMenu(); navigate("/admindashboard"); } },
+                  { icon: "💬", label: "Subscription Plan", sub: "Grow Faster With the Right Plan", action: () => { closeMobileMenu(); navigate("/subsription"); } },
+                  { icon: "📞", label: "Contact / Support", sub: "Get help and assistance", action: () => { closeMobileMenu(); navigate("/contactus"); } },
+                  { icon: "💼", label: "Career", sub: "Join our growing team", action: () => { closeMobileMenu(); goCareer(); } },
+                  { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: 18, height: "auto" }} />, label: "OvikaLiving Verified", sub: "Know about our verification process", action: () => { closeMobileMenu(); goOvikaVerified(); } },
+                  { icon: "✅", label: "Self Verification", sub: "Verify your property yourself", action: () => { closeMobileMenu(); goSelfVerified(); } },
+                  { icon: "🗺️", label: "Explore Townmanor", sub: "Discover amazing places", action: () => { closeMobileMenu(); window.open("https://www.townmanor.ai/", "_blank"); } },
                 ].map((item) => (
-                  <button key={item.label} onClick={item.action} style={{ ...panelButtonStyle, padding: "8px 4px" }}>
-                    <span style={{
-                      ...iconBoxStyle,
-                      width: 28,
-                      height: 28,
-                      borderRadius: 12,
-                      fontSize: 14
-                    }}>
-                      {item.icon}
-                    </span>
-                    <div style={{ textAlign: "left" }}>
+                  <button key={item.label} onClick={item.action}
+                    style={{ border: "none", background: "transparent", padding: "9px 8px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", width: "100%", borderRadius: 10, transition: "background 0.15s", textAlign: "left" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = "#fef9f2"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                  >
+                    <span style={{ width: 30, height: 30, borderRadius: 10, background: "#f4f4f4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>{item.icon}</span>
+                    <div>
                       <div style={{ fontSize: 13, fontWeight: 500, color: "#232323" }}>{item.label}</div>
-                      <div style={{ fontSize: 11, color: "#8a8a8a" }}>{item.sub}</div>
+                      <div style={{ fontSize: 10, color: "#8a8a8a" }}>{item.sub}</div>
                     </div>
                   </button>
                 ))}
-                <button onClick={() => { setSideMenuOpen(false); navigate("/subsription"); }} style={{ ...panelButtonStyle, padding: "8px 4px" }}>
-                  <span style={{ ...iconBoxStyle, width: 28, height: 28 }}><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="3" stroke="#c2772b" strokeWidth="1.8" /><path d="M3 9H21" stroke="#c2772b" strokeWidth="1.8" /><circle cx="8" cy="14" r="1.4" fill="#c2772b" /><circle cx="12" cy="14" r="1.4" fill="#c2772b" /><circle cx="16" cy="14" r="1.4" fill="#c2772b" /></svg></span>
-                  <div style={{ textAlign: "left" }}>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: "#232323" }}>Subscription Plan</div>
-                    <div style={{ fontSize: 11, color: "#8a8a8a" }}>Grow Faster With the Right Plan</div>
-                  </div>
-                </button>
-                <hr style={{ border: "none", borderTop: "1px solid #eee", margin: "10px 0" }} />
-                <button onClick={handleLogout} style={{ border: "none", background: "transparent", padding: "8px 4px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
-                  <span style={{ width: 28, height: 28, borderRadius: 999, background: "#fdeceb", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "#c23e3e" }}>⬅</span>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: "#c23e3e" }}>Log out</span>
-                </button>
+              </div>
+
+              {/* Footer: login / logout */}
+              <div style={{ padding: "12px 12px 24px", borderTop: "1px solid #f0e8d8" }}>
+                {user ? (
+                  <button onClick={() => { closeMobileMenu(); handleLogout(); }} style={{ border: "none", background: "#fdeceb", padding: "10px 14px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", width: "100%", borderRadius: 10 }}>
+                    <span style={{ width: 28, height: 28, borderRadius: "50%", background: "#f8d7d7", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "#c23e3e" }}>⬅</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "#c23e3e" }}>Log out</span>
+                  </button>
+                ) : (
+                  <button onClick={() => { closeMobileMenu(); handleLogin(); }} style={{ border: "none", background: "linear-gradient(135deg, #c2772b, #a85e1f)", padding: "11px 14px", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer", width: "100%", borderRadius: 10 }}>
+                    <UserCircle2 size={18} strokeWidth={2} color="#fff" />
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "#fff", fontFamily: "Poppins, sans-serif" }}>Sign In</span>
+                  </button>
+                )}
               </div>
             </div>
           </>
@@ -389,57 +322,46 @@ export default function Navbar() {
 
       <div style={{ position: "sticky", top: 0, zIndex: 100, fontFamily: "Poppins, sans-serif", background: "#fff", borderBottom: "1px solid #f0e8d8", boxShadow: "0 2px 18px rgba(71,38,9,0.09)" }}>
 
-        {/* ── ROW 1 ── */}
-        <div style={{ display: "flex", alignItems: "center", padding: "10px 36px 6px 36px", position: "relative" }}>
+        {/* ── SINGLE ROW: Logo | Nav Links | Actions ── */}
+        <div style={{ display: "flex", alignItems: "center", padding: "0 36px", height: 60 }}>
 
-          {/* LEFT */}
-          <div style={{ width: 200, display: "flex", alignItems: "center", flexShrink: 0 }}>
-            <button
-              onClick={() => setHamburgerMenuOpen(true)}
-              style={{ border: "1px solid rgba(194,119,43,0.25)", background: "#fdf8f2", cursor: "pointer", padding: "6px 14px 6px 10px", display: "flex", alignItems: "center", gap: 8, color: "#3a2410", transition: "all 0.22s ease", borderRadius: 10, fontFamily: "Poppins, sans-serif" }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "#fef0dc"; e.currentTarget.style.borderColor = "#c2772b"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(194,119,43,0.18)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "#fdf8f2"; e.currentTarget.style.borderColor = "rgba(194,119,43,0.25)"; e.currentTarget.style.boxShadow = "none"; }}
-            >
-              <div style={{ display: "flex", flexDirection: "column", gap: 4, width: 18 }}>
-                <span style={{ display: "block", height: 1.8, background: "#3a2410", borderRadius: 2, width: "100%" }} />
-                <span style={{ display: "block", height: 1.8, background: "#c2772b", borderRadius: 2, width: "75%" }} />
-                <span style={{ display: "block", height: 1.8, background: "#3a2410", borderRadius: 2, width: "100%" }} />
-              </div>
-              <span style={{ fontSize: 12.5, fontWeight: 500, color: "#3a2410", letterSpacing: "0.3px", whiteSpace: "nowrap" }}>Menu</span>
-            </button>
-          </div>
-
-          {/* CENTER logo — PNG with transparent background */}
+          {/* LEFT: Logo */}
           <div
-            style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer", gap: 2 }}
+            style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", cursor: "pointer", flexShrink: 0, marginRight: 40 }}
             onClick={() => navigate("/")}
           >
-            {/* ── LOGO IMAGE ── */}
             <img
               src="/ovikaliving_logo_clean.png"
               alt="OvikaLiving"
-              style={{
-                height: 30,
-                objectFit: "contain",
-                background: "transparent",
-                display: "block",
-              }}
+              style={{ height: 28, objectFit: "contain", background: "transparent", display: "block" }}
             />
-            <span style={{ fontSize: 9, color: "#c2772b", fontWeight: 400, letterSpacing: "0.3px", opacity: 0.7, whiteSpace: "nowrap", fontFamily: "Poppins, sans-serif" }}>A flagship rental brand of Townmonor Technologies Pvt. Ltd.</span>
+            <span style={{ fontSize: 9, color: "#a06020", fontWeight: 500, letterSpacing: "0.2px", opacity: 1, whiteSpace: "nowrap", fontFamily: "Poppins, sans-serif", marginTop: 1 }}>
+              A flagship rental brand of Townmonor Technologies Pvt. Ltd.
+            </span>
           </div>
 
-          {/* RIGHT: Become a Host + auth */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "flex-end", flexShrink: 0, marginLeft: "auto" }}>
-            {/* Become a Host */}
-            <button
-              onClick={handleBecomeHostClick}
-              style={{ border: "1.5px solid rgba(194,119,43,0.6)", background: "#fdf8f2", color: "#8B5E2A", fontWeight: 600, fontSize: 12, borderRadius: 22, padding: "6px 16px", height: 34, display: "flex", alignItems: "center", cursor: "pointer", fontFamily: "Poppins, sans-serif", letterSpacing: "0.2px", transition: "all 0.22s ease", whiteSpace: "nowrap" }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "#c2772b"; e.currentTarget.style.color = "#fff"; e.currentTarget.style.borderColor = "#c2772b"; e.currentTarget.style.boxShadow = "0 3px 10px rgba(194,119,43,0.25)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "#fdf8f2"; e.currentTarget.style.color = "#8B5E2A"; e.currentTarget.style.borderColor = "rgba(194,119,43,0.6)"; e.currentTarget.style.boxShadow = "none"; }}
-            >
-              Become a Host
-            </button>
-            {/* User / Sign In */}
+          {/* RIGHT-ALIGNED: Nav text links */}
+          <nav style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: "auto" }}>
+            {[
+              { label: "Nightly Rentals", action: () => navigate("/nightly-stays") },
+              { label: "Monthly Stay",    action: () => navigate("/monthly-rentals") },
+              { label: "List Property",   action: handleBecomeHostClick },
+              { label: "Signature Stays", action: handleSignatureStaysClick },
+            ].map(({ label, action }) => (
+              <button
+                key={label}
+                onClick={action}
+                style={{ border: "none", background: "transparent", cursor: "pointer", fontFamily: "Poppins, sans-serif", fontSize: 13.5, fontWeight: 500, color: "#232323", padding: "8px 14px", borderRadius: 8, transition: "all 0.18s ease", whiteSpace: "nowrap" }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "#c2772b"; e.currentTarget.style.background = "#fdf8f2"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "#232323"; e.currentTarget.style.background = "transparent"; }}
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
+
+          {/* RIGHT: auth */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
             {user ? (
               <button
                 onClick={() => setSideMenuOpen(true)}
@@ -515,9 +437,10 @@ export default function Navbar() {
             <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
               {[
                 { icon: "🏠", label: "Home", sub: "Return to homepage", action: () => { setHamburgerMenuOpen(false); navigate("/"); } },
-                { icon: "🏖️", label: "Book a Stay", sub: "Browse and book properties", action: () => { setHamburgerMenuOpen(false); navigate("/properties"); } },
+                { icon: "🌙", label: "Nightly Rentals", sub: "Short stays & nightly bookings", action: () => { setHamburgerMenuOpen(false); navigate("/nightly-stays"); } },
+                { icon: "📅", label: "Monthly Stay", sub: "Long term & monthly rentals", action: () => { setHamburgerMenuOpen(false); navigate("/monthly-rentals"); } },
                 { icon: "✨", label: "Signature Stays", sub: "Our curated premium properties", action: handleSignatureStaysClick },
-                { icon: "🏘️", label: "Become a Host", sub: "List your property and earn", action: () => { setHamburgerMenuOpen(false); setRentalCategoryPopup(true); } },
+                { icon: "🏘️", label: "List Property", sub: "List your property and earn", action: () => { setHamburgerMenuOpen(false); setRentalCategoryPopup(true); } },
                 { icon: "📊", label: "Profile", sub: "View your bookings & performance", action: () => { setHamburgerMenuOpen(false); navigate("/dashboard"); } },
                 { icon: "🛡️", label: "Owner Dashboard", sub: "Access owner controls", action: () => { setHamburgerMenuOpen(false); navigate("/admindashboard"); } },
                 { icon: "💬", label: "Subscription Plan", sub: "Grow Faster With the Right Plan", action: () => { setHamburgerMenuOpen(false); navigate("/subsription"); } },

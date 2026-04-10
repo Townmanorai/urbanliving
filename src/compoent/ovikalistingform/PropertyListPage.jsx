@@ -389,15 +389,41 @@ const SidebarContent = ({
   rentalType, setRentalType,
   priceMin, setPriceMin, priceMax, setPriceMax,
   roomsFilter, setRoomsFilter,
-  bathroomType, setBathroomType,
   propTypeFilter, togglePropType,
   amenitiesFilter, toggleAmenity,
+  furnishingFilter, setFurnishingFilter,
+  tenantFilter, setTenantFilter,
+  foodFilter, setFoodFilter,
+  petsFilter, setPetsFilter,
+  coupleFilter, setCoupleFilter,
   resetSidebar, onDone,
 }) => {
   const sectionTitle = (text) => (
     <p style={{ fontSize: 13, fontWeight: 700, color: '#333', margin: '0 0 10px' }}>{text}</p>
   );
   const divider = <div style={{ height: 1, background: '#f0f0f0', margin: '18px 0' }} />;
+
+  const ToggleRow = ({ label, value, onChange }) => (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px 0' }}>
+      <span style={{ fontSize: 13, color: '#444' }}>{label}</span>
+      <button
+        onClick={() => onChange(value === 'yes' ? null : 'yes')}
+        style={{
+          width: 38, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer',
+          background: value === 'yes' ? '#C98B3E' : '#e5e7eb',
+          position: 'relative', transition: 'background 0.2s ease',
+          flexShrink: 0,
+        }}
+      >
+        <span style={{
+          position: 'absolute', top: 3, width: 16, height: 16, borderRadius: '50%',
+          background: '#fff', transition: 'left 0.2s ease',
+          left: value === 'yes' ? 19 : 3,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+        }} />
+      </button>
+    </div>
+  );
 
   return (
     <div>
@@ -499,23 +525,6 @@ const SidebarContent = ({
         </div>
       </div>
 
-      {/* Bathroom */}
-      <div style={{ marginBottom: 18 }}>
-        {sectionTitle('Bathroom')}
-        <div style={{ display: 'flex', gap: 8 }}>
-          {['Combined','Separate'].map(b => (
-            <button key={b} onClick={() => setBathroomType(bathroomType === b ? null : b)} style={{
-              flex: 1, padding: '7px 0', borderRadius: 8,
-              border: `1.5px solid ${bathroomType === b ? '#C98B3E' : '#e8e8e8'}`,
-              background: bathroomType === b ? '#FFF6EE' : '#fafafa',
-              color: bathroomType === b ? '#C98B3E' : '#555',
-              fontWeight: bathroomType === b ? 700 : 500,
-              fontSize: 12, cursor: 'pointer', fontFamily: 'inherit',
-              transition: 'all 0.18s ease',
-            }}>{b}</button>
-          ))}
-        </div>
-      </div>
 
       {/* Property Type */}
       <div style={{ marginBottom: 18 }}>
@@ -532,16 +541,79 @@ const SidebarContent = ({
       </div>
 
       {/* Amenities */}
-      <div style={{ marginBottom: 22 }}>
+      <div style={{ marginBottom: 18 }}>
         {sectionTitle('Amenities')}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {['Wi-Fi','Air Conditioning','Parking'].map(a => (
-            <label key={a} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-              <input type="checkbox" checked={amenitiesFilter.includes(a)} onChange={() => toggleAmenity(a)}
-                style={{ accentColor: '#C98B3E', width: 15, height: 15, cursor: 'pointer' }} />
-              <span style={{ fontSize: 13, color: '#444', fontWeight: amenitiesFilter.includes(a) ? 600 : 400 }}>{a}</span>
-            </label>
-          ))}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
+          {['Wi-Fi','AC','Parking','Gym','Pool','Power Backup','Security Guard','CCTV','Balcony','Meals Included','Geyser','Washing Machine'].map(a => {
+            const active = amenitiesFilter.includes(a);
+            return (
+              <button key={a} onClick={() => toggleAmenity(a)} style={{
+                padding: '5px 11px', borderRadius: 20, fontSize: 12, fontWeight: active ? 700 : 400,
+                border: `1.5px solid ${active ? '#C98B3E' : '#e8e8e8'}`,
+                background: active ? '#FFF6EE' : '#fafafa',
+                color: active ? '#C98B3E' : '#555',
+                cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s ease',
+              }}>{a}</button>
+            );
+          })}
+        </div>
+      </div>
+
+      {divider}
+
+      {/* Furnishing */}
+      <div style={{ marginBottom: 18 }}>
+        {sectionTitle('Furnishing')}
+        <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap' }}>
+          {['Fully Furnished','Semi-Furnished','Unfurnished'].map(f => {
+            const active = furnishingFilter === f;
+            return (
+              <button key={f} onClick={() => setFurnishingFilter(active ? null : f)} style={{
+                padding: '6px 11px', borderRadius: 9, fontSize: 12,
+                border: `1.5px solid ${active ? '#C98B3E' : '#e8e8e8'}`,
+                background: active ? '#FFF6EE' : '#fafafa',
+                color: active ? '#C98B3E' : '#555',
+                fontWeight: active ? 700 : 400,
+                cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s ease',
+              }}>{f}</button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Tenant Preference */}
+      <div style={{ marginBottom: 18 }}>
+        {sectionTitle('Tenant Preference')}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
+          {[
+            { id: 'male', label: '👨 Male' },
+            { id: 'female', label: '👩 Female' },
+            { id: 'family', label: '👨‍👩‍👧 Family' },
+            { id: 'couple', label: '💑 Couple' },
+            { id: 'professionals', label: '💼 Professionals' },
+          ].map(({ id, label }) => {
+            const active = tenantFilter === id;
+            return (
+              <button key={id} onClick={() => setTenantFilter(active ? null : id)} style={{
+                padding: '5px 11px', borderRadius: 20, fontSize: 12,
+                border: `1.5px solid ${active ? '#C98B3E' : '#e8e8e8'}`,
+                background: active ? '#FFF6EE' : '#fafafa',
+                color: active ? '#C98B3E' : '#555',
+                fontWeight: active ? 700 : 400,
+                cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s ease',
+              }}>{label}</button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Quick toggles */}
+      <div style={{ marginBottom: 22 }}>
+        {sectionTitle('More Preferences')}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <ToggleRow label="🍽️ Food Available" value={foodFilter} onChange={setFoodFilter} />
+          <ToggleRow label="🐾 Pets Allowed" value={petsFilter} onChange={setPetsFilter} />
+          <ToggleRow label="💑 Couple Friendly" value={coupleFilter} onChange={setCoupleFilter} />
         </div>
       </div>
 
@@ -582,9 +654,13 @@ const PropertyListPage = () => {
   const [priceMin, setPriceMin] = useState(1000);
   const [priceMax, setPriceMax] = useState(50000);
   const [roomsFilter, setRoomsFilter] = useState(null);
-  const [bathroomType, setBathroomType] = useState(null);
   const [propTypeFilter, setPropTypeFilter] = useState([]);
   const [amenitiesFilter, setAmenitiesFilter] = useState([]);
+  const [furnishingFilter, setFurnishingFilter] = useState(null);
+  const [tenantFilter, setTenantFilter] = useState(null);
+  const [foodFilter, setFoodFilter] = useState(null);       // 'yes' | 'no'
+  const [petsFilter, setPetsFilter] = useState(null);       // 'yes' | 'no'
+  const [coupleFilter, setCoupleFilter] = useState(null);   // 'yes'
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [listPopupOpen, setListPopupOpen] = useState(false);
   const [sortBy, setSortBy] = useState('recommended');
@@ -615,8 +691,16 @@ const PropertyListPage = () => {
   };
   const resetSidebar = () => {
     setPriceMin(1000); setPriceMax(50000);
-    setRoomsFilter(null); setBathroomType(null);
+    setRoomsFilter(null);
     setPropTypeFilter([]); setAmenitiesFilter([]);
+    setFurnishingFilter(null); setTenantFilter(null);
+    setFoodFilter(null); setPetsFilter(null); setCoupleFilter(null);
+  };
+
+  const getMeta = (p) => {
+    if (!p.meta) return {};
+    if (typeof p.meta === 'object') return p.meta;
+    try { return JSON.parse(p.meta); } catch { return {}; }
   };
 
   const applyFilter = (list, cat, q, rental) => {
@@ -724,11 +808,119 @@ const PropertyListPage = () => {
       });
     }
 
-    // Amenities filter
+    // Helper: parse guest_policy safely
+    const getGuestPolicy = (p) => {
+      const raw = p.guest_policy;
+      if (!raw) return {};
+      if (typeof raw === 'string') { try { return JSON.parse(raw); } catch { return {}; } }
+      return raw;
+    };
+
+    // Helper: get flat amenities array from property
+    const getAmenities = (p) => {
+      const m = getMeta(p);
+      // p.amenities might be JSON string or array
+      let arr = [];
+      if (Array.isArray(p.amenities)) arr = p.amenities;
+      else if (typeof p.amenities === 'string') {
+        try { const parsed = JSON.parse(p.amenities); arr = Array.isArray(parsed) ? parsed : []; } catch { arr = []; }
+      }
+      // also check meta.amenities
+      const metaAms = Array.isArray(m.amenities) ? m.amenities : [];
+      return [...new Set([...arr, ...metaAms])].map(a => (a || '').toLowerCase());
+    };
+
+    // Amenities filter — check both p.amenities and meta.amenities
     if (amenitiesFilter.length > 0) {
+      const AMENITY_MAP = {
+        'Wi-Fi':          ['wi-fi', 'wifi', 'wi fi', 'internet'],
+        'AC':             ['air conditioning', 'ac', 'air conditioner', 'central ac'],
+        'Parking':        ['parking', 'reserved parking', 'visitor parking'],
+        'Gym':            ['gym', 'fitness', 'gymnasium'],
+        'Pool':           ['pool', 'swimming', 'swimming pool'],
+        'Power Backup':   ['power backup', 'generator', 'inverter'],
+        'Security Guard': ['security guard', 'security', 'guard'],
+        'CCTV':           ['cctv', 'camera', 'surveillance'],
+        'Balcony':        ['balcony', 'terrace', 'balcony/terrace'],
+        'Meals Included': ['meal', 'breakfast', 'lunch', 'dinner', 'food'],
+        'Geyser':         ['geyser', 'hot water', 'water heater'],
+        'Washing Machine':['washing machine', 'laundry', 'washer'],
+      };
       filteredResults = filteredResults.filter(p => {
-        const ams = (p.amenities || []).map(a => a.toLowerCase());
-        return amenitiesFilter.every(f => ams.some(a => a.includes(f.toLowerCase())));
+        const ams = getAmenities(p);
+        return amenitiesFilter.every(f => {
+          const keywords = AMENITY_MAP[f] || [f.toLowerCase()];
+          return ams.some(a => keywords.some(k => a.includes(k)));
+        });
+      });
+    }
+
+    // Furnishing filter — stored in meta.furnishing (from PGListingForm)
+    if (furnishingFilter) {
+      filteredResults = filteredResults.filter(p => {
+        const m = getMeta(p);
+        const f = (m.furnishing || p.furnishing || '').toLowerCase();
+        if (!f) return false;
+        return f.includes(furnishingFilter.toLowerCase());
+      });
+    }
+
+    // Tenant preference — from guest_policy (family_allowed, bachelors_allowed, unmarried_couple_allowed, preferredTenants)
+    if (tenantFilter) {
+      filteredResults = filteredResults.filter(p => {
+        const gp = getGuestPolicy(p);
+        const m = getMeta(p);
+        // preferredTenants can be in guest_policy or meta
+        const pts = [
+          ...(Array.isArray(gp.preferredTenants) ? gp.preferredTenants : []),
+          ...(Array.isArray(m.preferredTenants) ? m.preferredTenants : []),
+        ].map(t => (t || '').toLowerCase());
+
+        if (tenantFilter === 'male') {
+          return gp.bachelors_allowed === true || gp.Bechelors === true ||
+            m.bachelorAllowed === true ||
+            pts.some(t => t.includes('male') || t.includes('bachelor'));
+        }
+        if (tenantFilter === 'female') {
+          return pts.some(t => t.includes('female') || t.includes('girls') || t.includes('girl'));
+        }
+        if (tenantFilter === 'family') {
+          return gp.family_allowed === true || m.familyAllowed === true ||
+            pts.some(t => t.includes('family'));
+        }
+        if (tenantFilter === 'couple') {
+          return gp.unmarried_couple_allowed === true || m.unmarriedCoupleAllowed === true;
+        }
+        if (tenantFilter === 'professionals') {
+          return pts.some(t => t.includes('professional') || t.includes('working'));
+        }
+        return true;
+      });
+    }
+
+    // Food available — meta.foodAvailable (boolean from PGListingForm)
+    if (foodFilter === 'yes') {
+      filteredResults = filteredResults.filter(p => {
+        const m = getMeta(p);
+        return m.foodAvailable === true || m.food_available === true ||
+          getAmenities(p).some(a => a.includes('meal') || a.includes('breakfast') || a.includes('lunch') || a.includes('dinner'));
+      });
+    }
+
+    // Pets filter — meta.petsAllowed (from both forms)
+    if (petsFilter === 'yes') {
+      filteredResults = filteredResults.filter(p => {
+        const m = getMeta(p);
+        return m.petsAllowed === true || m.pets_allowed === true;
+      });
+    }
+
+    // Couple friendly — guest_policy.unmarried_couple_allowed
+    if (coupleFilter === 'yes') {
+      filteredResults = filteredResults.filter(p => {
+        const gp = getGuestPolicy(p);
+        const m = getMeta(p);
+        return gp.unmarried_couple_allowed === true || m.unmarriedCoupleAllowed === true;
       });
     }
 
@@ -747,7 +939,7 @@ const PropertyListPage = () => {
     });
     setFiltered(sortedResults);
     setCurrentPage(1);
-  }, [search, activeCat, properties, rentalType, priceMin, priceMax, roomsFilter, propTypeFilter, amenitiesFilter, sortBy]);
+  }, [search, activeCat, properties, rentalType, priceMin, priceMax, roomsFilter, propTypeFilter, amenitiesFilter, furnishingFilter, tenantFilter, foodFilter, petsFilter, coupleFilter, sortBy]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -994,9 +1186,13 @@ const PropertyListPage = () => {
             priceMin={priceMin} setPriceMin={setPriceMin}
             priceMax={priceMax} setPriceMax={setPriceMax}
             roomsFilter={roomsFilter} setRoomsFilter={setRoomsFilter}
-            bathroomType={bathroomType} setBathroomType={setBathroomType}
             propTypeFilter={propTypeFilter} togglePropType={togglePropType}
             amenitiesFilter={amenitiesFilter} toggleAmenity={toggleAmenity}
+            furnishingFilter={furnishingFilter} setFurnishingFilter={setFurnishingFilter}
+            tenantFilter={tenantFilter} setTenantFilter={setTenantFilter}
+            foodFilter={foodFilter} setFoodFilter={setFoodFilter}
+            petsFilter={petsFilter} setPetsFilter={setPetsFilter}
+            coupleFilter={coupleFilter} setCoupleFilter={setCoupleFilter}
             resetSidebar={resetSidebar}
             onDone={() => setSidebarOpen(false)}
           />
@@ -1144,9 +1340,13 @@ const PropertyListPage = () => {
             priceMin={priceMin} setPriceMin={setPriceMin}
             priceMax={priceMax} setPriceMax={setPriceMax}
             roomsFilter={roomsFilter} setRoomsFilter={setRoomsFilter}
-            bathroomType={bathroomType} setBathroomType={setBathroomType}
             propTypeFilter={propTypeFilter} togglePropType={togglePropType}
             amenitiesFilter={amenitiesFilter} toggleAmenity={toggleAmenity}
+            furnishingFilter={furnishingFilter} setFurnishingFilter={setFurnishingFilter}
+            tenantFilter={tenantFilter} setTenantFilter={setTenantFilter}
+            foodFilter={foodFilter} setFoodFilter={setFoodFilter}
+            petsFilter={petsFilter} setPetsFilter={setPetsFilter}
+            coupleFilter={coupleFilter} setCoupleFilter={setCoupleFilter}
             resetSidebar={resetSidebar}
           />
         </div>
