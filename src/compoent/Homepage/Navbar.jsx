@@ -97,14 +97,7 @@ export default function Navbar() {
   const handleSignatureStaysClick = () => {
     setSideMenuOpen(false);
     setHamburgerMenuOpen(false);
-    const isHome = window.location.pathname === "/" || window.location.pathname === "";
-    if (isHome) {
-      const el = document.getElementById("signature-stays-section");
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      sessionStorage.setItem("scrollToSignature", "true");
-      navigate("/");
-    }
+    navigate("/properties?category=Signature+Stays");
   };
 
   const handleLogin = () => navigate("/login");

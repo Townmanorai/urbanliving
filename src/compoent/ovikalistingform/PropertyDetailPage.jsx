@@ -2017,7 +2017,7 @@ const PropertyDetailPage = () => {
                     <img src={getPhotoUrl(property.photos?.[0]) || 'https://via.placeholder.com/300x200'} alt="Property" className="pm-property-img" />
                     <div style={{ flex: 1, minWidth: '200px' }}>
                       <h3 style={{ fontSize: '1.3rem', marginBottom: '0.5rem' }}>{property.property_name}</h3>
-                      <p style={{ color: '#666', marginBottom: '0.5rem' }}>{property.address}, {property.city}</p>
+                      <p style={{ color: '#666', marginBottom: '0.5rem' }}>{property.city}, {property.address}</p>
                       <p style={{ color: '#555', fontSize: '0.95rem', marginBottom: '1rem' }}>{cleanDescription(property.description)}</p>
                       <p style={{ fontSize: '1.5rem', fontWeight: '600', color: '#8b0000' }}>
                         <MdCurrencyRupee style={{ display: 'inline', verticalAlign: 'middle' }} />
@@ -2430,7 +2430,7 @@ const PropertyDetailPage = () => {
       <section className="title-section">
         <h1>{property.property_name}</h1>
         <div className="location-row">
-          <span>{property.address}, {property.city}</span>
+          <span>{property.city}, {property.address}</span>
           <span className="dot">•</span>
           <span className="rating"><FiStar className="star" /> New Listing</span>
         </div>

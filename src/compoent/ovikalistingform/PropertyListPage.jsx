@@ -11,12 +11,14 @@ const CATEGORIES = [
   { id: 'PG', title: 'PG', minPrice: 0, maxPrice: 1499 },
   { id: 'Economy Stay', title: 'Economy Stay', minPrice: 1500, maxPrice: 2499 },
   { id: 'Premium Stay', title: 'Premium Stay', minPrice: 2500, maxPrice: Infinity },
+  { id: 'Signature Stays', title: 'Signature Stays', minPrice: 0, maxPrice: Infinity },
 ];
 
 const CategoryIcon = ({ id, size = 14, color = 'currentColor' }) => {
   if (id === 'PG') return <FiHome style={{ fontSize: size, color }} />;
   if (id === 'Economy Stay') return <FiTrendingUp style={{ fontSize: size, color }} />;
   if (id === 'Premium Stay') return <FiAward style={{ fontSize: size, color }} />;
+  if (id === 'Signature Stays') return <span style={{ fontSize: size, color }}>✨</span>;
   return null;
 };
 
@@ -151,10 +153,12 @@ const PropertyCard = ({ property, rentalType }) => {
   // ─────────────────────────────────────────────────────────────────────────
 
   const categoryLabel = (property.property_name?.toLowerCase().includes('ovika') || property.property_name?.toLowerCase().includes('signature'))
-    ? 'Premium Stay'
+    ? 'Signature Stays'
     : property.property_category || '';
 
-  const categoryColor = categoryLabel === 'Premium Stay'
+  const categoryColor = categoryLabel === 'Signature Stays'
+    ? { bg: '#8B5E2A', text: '#fff' }
+    : categoryLabel === 'Premium Stay'
     ? { bg: '#8B5E2A', text: '#fff' }
     : categoryLabel === 'PG'
     ? { bg: '#C98B3E', text: '#fff' }
@@ -652,7 +656,7 @@ const PropertyListPage = () => {
   const [checkOut, setCheckOut] = useState('');
   // Sidebar filter state
   const [priceMin, setPriceMin] = useState(1000);
-  const [priceMax, setPriceMax] = useState(50000);
+  const [priceMax, setPriceMax] = useState(500000);
   const [roomsFilter, setRoomsFilter] = useState(null);
   const [propTypeFilter, setPropTypeFilter] = useState([]);
   const [amenitiesFilter, setAmenitiesFilter] = useState([]);
@@ -707,14 +711,29 @@ const PropertyListPage = () => {
     let result = list;
     const isMonthly = rental === 'long';
 
+    // Signature Stays property IDs (Home7 se liye hain)
+    const SIGNATURE_NIGHTLY_IDS = [77, 78, 79, 80, 81];
+    const SIGNATURE_MONTHLY_IDS = [323, 315, 316, 317]; // 78 monthly mein available nahi
+
+    const isSignatureProperty = (p) => {
+      const id = Number(p.id || p.property_id);
+      return SIGNATURE_NIGHTLY_IDS.includes(id) || SIGNATURE_MONTHLY_IDS.includes(id);
+    };
+
+    const isSignatureOrOvika = (p) =>
+      p.property_name?.toLowerCase().includes('signature') ||
+      p.property_name?.toLowerCase().includes('ovika');
+
     if (isMonthly) {
-      result = result.filter(p =>
-        p.property_category === 'PG' || isLongTermProperty(p)
-      );
+      result = result.filter(p => {
+        if (SIGNATURE_MONTHLY_IDS.includes(Number(p.id || p.property_id))) return true;
+        return p.property_category === 'PG' || isLongTermProperty(p);
+      });
     } else {
-      result = result.filter(p =>
-        p.property_category === 'PG' || !isLongTermProperty(p)
-      );
+      result = result.filter(p => {
+        if (SIGNATURE_NIGHTLY_IDS.includes(Number(p.id || p.property_id))) return true;
+        return p.property_category === 'PG' || !isLongTermProperty(p);
+      });
 
       result = result.filter(p => {
         if (p.property_category !== 'PG') return true;
@@ -725,12 +744,16 @@ const PropertyListPage = () => {
 
         if (cat) {
           result = result.filter(p => {
-            const isSignature = p.property_name?.toLowerCase().includes('signature');
-            const isOvika = p.property_name?.toLowerCase().includes('ovika');
-            
-            // If it's an Ovika or Signature property, it MUST be in Premium Stay category ONLY
-            if (isSignature || isOvika) {
-              return cat.id === 'Premium Stay';
+            const id = Number(p.id || p.property_id);
+            // Signature Stays category: sahi IDs dikhao based on monthly/nightly
+            if (cat.id === 'Signature Stays') {
+              if (isMonthly) return SIGNATURE_MONTHLY_IDS.includes(id);
+              return SIGNATURE_NIGHTLY_IDS.includes(id);
+            }
+
+            // Signature properties sirf Signature Stays category mein dikhni chahiye
+            if (isSignatureProperty(p) || isSignatureOrOvika(p)) {
+              return false;
             }
 
             if (cat.id === 'PG') return p.property_category === 'PG';
@@ -777,8 +800,9 @@ const PropertyListPage = () => {
   useEffect(() => {
     let filteredResults = applyFilter(properties, activeCat, search, rentalType);
 
-    // Sidebar price filter
+    // Sidebar price filter (Signature Stays ke liye bypass — ID se already filtered hain)
     filteredResults = filteredResults.filter(p => {
+      if (activeCat?.id === 'Signature Stays') return true;
       const price = Number(p.price) || Number(p.base_rate) || 0;
       if (price === 0) return true;
       return price >= priceMin && price <= priceMax;
