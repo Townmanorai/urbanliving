@@ -57,6 +57,7 @@ import CookieConsent from "./compoent/CookieConsent/CookieConsent";
 import ColivingSpace from './compoent/CoLivingSpace/ColivingSpace';
 import Home9 from "./compoent/HomePageNew/Home9";
 import Home10 from "./compoent/HomePageNew/Home10";
+import HomePageNew1 from "./compoent/HomePageNew2/HomePageNew1";
 import  OvikaSelfVerified  from "./compoent/ovikalistingform/OvikaSelfVerified";
 import OwnerVerificationForm from "./compoent/ovikalistingform/OwnerVerificationForm";
 
@@ -138,7 +139,7 @@ function App() {
           {/* Main Website Pages */}
           <Route path="/home" element={<Home />} />
           <Route path="/home-main" element={<HomeMain />} />
-          <Route path="/" element={<PropertyListPage />} />
+          <Route path="/" element={<HomePageNew1 />} />
           <Route path="/tmluxe" element={<LuxeMain />} />
           <Route path="/tmluxespecific/:id" element={<ThirdMain />} />
           <Route path="/payment" element={<Payment />} />
