@@ -178,99 +178,123 @@ export default function HomePageNew1() {
   /* ════════ MOBILE (≤640px) ════════ */
   if (bp === 'mobile') {
     return (
-      <div style={{ background: 'linear-gradient(160deg,#f5efe4,#ede4cf)', minHeight: '100svh', fontFamily: "'Poppins',sans-serif", boxSizing: 'border-box' }}>
+      <div style={{
+        background: 'linear-gradient(160deg, #fdf7ee 0%, #f5ead6 55%, #ede4cf 100%)',
+        minHeight: '100svh', fontFamily: "'Poppins',sans-serif", boxSizing: 'border-box',
+        padding: '22px 16px 32px',
+      }}>
 
-        {/* Hero Image */}
-        <div style={{ position: 'relative', height: 220, overflow: 'hidden' }}>
-          <img src="/newhome1mobile.png" alt=""
-            onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80'; }}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 55%' }} />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%)' }} />
-          <div style={{ position: 'absolute', inset: 0, padding: '16px 18px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-            <div style={{ display: 'inline-flex', alignSelf: 'flex-start', background: 'rgba(194,119,43,0.88)', borderRadius: 20, padding: '3px 12px', marginBottom: 8 }}>
-              <span style={{ fontSize: '0.56rem', color: '#fff', letterSpacing: 1.2, textTransform: 'uppercase', fontWeight: 600 }}>✦ Smart Stay Platform</span>
+        {/* ── Header (mirrors desktop left panel) ── */}
+        <div style={{ marginBottom: 22 }}>
+          <div style={{ display: 'inline-flex', background: 'rgba(194,119,43,0.1)', border: '1px solid rgba(194,119,43,0.28)', borderRadius: 20, padding: '4px 14px', marginBottom: 12 }}>
+            <span style={{ fontSize: '0.58rem', color: '#c2772b', letterSpacing: 1.4, textTransform: 'uppercase', fontWeight: 600 }}>✦ Smart Stay Platform</span>
+          </div>
+          <h1 style={{ color: '#1a1209', fontSize: '1.55rem', fontWeight: 700, lineHeight: 1.2, margin: '0 0 8px' }}>
+            Find Smart Stays<br /><span style={{ color: '#c2772b' }}>in Noida</span> &amp; Greater Noida
+          </h1>
+          <p style={{ color: '#6b5540', fontSize: '0.78rem', margin: '0 0 16px', lineHeight: 1.65 }}>
+            Verified PGs, Apartments &amp; Premium Homes across India
+          </p>
+          {/* Search bar – same shared component, full width */}
+          <SearchBar compact={false} />
+        </div>
+
+        {/* ── Nightly Stays Card (image-on-top like desktop) ── */}
+        <div style={{ background: '#fff', borderRadius: 18, marginBottom: 14, overflow: 'hidden', boxShadow: '0 6px 28px rgba(0,0,0,0.1)', border: '1px solid #f0e8da' }}>
+          <div style={{ height: 180, position: 'relative', overflow: 'hidden' }}>
+            <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80&auto=format&fit=crop" alt="Nightly Stay"
+              onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80'; }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.4) 100%)' }} />
+            <div style={{ position: 'absolute', top: 12, left: 14, background: 'rgba(194,119,43,0.92)', borderRadius: 20, padding: '3px 10px' }}>
+              <span style={{ fontSize: '0.56rem', color: '#fff', fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase' }}>🌙 Nightly Stays</span>
             </div>
-            <h1 style={{ color: '#fff', fontSize: '1.35rem', fontWeight: 700, margin: 0, textShadow: '0 2px 12px rgba(0,0,0,0.7)', lineHeight: 1.25 }}>
-              Find Smart Stays<br /><span style={{ color: '#f0c070' }}>in Noida</span> &amp; Greater Noida
-            </h1>
-            <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.74rem', margin: '6px 0 0', lineHeight: 1.5 }}>Verified PGs, Apartments &amp; Premium Homes</p>
+          </div>
+          <div style={{ padding: '14px 16px 16px', background: 'linear-gradient(180deg, #fefcf8 0%, #fff 100%)' }}>
+            <div style={{ fontSize: '0.7rem', color: '#6b5540', fontWeight: 500, marginBottom: 8, lineHeight: 1.4 }}>
+              Short trips · Business visits · Weekend getaways
+            </div>
+            <div style={{ marginBottom: 10 }}>
+              <span style={{ fontSize: '0.6rem', color: '#c2772b', textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: 600 }}>Starts at</span>
+              <div style={{ fontSize: '1.6rem', fontWeight: 300, color: '#1a1209', lineHeight: 1.1, marginTop: 2 }}>{shortDisplay}</div>
+            </div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+              {['AC Rooms', 'Wi-Fi', 'Housekeeping'].map(f => (
+                <span key={f} style={{ fontSize: '0.6rem', color: '#7a5530', background: '#fdf0e0', border: '1px solid #e8c88a', borderRadius: 20, padding: '3px 10px', fontWeight: 600 }}>{f}</span>
+              ))}
+            </div>
+            <div style={{ borderTop: '1px solid #f5ede0', paddingTop: 10, display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 12 }}>
+              {[['🛏', 'Private rooms & entire apartments'], ['📍', 'Pan-India locations available'], ['⚡', 'Same-day booking confirmed']].map(([icon, text]) => (
+                <div key={text} style={{ display: 'flex', alignItems: 'flex-start', gap: 7 }}>
+                  <span style={{ fontSize: '0.7rem', lineHeight: 1.4 }}>{icon}</span>
+                  <span style={{ fontSize: '0.68rem', color: '#6b5540', lineHeight: 1.4 }}>{text}</span>
+                </div>
+              ))}
+            </div>
+            <button onClick={() => handleSearch('short')}
+              style={{ width: '100%', padding: '11px 0', borderRadius: 10, border: 'none', background: '#c2772b', color: '#fff', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', fontFamily: "'Poppins',sans-serif" }}>
+              Check Availability
+            </button>
           </div>
         </div>
 
-        {/* Content */}
-        <div style={{ padding: '16px 14px 28px' }}>
-
-          {/* Nightly Card */}
-          <div style={{ background: '#fff', borderRadius: 16, marginBottom: 12, overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.09)', border: '1px solid #f0e8da' }}>
-            <div style={{ display: 'flex', alignItems: 'stretch' }}>
-              <div style={{ width: 110, flexShrink: 0, position: 'relative', overflow: 'hidden', minHeight: 140 }}>
-                <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=300&q=80&auto=format&fit=crop" alt=""
-                  onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=300&q=80'; }}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.12)' }} />
-                <div style={{ position: 'absolute', bottom: 8, left: 0, right: 0, textAlign: 'center' }}>
-                  <span style={{ fontSize: '0.52rem', color: '#fff', fontWeight: 700, background: 'rgba(194,119,43,0.92)', borderRadius: 8, padding: '2px 7px', textTransform: 'uppercase', letterSpacing: 0.4 }}>🌙 Nightly</span>
-                </div>
-              </div>
-              <div style={{ flex: 1, padding: '14px 14px 14px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <div>
-                  <div style={{ fontSize: '0.62rem', color: '#8a6a3a', fontWeight: 600, marginBottom: 4 }}>Short trips · Business · Weekends</div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 300, color: '#1a1209', lineHeight: 1.1, marginBottom: 8 }}>{shortDisplay}</div>
-                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                    {['AC', 'Wi-Fi', 'Housekeeping'].map(f => (
-                      <span key={f} style={{ fontSize: '0.58rem', color: '#7a5530', background: '#fdf0e0', border: '1px solid #e8c88a', borderRadius: 20, padding: '2px 8px', fontWeight: 600 }}>{f}</span>
-                    ))}
-                  </div>
-                </div>
-                <button onClick={() => handleSearch('short')} style={{ width: '100%', padding: '9px 0', borderRadius: 9, border: 'none', background: '#c2772b', color: '#fff', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer', marginTop: 10 }}>
-                  Check Availability
-                </button>
-              </div>
+        {/* ── Monthly Rental Card ── */}
+        <div style={{ background: '#fff', borderRadius: 18, marginBottom: 22, overflow: 'hidden', boxShadow: '0 6px 28px rgba(0,0,0,0.1)', border: '1px solid #f0e8da' }}>
+          <div style={{ height: 180, position: 'relative', overflow: 'hidden' }}>
+            <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&q=80&auto=format&fit=crop" alt="Monthly Rental"
+              onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&q=80'; }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.4) 100%)' }} />
+            <div style={{ position: 'absolute', top: 12, left: 14, background: 'rgba(26,18,9,0.85)', borderRadius: 20, padding: '3px 10px' }}>
+              <span style={{ fontSize: '0.56rem', color: '#f0c070', fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase' }}>🏠 Monthly Rental</span>
             </div>
           </div>
-
-          {/* Monthly Card */}
-          <div style={{ background: '#fff', borderRadius: 16, marginBottom: 16, overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.09)', border: '1px solid #f0e8da' }}>
-            <div style={{ display: 'flex', alignItems: 'stretch' }}>
-              <div style={{ width: 110, flexShrink: 0, position: 'relative', overflow: 'hidden', minHeight: 140 }}>
-                <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=300&q=80&auto=format&fit=crop" alt=""
-                  onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=300&q=80'; }}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.12)' }} />
-                <div style={{ position: 'absolute', bottom: 8, left: 0, right: 0, textAlign: 'center' }}>
-                  <span style={{ fontSize: '0.52rem', color: '#f0c070', fontWeight: 700, background: 'rgba(26,18,9,0.88)', borderRadius: 8, padding: '2px 7px', textTransform: 'uppercase', letterSpacing: 0.4 }}>🏠 Monthly</span>
-                </div>
-              </div>
-              <div style={{ flex: 1, padding: '14px 14px 14px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <div>
-                  <div style={{ fontSize: '0.62rem', color: '#8a6a3a', fontWeight: 600, marginBottom: 4 }}>Professionals · Students · Long-term</div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 300, color: '#1a1209', lineHeight: 1.1, marginBottom: 8 }}>{longDisplay}</div>
-                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                    {['Furnished', 'No Brokerage', 'Flexible'].map(f => (
-                      <span key={f} style={{ fontSize: '0.58rem', color: '#7a5530', background: '#fdf0e0', border: '1px solid #e8c88a', borderRadius: 20, padding: '2px 8px', fontWeight: 600 }}>{f}</span>
-                    ))}
-                  </div>
-                </div>
-                <button onClick={() => handleSearch('long')} style={{ width: '100%', padding: '9px 0', borderRadius: 9, border: '1.5px solid #c2772b', background: 'transparent', color: '#c2772b', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer', marginTop: 10 }}>
-                  Explore Rooms
-                </button>
-              </div>
+          <div style={{ padding: '14px 16px 16px' }}>
+            <div style={{ fontSize: '0.7rem', color: '#6b5540', fontWeight: 500, marginBottom: 8, lineHeight: 1.4 }}>
+              Professionals · Students · Long-term residents
             </div>
+            <div style={{ marginBottom: 10 }}>
+              <span style={{ fontSize: '0.6rem', color: '#c2772b', textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: 600 }}>Starts at</span>
+              <div style={{ fontSize: '1.6rem', fontWeight: 300, color: '#1a1209', lineHeight: 1.1, marginTop: 2 }}>{longDisplay}</div>
+            </div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+              {['Furnished', 'Zero Brokerage', 'Flexible Lease'].map(f => (
+                <span key={f} style={{ fontSize: '0.6rem', color: '#7a5530', background: '#fdf0e0', border: '1px solid #e8c88a', borderRadius: 20, padding: '3px 10px', fontWeight: 600 }}>{f}</span>
+              ))}
+            </div>
+            <div style={{ borderTop: '1px solid #f5ede0', paddingTop: 10, display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 12 }}>
+              {[['🏠', 'PGs, flats & co-living spaces'], ['📄', 'Simple rent agreements'], ['🔑', 'Move in within 24 hours']].map(([icon, text]) => (
+                <div key={text} style={{ display: 'flex', alignItems: 'flex-start', gap: 7 }}>
+                  <span style={{ fontSize: '0.7rem', lineHeight: 1.4 }}>{icon}</span>
+                  <span style={{ fontSize: '0.68rem', color: '#6b5540', lineHeight: 1.4 }}>{text}</span>
+                </div>
+              ))}
+            </div>
+            <button onClick={() => handleSearch('long')}
+              style={{ width: '100%', padding: '11px 0', borderRadius: 10, border: '2px solid #c2772b', background: 'transparent', color: '#c2772b', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', fontFamily: "'Poppins',sans-serif" }}>
+              Explore Rooms
+            </button>
           </div>
-
-          {/* Badges */}
-          <div style={{ display: 'flex', justifyContent: 'space-around', marginBottom: 14, padding: '0 2px' }}>
-            {[['✦', 'Fully Furnished'], ['⚡', 'Instant Move-in'], ['🛡', '100% Verified']].map(([icon, label]) => (
-              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ color: '#c2772b', fontSize: '0.65rem' }}>{icon}</span>
-                <span style={{ color: '#5a4a3a', fontSize: '0.66rem', fontWeight: 500 }}>{label}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Search Bar */}
-          <SearchBar compact />
         </div>
+
+        {/* ── Feature boxes 2×2 (mirrors desktop left panel bottom) ── */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          {[
+            { icon: '✦', title: 'Fully Furnished', sub: 'Move in with zero hassle' },
+            { icon: '⚡', title: 'Instant Move-in', sub: 'Same day confirmation' },
+            { icon: '🛡', title: 'Zero Brokerage', sub: 'No hidden charges ever' },
+            { icon: '✔', title: 'Verified Properties', sub: '100% physically verified' },
+          ].map(f => (
+            <div key={f.title} style={{ background: '#fff', borderRadius: 12, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 9, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid #f0e8da' }}>
+              <span style={{ fontSize: '1rem', flexShrink: 0 }}>{f.icon}</span>
+              <div>
+                <div style={{ fontSize: '0.66rem', fontWeight: 700, color: '#1a1209', lineHeight: 1.2 }}>{f.title}</div>
+                <div style={{ fontSize: '0.55rem', color: '#bbb', marginTop: 1 }}>{f.sub}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
       </div>
     );
   }
