@@ -100,32 +100,36 @@ export default function HomePageNew1() {
   /* ── Shared search bar ── */
   const SearchBar = ({ compact }) => (
     <div style={{
-      background: '#fff', borderRadius: compact ? 12 : 14, display: 'flex', alignItems: 'center',
-      boxShadow: '0 4px 20px rgba(0,0,0,0.08)', border: '1.5px solid #e8dfd0', overflow: 'hidden',
+      background: '#fff',
+      borderRadius: 16,
+      boxShadow: '0 8px 32px rgba(194,119,43,0.18), 0 2px 8px rgba(0,0,0,0.06)',
+      border: '1.5px solid #d4b896',
+      display: 'flex',
+      alignItems: 'stretch',
+      overflow: 'hidden',
+      minHeight: compact ? 48 : 62,
     }}>
-      <div ref={cityRef} style={{ position: 'relative', flex: 1 }}>
+      {/* Location */}
+      <div ref={cityRef} style={{ position: 'relative', flex: 1, borderRight: '1.5px solid #f0e8da' }}>
         <div onClick={() => { setShowCity(!showCity); setShowDate(false); }}
-          style={{ display: 'flex', alignItems: 'center', gap: compact ? 5 : 8, padding: compact ? '10px 10px' : '11px 14px', cursor: 'pointer', borderRight: '1px solid #f0ece4' }}>
-          <MapPin size={compact ? 13 : 14} style={{ color: '#c2772b', flexShrink: 0 }} />
-          {!compact && (
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: '0.55rem', color: '#bbb', textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: 600 }}>Location</div>
-              <div style={{ fontSize: '0.85rem', color: '#1a1209', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{city}</div>
-            </div>
-          )}
-          {compact && <span style={{ fontSize: '0.85rem', color: '#1a1209', fontWeight: 600 }}>{city}</span>}
-          <ChevronDown size={12} style={{ color: '#bbb', marginLeft: compact ? 'auto' : undefined, flexShrink: 0 }} />
+          style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 16px', height: '100%', cursor: 'pointer', minHeight: compact ? 48 : 62 }}>
+          <MapPin size={16} style={{ color: '#c2772b', flexShrink: 0 }} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: '0.6rem', color: '#c2772b', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700, marginBottom: 2 }}>Location</div>
+            <div style={{ fontSize: '0.9rem', color: '#1a1209', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{city}</div>
+          </div>
+          <ChevronDown size={13} style={{ color: '#c2772b', flexShrink: 0 }} />
         </div>
         {showCity && (
-          <div onClick={e => e.stopPropagation()} style={{ ...dd, width: compact ? 220 : 240 }}>
-            <div style={{ padding: compact ? '8px 10px' : '10px 12px', borderBottom: '1px solid #f0ece4' }}>
+          <div onClick={e => e.stopPropagation()} style={{ ...dd, width: 240 }}>
+            <div style={{ padding: '10px 12px', borderBottom: '1px solid #f0ece4' }}>
               <input autoFocus placeholder="Search city..." value={citySearch} onChange={e => setCitySearch(e.target.value)}
-                style={{ width: '100%', border: '1px solid #e0d0b8', borderRadius: compact ? 8 : 10, padding: compact ? '6px 8px' : '8px 12px', fontSize: compact ? '0.82rem' : '0.85rem', outline: 'none', boxSizing: 'border-box' }} />
+                style={{ width: '100%', border: '1px solid #e0d0b8', borderRadius: 10, padding: '8px 12px', fontSize: '0.85rem', outline: 'none', boxSizing: 'border-box' }} />
             </div>
             <div style={{ maxHeight: 220, overflowY: 'auto' }}>
               {filteredCities.map(c => (
                 <div key={c} onClick={() => { setCity(c); setShowCity(false); setCitySearch(''); }}
-                  style={{ padding: compact ? '9px 14px' : '10px 16px', fontSize: compact ? '0.82rem' : '0.88rem', color: c === city ? '#c2772b' : '#444', fontWeight: c === city ? 600 : 400, cursor: 'pointer', background: c === city ? '#fef9f2' : 'transparent', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  style={{ padding: '10px 16px', fontSize: '0.88rem', color: c === city ? '#c2772b' : '#444', fontWeight: c === city ? 600 : 400, cursor: 'pointer', background: c === city ? '#fef9f2' : 'transparent', display: 'flex', alignItems: 'center', gap: 8 }}>
                   <MapPin size={12} style={{ color: '#c2772b', flexShrink: 0 }} />{c}
                 </div>
               ))}
@@ -134,24 +138,22 @@ export default function HomePageNew1() {
         )}
       </div>
 
-      <div ref={dateRef} style={{ position: 'relative', flex: compact ? 1 : 0.9 }}>
+      {/* Move-in */}
+      <div ref={dateRef} style={{ position: 'relative', flex: 1, borderRight: '1.5px solid #f0e8da' }}>
         <div onClick={() => { setShowDate(!showDate); setShowCity(false); }}
-          style={{ display: 'flex', alignItems: 'center', gap: compact ? 5 : 8, padding: compact ? '10px 10px' : '11px 14px', cursor: 'pointer', borderRight: '1px solid #f0ece4' }}>
-          <Calendar size={compact ? 13 : 14} style={{ color: '#888', flexShrink: 0 }} />
-          {!compact && (
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '0.55rem', color: '#bbb', textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: 600 }}>Move-in</div>
-              <div style={{ fontSize: '0.85rem', color: '#1a1209', fontWeight: 600 }}>{dateLabel}</div>
-            </div>
-          )}
-          {compact && <span style={{ fontSize: '0.85rem', color: '#1a1209', fontWeight: 600 }}>{dateLabel}</span>}
-          <ChevronDown size={12} style={{ color: '#bbb', marginLeft: compact ? 'auto' : undefined, flexShrink: 0 }} />
+          style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 16px', height: '100%', cursor: 'pointer', minHeight: compact ? 48 : 62 }}>
+          <Calendar size={16} style={{ color: '#8a6a3a', flexShrink: 0 }} />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '0.6rem', color: '#c2772b', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 700, marginBottom: 2 }}>Move-in</div>
+            <div style={{ fontSize: '0.9rem', color: '#1a1209', fontWeight: 700 }}>{dateLabel}</div>
+          </div>
+          <ChevronDown size={13} style={{ color: '#c2772b', flexShrink: 0 }} />
         </div>
         {showDate && (
           <div onClick={e => e.stopPropagation()} style={dd}>
             {DATE_OPTIONS.map(d => (
               <div key={d} onClick={() => { setDateLabel(d); setShowDate(false); }}
-                style={{ padding: compact ? '10px 14px' : '11px 18px', fontSize: compact ? '0.82rem' : '0.88rem', color: d === dateLabel ? '#c2772b' : '#444', fontWeight: d === dateLabel ? 600 : 400, cursor: 'pointer', background: d === dateLabel ? '#fef9f2' : 'transparent' }}>
+                style={{ padding: '11px 18px', fontSize: '0.88rem', color: d === dateLabel ? '#c2772b' : '#444', fontWeight: d === dateLabel ? 600 : 400, cursor: 'pointer', background: d === dateLabel ? '#fef9f2' : 'transparent' }}>
                 {d}
               </div>
             ))}
@@ -159,17 +161,19 @@ export default function HomePageNew1() {
         )}
       </div>
 
+      {/* Button */}
       <button onClick={() => handleSearch(null)} style={{
-        flexShrink: 0, padding: compact ? '10px 14px' : '11px 18px', border: 'none',
-        background: '#c2772b', color: '#fff', fontSize: compact ? '0.8rem' : '0.82rem',
-        fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-        transition: 'background 0.2s', whiteSpace: 'nowrap',
-        borderRadius: compact ? '0 10px 10px 0' : '0 12px 12px 0',
-        margin: compact ? '3px 3px 3px 0' : '4px 4px 4px 0',
+        flexShrink: 0, padding: '0 20px', border: 'none',
+        background: 'linear-gradient(135deg, #c2772b 0%, #a85e1f 100%)',
+        color: '#fff', fontSize: '0.86rem',
+        fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 7,
+        transition: 'all 0.2s', whiteSpace: 'nowrap',
+        margin: '6px 6px 6px 0', borderRadius: 10,
+        boxShadow: '0 4px 14px rgba(194,119,43,0.4)',
       }}
-        onMouseEnter={e => { e.currentTarget.style.background = '#a8631f'; }}
-        onMouseLeave={e => { e.currentTarget.style.background = '#c2772b'; }}>
-        <Search size={compact ? 13 : 14} /> {compact ? 'Search' : 'Show Options'}
+        onMouseEnter={e => { e.currentTarget.style.background = '#a8631f'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(194,119,43,0.55)'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #c2772b 0%, #a85e1f 100%)'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(194,119,43,0.4)'; }}>
+        <Search size={15} /> {compact ? 'Search' : 'Show Options'}
       </button>
     </div>
   );
@@ -180,7 +184,7 @@ export default function HomePageNew1() {
     return (
       <div style={{
         background: 'linear-gradient(160deg, #fdf7ee 0%, #f5ead6 55%, #ede4cf 100%)',
-        minHeight: '100svh', fontFamily: "'Poppins',sans-serif", boxSizing: 'border-box',
+        fontFamily: "'Poppins',sans-serif", boxSizing: 'border-box',
         padding: '22px 16px 32px',
       }}>
 
@@ -303,7 +307,7 @@ export default function HomePageNew1() {
   /* ════════ TABLET (641–1024px) ════════ */
   if (bp === 'tablet') {
     return (
-      <div style={{ background: 'linear-gradient(160deg,#f5efe4,#ede4cf)', minHeight: '100svh', fontFamily: "'Poppins',sans-serif", boxSizing: 'border-box', padding: '0 0 32px' }}>
+      <div style={{ background: 'linear-gradient(160deg,#f5efe4,#ede4cf)', fontFamily: "'Poppins',sans-serif", boxSizing: 'border-box', padding: '0 0 32px' }}>
 
         {/* Hero */}
         <div style={{ position: 'relative', height: 280, overflow: 'hidden' }}>
@@ -415,7 +419,6 @@ export default function HomePageNew1() {
   return (
     <div style={{
       background: 'linear-gradient(160deg, #f5efe4 0%, #ede4cf 55%, #e2d5be 100%)',
-      minHeight: 'calc(100vh - 140px)',
       display: 'flex', alignItems: 'stretch',
       padding: '16px 20px', fontFamily: "'Poppins', sans-serif", boxSizing: 'border-box',
     }}>
@@ -424,18 +427,18 @@ export default function HomePageNew1() {
         {/* Main Card */}
         <div style={{
           background: '#fff', borderRadius: 22, boxShadow: '0 16px 56px rgba(0,0,0,0.15)',
-          overflow: 'hidden', display: 'flex', flex: 1,
-          border: '1px solid rgba(194,119,43,0.12)', minHeight: 0,
+          overflow: 'hidden', display: 'flex',
+          height: 'clamp(480px, 55vh, 620px)',
+          border: '1px solid rgba(194,119,43,0.12)',
         }}>
 
           {/* LEFT panel */}
           <div style={{
             flex: '0 0 38%', background: 'linear-gradient(160deg, #fdf7ee 0%, #f5ead6 100%)',
             padding: '28px 30px', display: 'flex', flexDirection: 'column',
-            borderRight: '1px solid #f0e8da', overflow: 'auto',
+            borderRight: '1px solid #f0e8da', overflow: 'visible',
           }}>
-            <div>
-              <div style={{ display: 'inline-flex', background: 'rgba(194,119,43,0.12)', border: '1px solid rgba(194,119,43,0.3)', borderRadius: 20, padding: '4px 14px', marginBottom: 14 }}>
+              <div style={{ display: 'inline-flex', alignSelf: 'flex-start', background: 'rgba(194,119,43,0.12)', border: '1px solid rgba(194,119,43,0.3)', borderRadius: 20, padding: '4px 14px', marginBottom: 14 }}>
                 <span style={{ fontSize: '0.62rem', color: '#c2772b', letterSpacing: 1.5, textTransform: 'uppercase', fontWeight: 600 }}>✦ Smart Stay Platform</span>
               </div>
               <h1 style={{ color: '#1a1209', fontSize: 'clamp(1.3rem, 2vw, 1.9rem)', fontWeight: 700, lineHeight: 1.2, margin: '0 0 10px' }}>
@@ -449,24 +452,59 @@ export default function HomePageNew1() {
               {/* Search bar */}
               <SearchBar compact={false} />
 
-              {/* Feature boxes */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 70 }}>
-                {[
-                  { icon: '✦', title: 'Fully Furnished', sub: 'Move in with zero hassle' },
-                  { icon: '⚡', title: 'Instant Move-in', sub: 'Same day confirmation' },
-                  { icon: '🛡', title: 'Zero Brokerage', sub: 'No hidden charges ever' },
-                  { icon: '✔', title: 'Verified Properties', sub: '100% physically verified' },
-                ].map(f => (
-                  <div key={f.title} style={{ background: '#fff', borderRadius: 11, padding: '9px 12px', display: 'flex', alignItems: 'center', gap: 9, boxShadow: '0 2px 8px rgba(0,0,0,0.05)', border: '1px solid #f0e8da' }}>
-                    <span style={{ fontSize: '0.95rem', flexShrink: 0 }}>{f.icon}</span>
-                    <div>
-                      <div style={{ fontSize: '0.67rem', fontWeight: 700, color: '#1a1209', lineHeight: 1.2 }}>{f.title}</div>
-                      <div style={{ fontSize: '0.56rem', color: '#bbb', marginTop: 1 }}>{f.sub}</div>
-                    </div>
-                  </div>
-                ))}
+              {/* Popular searches */}
+              <div style={{ marginTop: 18 }}>
+                <div style={{ fontSize: '0.58rem', color: '#b8a080', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>🔍 Popular Searches</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {[
+                    { label: 'PG in Sector 62', rentalType: 'long' },
+                    { label: 'Studio Apartment', rentalType: 'short' },
+                    { label: 'Co-Living Space', rentalType: 'long' },
+                    { label: '1BHK Monthly', rentalType: 'long' },
+                    { label: 'Short Stay Noida', rentalType: 'short' },
+                  ].map(tag => (
+                    <span key={tag.label}
+                      onClick={() => handleSearch(tag.rentalType)}
+                      style={{
+                        fontSize: '0.68rem', color: '#6b5540', background: '#fff',
+                        border: '1px solid #e8d8c0', borderRadius: 20, padding: '5px 12px',
+                        fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = '#fdf0e0'; e.currentTarget.style.borderColor = '#c2772b'; e.currentTarget.style.color = '#c2772b'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#e8d8c0'; e.currentTarget.style.color = '#6b5540'; }}
+                    >{tag.label}</span>
+                  ))}
+                </div>
               </div>
-            </div>
+
+              {/* Feature strip */}
+              <div style={{ marginTop: 'auto', paddingTop: 16, borderTop: '1px solid #e8d8c0' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
+                  {[
+                    { icon: '✦', title: 'Fully Furnished', sub: 'Move in with zero hassle' },
+                    { icon: '⚡', title: 'Instant Move-in', sub: 'Same day confirmation' },
+                    { icon: '🛡', title: 'Zero Brokerage', sub: 'No hidden charges ever' },
+                    { icon: '✔', title: 'Verified Properties', sub: '100% physically verified' },
+                  ].map((f, i) => (
+                    <div key={f.title} style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      padding: '10px 0',
+                      borderRight: i % 2 === 0 ? '1px solid #e8d8c0' : 'none',
+                      paddingRight: i % 2 === 0 ? 14 : 0,
+                      paddingLeft: i % 2 === 1 ? 14 : 0,
+                      borderBottom: i < 2 ? '1px solid #e8d8c0' : 'none',
+                    }}>
+                      <div style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(194,119,43,0.1)', border: '1px solid rgba(194,119,43,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <span style={{ fontSize: '0.8rem' }}>{f.icon}</span>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '0.66rem', fontWeight: 700, color: '#1a1209', lineHeight: 1.2 }}>{f.title}</div>
+                        <div style={{ fontSize: '0.55rem', color: '#a08060', marginTop: 1 }}>{f.sub}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
           </div>
 
           {/* RIGHT panel */}

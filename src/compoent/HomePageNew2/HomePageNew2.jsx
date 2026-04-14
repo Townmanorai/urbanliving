@@ -163,12 +163,13 @@ export default function HomePageNew2() {
     background: 'linear-gradient(160deg, #fdf7ee 0%, #f5ead6 60%, #ede4cf 100%)',
     fontFamily: "'Poppins', sans-serif",
     boxSizing: 'border-box',
+    overflow: 'visible',
   };
 
   /* ════════ MOBILE (≤640px) ════════ */
   if (bp === 'mobile') {
     return (
-      <section style={{ ...sectionBg, padding: '26px 14px 36px' }}>
+      <section style={{ ...sectionBg, padding: '26px 14px 60px' }}>
 
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 18 }}>
@@ -187,7 +188,7 @@ export default function HomePageNew2() {
         <TabSwitcher activeTab={activeTab} setActiveTab={setActiveTab} size="sm" />
 
         {/* Cards – 2-column grid, full-width image-on-top cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, paddingBottom: 4 }}>
           {cats.map((cat) => (
             <div key={cat.id}
               onClick={() => handleNav(cat)}
@@ -248,7 +249,7 @@ export default function HomePageNew2() {
   /* ════════ TABLET (641–1024px) ════════ */
   if (bp === 'tablet') {
     return (
-      <section style={{ ...sectionBg, padding: '36px 24px 48px' }}>
+      <section style={{ ...sectionBg, padding: '36px 24px 72px' }}>
         <div style={{ textAlign: 'center', marginBottom: 26 }}>
           <div style={{ display: 'inline-flex', background: 'rgba(194,119,43,0.1)', border: '1px solid rgba(194,119,43,0.25)', borderRadius: 20, padding: '4px 16px', marginBottom: 10 }}>
             <span style={{ fontSize: '0.6rem', color: '#c2772b', letterSpacing: 1.4, textTransform: 'uppercase', fontWeight: 600 }}>✦ Browse by Category</span>
@@ -259,7 +260,7 @@ export default function HomePageNew2() {
 
         <TabSwitcher activeTab={activeTab} setActiveTab={setActiveTab} size="md" />
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, maxWidth: 900, margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, maxWidth: 900, margin: '0 auto', paddingBottom: 8 }}>
           {cats.map((cat) => (
             <div key={cat.id}
               onMouseEnter={() => setHovered(cat.id)}
@@ -303,7 +304,7 @@ export default function HomePageNew2() {
 
   /* ════════ DESKTOP (>1024px) ════════ */
   return (
-    <section style={{ ...sectionBg, padding: '44px 40px 56px' }}>
+    <section style={{ ...sectionBg, padding: '44px 40px 80px' }}>
 
       <div style={{ textAlign: 'center', marginBottom: 32 }}>
         <div style={{ display: 'inline-flex', background: 'rgba(194,119,43,0.1)', border: '1px solid rgba(194,119,43,0.25)', borderRadius: 20, padding: '4px 16px', marginBottom: 12 }}>
@@ -315,7 +316,7 @@ export default function HomePageNew2() {
 
       <TabSwitcher activeTab={activeTab} setActiveTab={setActiveTab} size="lg" />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 22, maxWidth: 1280, margin: '0 auto' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 22, maxWidth: 1280, margin: '0 auto', paddingBottom: 12 }}>
         {cats.map((cat) => (
           <div key={cat.id}
             onMouseEnter={() => setHovered(cat.id)}

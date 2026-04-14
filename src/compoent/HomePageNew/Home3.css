@@ -1,7 +1,7 @@
 /* Home3.css */
 .home3-section {
   padding: clamp(3rem, 6vw, 5rem) 0 clamp(3.5rem, 6vw, 6rem);
-  background: radial-gradient(circle at top right, #fffdfa 0%, #ffffff 40%, #fdf9f2 100%);
+  background: linear-gradient(160deg, #fdf7ee 0%, #f5ead6 60%, #ede4cf 100%);
   font-family: 'Poppins', sans-serif;
   box-sizing: border-box;
   width: 100%;
@@ -17,9 +17,9 @@
 
 .home3-heading {
   font-size: clamp(1.4rem, 3vw, 2.2rem);
-  color: #1a0f00;
+  color: #1a1209;
   margin: 0 0 0.4rem;
-  font-family: "Georgia", 'Times New Roman', serif;
+  font-family: 'Poppins', sans-serif;
   letter-spacing: -0.3px;
   text-align: center;
   font-weight: 700;
@@ -32,7 +32,7 @@
 .home3-subtitle {
   text-align: center;
   font-size: clamp(0.78rem, 1.1vw, 0.95rem);
-  color: #7a6b57;
+  color: #6b5540;
   margin-bottom: clamp(2rem, 4vw, 3rem);
   font-weight: 500;
   letter-spacing: 0.05rem;
@@ -46,10 +46,11 @@
 
 .home3-toggle-pill {
   display: inline-flex;
-  background: #fbf8f3;
-  border: 1px solid #f0e6d6;
+  background: #fff;
+  border: 1.5px solid #f0e8da;
   border-radius: 50px;
   padding: 4px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
 }
 
 .home3-toggle-btn {
@@ -86,8 +87,9 @@
   left: 12%;
   right: 12%;
   height: 2px;
-  background: #e0d5c1;
+  background: linear-gradient(to right, #f0e8da, #c2772b 50%, #f0e8da);
   z-index: 0;
+  opacity: 0.6;
 }
 
 .home3-step-card {
@@ -116,14 +118,14 @@
   width: 110px;
   height: 110px;
   background: #fff;
-  border: 1px solid #d6c5a8;
-  outline: 6px solid #fbf8f3;
+  border: 1.5px solid #f0e8da;
+  outline: 6px solid #fdf7ee;
   border-radius: 50%;
   margin: 0 auto 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 8px 24px rgba(194,119,43,0.08);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -152,11 +154,11 @@
 }
 
 .home3-step-title {
-  font-size: 1.25rem; /* Enhanced font size */
-  font-weight: 700; /* Enhanced font weight */
-  color: #1a0f00;
-  margin-bottom: 0.75rem; /* Adjusted margin */
-  transition: color 0.3s ease; /* Added transition */
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1209;
+  margin-bottom: 0.75rem;
+  transition: color 0.3s ease;
 }
 
 .home3-step-card:hover .home3-step-title {
@@ -164,11 +166,11 @@
 }
 
 .home3-step-desc {
-  font-size: 0.9rem; /* Enhanced font size */
-  color: #666;
-  line-height: 1.6; /* Enhanced line height */
-  max-width: 250px; /* Added max-width */
-  margin: 0 auto; /* Centered description */
+  font-size: 0.9rem;
+  color: #8a6a3a;
+  line-height: 1.6;
+  max-width: 250px;
+  margin: 0 auto;
 }
 
 /* Mobile Layout */
@@ -181,20 +183,20 @@
 
 .home3-mobile-card {
   background: #fff;
-  border: 1.5px solid #d6c5a8;
+  border: 1.5px solid #f0e8da;
   border-radius: 16px;
   padding: 1.2rem;
   display: flex;
   gap: 1.5rem;
   align-items: center;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 18px rgba(194,119,43,0.07);
 }
 
 .home3-mobile-icon {
   width: 85px;
   height: 85px;
-  background: #fbf8f3;
-  border: 2px solid #e0d5c1;
+  background: #fdf7ee;
+  border: 1.5px solid #f0e8da;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -230,27 +232,27 @@
 .home3-mobile-title {
   font-size: 1rem;
   font-weight: 600;
-  color: #1a0f00;
+  color: #1a1209;
   margin-bottom: 0.3rem;
 }
 
 .home3-mobile-desc {
   font-size: 0.85rem;
-  color: #666;
+  color: #8a6a3a;
   line-height: 1.4;
 }
 
 /* CTA */
 .home3-cta {
-  background: #ffffff;
-  border: 1px solid #efe4d1;
-  border-top: 4px solid #c2772b; /* Premium accent line */
+  background: #fff;
+  border: 1.5px solid #f0e8da;
+  border-top: 4px solid #c2772b;
   border-radius: 24px;
   padding: clamp(2.5rem, 5vw, 4rem) 2rem;
   text-align: center;
   margin: 4rem auto 1rem;
-  max-width: 1000px; /* Constrain width for better readability on desktop */
-  box-shadow: 0 30px 60px -12px rgba(194,119,43,0.08), 0 18px 36px -18px rgba(0,0,0,0.1);
+  max-width: 1000px;
+  box-shadow: 0 8px 40px rgba(194,119,43,0.1), 0 2px 12px rgba(0,0,0,0.06);
   position: relative;
   z-index: 1;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -273,7 +275,7 @@
 .home3-cta-title {
   font-size: clamp(1.4rem, 2.5vw, 2.2rem);
   font-weight: 700;
-  color: #1a0f00;
+  color: #1a1209;
   margin-bottom: 2rem;
   line-height: 1.2;
 }
@@ -291,12 +293,12 @@
   align-items: center;
   gap: 0.6rem;
   font-size: 1rem;
-  color: #4a4030;
+  color: #5a4030;
   font-weight: 600;
-  background: #fbf8f3;
+  background: #fdf0e0;
   padding: 0.6rem 1.2rem;
   border-radius: 12px;
-  border: 1px solid #f0e6d6;
+  border: 1px solid #e8c88a;
   white-space: nowrap;
 }
 
@@ -333,9 +335,9 @@
   padding: 0.8rem 2rem;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #7a6140; /* Darker, more visible brown */
-  background: #fff8ee; /* Warmer background */
-  border: 1px dashed #d6c5a8; /* Elegant dashed border */
+  color: #6b5540;
+  background: #fdf7ee;
+  border: 1px dashed #e8c88a;
   border-radius: 16px;
   width: fit-content;
   margin-left: auto;
@@ -365,14 +367,14 @@
   font-weight: 700;
   text-transform: none;
   letter-spacing: -0.02em;
-  color: #1a1a1a;
+  color: #1a1209;
   margin-bottom: 0.35rem;
 }
 
 .h3-vbadge-subheading {
   font-size: 0.88rem;
   font-weight: 400;
-  color: #888;
+  color: #8a6a3a;
   margin-bottom: 1.4rem;
   letter-spacing: 0.01em;
 }

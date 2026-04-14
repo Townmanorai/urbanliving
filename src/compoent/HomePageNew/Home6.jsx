@@ -95,9 +95,10 @@ function Home6() {
               Thank you for reaching out. We'll get back to you soon.
             </p>
             <button onClick={closeSuccessPopup} style={{
-              padding: "12px 40px", background: "linear-gradient(90deg, #b62305 0%, #000 100%)",
-              color: "#fff", border: "none", borderRadius: "8px", fontSize: "16px",
-              fontWeight: "600", fontFamily: "Poppins, sans-serif", cursor: "pointer"
+              padding: "12px 40px", background: "linear-gradient(135deg, #c2772b 0%, #a85e1f 100%)",
+              color: "#fff", border: "none", borderRadius: "8px", fontSize: "15px",
+              fontWeight: "600", fontFamily: "Poppins, sans-serif", cursor: "pointer",
+              boxShadow: "0 4px 14px rgba(194,119,43,0.35)"
             }}>
               Close
             </button>
@@ -111,10 +112,11 @@ function Home6() {
         {/* LEFT: Heading + Description + Form */}
         <div className="ovika-connect-left">
           <div className="ovika-connect-intro">
+            <div className="ovika-connect-eyebrow">✦ For Property Owners</div>
             <h1 className="ovika-property-heading">
-              TURN YOUR PROPERTY<br />
-              INTO A SMART<br />
-              INCOME SOURCE
+              Turn Your Property<br />
+              Into a Smart<br />
+              <span style={{ color: '#c2772b' }}>Income Source</span>
             </h1>
             <p className="ovika-property-desc">
               Join hundreds of property owners earning passive income with our all-inclusive management services.
