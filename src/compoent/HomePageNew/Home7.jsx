@@ -118,8 +118,8 @@ const styles = `
     font-weight: 600;
   }
   .vs-title {
-    font-size: clamp(1.4rem, 2.8vw, 1.9rem);
-    font-weight: 700;
+    font-size: clamp(1.3rem, 1.8vw, 1.75rem);
+    font-weight: 600;
     color: var(--text-dark);
     line-height: 1.2;
     margin-bottom: 6px;
@@ -127,7 +127,7 @@ const styles = `
   }
   .vs-title em { font-style: normal; color: var(--gold); }
   .vs-subtitle {
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     font-weight: 400;
     color: var(--text-mid);
     line-height: 1.6;
@@ -386,7 +386,7 @@ const styles = `
   .grid-card:hover .play-btn-grid { transform: scale(1); }
   .grid-body { padding: 16px 20px 20px; }
   .grid-cat { font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
-  .grid-title { font-family: 'Poppins', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; line-height: 1.2; }
+  .grid-title { font-family: 'Poppins', sans-serif; font-size: 0.95rem; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; line-height: 1.2; }
   .grid-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(194,119,43,0.1); gap: 8px; flex-wrap: wrap; }
   .watch-btn { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); display: flex; align-items: center; gap: 4px; font-weight: 500; cursor: pointer; }
   .watch-btn::after { content: '→'; transition: transform 0.2s; display: inline-block; }
@@ -422,7 +422,20 @@ const styles = `
   .modal-close:hover { background: var(--gold); border-color: transparent; }
   .modal-info { padding: 24px 32px; border-top: 1px solid rgba(194,119,43,0.15); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
   .modal-cat { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
-  .modal-title { font-family: 'Poppins', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--text-dark); }
+  .modal-title { font-family: 'Poppins', sans-serif; font-size: 1.05rem; font-weight: 600; color: var(--text-dark); }
+
+  @media (max-width: 768px) {
+    .vs-root { padding: 24px 16px 28px; }
+    .vs-title { font-size: 1.2rem; font-weight: 600; }
+    .vs-subtitle { font-size: 0.7rem; }
+    .vs-eyebrow { font-size: 0.55rem; padding: 3px 12px; margin-bottom: 7px; }
+    .vs-header { margin-bottom: 16px; }
+    .vs-controls { margin-bottom: 16px; }
+    .vs-view-btn { font-size: 0.66rem; padding: 6px 14px; }
+    .vs-rental-btn { font-size: 0.72rem; padding: 7px 16px; }
+    .grid-layout { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid-title { font-size: 0.78rem; font-weight: 600; }
+  }
 
   @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
   @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px) } to { opacity: 1; transform: translateY(0) } }

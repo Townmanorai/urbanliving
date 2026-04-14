@@ -73,23 +73,23 @@
 /* ===== HEADING ===== */
 .ovika-property-heading {
   font-family: 'Poppins', sans-serif;
-  font-size: clamp(1.6rem, 2.4vw, 2.4rem);
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: 600;
   line-height: 1.2;
   color: #1a1209;
-  margin-bottom: 14px;
-  letter-spacing: -0.3px;
+  margin-bottom: 12px;
+  letter-spacing: -0.2px;
 }
 
 /* ===== DESC ===== */
 .ovika-property-desc {
   font-family: 'Poppins', sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.86rem;
   font-weight: 400;
   color: #6b5540;
   line-height: 1.65;
-  margin-bottom: 28px;
-  max-width: 420px;
+  margin-bottom: 24px;
+  max-width: 400px;
 }
 
 /* ===== FORM WRAPPER ===== */
@@ -111,10 +111,10 @@
 
 .form-heading-ovika-homepage {
   font-family: 'Poppins', sans-serif;
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 600;
   color: #1a1209;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   text-align: left;
 }
 
@@ -244,14 +244,17 @@
 
 /* ===== MOBILE ===== */
 @media (max-width: 768px) {
-  .ovika-connect-main { padding: 0; }
+  .ovika-connect-main {
+    padding: 0;
+    background: #fff;
+  }
 
   .ovika-connect-content {
     flex-direction: column;
-    background: linear-gradient(160deg, #fdf7ee 0%, #f5ead6 60%, #ede4cf 100%);
+    background: #fff;
+    background-image: none;
     min-height: unset;
     padding: 0;
-    background-image: none;
     position: relative;
     overflow: visible;
   }
@@ -260,16 +263,20 @@
     flex: unset;
     max-width: 100%;
     width: 100%;
-    padding: 28px 16px 40px;
+    padding: 24px 16px 32px;
     position: relative;
     z-index: 1;
     display: block;
   }
 
-  .ovika-connect-eyebrow { margin-bottom: 10px; }
+  .ovika-connect-eyebrow {
+    font-size: 0.52rem;
+    padding: 3px 11px;
+    margin-bottom: 8px;
+  }
 
   .ovika-connect-intro {
-    width: 65%;
+    width: 62%;
     position: relative;
     z-index: 10;
   }
@@ -306,25 +313,26 @@
     top: 0;
     width: 100%;
     max-width: none;
-    margin-top: 150px;
+    margin-top: 140px;
     z-index: 10;
-    padding: 0 4px;
+    padding: 0 2px;
   }
 
   .ovika-connect-right { display: none; }
   .ovika-lady-img { display: none; }
 
   .ovika-property-heading {
-    font-size: 1.5rem;
-    font-weight: 800;
-    letter-spacing: -0.3px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: -0.2px;
     line-height: 1.25;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .ovika-property-desc {
-    font-size: 0.82rem;
-    line-height: 1.45;
+    font-size: 0.7rem;
+    font-weight: 400;
+    line-height: 1.5;
     margin-bottom: 0;
     max-width: 100%;
   }
@@ -333,41 +341,47 @@
     max-width: 100%;
     width: 100%;
     margin: 0;
-    border-radius: 16px;
-    padding: 22px 16px 18px;
+    border-radius: 14px;
+    padding: 16px 14px 14px;
     background: #fff;
-    box-shadow: 0 10px 40px rgba(194, 119, 43, 0.12);
-    border: 1.5px solid #f0e8da;
+    box-shadow: 0 8px 28px rgba(194, 119, 43, 0.1);
+    border: 1px solid #f0e8da;
   }
 
   .form-heading-ovika-homepage {
-    font-size: 1rem;
-    margin-bottom: 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 10px;
   }
 
   .ovika-input {
-    font-size: 0.9rem;
-    padding: 11px 13px;
-    margin-bottom: 9px;
+    font-size: 0.78rem;
+    padding: 9px 12px;
+    margin-bottom: 8px;
+    border-radius: 7px;
   }
 
+  .ovika-input::placeholder { font-size: 0.76rem; }
+
   .ovika-submit-btn-homepage {
-    font-size: 0.95rem;
-    padding: 13px 0;
-    margin-bottom: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 10px 0;
+    margin-bottom: 7px;
   }
 
   .ovika-host-btn {
-    font-size: 0.82rem;
-    padding: 11px 0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 9px 0;
   }
 }
 
 /* ===== EXTRA SMALL ===== */
 @media (max-width: 480px) {
-  .ovika-connect-left { padding: 24px 12px 30px; }
-  .ovika-property-heading { font-size: 1.35rem; }
-  .ovika-connect-mobile-hero { width: 100%; max-width: 440px; right: -40px; top: 5px; }
-  .ovika-connect-form-wrapper { margin-top: 65px; padding: 0; }
-  .ovika-connect-form { padding: 18px 12px 14px; }
+  .ovika-connect-left { padding: 20px 12px 28px; }
+  .ovika-property-heading { font-size: 1.1rem; font-weight: 600; }
+  .ovika-connect-mobile-hero { width: 88%; max-width: 380px; right: -24px; top: 5px; }
+  .ovika-connect-form-wrapper { margin-top: 120px; padding: 0; }
+  .ovika-connect-form { padding: 14px 12px 12px; }
 }

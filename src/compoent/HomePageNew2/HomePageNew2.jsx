@@ -4,7 +4,7 @@ import { ArrowRight } from 'lucide-react';
 
 function getBreakpoint() {
   const w = window.innerWidth;
-  if (w <= 640) return 'mobile';
+  if (w <= 768) return 'mobile';
   if (w <= 1024) return 'tablet';
   return 'desktop';
 }
@@ -166,20 +166,20 @@ export default function HomePageNew2() {
     overflow: 'visible',
   };
 
-  /* ════════ MOBILE (≤640px) ════════ */
+  /* ════════ MOBILE (≤768px) ════════ */
   if (bp === 'mobile') {
     return (
-      <section style={{ ...sectionBg, padding: '26px 14px 60px' }}>
+      <section style={{ ...sectionBg, padding: '24px 16px 32px', background: 'linear-gradient(180deg, #f5ead6 0%, #ede4cf 100%)' }}>
 
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 18 }}>
-          <div style={{ display: 'inline-flex', background: 'rgba(194,119,43,0.1)', border: '1px solid rgba(194,119,43,0.25)', borderRadius: 20, padding: '4px 14px', marginBottom: 10 }}>
-            <span style={{ fontSize: '0.58rem', color: '#c2772b', letterSpacing: 1.4, textTransform: 'uppercase', fontWeight: 600 }}>✦ Browse by Category</span>
+        <div style={{ textAlign: 'center', marginBottom: 16 }}>
+          <div style={{ display: 'inline-flex', background: 'rgba(194,119,43,0.1)', border: '1px solid rgba(194,119,43,0.25)', borderRadius: 20, padding: '3px 12px', marginBottom: 8 }}>
+            <span style={{ fontSize: '0.55rem', color: '#c2772b', letterSpacing: 1.2, textTransform: 'uppercase', fontWeight: 600 }}>✦ Browse by Category</span>
           </div>
-          <h2 style={{ color: '#1a1209', fontSize: '1.3rem', fontWeight: 700, margin: '0 0 6px', lineHeight: 1.2 }}>
+          <h2 style={{ color: '#1a1209', fontSize: '1.2rem', fontWeight: 600, margin: '0 0 5px', lineHeight: 1.25 }}>
             Explore Stay Options
           </h2>
-          <p style={{ color: '#6b5540', fontSize: '0.74rem', margin: 0, lineHeight: 1.55 }}>
+          <p style={{ color: '#6b5540', fontSize: '0.72rem', margin: 0, lineHeight: 1.5, fontWeight: 400 }}>
             PGs, Economy, Premium &amp; Signature — all in one place
           </p>
         </div>
@@ -187,56 +187,58 @@ export default function HomePageNew2() {
         {/* Tab switcher */}
         <TabSwitcher activeTab={activeTab} setActiveTab={setActiveTab} size="sm" />
 
-        {/* Cards – 2-column grid, full-width image-on-top cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, paddingBottom: 4 }}>
+        {/* Cards — 2×2 grid (flex wrap, 2 per row) */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 14 }}>
           {cats.map((cat) => (
             <div key={cat.id}
               onClick={() => handleNav(cat)}
               style={{
-                background: '#fff', borderRadius: 16, overflow: 'hidden',
-                boxShadow: '0 4px 18px rgba(0,0,0,0.09)',
-                border: '1.5px solid #f0e8da', cursor: 'pointer',
+                flex: '1 1 calc(50% - 5px)', minWidth: 0,
+                background: '#fff', borderRadius: 14, overflow: 'hidden',
+                boxShadow: '0 3px 14px rgba(0,0,0,0.08)',
+                border: '1px solid #f0e8da', cursor: 'pointer',
+                display: 'flex', flexDirection: 'column',
               }}>
-              {/* Image */}
-              <div style={{ height: 115, position: 'relative', overflow: 'hidden' }}>
+              {/* Image — proportional */}
+              <div style={{ position: 'relative', paddingTop: '60%', flexShrink: 0 }}>
                 <img src={cat.img} alt={cat.title}
                   onError={e => { e.currentTarget.src = cat.imgFallback; }}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.32) 100%)' }} />
-                <div style={{ position: 'absolute', top: 7, left: 7, background: 'rgba(194,119,43,0.9)', borderRadius: 20, padding: '2px 8px' }}>
-                  <span style={{ fontSize: '0.48rem', color: '#fff', fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase' }}>{cat.badge}</span>
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.28) 100%)' }} />
+                <div style={{ position: 'absolute', top: 6, left: 6, background: 'rgba(194,119,43,0.9)', borderRadius: 20, padding: '2px 7px' }}>
+                  <span style={{ fontSize: '0.42rem', color: '#fff', fontWeight: 600, letterSpacing: 0.3, textTransform: 'uppercase' }}>{cat.badge}</span>
                 </div>
               </div>
               {/* Content */}
-              <div style={{ padding: '11px 11px 13px' }}>
-                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#1a1209', lineHeight: 1.2, marginBottom: 3 }}>{cat.title}</div>
-                <div style={{ fontSize: '0.62rem', color: '#8a6a3a', lineHeight: 1.3, marginBottom: 9, fontWeight: 400 }}>{cat.sub}</div>
-                <div style={{ marginBottom: 10 }}>
-                  <div style={{ fontSize: '0.52rem', color: '#c2772b', textTransform: 'uppercase', letterSpacing: 0.7, fontWeight: 600 }}>Starts at</div>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#1a1209', marginTop: 1 }}>{cat.price}</div>
+              <div style={{ padding: '9px 9px 11px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#1a1209', lineHeight: 1.2, marginBottom: 2 }}>{cat.title}</div>
+                <div style={{ fontSize: '0.56rem', color: '#8a6a3a', lineHeight: 1.3, marginBottom: 7, fontWeight: 400 }}>{cat.sub}</div>
+                <div style={{ marginBottom: 9 }}>
+                  <div style={{ fontSize: '0.46rem', color: '#c2772b', textTransform: 'uppercase', letterSpacing: 0.6, fontWeight: 600 }}>Starts at</div>
+                  <div style={{ fontSize: '0.76rem', fontWeight: 600, color: '#1a1209', marginTop: 1 }}>{cat.price}</div>
                 </div>
                 <button
                   onClick={e => { e.stopPropagation(); handleNav(cat); }}
                   style={{
-                    width: '100%', padding: '8px 0', borderRadius: 9, border: 'none',
+                    marginTop: 'auto', width: '100%', padding: '7px 0', borderRadius: 8, border: 'none',
                     background: '#c2772b', color: '#fff',
-                    fontSize: '0.7rem', fontWeight: 600, cursor: 'pointer',
+                    fontSize: '0.6rem', fontWeight: 600, cursor: 'pointer',
                     fontFamily: "'Poppins', sans-serif",
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
                   }}>
-                  {cat.btnText} <ArrowRight size={11} />
+                  {cat.btnText} <ArrowRight size={10} />
                 </button>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Bottom trust badges */}
-        <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: 22, padding: '14px 8px', background: '#fff', borderRadius: 14, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid #f0e8da' }}>
+        {/* Bottom trust strip */}
+        <div style={{ display: 'flex', justifyContent: 'space-around', padding: '12px 8px', background: '#fff', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.05)', border: '1px solid #f0e8da' }}>
           {[['✦', 'Fully Furnished'], ['⚡', 'Instant Move-in'], ['🛡', 'Zero Brokerage']].map(([icon, label]) => (
-            <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-              <span style={{ fontSize: '1rem' }}>{icon}</span>
-              <span style={{ fontSize: '0.6rem', color: '#5a4a3a', fontWeight: 600, textAlign: 'center', lineHeight: 1.3 }}>{label}</span>
+            <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+              <span style={{ fontSize: '0.9rem' }}>{icon}</span>
+              <span style={{ fontSize: '0.55rem', color: '#5a4a3a', fontWeight: 600, textAlign: 'center', lineHeight: 1.3 }}>{label}</span>
             </div>
           ))}
         </div>
@@ -254,8 +256,8 @@ export default function HomePageNew2() {
           <div style={{ display: 'inline-flex', background: 'rgba(194,119,43,0.1)', border: '1px solid rgba(194,119,43,0.25)', borderRadius: 20, padding: '4px 16px', marginBottom: 10 }}>
             <span style={{ fontSize: '0.6rem', color: '#c2772b', letterSpacing: 1.4, textTransform: 'uppercase', fontWeight: 600 }}>✦ Browse by Category</span>
           </div>
-          <h2 style={{ color: '#1a1209', fontSize: '1.65rem', fontWeight: 700, margin: '0 0 8px', lineHeight: 1.2 }}>Explore Stay Options</h2>
-          <p style={{ color: '#6b5540', fontSize: '0.82rem', margin: 0, lineHeight: 1.6 }}>From budget PGs to luxury villas — find exactly what fits you</p>
+          <h2 style={{ color: '#1a1209', fontSize: '1.5rem', fontWeight: 600, margin: '0 0 8px', lineHeight: 1.2 }}>Explore Stay Options</h2>
+          <p style={{ color: '#6b5540', fontSize: '0.82rem', fontWeight: 400, margin: 0, lineHeight: 1.6 }}>From budget PGs to luxury villas — find exactly what fits you</p>
         </div>
 
         <TabSwitcher activeTab={activeTab} setActiveTab={setActiveTab} size="md" />
@@ -283,11 +285,11 @@ export default function HomePageNew2() {
                 </div>
               </div>
               <div style={{ padding: '16px 18px 18px' }}>
-                <h3 style={{ color: '#1a1209', fontSize: '1rem', fontWeight: 700, margin: '0 0 4px', lineHeight: 1.2 }}>{cat.title}</h3>
-                <p style={{ color: '#8a6a3a', fontSize: '0.74rem', margin: '0 0 12px', lineHeight: 1.4 }}>{cat.sub}</p>
+                <h3 style={{ color: '#1a1209', fontSize: '0.95rem', fontWeight: 600, margin: '0 0 4px', lineHeight: 1.2 }}>{cat.title}</h3>
+                <p style={{ color: '#8a6a3a', fontSize: '0.74rem', fontWeight: 400, margin: '0 0 12px', lineHeight: 1.4 }}>{cat.sub}</p>
                 <div style={{ marginBottom: 14 }}>
                   <div style={{ fontSize: '0.58rem', color: '#c2772b', textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: 600 }}>Starts at</div>
-                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1a1209', marginTop: 2 }}>{cat.price}</div>
+                  <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#1a1209', marginTop: 2 }}>{cat.price}</div>
                 </div>
                 <button onClick={e => { e.stopPropagation(); handleNav(cat); }}
                   style={{ width: '100%', padding: '10px 0', borderRadius: 10, border: 'none', background: hovered === cat.id ? '#a8631f' : '#c2772b', color: '#fff', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Poppins', sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
@@ -310,8 +312,8 @@ export default function HomePageNew2() {
         <div style={{ display: 'inline-flex', background: 'rgba(194,119,43,0.1)', border: '1px solid rgba(194,119,43,0.25)', borderRadius: 20, padding: '4px 16px', marginBottom: 12 }}>
           <span style={{ fontSize: '0.62rem', color: '#c2772b', letterSpacing: 1.4, textTransform: 'uppercase', fontWeight: 600 }}>✦ Browse by Category</span>
         </div>
-        <h2 style={{ color: '#1a1209', fontSize: '1.9rem', fontWeight: 700, margin: '0 0 10px', lineHeight: 1.2 }}>Explore Stay Options</h2>
-        <p style={{ color: '#6b5540', fontSize: '0.88rem', margin: 0, lineHeight: 1.6 }}>From budget PGs to luxury villas — find exactly what fits you</p>
+        <h2 style={{ color: '#1a1209', fontSize: '1.75rem', fontWeight: 600, margin: '0 0 10px', lineHeight: 1.2 }}>Explore Stay Options</h2>
+        <p style={{ color: '#6b5540', fontSize: '0.88rem', fontWeight: 400, margin: 0, lineHeight: 1.6 }}>From budget PGs to luxury villas — find exactly what fits you</p>
       </div>
 
       <TabSwitcher activeTab={activeTab} setActiveTab={setActiveTab} size="lg" />
@@ -339,11 +341,11 @@ export default function HomePageNew2() {
               </div>
             </div>
             <div style={{ padding: '18px 20px 20px' }}>
-              <h3 style={{ color: '#1a1209', fontSize: '1.05rem', fontWeight: 700, margin: '0 0 5px', lineHeight: 1.2 }}>{cat.title}</h3>
-              <p style={{ color: '#8a6a3a', fontSize: '0.76rem', margin: '0 0 14px', lineHeight: 1.4 }}>{cat.sub}</p>
+              <h3 style={{ color: '#1a1209', fontSize: '0.95rem', fontWeight: 600, margin: '0 0 5px', lineHeight: 1.2 }}>{cat.title}</h3>
+              <p style={{ color: '#8a6a3a', fontSize: '0.76rem', fontWeight: 400, margin: '0 0 14px', lineHeight: 1.4 }}>{cat.sub}</p>
               <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: '0.6rem', color: '#c2772b', textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: 600 }}>Starts at</div>
-                <div style={{ fontSize: '1rem', fontWeight: 700, color: '#1a1209', marginTop: 3 }}>{cat.price}</div>
+                <div style={{ fontSize: '1rem', fontWeight: 600, color: '#1a1209', marginTop: 3 }}>{cat.price}</div>
               </div>
               <button onClick={e => { e.stopPropagation(); handleNav(cat); }}
                 style={{ width: '100%', padding: '10px 0', borderRadius: 10, border: 'none', background: hovered === cat.id ? '#a8631f' : '#c2772b', color: '#fff', fontSize: '0.84rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Poppins', sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
