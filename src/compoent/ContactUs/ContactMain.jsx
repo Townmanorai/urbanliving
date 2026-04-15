@@ -125,7 +125,7 @@ const ContactMain = () => {
           height: isMobile ? '350px' : '450px'
         }}>
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3503.694774142383!2d77.36040731508097!3d28.568851082442856!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce5456d11b54f%3A0x65da969aa8a715c!2sEldeco%20Edge%2C%20Sector%2093A%2C%20Noida%2C%20Uttar%20Pradesh%20201304!5e0!3m2!1sen!2sin!4v1621234567890!5m2!1sen!2sin"
+            src="https://maps.google.com/maps?q=Ekdeco+Studio+Sector+93A+Noida+Uttar+Pradesh&output=embed"
             width="100%"
             height="100%"
             style={{ border: 0 }}
