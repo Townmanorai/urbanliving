@@ -55,7 +55,6 @@ const SAMPLE_VIDEOS = [
   },
 ];
 
-const VIEWS = ["Spotlight", "Grid", "Filmstrip"];
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -445,8 +444,7 @@ const styles = `
 `;
 
 export default function VideoShowcase({ videos = SAMPLE_VIDEOS }) {
-  const [activeView, setActiveView] = useState("Spotlight");
-  const [activeIdx, setActiveIdx] = useState(0);
+const [activeIdx, setActiveIdx] = useState(0);
   const [playingVideo, setPlayingVideo] = useState(null);
   const [rentalType, setRentalType] = useState('short');
   const videoRef = useRef(null);
@@ -522,9 +520,7 @@ export default function VideoShowcase({ videos = SAMPLE_VIDEOS }) {
 
       <div className="vs-wrapper">
         <div className="vs-header">
-          <div className="vs-eyebrow">✦ Signature Collection</div>
-          <h2 className="vs-title">Our <em>Signature</em> Stays</h2>
-          <p className="vs-subtitle">Curated luxury properties — tour virtually, book instantly</p>
+          <div className="vs-eyebrow">✦ Signature Stays</div>
           <div className="vs-rental-toggle">
             <button 
               className={`vs-rental-btn${!isMonthly ? ' active' : ''}`} 
@@ -541,17 +537,8 @@ export default function VideoShowcase({ videos = SAMPLE_VIDEOS }) {
           </div>
         </div>
 
-        <div className="vs-controls">
-          {VIEWS.map((v) => (
-            <button key={v} className={`vs-view-btn${activeView === v ? " active" : ""}`} onClick={() => setActiveView(v)}>
-              {v}
-            </button>
-          ))}
-        </div>
-
         {/* SPOTLIGHT */}
-        {activeView === "Spotlight" && (
-          <div className="view-spotlight">
+        <div className="view-spotlight">
             <div className="spotlight-main">
               <div className="spotlight-player" onClick={() => openModal(current)}>
                 <img 
@@ -617,69 +604,7 @@ export default function VideoShowcase({ videos = SAMPLE_VIDEOS }) {
               </div>
             </div>
           </div>
-        )}
 
-        {/* GRID */}
-        {activeView === "Grid" && (
-          <div className="view-grid">
-            <div className="grid-layout">
-              {filteredVideos.map((v) => (
-                <div key={v.id} className="grid-card" onClick={() => openModal(v)}>
-                  <div className="grid-thumb">
-                    <img src={v.thumbnail} alt={v.title} />
-                    <div className="grid-thumb-overlay"><div className="play-btn-grid"><div className="play-icon" /></div></div>
-                  </div>
-                  <div className="grid-body">
-                    <div className="grid-cat">{v.category}</div>
-                    <div className="grid-title">{v.title}</div>
-                    <div className="grid-footer">
-                      <div className="watch-btn" onClick={(e) => { e.stopPropagation(); openModal(v); }}>Watch</div>
-                      <a className="instant-book-btn" href={getBookingUrl(v)} onClick={(e) => e.stopPropagation()} style={{ fontSize: "9px", padding: "9px 16px" }}>
-                        <span className="bolt-icon">⚡</span>Instant Booking
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* FILMSTRIP */}
-        {activeView === "Filmstrip" && (
-          <div className="view-filmstrip">
-            <div className="filmstrip-featured">
-              <img src={current.thumbnail} alt={current.title} />
-              <div className="filmstrip-overlay">
-                <div className="filmstrip-tag">{current.category}</div>
-                <div className="filmstrip-featured-title">{current.title}</div>
-                <div className="filmstrip-actions">
-                  <span className="watch-now-btn" onClick={() => openModal(current)} style={{ cursor: "pointer" }}>Watch Now</span>
-                  <a className="instant-book-btn" href={getBookingUrl(current)} onClick={(e) => e.stopPropagation()}>
-                    <span className="bolt-icon">⚡</span>Instant Booking
-                  </a>
-                </div>
-              </div>
-              <div className="filmstrip-play-big" onClick={() => openModal(current)}>
-                <div className="play-icon" style={{ borderLeftColor: "white" }} />
-              </div>
-            </div>
-            <div className="filmstrip-strip">
-              {filteredVideos.map((v, i) => (
-                <div key={v.id} className={`strip-item${activeIdx === i ? " active" : ""}`} onClick={() => setActiveIdx(i)}>
-                  <img className="strip-thumb" src={v.thumbnail} alt={v.title} />
-                  <div className="strip-body">
-                    <div className="strip-cat">{v.category}</div>
-                    <div className="strip-title">{v.title}</div>
-                    <a className="instant-book-btn" href={getBookingUrl(v)} onClick={(e) => e.stopPropagation()} style={{ fontSize: "8px", padding: "7px 12px", letterSpacing: "1.5px" }}>
-                      ⚡ Instant Booking
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* VIDEO MODAL */}

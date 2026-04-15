@@ -61,6 +61,7 @@ import HomePageNew1 from "./compoent/HomePageNew2/HomePageNew1";
 import  OvikaSelfVerified  from "./compoent/ovikalistingform/OvikaSelfVerified";
 import OwnerVerificationForm from "./compoent/ovikalistingform/OwnerVerificationForm";
 import { HomePageNewMain } from "./compoent/HomePageNew2/HomePageNewMain";
+import LegalInformation from "./compoent/LegalInformation/LegalInformation";
 
 // 🔒 Protected Route Component
 function RequireAuth({ children }) {
@@ -197,6 +198,7 @@ function App() {
           <Route path="/ovika-verified" element={<OvikaVerified />} />
           <Route path="/career-support" element={<RequireAuth><CareerSupport /></RequireAuth>} />
           <Route path="/coliving-space" element={<ColivingSpace />} />
+          <Route path="/legal-information" element={<LegalInformation />} />
           <Route path="/admindashboard" element={<ProtectedAdminLayout />}>
             <Route index element={<AdminDashBoard />} />
             <Route path="inquiriesbookings" element={<InquiriesBookings />} />

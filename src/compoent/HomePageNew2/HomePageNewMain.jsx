@@ -5,6 +5,7 @@ import Home3 from "../HomePageNew/Home3"
 import Home7 from "../HomePageNew/Home7"
 import Home2 from "../HomePageNew/Home2"
 import Home6 from "../HomePageNew/Home6"
+import HomeReviews from "../HomePageNew/HomeReviews"
 
 export const HomePageNewMain = () => {
   return (
@@ -13,6 +14,7 @@ export const HomePageNewMain = () => {
       <HomePageNew2 />
       <Home3 />
       <Home7 />
+      <HomeReviews />
       <Home2 />
       <Home6 />
     </div>

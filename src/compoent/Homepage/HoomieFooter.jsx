@@ -756,37 +756,6 @@ const HoomieFooter = () => {
               </div>
             </div>
 
-            {/* Legal Information - Desktop Grid */}
-            <div className="footer-col legal-col desktop-links-grid">
-              <h3
-                style={{
-                  fontSize: "18px",
-                  fontWeight: "600",
-                  marginBottom: "12px",
-                }}
-              >
-                Legal Information
-              </h3>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "15px",
-                  fontSize: "13px",
-                  marginTop: "4px",
-                }}
-              >
-                <span style={{ lineHeight: "1.6" }}>
-                  GST No: 09AAKCT6155G1ZZ
-                </span>
-                <span style={{ lineHeight: "1.6" }}>
-                  PAN No: AAKCT6155G
-                </span>
-                <span style={{ lineHeight: "1.6" }}>
-                  Startup India Recognition Certificate no: DIPP151698
-                </span>
-              </div>
-            </div>
           </div>
 
           {/* Mobile Quick Links + Contact Us + Legal Info Side by Side */}
@@ -886,36 +855,6 @@ const HoomieFooter = () => {
               </div>
             </div>
 
-            <div className="footer-col legal-col">
-              <h3
-                style={{
-                  fontSize: "18px",
-                  fontWeight: "600",
-                  marginBottom: "12px",
-                }}
-              >
-                Legal Info
-              </h3>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "15px",
-                  fontSize: "13px",
-                  marginTop: "4px",
-                }}
-              >
-                <span style={{ lineHeight: "1.6" }}>
-                  GST No: 09AAKCT6155G1ZZ
-                </span>
-                <span style={{ lineHeight: "1.6" }}>
-                  PAN No: AAKCT6155G
-                </span>
-                <span style={{ lineHeight: "1.6" }}>
-                  Startup India Recognition Certificate no: DIPP151698
-                </span>
-              </div>
-            </div>
           </div>
 
           {/* Newsletter Section */}
@@ -1136,6 +1075,13 @@ const HoomieFooter = () => {
               >
                 PRIVACY
               </a>
+              <span>|</span>
+              <Link
+                to="/legal-information"
+                style={{ color: "#fff", textDecoration: "none" }}
+              >
+                LEGAL INFO
+              </Link>
             </div>
           </div>
         </div>
