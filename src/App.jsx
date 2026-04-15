@@ -199,6 +199,7 @@ function App() {
           <Route path="/career-support" element={<RequireAuth><CareerSupport /></RequireAuth>} />
           <Route path="/coliving-space" element={<ColivingSpace />} />
           <Route path="/legal-information" element={<LegalInformation />} />
+          <Route path="/support" element={<ContactMain />} />
           <Route path="/admindashboard" element={<ProtectedAdminLayout />}>
             <Route index element={<AdminDashBoard />} />
             <Route path="inquiriesbookings" element={<InquiriesBookings />} />

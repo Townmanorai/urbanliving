@@ -35,19 +35,23 @@ const AboutUs = () => {
       {/* Hero Section */}
       <section className="about-hero">
         <div className="about-hero-content">
-          <h1 className="about-main-title">About OVIKA</h1>
+          <div className="about-hero-eyebrow">✦ Our Story</div>
+          <h1 className="about-main-title">About <span>OvikaLiving</span></h1>
+          <p className="about-hero-sub">India's technology-driven flexible stay platform — connecting guests with verified, curated homes.</p>
         </div>
       </section>
 
       {/* Content Section */}
       <section className="about-content-section">
         <div className="about-content-container">
+
           {/* Introduction */}
           <div className="about-intro-box">
             <p className="about-intro-text">
-              OVIKA is a technology-driven marketplace for short-term stays and
+              OvikaLiving is a technology-driven marketplace for short-term stays and
               hosting, built to simplify how people book quality accommodations
-              and how property owners earn from their homes.
+              and how property owners earn from their homes. We verify every property,
+              support every guest, and make every stay seamless.
             </p>
           </div>
 
@@ -56,49 +60,39 @@ const AboutUs = () => {
             <div className="about-feature-box">
               <div className="feature-header">
                 <div className="feature-icon-circle">
-                  <svg
-                    width="28"
-                    height="28"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                     <circle cx="9" cy="7" r="4" />
                   </svg>
                 </div>
                 <h3 className="feature-heading">For Guests</h3>
               </div>
-              <p className="feature-description">
-                OVIKA offers thoughtfully curated short-term rental homes
-                designed for comfort, convenience, and reliability—whether for
-                business travel, leisure, or extended stays.
-              </p>
+              <ul className="feature-description">
+                <li>Curated, verified short-term rental homes</li>
+                <li>Business travel, leisure &amp; extended stays</li>
+                <li>Instant booking with transparent pricing</li>
+                <li>24/7 guest support throughout your stay</li>
+                <li>Flexible nightly &amp; monthly options</li>
+              </ul>
             </div>
 
             <div className="about-feature-box">
               <div className="feature-header">
                 <div className="feature-icon-circle">
-                  <svg
-                    width="28"
-                    height="28"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                     <polyline points="9 22 9 12 15 12 15 22" />
                   </svg>
                 </div>
                 <h3 className="feature-heading">For Property Owners</h3>
               </div>
-              <p className="feature-description">
-                  For property owners, OVIKA provides a simple and transparent platform to
-         list, manage, and monetize properties through short-term rentals, with
-         professional support and end-to-end assistance.
-              </p>
+              <ul className="feature-description">
+                <li>Simple, transparent listing platform</li>
+                <li>Professional property management support</li>
+                <li>End-to-end guest handling &amp; communication</li>
+                <li>Maximise returns with dynamic pricing</li>
+                <li>Ovika Verified badge for trust &amp; visibility</li>
+              </ul>
             </div>
           </div>
 
@@ -106,9 +100,9 @@ const AboutUs = () => {
           <div className="about-mission-box">
             <h2 className="mission-title">Our Mission</h2>
             <p className="mission-description">
-              Our mission is to create a trusted ecosystem where guests enjoy
-              seamless stays and hosts unlock better returns—powered by
-              technology, local expertise, and a focus on quality.
+              To create a trusted ecosystem where guests enjoy seamless stays and hosts unlock
+              better returns — powered by technology, local expertise, and an unwavering
+              focus on quality. Every stay should feel like home.
             </p>
           </div>
         </div>

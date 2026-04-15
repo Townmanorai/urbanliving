@@ -1,197 +1,189 @@
-/* ===============================
-   Season Offer Styles
-================================ */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
 .season-offer-wrapper {
   width: 100%;
-  padding: 40px 20px;
+  padding: 40px 16px 0;
+  font-family: 'Poppins', sans-serif;
 }
 
 .season-offer-container {
-  max-width: 800px;
+  max-width: 860px;
   margin: 0 auto;
-  background: linear-gradient(rgb(228, 157, 70), rgb(221, 148, 53));
-  border-radius: 18px;
-  padding: 50px 30px;
+  background: linear-gradient(135deg, #c2772b 0%, #d4894a 100%);
+  border-radius: 20px;
+  padding: 44px 40px;
   text-align: center;
+  box-shadow: 0 10px 36px rgba(194,119,43,0.28);
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+}
+
+.season-offer-container::before {
+  content: '';
+  position: absolute;
+  top: -50px; right: -50px;
+  width: 200px; height: 200px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .season-offer-title {
-  font-size: 38px;
-  font-weight: 300 !important;
-  margin-bottom: 18px;
+  font-size: clamp(22px, 4vw, 30px);
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
 }
 
 .season-offer-text {
-  font-size: 18px;
-  line-height: 1.6;
-  max-width: 900px;
-  margin: 0 auto 35px;
+  font-size: 14px;
+  line-height: 1.75;
+  max-width: 600px;
+  margin: 0 auto 28px;
+  color: rgba(255,255,255,0.92);
+  font-family: 'Poppins', sans-serif;
 }
 
 .season-offer-text span {
-  font-weight: 300 !important;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(255,255,255,0.18);
+  padding: 1px 8px;
+  border-radius: 6px;
 }
 
 .season-offer-btn {
-  background: linear-gradient(135deg, #ff4b4b, #d93636);
-  color: #fff;
-  font-size: 18px;
-  font-weight: 300 !important;
-  padding: 14px 34px;
+  background: #fff;
+  color: #c2772b;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 13px 32px;
   border: none;
-  border-radius: 8px;
+  border-radius: 50px;
   cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
 }
 
-/* ===============================
-   MODAL OVERLAY
-================================ */
-body.modal-open {
-  overflow: hidden;
+.season-offer-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.2);
 }
 
-/* MODAL SHOULD BE ABOVE EVERYTHING */
+/* Modal */
 .tm-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0,0,0,0.55);
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 16px;
-
-  z-index: 99999; /* 🔥 VERY IMPORTANT */
+  z-index: 99999;
 }
 
-
-/* ===============================
-   MODAL CONTAINER
-================================ */
 .tm-modal {
   background: #fff;
   width: 100%;
-  max-width: 480px;      /* ✅ controlled width */
+  max-width: 460px;
   max-height: 90vh;
   overflow-y: auto;
-  border-radius: 14px;
-  padding: 26px 22px;
+  border-radius: 18px;
+  padding: 30px 26px;
   position: relative;
-  animation: scaleIn 0.3s ease;
+  animation: scaleIn 0.25s ease;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
 }
 
 @keyframes scaleIn {
-  from {
-    transform: scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 .tm-close-btn {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 14px; right: 16px;
   border: none;
-  background: none;
-  font-size: 22px;
+  background: rgba(194,119,43,0.1);
+  color: #c2772b;
+  font-size: 18px;
+  width: 32px; height: 32px;
+  border-radius: 50%;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
 }
 
-/* ===============================
-   MODAL TITLE
-================================ */
+.tm-close-btn:hover { background: rgba(194,119,43,0.2); }
+
 .tm-modal-title {
-  font-size: 20px;
-  font-weight: 300 !important;
-  margin-bottom: 18px;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
   text-align: center;
+  color: #1a1209;
 }
 
-/* ===============================
-   FORM STYLES (COMPACT & CENTERED)
-================================ */
 .tm-form {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-width: 360px;      /* ✅ form narrow */
+  max-width: 380px;
   margin: 0 auto;
 }
 
 .tm-form label {
-  font-size: 14px;
-  font-weight: 300 !important;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b5540;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: -4px;
 }
 
 .tm-form input {
-  padding: 13px 12px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #f0e8da;
   font-size: 14px;
-  background: #fafafa;
+  background: #fdf7ee;
+  font-family: 'Poppins', sans-serif;
+  color: #1a1209;
+  transition: border-color 0.2s;
 }
 
 .tm-form input:focus {
   outline: none;
-  border-color: #ff4b4b;
+  border-color: #c2772b;
   background: #fff;
 }
 
-/* ===============================
-   SUBMIT BUTTON
-================================ */
 .tm-submit-btn {
-  margin-top: 16px;
-  background: linear-gradient(135deg, #ff4b4b, #b92c2c);
+  margin-top: 8px;
+  background: linear-gradient(135deg, #c2772b 0%, #d4894a 100%);
   color: #fff;
-  padding: 14px;
-  border-radius: 8px;
+  padding: 13px;
+  border-radius: 50px;
   border: none;
-  font-size: 16px;
-  font-weight: 300 !important;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
   width: 100%;
-  position: sticky;
-  bottom: 0;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 4px 14px rgba(194,119,43,0.35);
+  transition: all 0.3s ease;
 }
 
-/* ===============================
-   MOBILE RESPONSIVE
-================================ */
-@media (max-width: 600px) {
-  .season-offer-title {
-    font-size: 22px;
-  }
+.tm-submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(194,119,43,0.45); }
 
-  .season-offer-text {
-    font-size: 14px;
-  }
-
-  .tm-modal {
-    padding: 22px 16px;
-  }
-
-  .tm-form {
-    max-width: 320px;
-  }
-}
-
-/* ===============================
-   VERY SMALL DEVICES
-================================ */
-@media (max-width: 420px) {
-  .tm-modal-title {
-    font-size: 17px;
-  }
-
-  .tm-form {
-    max-width: 300px;
-  }
-
-  .tm-form label {
-    font-size: 13px;
-  }
+@media (max-width: 768px) {
+  .season-offer-container { padding: 32px 22px; }
+  .season-offer-title { font-size: 20px; }
+  .tm-modal { padding: 24px 18px; }
 }

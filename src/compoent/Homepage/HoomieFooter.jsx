@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Mail, Phone, MapPin, Smartphone, X, Linkedin, Instagram, Facebook, FileText } from "lucide-react";
+import { X, Linkedin, Instagram, Facebook } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const LinkList = ({ items }) => (
@@ -691,68 +691,23 @@ const HoomieFooter = () => {
 
             {/* Contact Us - Desktop Grid */}
             <div className="footer-col contactus-col desktop-links-grid">
-              <h3
-                style={{
-                  fontSize: "18px",
-                  fontWeight: "600",
-                  marginBottom: "12px",
-                }}
-              >
-                Contact Us
-              </h3>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "14px",
-                  fontSize: "13px",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: "10px",
-                  }}
+              <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                <Link
+                  to="/contactus"
+                  style={{ color: "#fff", textDecoration: "none", fontSize: "13px", opacity: 0.9, transition: "opacity 0.2s" }}
+                  onMouseOver={e => e.currentTarget.style.opacity = "0.6"}
+                  onMouseOut={e => e.currentTarget.style.opacity = "0.9"}
                 >
-                  <MapPin size={16} style={{ marginTop: "2px", flexShrink: 0 }} />
-                  <span style={{ lineHeight: "1.6" }}>
-                    ST-304, Eldeco Studio, Sector 93A, Noida India, PIN-201304
-                  </span>
-                </div>
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
+                  Contact Us
+                </Link>
+                <Link
+                  to="/legal-information"
+                  style={{ color: "#fff", textDecoration: "none", fontSize: "13px", opacity: 0.9, transition: "opacity 0.2s" }}
+                  onMouseOver={e => e.currentTarget.style.opacity = "0.6"}
+                  onMouseOut={e => e.currentTarget.style.opacity = "0.9"}
                 >
-                  <Phone size={16} />
-                  <span>+91-0120-4420450</span>
-                </div>
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
-                >
-                  <Smartphone size={16} />
-                  <span>7042888903</span>
-                </div>
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
-                >
-                  <Phone size={16} />
-                  <span>Technical Support: 9319392227</span>
-                </div>
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
-                >
-                  <Mail size={16} />
-                  <a
-                    href="mailto:enquiry@ovikaliving.com"
-                    style={{
-                      color: "#fff",
-                      textDecoration: "none",
-                      fontSize: "13px",
-                    }}
-                  >
-                    enquiry@ovikaliving.com
-                  </a>
-                </div>
+                  Legal Information
+                </Link>
               </div>
             </div>
 
@@ -790,68 +745,19 @@ const HoomieFooter = () => {
             </div>
 
             <div className="footer-col contactus-col">
-              <h3
-                style={{
-                  fontSize: "18px",
-                  fontWeight: "600",
-                  marginBottom: "12px",
-                }}
-              >
-                Contact Us
-              </h3>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "14px",
-                  fontSize: "13px",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: "10px",
-                  }}
+              <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                <Link
+                  to="/contactus"
+                  style={{ color: "#fff", textDecoration: "none", fontSize: "13px", opacity: 0.9 }}
                 >
-                  <MapPin size={16} style={{ marginTop: "2px", flexShrink: 0 }} />
-                  <span style={{ lineHeight: "1.6" }}>
-                    ST-304, Eldeco Studio, Sector 93A, Noida India, PIN-201304
-                  </span>
-                </div>
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
+                  Contact Us
+                </Link>
+                <Link
+                  to="/legal-information"
+                  style={{ color: "#fff", textDecoration: "none", fontSize: "13px", opacity: 0.9 }}
                 >
-                  <Phone size={16} />
-                  <span>+91-0120-4420450</span>
-                </div>
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
-                >
-                  <Smartphone size={16} />
-                  <span>7042888903</span>
-                </div>
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
-                >
-                  <Phone size={16} />
-                  <span>Tech: 9319392227</span>
-                </div>
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
-                >
-                  <Mail size={16} />
-                  <a
-                    href="mailto:enquiry@ovikaliving.com"
-                    style={{
-                      color: "#fff",
-                      textDecoration: "none",
-                      fontSize: "13px",
-                    }}
-                  >
-                    enquiry@ovikaliving.com
-                  </a>
-                </div>
+                  Legal Information
+                </Link>
               </div>
             </div>
 
@@ -1075,6 +981,13 @@ const HoomieFooter = () => {
               >
                 PRIVACY
               </a>
+              <span>|</span>
+              <Link
+                to="/contactus"
+                style={{ color: "#fff", textDecoration: "none" }}
+              >
+                CONTACT US
+              </Link>
               <span>|</span>
               <Link
                 to="/legal-information"

@@ -34,9 +34,9 @@ const Subs2 = () => {
           </button>
 
           <ul>
-            <li>✔ 30 Days</li>
-            <li>✔ 10 : Number of Listing</li>
-            <li>✔ 10 : Featured Listing Limit</li>
+            <li>30 Days</li>
+            <li>10 : Number of Listing</li>
+            <li>10 : Featured Listing Limit</li>
           </ul>
         </div>
 
@@ -56,9 +56,9 @@ const Subs2 = () => {
           </button>
 
           <ul>
-            <li>✔ One Time</li>
-            <li>✔ 1 : Number of Listing</li>
-            <li>✔ 1 : Featured Listing Limit</li>
+            <li>One Time</li>
+            <li>1 : Number of Listing</li>
+            <li>1 : Featured Listing Limit</li>
           </ul>
         </div>
 
@@ -78,9 +78,9 @@ const Subs2 = () => {
           </button>
 
           <ul>
-            <li>✔ 30 Days</li>
-            <li>✔ 5 : Number of Listing</li>
-            <li>✔ 3 : Featured Listing Limit</li>
+            <li>30 Days</li>
+            <li>5 : Number of Listing</li>
+            <li>3 : Featured Listing Limit</li>
           </ul>
         </div>
 
@@ -100,9 +100,9 @@ const Subs2 = () => {
           </button>
 
           <ul>
-            <li>✔ 90 Days</li>
-            <li>✔ 25 : Number of Listing</li>
-            <li>✔ 18 : Featured Listing Limit</li>
+            <li>90 Days</li>
+            <li>25 : Number of Listing</li>
+            <li>18 : Featured Listing Limit</li>
           </ul>
         </div>
       </div>
