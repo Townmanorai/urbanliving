@@ -174,46 +174,47 @@ export default function HomePageNew2() {
         {/* Tab switcher */}
         <TabSwitcher activeTab={activeTab} setActiveTab={setActiveTab} size="sm" />
 
-        {/* Cards — 2×2 grid (flex wrap, 2 per row) */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 14 }}>
+        {/* Cards — single horizontal scroll row */}
+        <style>{`.hw2-scroll::-webkit-scrollbar{display:none}`}</style>
+        <div className="hw2-scroll" style={{ display: 'flex', overflowX: 'auto', gap: 9, marginBottom: 14, msOverflowStyle: 'none', scrollbarWidth: 'none', paddingBottom: 2 }}>
           {cats.map((cat) => (
             <div key={cat.id}
               onClick={() => handleNav(cat)}
               style={{
-                flex: '1 1 calc(50% - 5px)', minWidth: 0,
+                flex: '0 0 44%',
                 background: '#fff', borderRadius: 14, overflow: 'hidden',
                 boxShadow: '0 3px 14px rgba(0,0,0,0.08)',
                 border: '1px solid #f0e8da', cursor: 'pointer',
                 display: 'flex', flexDirection: 'column',
               }}>
-              {/* Image — proportional */}
-              <div style={{ position: 'relative', paddingTop: '60%', flexShrink: 0 }}>
+              {/* Image */}
+              <div style={{ position: 'relative', paddingTop: '58%', flexShrink: 0 }}>
                 <img src={cat.img} alt={cat.title}
                   onError={e => { e.currentTarget.src = cat.imgFallback; }}
                   style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.28) 100%)' }} />
-                <div style={{ position: 'absolute', top: 6, left: 6, background: 'rgba(194,119,43,0.9)', borderRadius: 20, padding: '2px 7px' }}>
-                  <span style={{ fontSize: '0.42rem', color: '#fff', fontWeight: 600, letterSpacing: 0.3, textTransform: 'uppercase' }}>{cat.badge}</span>
+                <div style={{ position: 'absolute', top: 6, left: 6, background: 'rgba(194,119,43,0.9)', borderRadius: 20, padding: '2px 6px' }}>
+                  <span style={{ fontSize: '0.38rem', color: '#fff', fontWeight: 600, letterSpacing: 0.3, textTransform: 'uppercase' }}>{cat.badge}</span>
                 </div>
               </div>
               {/* Content */}
-              <div style={{ padding: '9px 9px 11px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#1a1209', lineHeight: 1.2, marginBottom: 2 }}>{cat.title}</div>
-                <div style={{ fontSize: '0.56rem', color: '#8a6a3a', lineHeight: 1.3, marginBottom: 7, fontWeight: 400 }}>{cat.sub}</div>
-                <div style={{ marginBottom: 9 }}>
-                  <div style={{ fontSize: '0.46rem', color: '#c2772b', textTransform: 'uppercase', letterSpacing: 0.6, fontWeight: 600 }}>Starts at</div>
-                  <div style={{ fontSize: '0.76rem', fontWeight: 600, color: '#1a1209', marginTop: 1 }}>{cat.price}</div>
+              <div style={{ padding: '7px 8px 9px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <div style={{ fontSize: '0.65rem', fontWeight: 600, color: '#1a1209', lineHeight: 1.2, marginBottom: 1 }}>{cat.title}</div>
+                <div style={{ fontSize: '0.5rem', color: '#8a6a3a', lineHeight: 1.3, marginBottom: 5, fontWeight: 400 }}>{cat.sub}</div>
+                <div style={{ marginBottom: 7 }}>
+                  <div style={{ fontSize: '0.42rem', color: '#c2772b', textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: 600 }}>Starting</div>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 500, color: '#1a1209', marginTop: 1 }}>{cat.price}</div>
                 </div>
                 <button
                   onClick={e => { e.stopPropagation(); handleNav(cat); }}
                   style={{
-                    marginTop: 'auto', width: '100%', padding: '7px 0', borderRadius: 8, border: 'none',
+                    marginTop: 'auto', width: '100%', padding: '6px 0', borderRadius: 7, border: 'none',
                     background: '#c2772b', color: '#fff',
-                    fontSize: '0.6rem', fontWeight: 600, cursor: 'pointer',
+                    fontSize: '0.52rem', fontWeight: 600, cursor: 'pointer',
                     fontFamily: "'Poppins', sans-serif",
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 3,
                   }}>
-                  {cat.btnText} <ArrowRight size={10} />
+                  {cat.btnText} <ArrowRight size={9} />
                 </button>
               </div>
             </div>
@@ -260,7 +261,7 @@ export default function HomePageNew2() {
                   style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease', transform: hovered === cat.id ? 'scale(1.05)' : 'scale(1)' }} />
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.3) 100%)' }} />
                 <div style={{ position: 'absolute', top: 12, left: 14, background: 'rgba(194,119,43,0.9)', borderRadius: 20, padding: '3px 12px' }}>
-                  <span style={{ fontSize: '0.58rem', color: '#fff', fontWeight: 700, letterSpacing: 0.6, textTransform: 'uppercase' }}>{cat.badge}</span>
+                  <span style={{ fontSize: '0.58rem', color: '#fff', fontWeight: 600, letterSpacing: 0.6, textTransform: 'uppercase' }}>{cat.badge}</span>
                 </div>
               </div>
               <div style={{ padding: '16px 18px 18px' }}>
@@ -308,7 +309,7 @@ export default function HomePageNew2() {
                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease', transform: hovered === cat.id ? 'scale(1.06)' : 'scale(1)' }} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.3) 100%)' }} />
               <div style={{ position: 'absolute', top: 12, left: 14, background: 'rgba(194,119,43,0.9)', borderRadius: 20, padding: '3px 12px' }}>
-                <span style={{ fontSize: '0.58rem', color: '#fff', fontWeight: 700, letterSpacing: 0.6, textTransform: 'uppercase' }}>{cat.badge}</span>
+                <span style={{ fontSize: '0.58rem', color: '#fff', fontWeight: 600, letterSpacing: 0.6, textTransform: 'uppercase' }}>{cat.badge}</span>
               </div>
             </div>
             <div style={{ padding: '18px 20px 20px' }}>

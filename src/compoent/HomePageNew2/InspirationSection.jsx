@@ -1,5 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+function getBreakpoint() {
+  const w = window.innerWidth;
+  if (w <= 768) return 'mobile';
+  if (w <= 1024) return 'tablet';
+  return 'desktop';
+}
 
 const TABS = ['Popular', 'PGs', 'Hotels', 'Premium Stays', 'Economy Stays', 'Signature Stays'];
 
@@ -115,8 +122,15 @@ const css = `
 export default function InspirationSection() {
   const [activeTab, setActiveTab] = useState('Popular');
   const [showAll, setShowAll] = useState(false);
+  const [bp, setBp] = useState(getBreakpoint());
   const tabBarRef = useRef(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const onResize = () => setBp(getBreakpoint());
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   const items = DATA[activeTab] || [];
   const displayItems = showAll ? items : items.slice(0, 12);
@@ -133,14 +147,9 @@ export default function InspirationSection() {
   };
 
   return (
-    <div style={{ background: '#fff', padding: '48px 40px 56px', fontFamily: "'Poppins', sans-serif" }}>
+    <div style={{ background: '#fff', padding: bp === 'mobile' ? '28px 16px 36px' : '48px 40px 56px', fontFamily: "'Poppins', sans-serif" }}>
       <style>{css}</style>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-
-        {/* Title */}
-        <h2 style={{ fontSize: 'clamp(1.1rem, 2vw, 1.45rem)', fontWeight: 600, color: '#1a1209', margin: '0 0 24px' }}>
-          Inspiration for future getaways
-        </h2>
 
         {/* Tab bar */}
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', marginBottom: 0 }}>
@@ -148,8 +157,7 @@ export default function InspirationSection() {
           {/* Left arrow */}
           <button
             onClick={() => scrollTabs(-1)}
-            className="insp-arrow-btn"
-            style={{ display: 'none', border: '1px solid #e5e7eb', background: '#fff', cursor: 'pointer', width: 28, height: 28, borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.12)', flexShrink: 0, fontSize: 14, color: '#1a1209', alignItems: 'center', justifyContent: 'center' }}
+            style={{ display: bp === 'mobile' ? 'flex' : 'none', border: '1px solid #e5e7eb', background: '#fff', cursor: 'pointer', width: 28, height: 28, borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.12)', flexShrink: 0, fontSize: 14, color: '#1a1209', alignItems: 'center', justifyContent: 'center' }}
           >‹</button>
 
           <div
@@ -184,27 +192,30 @@ export default function InspirationSection() {
           {/* Right arrow */}
           <button
             onClick={() => scrollTabs(1)}
-            className="insp-arrow-btn"
-            style={{ display: 'none', border: '1px solid #e5e7eb', background: '#fff', cursor: 'pointer', width: 28, height: 28, borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.12)', flexShrink: 0, fontSize: 14, color: '#1a1209', alignItems: 'center', justifyContent: 'center' }}
+            style={{ display: bp === 'mobile' ? 'flex' : 'none', border: '1px solid #e5e7eb', background: '#fff', cursor: 'pointer', width: 28, height: 28, borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.12)', flexShrink: 0, fontSize: 14, color: '#1a1209', alignItems: 'center', justifyContent: 'center' }}
           >›</button>
         </div>
 
         {/* Divider */}
         <div style={{ height: 1, background: '#e5e7eb', marginBottom: 24 }} />
 
-        {/* Grid */}
-        <div className="insp-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '20px 16px' }}>
+        {/* Grid — flex+wrap (grid breaks in inline styles in this codebase) */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: bp === 'mobile' ? '16px 10px' : '20px 16px' }}>
           {displayItems.map((item, i) => (
             <div
               key={i}
               className="insp-item"
               onClick={() => navigate(getSearchPath(activeTab, item.city))}
-              style={{ cursor: 'pointer' }}
+              style={{
+                cursor: 'pointer',
+                flex: bp === 'mobile' ? '1 1 calc(50% - 5px)' : bp === 'tablet' ? '1 1 calc(33.33% - 11px)' : '1 1 calc(16.66% - 14px)',
+                minWidth: 0,
+              }}
             >
-              <div className="insp-city" style={{ fontSize: '0.875rem', fontWeight: 600, color: '#1a1209', lineHeight: 1.3 }}>
+              <div className="insp-city" style={{ fontSize: bp === 'mobile' ? '0.78rem' : '0.875rem', fontWeight: 600, color: '#1a1209', lineHeight: 1.3 }}>
                 {item.city}
               </div>
-              <div style={{ fontSize: '0.8rem', color: '#c2772b', marginTop: 2, fontWeight: 400 }}>
+              <div style={{ fontSize: bp === 'mobile' ? '0.7rem' : '0.8rem', color: '#c2772b', marginTop: 2, fontWeight: 400 }}>
                 {item.type}
               </div>
             </div>
@@ -212,7 +223,7 @@ export default function InspirationSection() {
 
           {/* Show more / less */}
           {items.length > 12 && (
-            <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+            <div style={{ flex: '1 1 calc(16.66% - 14px)', minWidth: 0, display: 'flex', alignItems: 'flex-start' }}>
               <button
                 onClick={() => setShowAll(v => !v)}
                 style={{
@@ -231,22 +242,6 @@ export default function InspirationSection() {
 
       </div>
 
-      <style>{`
-        @media (max-width: 768px) {
-          .insp-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 18px 12px !important;
-          }
-          .insp-arrow-btn {
-            display: flex !important;
-          }
-        }
-        @media (max-width: 1024px) and (min-width: 769px) {
-          .insp-grid {
-            grid-template-columns: repeat(3, 1fr) !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }

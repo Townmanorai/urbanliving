@@ -137,27 +137,6 @@ export default function HomeReviews() {
         textAlign: "center",
         marginBottom: 20,
       }}>
-        <div style={{
-          display: "inline-flex",
-          background: "rgba(194,119,43,0.1)",
-          border: "1px solid rgba(194,119,43,0.25)",
-          borderRadius: 20,
-          padding: "4px 16px",
-          fontSize: "0.6rem",
-          color: "#c2772b",
-          letterSpacing: "1.4px",
-          textTransform: "uppercase",
-          fontWeight: 600,
-          fontFamily: "'Poppins', sans-serif",
-          marginBottom: 10,
-        }}>✦ Guest Reviews</div>
-        <h2 style={{
-          fontSize: "clamp(1.1rem, 1.8vw, 1.55rem)",
-          fontWeight: 600,
-          color: "#1a1209",
-          fontFamily: "'Poppins', sans-serif",
-          margin: 0,
-        }}>What Our Guests Say</h2>
       </div>
 
       <div style={{ overflow: "hidden", width: "100%" }}>

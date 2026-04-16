@@ -18,13 +18,7 @@ const Home2 = () => {
 
       {/* Header */}
       <div className="living-header">
-        <div className="living-eyebrow">✦ Community Living</div>
-        <h2 className="living-heading">
-          Explore <span className="highlight">Co-Living</span> Spaces
-        </h2>
-        <p className="living-subtext">
-          Modern, community-driven homes for young professionals &amp; urban residents
-        </p>
+        <div className="living-eyebrow">✦ Co-Living Spaces</div>
       </div>
 
       {/* Card */}

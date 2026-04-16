@@ -326,7 +326,7 @@ const HoomieFooter = () => {
             <h2
               style={{
                 fontFamily: "Poppins, sans-serif",
-                fontSize: "24px",
+                fontSize: "1.5rem",
                 fontWeight: "600",
                 marginBottom: "10px",
                 color: "#333"
@@ -337,7 +337,7 @@ const HoomieFooter = () => {
             <p
               style={{
                 fontFamily: "Poppins, sans-serif",
-                fontSize: "14px",
+                fontSize: "0.875rem",
                 color: "#666",
                 marginBottom: "25px"
               }}
@@ -348,11 +348,11 @@ const HoomieFooter = () => {
               onClick={closeSuccessPopup}
               style={{
                 padding: "12px 40px",
-                background: "linear-gradient(90deg, #b62305 0%, #000000 100%)",
+                background: "linear-gradient(135deg, #c2772b 0%, #a85e1f 100%)",
                 color: "#fff",
                 border: "none",
                 borderRadius: "8px",
-                fontSize: "16px",
+                fontSize: "1rem",
                 fontWeight: "600",
                 fontFamily: "Poppins, sans-serif",
                 cursor: "pointer",
@@ -360,7 +360,7 @@ const HoomieFooter = () => {
               }}
               onMouseOver={(e) => {
                 e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow = "0 4px 12px rgba(182, 35, 5, 0.3)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(194, 119, 43, 0.35)";
               }}
               onMouseOut={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
@@ -431,7 +431,7 @@ const HoomieFooter = () => {
             <h2
               style={{
                 fontFamily: "Poppins, sans-serif",
-                fontSize: "24px",
+                fontSize: "1.5rem",
                 fontWeight: "600",
                 marginBottom: "10px",
                 color: "#333",
@@ -443,7 +443,7 @@ const HoomieFooter = () => {
             <p
               style={{
                 fontFamily: "Poppins, sans-serif",
-                fontSize: "14px",
+                fontSize: "0.875rem",
                 color: "#666",
                 marginBottom: "25px",
                 textAlign: "center"
@@ -458,7 +458,7 @@ const HoomieFooter = () => {
                   style={{
                     display: "block",
                     fontFamily: "Poppins, sans-serif",
-                    fontSize: "14px",
+                    fontSize: "0.875rem",
                     fontWeight: "500",
                     marginBottom: "8px",
                     color: "#333"
@@ -479,7 +479,7 @@ const HoomieFooter = () => {
                     padding: "12px 15px",
                     border: "2px solid #e0e0e0",
                     borderRadius: "8px",
-                    fontSize: "15px",
+                    fontSize: "0.94rem",
                     fontFamily: "Poppins, sans-serif",
                     outline: "none",
                     transition: "border-color 0.2s",
@@ -496,7 +496,7 @@ const HoomieFooter = () => {
                   style={{
                     display: "block",
                     fontFamily: "Poppins, sans-serif",
-                    fontSize: "14px",
+                    fontSize: "0.875rem",
                     fontWeight: "500",
                     marginBottom: "8px",
                     color: "#333"
@@ -519,7 +519,7 @@ const HoomieFooter = () => {
                     padding: "12px 15px",
                     border: "2px solid #e0e0e0",
                     borderRadius: "8px",
-                    fontSize: "15px",
+                    fontSize: "0.94rem",
                     fontFamily: "Poppins, sans-serif",
                     outline: "none",
                     transition: "border-color 0.2s",
@@ -536,7 +536,7 @@ const HoomieFooter = () => {
                   style={{
                     display: "block",
                     fontFamily: "Poppins, sans-serif",
-                    fontSize: "14px",
+                    fontSize: "0.875rem",
                     fontWeight: "500",
                     marginBottom: "8px",
                     color: "#333"
@@ -557,7 +557,7 @@ const HoomieFooter = () => {
                     padding: "12px 15px",
                     border: "2px solid #e0e0e0",
                     borderRadius: "8px",
-                    fontSize: "15px",
+                    fontSize: "0.94rem",
                     fontFamily: "Poppins, sans-serif",
                     outline: "none",
                     transition: "border-color 0.2s",
@@ -578,11 +578,11 @@ const HoomieFooter = () => {
                   padding: "14px",
                   background: isSubmitting 
                     ? "#ccc" 
-                    : "linear-gradient(90deg, #b62305 0%, #000000 100%)",
+                    : "linear-gradient(135deg, #c2772b 0%, #a85e1f 100%)",
                   color: "#fff",
                   border: "none",
                   borderRadius: "8px",
-                  fontSize: "16px",
+                  fontSize: "1rem",
                   fontWeight: "600",
                   fontFamily: "Poppins, sans-serif",
                   cursor: isSubmitting ? "not-allowed" : "pointer",
@@ -592,7 +592,7 @@ const HoomieFooter = () => {
                 onMouseOver={(e) => {
                   if (!isSubmitting) {
                     e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.boxShadow = "0 4px 12px rgba(182, 35, 5, 0.3)";
+                    e.currentTarget.style.boxShadow = "0 4px 12px rgba(194, 119, 43, 0.35)";
                   }
                 }}
                 onMouseOut={(e) => {
@@ -760,7 +760,7 @@ const HoomieFooter = () => {
               <p
                 style={{
                   color: "white",
-                  fontSize: "16px",
+                  fontSize: "1rem",
                   fontWeight: 400,
                   fontFamily: "Poppins, sans-serif",
                   whiteSpace: "nowrap",
@@ -792,7 +792,7 @@ const HoomieFooter = () => {
                       padding: "0px 20px",
                       border: "none",
                       outline: "none",
-                      fontSize: "15px",
+                      fontSize: "0.94rem",
                       borderRadius: "50px",
                       fontFamily: "Poppins, sans-serif",
                     }}
@@ -805,11 +805,11 @@ const HoomieFooter = () => {
                       height: "100%",
                       width: "130px",
                       background:
-                        "linear-gradient(90deg, #b62305 0%, #000000 100%)",
+                        "linear-gradient(135deg, #c2772b 0%, #a85e1f 100%)",
                       color: "white",
                       border: "none",
                       cursor: "pointer",
-                      fontSize: "18px",
+                      fontSize: "1.1rem",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",

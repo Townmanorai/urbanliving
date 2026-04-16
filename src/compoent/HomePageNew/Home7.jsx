@@ -211,7 +211,7 @@ const styles = `
     align-items: center;
     gap: 7px;
     font-family: 'Jost', sans-serif;
-    font-size: 10px;
+    font-size: 0.62rem;
     font-weight: 500;
     letter-spacing: 2.5px;
     text-transform: uppercase;
@@ -239,7 +239,7 @@ const styles = `
     align-items: center;
     gap: 5px;
     font-family: 'Jost', sans-serif;
-    font-size: 9px;
+    font-size: 0.56rem;
     font-weight: 500;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -322,8 +322,8 @@ const styles = `
     margin-left: 4px;
   }
   .spotlight-info { position: relative; z-index: 2; }
-  .spotlight-cat { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 6px; }
-  .spotlight-name { font-family: 'Poppins', sans-serif; font-size: 1.3rem; font-weight: 700; color: white; margin-bottom: 12px; }
+  .spotlight-cat { font-size: 0.56rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 6px; }
+  .spotlight-name { font-family: 'Poppins', sans-serif; font-size: 1.3rem; font-weight: 600; color: white; margin-bottom: 12px; }
   .spotlight-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; position: relative; z-index: 10; }
   @media(max-width: 600px) { .spotlight-actions { display: none; } }
 
@@ -354,7 +354,7 @@ const styles = `
   .playlist-thumb-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
   .play-icon-sm { width: 0; height: 0; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-left: 10px solid rgba(255,255,255,0.9); margin-left: 2px; }
   .playlist-meta { flex: 1; min-width: 0; }
-  .playlist-cat { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+  .playlist-cat { font-size: 0.5rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
   .playlist-title { font-family: 'Poppins', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
   .playlist-active-bar { width: 3px; background: var(--gold); border-radius: 2px; flex-shrink: 0; transition: opacity 0.3s; }
 
@@ -384,10 +384,10 @@ const styles = `
   .play-btn-grid { width: 52px; height: 52px; border-radius: 50%; background: rgba(194,119,43,0.9); display: flex; align-items: center; justify-content: center; border: 2px solid rgba(255,255,255,0.5); box-shadow: 0 8px 24px rgba(194,119,43,0.5); transform: scale(0.8); transition: transform 0.3s; }
   .grid-card:hover .play-btn-grid { transform: scale(1); }
   .grid-body { padding: 16px 20px 20px; }
-  .grid-cat { font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+  .grid-cat { font-size: 0.5rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
   .grid-title { font-family: 'Poppins', sans-serif; font-size: 0.95rem; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; line-height: 1.2; }
   .grid-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(194,119,43,0.1); gap: 8px; flex-wrap: wrap; }
-  .watch-btn { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); display: flex; align-items: center; gap: 4px; font-weight: 500; cursor: pointer; }
+  .watch-btn { font-size: 0.56rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); display: flex; align-items: center; gap: 4px; font-weight: 500; cursor: pointer; }
   .watch-btn::after { content: '→'; transition: transform 0.2s; display: inline-block; }
   .grid-card:hover .watch-btn::after { transform: translateX(4px); }
 
@@ -395,12 +395,12 @@ const styles = `
   .filmstrip-featured { position: relative; border-radius: 20px; overflow: hidden; aspect-ratio: 16/7; margin-bottom: 24px; box-shadow: 0 24px 64px rgba(0,0,0,0.12); background: #0a0805; }
   .filmstrip-featured img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .filmstrip-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(10,8,5,0.82) 0%, transparent 60%, rgba(194,119,43,0.15) 100%); padding: 48px; display: flex; flex-direction: column; justify-content: center; }
-  .filmstrip-tag { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .filmstrip-tag { font-size: 0.56rem; letter-spacing: 4px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
   .filmstrip-tag::before { content: ''; width: 24px; height: 1px; background: var(--gold); }
-  .filmstrip-featured-title { font-family: 'Poppins', sans-serif; font-size: clamp(1.3rem, 3vw, 2rem); font-weight: 700; color: white; line-height: 1.2; margin-bottom: 8px; max-width: 500px; }
+  .filmstrip-featured-title { font-family: 'Poppins', sans-serif; font-size: clamp(1.3rem, 3vw, 2rem); font-weight: 600; color: white; line-height: 1.2; margin-bottom: 8px; max-width: 500px; }
   .filmstrip-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; position: relative; z-index: 10; }
   @media(max-width: 600px) { .filmstrip-actions .instant-book-btn { display: none; } }
-  .watch-now-btn { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: white; background: transparent; border: 1px solid rgba(255,255,255,0.45); padding: 11px 28px; border-radius: 50px; cursor: pointer; font-family: 'Jost', sans-serif; font-weight: 400; transition: all 0.3s; text-decoration: none; display: inline-block; }
+  .watch-now-btn { font-size: 0.62rem; letter-spacing: 3px; text-transform: uppercase; color: white; background: transparent; border: 1px solid rgba(255,255,255,0.45); padding: 11px 28px; border-radius: 50px; cursor: pointer; font-family: 'Jost', sans-serif; font-weight: 400; transition: all 0.3s; text-decoration: none; display: inline-block; }
   .watch-now-btn:hover { background: rgba(255,255,255,0.15); border-color: white; }
   .filmstrip-play-big { position: absolute; right: 48px; top: 50%; transform: translateY(-50%); width: 80px; height: 80px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); background: rgba(255,255,255,0.1); transition: all 0.3s; cursor: pointer; }
   .filmstrip-featured:hover .filmstrip-play-big { background: rgba(194,119,43,0.8); border-color: transparent; box-shadow: 0 0 40px rgba(194,119,43,0.5); }
@@ -410,7 +410,7 @@ const styles = `
   .strip-item:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(194,119,43,0.15); }
   .strip-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
   .strip-body { padding: 10px 12px 14px; }
-  .strip-cat { font-size: 7px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 3px; }
+  .strip-cat { font-size: 0.44rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 3px; }
   .strip-title { font-family: 'Poppins', sans-serif; font-size: 0.78rem; font-weight: 600; color: var(--text-dark); line-height: 1.3; margin-bottom: 8px; }
 
   .modal-backdrop { position: fixed; inset: 0; background: rgba(10,8,5,0.92); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 24px; animation: fadeIn 0.3s ease; }
@@ -420,7 +420,7 @@ const styles = `
   .modal-close { position: absolute; top: 16px; right: 16px; width: 40px; height: 40px; border-radius: 50%; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: white; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; backdrop-filter: blur(4px); transition: all 0.2s; }
   .modal-close:hover { background: var(--gold); border-color: transparent; }
   .modal-info { padding: 24px 32px; border-top: 1px solid rgba(194,119,43,0.15); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-  .modal-cat { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+  .modal-cat { font-size: 0.56rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
   .modal-title { font-family: 'Poppins', sans-serif; font-size: 1.05rem; font-weight: 600; color: var(--text-dark); }
 
   @media (max-width: 768px) {

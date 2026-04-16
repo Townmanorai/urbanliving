@@ -61,7 +61,7 @@ function SearchBar({ searchText, setSearchText, showSuggestions, setShowSuggesti
             flexShrink: 0, padding: compact ? '0 16px' : '0 22px', border: 'none',
             background: 'linear-gradient(135deg, #c2772b 0%, #a85e1f 100%)',
             color: '#fff', fontSize: compact ? '0.8rem' : '0.86rem',
-            fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 7,
+            fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 7,
             margin: '5px 5px 5px 0', borderRadius: 10,
             boxShadow: '0 4px 14px rgba(194,119,43,0.4)',
             fontFamily: "'Poppins', sans-serif",
@@ -471,7 +471,7 @@ export default function HomePageNew1() {
 
           {/* Popular Searches */}
           <div style={{ marginTop: 14, marginBottom: 16 }}>
-            <div style={{ fontSize: '0.57rem', color: '#b0987c', fontWeight: 700, letterSpacing: 1.1, textTransform: 'uppercase', marginBottom: 8 }}>
+            <div style={{ fontSize: '0.57rem', color: '#b0987c', fontWeight: 600, letterSpacing: 1.1, textTransform: 'uppercase', marginBottom: 8 }}>
               Popular Searches
             </div>
             <div style={{ display: 'flex', gap: 7, overflowX: 'auto', paddingBottom: 2, msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
@@ -493,77 +493,107 @@ export default function HomePageNew1() {
           </div>
         </div>
 
-        {/* ── Cards + Feature boxes — cream bg ── */}
-        <div style={{ background: 'linear-gradient(180deg, #fdf7ee 0%, #f5ead6 60%, #ede4cf 100%)', padding: '0 12px 28px' }}>
+        {/* ── Flip-poster cards + feature boxes ── */}
+        <div style={{ background: 'linear-gradient(180deg, #fdf7ee 0%, #f5ead6 60%, #ede4cf 100%)', padding: '0 12px 24px' }}>
 
-          {/* Two cards side by side */}
-          <div style={{ display: 'flex', flexDirection: 'row', gap: 10, marginBottom: 12 }}>
+          <style>{`
+            @keyframes shimLineMob { 0%{transform:translateX(-100%)} 100%{transform:translateX(220%)} }
+          `}</style>
 
-            {/* ── Nightly Card ── */}
-            <div style={{ flex: '1 1 0', minWidth: 0, background: '#fff', borderRadius: 14, overflow: 'hidden', boxShadow: '0 4px 16px rgba(0,0,0,0.1)', border: '1px solid #f0e8da', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ position: 'relative', paddingTop: '60%', flexShrink: 0 }}>
+          {/* Two poster cards side by side */}
+          <div style={{ display: 'flex', gap: 9, marginBottom: 11 }}>
+
+            {/* ── NIGHTLY: image top → content bottom ── */}
+            <div onClick={() => handleSearch('short')}
+              style={{ flex: '1 1 0', minWidth: 0, background: '#fdf8f2', borderRadius: 14, overflow: 'hidden', boxShadow: '0 4px 18px rgba(0,0,0,0.11)', border: '1px solid #f0e8da', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}>
+              {/* Image top */}
+              <div style={{ position: 'relative', flex: '0 0 52%', overflow: 'hidden', minHeight: 110 }}>
                 <img
                   src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&q=80&auto=format&fit=crop"
                   alt="Nightly Stay"
                   onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80'; }}
-                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,0.3) 100%)' }} />
-                <div style={{ position: 'absolute', top: 7, left: 7, background: 'rgba(194,119,43,0.93)', borderRadius: 20, padding: '2px 7px' }}>
-                  <span style={{ fontSize: '0.44rem', color: '#fff', fontWeight: 700, letterSpacing: 0.3, textTransform: 'uppercase' }}>🌙 NIGHTLY STAY</span>
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 36, background: 'linear-gradient(to bottom, transparent, #fdf8f2)' }} />
+                <div style={{ position: 'absolute', top: 7, left: 7, background: 'rgba(194,119,43,0.92)', borderRadius: 20, padding: '2px 7px' }}>
+                  <span style={{ fontSize: '0.38rem', color: '#fff', fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase' }}>🌙 Nightly</span>
                 </div>
               </div>
-              <div style={{ padding: '9px 9px 11px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <div style={{ fontSize: '0.71rem', fontWeight: 700, color: '#1a1209', marginBottom: 3 }}>Nightly Stays</div>
-                <div style={{ marginBottom: 6 }}>
-                  <div style={{ fontSize: '1.15rem', fontWeight: 300, color: '#1a1209', lineHeight: 1.1 }}>{shortDisplay}</div>
+              {/* Content bottom */}
+              <div style={{ flex: 1, padding: '8px 9px 10px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: '#fdf8f2' }}>
+                <div>
+                  <div style={{ fontSize: '0.6rem', fontWeight: 600, color: '#1a1209', lineHeight: 1.2, marginBottom: 4 }}>
+                    Stay the Night,<br /><span style={{ color: '#c2772b' }}>Own the Morning</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, marginBottom: 3 }}>
+                    <span style={{ fontSize: '0.36rem', color: '#a08060', fontWeight: 500 }}>STARTING</span>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 300, color: '#1a1209', lineHeight: 1 }}>{shortDisplay}</span>
+                  </div>
+                  {/* shimmer */}
+                  <div style={{ position: 'relative', height: 1.5, width: '70%', background: 'rgba(194,119,43,0.15)', borderRadius: 2, overflow: 'hidden', marginBottom: 5 }}>
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg,transparent,#c2772b,transparent)', animation: 'shimLineMob 2.2s ease-in-out infinite' }} />
+                  </div>
                 </div>
-                <button onClick={() => handleSearch('short')} style={{ marginTop: 'auto', width: '100%', padding: '8px 0', borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#c2772b,#a85e1f)', color: '#fff', fontSize: '0.6rem', fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins',sans-serif" }}>
-                  Explore
+                <button onClick={e => { e.stopPropagation(); handleSearch('short'); }}
+                  style={{ width: '100%', padding: '7px 0', borderRadius: 7, border: 'none', background: 'linear-gradient(135deg,#c2772b,#a85e1f)', color: '#fff', fontSize: '0.52rem', fontWeight: 600, cursor: 'pointer', fontFamily: "'Poppins',sans-serif" }}>
+                  Explore Nightly →
                 </button>
               </div>
             </div>
 
-            {/* ── Monthly Card ── */}
-            <div style={{ flex: '1 1 0', minWidth: 0, background: '#fff', borderRadius: 14, overflow: 'hidden', boxShadow: '0 4px 16px rgba(0,0,0,0.1)', border: '1px solid #f0e8da', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ position: 'relative', paddingTop: '60%', flexShrink: 0 }}>
+            {/* ── MONTHLY: content top → image bottom ── */}
+            <div onClick={() => handleSearch('long')}
+              style={{ flex: '1 1 0', minWidth: 0, background: '#fdf5e8', borderRadius: 14, overflow: 'hidden', boxShadow: '0 4px 18px rgba(0,0,0,0.11)', border: '1px solid #f0e8da', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}>
+              {/* Content top */}
+              <div style={{ flex: '0 0 48%', padding: '8px 9px 6px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: 'linear-gradient(160deg,#fdf5e8,#faebd0)', borderBottom: '1px solid #f0e0c0' }}>
+                <div>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', background: 'rgba(26,18,9,0.07)', border: '1px solid rgba(194,119,43,0.25)', borderRadius: 20, padding: '2px 7px', marginBottom: 4 }}>
+                    <span style={{ fontSize: '0.38rem', color: '#7a5025', fontWeight: 600, letterSpacing: 0.8, textTransform: 'uppercase' }}>🏠 Monthly</span>
+                  </div>
+                  <div style={{ fontSize: '0.6rem', fontWeight: 600, color: '#1a1209', lineHeight: 1.2, marginBottom: 4 }}>
+                    Your City,<br /><span style={{ color: '#c2772b' }}>Your Home</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, marginBottom: 3 }}>
+                    <span style={{ fontSize: '0.36rem', color: '#a08060', fontWeight: 500 }}>STARTING</span>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 300, color: '#1a1209', lineHeight: 1 }}>{longDisplay}</span>
+                  </div>
+                  {/* shimmer */}
+                  <div style={{ position: 'relative', height: 1.5, width: '70%', background: 'rgba(194,119,43,0.15)', borderRadius: 2, overflow: 'hidden', marginBottom: 5 }}>
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg,transparent,#c2772b,transparent)', animation: 'shimLineMob 2.6s ease-in-out infinite' }} />
+                  </div>
+                </div>
+                <button onClick={e => { e.stopPropagation(); handleSearch('long'); }}
+                  style={{ width: '100%', padding: '7px 0', borderRadius: 7, border: '1.5px solid #c2772b', background: 'transparent', color: '#c2772b', fontSize: '0.52rem', fontWeight: 600, cursor: 'pointer', fontFamily: "'Poppins',sans-serif" }}>
+                  Explore Monthly →
+                </button>
+              </div>
+              {/* Image bottom */}
+              <div style={{ flex: 1, position: 'relative', overflow: 'hidden', minHeight: 90 }}>
                 <img
-                  src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=400&q=80&auto=format&fit=crop"
+                  src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&q=80&auto=format&fit=crop"
                   alt="Monthly Rental"
                   onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&q=80'; }}
-                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,0.3) 100%)' }} />
-                <div style={{ position: 'absolute', top: 7, left: 7, background: 'rgba(26,18,9,0.84)', borderRadius: 20, padding: '2px 7px' }}>
-                  <span style={{ fontSize: '0.44rem', color: '#f0c070', fontWeight: 700, letterSpacing: 0.3, textTransform: 'uppercase' }}>🏠 MONTHLY RENTAL</span>
-                </div>
-              </div>
-              <div style={{ padding: '9px 9px 11px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <div style={{ fontSize: '0.71rem', fontWeight: 700, color: '#1a1209', marginBottom: 3 }}>Monthly Rental</div>
-                <div style={{ marginBottom: 6 }}>
-                  <div style={{ fontSize: '1.15rem', fontWeight: 300, color: '#1a1209', lineHeight: 1.1 }}>{longDisplay}</div>
-                </div>
-                <button onClick={() => handleSearch('long')} style={{ marginTop: 'auto', width: '100%', padding: '8px 0', borderRadius: 8, border: '1.5px solid #c2772b', background: 'transparent', color: '#c2772b', fontSize: '0.6rem', fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins',sans-serif" }}>
-                  Explore Rooms
-                </button>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 32, background: 'linear-gradient(to top, transparent, #faebd0)' }} />
               </div>
             </div>
 
           </div>
 
           {/* Feature boxes — 2 per row */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
             {[
               { icon: '🏠', title: 'Fully Furnished', sub: 'Move in with zero hassle' },
               { icon: '⚡', title: 'Instant Move-in', sub: 'Same-day confirmation' },
               { icon: '🛡', title: 'Zero Brokerage', sub: 'No hidden charges ever' },
               { icon: '✔', title: 'Verified', sub: '100% physically verified' },
             ].map(f => (
-              <div key={f.title} style={{ flex: '1 1 calc(50% - 4px)', minWidth: 0, background: '#fff', borderRadius: 12, padding: '10px 11px', display: 'flex', alignItems: 'center', gap: 9, boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid #f0e8da' }}>
-                <div style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(194,119,43,0.1)', border: '1px solid rgba(194,119,43,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', flexShrink: 0 }}>{f.icon}</div>
+              <div key={f.title} style={{ flex: '1 1 calc(50% - 4px)', minWidth: 0, background: '#fff', borderRadius: 11, padding: '9px 10px', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.06)', border: '1px solid #f0e8da' }}>
+                <div style={{ width: 26, height: 26, borderRadius: 7, background: 'rgba(194,119,43,0.1)', border: '1px solid rgba(194,119,43,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', flexShrink: 0 }}>{f.icon}</div>
                 <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: '0.63rem', fontWeight: 600, color: '#1a1209', lineHeight: 1.2 }}>{f.title}</div>
-                  <div style={{ fontSize: '0.52rem', color: '#9a8878', fontWeight: 400, marginTop: 2, lineHeight: 1.3 }}>{f.sub}</div>
+                  <div style={{ fontSize: '0.58rem', fontWeight: 600, color: '#1a1209', lineHeight: 1.2 }}>{f.title}</div>
+                  <div style={{ fontSize: '0.48rem', color: '#9a8878', fontWeight: 400, marginTop: 1, lineHeight: 1.3 }}>{f.sub}</div>
                 </div>
               </div>
             ))}
@@ -615,7 +645,7 @@ export default function HomePageNew1() {
                 onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.35) 100%)' }} />
               <div style={{ position: 'absolute', top: 12, left: 14, background: 'rgba(194,119,43,0.92)', borderRadius: 20, padding: '3px 12px' }}>
-                <span style={{ fontSize: '0.6rem', color: '#fff', fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase' }}>🌙 Nightly Stays</span>
+                <span style={{ fontSize: '0.6rem', color: '#fff', fontWeight: 600, letterSpacing: 0.8, textTransform: 'uppercase' }}>🌙 Nightly Stays</span>
               </div>
             </div>
             <div style={{ padding: '16px 18px 18px' }}>
@@ -641,7 +671,7 @@ export default function HomePageNew1() {
                 onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.35) 100%)' }} />
               <div style={{ position: 'absolute', top: 12, left: 14, background: 'rgba(26,18,9,0.85)', borderRadius: 20, padding: '3px 12px' }}>
-                <span style={{ fontSize: '0.6rem', color: '#f0c070', fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase' }}>🏠 Monthly Rental</span>
+                <span style={{ fontSize: '0.6rem', color: '#f0c070', fontWeight: 600, letterSpacing: 0.8, textTransform: 'uppercase' }}>🏠 Monthly Rental</span>
               </div>
             </div>
             <div style={{ padding: '16px 18px 18px' }}>
@@ -803,7 +833,7 @@ export default function HomePageNew1() {
                 <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to bottom, transparent, #fdf8f2)' }} />
                 {/* Badge */}
                 <div style={{ position: 'absolute', top: 14, left: 14 }}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(194,119,43,0.92)', borderRadius: 20, padding: '4px 12px', fontSize: '0.52rem', color: '#fff', fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', boxShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>🌙 Nightly Stays</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(194,119,43,0.92)', borderRadius: 20, padding: '4px 12px', fontSize: '0.52rem', color: '#fff', fontWeight: 600, letterSpacing: 1.2, textTransform: 'uppercase', boxShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>🌙 Nightly Stays</span>
                 </div>
                 {/* Top-right: small second image cut */}
                 <div style={{ position: 'absolute', top: 12, right: 12, width: 58, height: 44, borderRadius: 10, overflow: 'hidden', border: '2px solid rgba(255,255,255,0.7)', boxShadow: '0 4px 14px rgba(0,0,0,0.22)' }}>
@@ -860,7 +890,7 @@ export default function HomePageNew1() {
                   <div style={{ fontSize: '0.5rem', color: '#b8966a', fontWeight: 600, letterSpacing: 1.8, textTransform: 'uppercase', marginBottom: 5 }}>Professionals · Students · Long-term</div>
                   {/* Badge */}
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(26,18,9,0.07)', border: '1px solid rgba(194,119,43,0.25)', borderRadius: 20, padding: '4px 12px', marginBottom: 8 }}>
-                    <span style={{ fontSize: '0.52rem', color: '#7a5025', fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase' }}>🏠 Monthly Rental</span>
+                    <span style={{ fontSize: '0.52rem', color: '#7a5025', fontWeight: 600, letterSpacing: 1.2, textTransform: 'uppercase' }}>🏠 Monthly Rental</span>
                   </div>
                   <div style={{ fontSize: 'clamp(0.95rem, 1.4vw, 1.2rem)', fontWeight: 600, color: '#1a1209', lineHeight: 1.25, marginBottom: 12 }}>
                     Your City,<br />

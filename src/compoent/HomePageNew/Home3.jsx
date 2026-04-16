@@ -101,10 +101,21 @@ const Home3 = () => {
     <section className={`home3-section ${tab}-active`}>
       <div className="home3-container">
         
-        <h2 className="home3-heading">
-          How <span className="highlight">OvikaLiving</span> Works
-        </h2>
-        <p className="home3-subtitle">— {subtitle} —</p>
+        <div style={{ textAlign: 'center', marginBottom: 20 }}>
+          <div style={{
+            display: 'inline-flex',
+            background: 'rgba(194,119,43,0.1)',
+            border: '1px solid rgba(194,119,43,0.25)',
+            borderRadius: 20,
+            padding: '5px 18px',
+            fontSize: '0.62rem',
+            color: '#c2772b',
+            letterSpacing: '1.4px',
+            textTransform: 'uppercase',
+            fontWeight: 600,
+            fontFamily: "'Poppins', sans-serif",
+          }}>✦ How OvikaLiving Works</div>
+        </div>
 
         <div className="home3-toggle">
           <div className="home3-toggle-pill">
@@ -140,15 +151,24 @@ const Home3 = () => {
         {/* Mobile Layout */}
         <div className="home3-steps-mobile">
           {steps.map((s, i) => (
-            <div className="home3-mobile-card" key={i}>
-              <div className="home3-mobile-icon">
-                {s.imageUrl ? <img src={s.imageUrl} alt={s.title} /> : <span>🏠</span>}
+            <div key={i}>
+              <div className="home3-mobile-card">
+                <div className="home3-mobile-icon">
+                  {s.imageUrl ? <img src={s.imageUrl} alt={s.title} /> : <span>🏠</span>}
+                </div>
+                <div className="home3-mobile-content">
+                  <div className="home3-mobile-label">Step {s.stepNo} of 4</div>
+                  <h3 className="home3-mobile-title">{s.title}</h3>
+                  <p className="home3-mobile-desc">{s.desc}</p>
+                </div>
               </div>
-              <div className="home3-mobile-content">
-                <div className="home3-mobile-label">Step {s.stepNo} of 4</div>
-                <h3 className="home3-mobile-title">{s.title}</h3>
-                <p className="home3-mobile-desc">{s.desc}</p>
-              </div>
+              {i < steps.length - 1 && (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0, margin: '2px 0' }}>
+                  <div style={{ width: 1.5, height: 8, background: 'linear-gradient(to bottom, #e8c88a, #c2772b)', borderRadius: 2 }} />
+                  <span style={{ fontSize: '0.75rem', color: '#c2772b', lineHeight: 1 }}>↓</span>
+                  <div style={{ width: 1.5, height: 8, background: 'linear-gradient(to bottom, #c2772b, #e8c88a)', borderRadius: 2 }} />
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -165,7 +185,6 @@ const Home3 = () => {
             ))}
           </div>
           <button className="home3-cta-btn" onClick={handleCTAClick}>{cta.btnText}</button>
-          <p className="home3-footer">{cta.footnote}</p>
         </div>
 
         {/* Premium Verified Badges */}

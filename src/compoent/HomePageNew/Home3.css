@@ -103,7 +103,7 @@
 .home3-step-label {
   display: inline-block;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #fff;
   background: linear-gradient(135deg, #c2772b, #a85e1f);
   padding: 4px 12px;
@@ -305,7 +305,7 @@
 
 .home3-feature-icon {
   color: #c2772b;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 1.1rem;
 }
 
@@ -316,7 +316,7 @@
   padding: 16px 44px;
   border-radius: 50px;
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   box-shadow: 0 10px 25px rgba(194, 119, 43, 0.4);
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -365,7 +365,7 @@
 
 .h3-vbadge-heading {
   font-size: 1.6rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: none;
   letter-spacing: -0.02em;
   color: #1a1209;
@@ -449,7 +449,7 @@
 .h3-vbadge-title {
   font-family: 'Georgia', serif;
   font-size: 1.3rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #f5e090;
   letter-spacing: 0.03em;
   text-shadow: 0 1px 4px rgba(0,0,0,0.5);
@@ -539,8 +539,8 @@
     height: 52px;
   }
   .home3-mobile-label {
-    font-size: 0.55rem;
-    letter-spacing: 0.8px;
+    font-size: 0.62rem;
+    letter-spacing: 0.6px;
     margin-bottom: 2px;
   }
   .home3-mobile-title {
@@ -567,22 +567,25 @@
     margin-bottom: 12px;
   }
   .home3-cta-features {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    flex-wrap: nowrap;
     margin-bottom: 14px;
     width: 100%;
   }
   .home3-feature {
-    font-size: 0.7rem;
+    font-size: 0.62rem;
     font-weight: 500;
-    padding: 5px 10px;
-    width: 100%;
-    justify-content: flex-start;
-    border-radius: 8px;
+    padding: 4px 8px;
+    width: auto;
+    justify-content: center;
+    border-radius: 7px;
+    white-space: nowrap;
   }
   .home3-feature-icon {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
   }
   .home3-cta-btn {
     font-size: 0.72rem;
