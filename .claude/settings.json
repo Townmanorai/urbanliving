@@ -4,7 +4,11 @@
       "Bash(npx vite:*)",
       "Bash(npx react-scripts:*)",
       "Bash(npx eslint:*)",
-      "Bash(node -e ':*)"
+      "Bash(node -e ':*)",
+      "Bash(curl -s \"https://www.townmanor.ai/api/ovika/properties\")",
+      "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const j=JSON.parse\\(d\\); const props=j?.data||[]; console.log\\('Total:',props.length\\); if\\(props[0]\\) console.log\\('Keys:',Object.keys\\(props[0]\\).join\\(', '\\)\\); props.slice\\(0,3\\).forEach\\(p=>console.log\\(JSON.stringify\\({city:p.city,locality:p.locality,address:p.address,property_category:p.property_category,property_type:p.property_type,category:p.category}\\)\\)\\)\")",
+      "Bash(python3 -c ' *)",
+      "Bash(node -e ' *)"
     ]
   }
 }

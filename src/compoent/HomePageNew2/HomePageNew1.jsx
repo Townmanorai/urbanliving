@@ -516,16 +516,10 @@ export default function HomePageNew1() {
               <div style={{ padding: '9px 9px 11px', display: 'flex', flexDirection: 'column', flex: 1 }}>
                 <div style={{ fontSize: '0.71rem', fontWeight: 700, color: '#1a1209', marginBottom: 3 }}>Nightly Stays</div>
                 <div style={{ marginBottom: 6 }}>
-                  <div style={{ fontSize: '0.48rem', color: '#c2772b', textTransform: 'uppercase', letterSpacing: 0.7, fontWeight: 700 }}>Starts at</div>
                   <div style={{ fontSize: '1.15rem', fontWeight: 300, color: '#1a1209', lineHeight: 1.1 }}>{shortDisplay}</div>
                 </div>
-                <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', marginBottom: 8 }}>
-                  {['AC Rooms', 'Wi-Fi'].map(f => (
-                    <span key={f} style={{ fontSize: '0.47rem', color: '#7a5530', background: '#fdf0e0', border: '1px solid #e8c88a', borderRadius: 20, padding: '2px 6px', fontWeight: 600 }}>{f}</span>
-                  ))}
-                </div>
                 <button onClick={() => handleSearch('short')} style={{ marginTop: 'auto', width: '100%', padding: '8px 0', borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#c2772b,#a85e1f)', color: '#fff', fontSize: '0.6rem', fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins',sans-serif" }}>
-                  Check Availability
+                  Explore
                 </button>
               </div>
             </div>
@@ -547,13 +541,7 @@ export default function HomePageNew1() {
               <div style={{ padding: '9px 9px 11px', display: 'flex', flexDirection: 'column', flex: 1 }}>
                 <div style={{ fontSize: '0.71rem', fontWeight: 700, color: '#1a1209', marginBottom: 3 }}>Monthly Rental</div>
                 <div style={{ marginBottom: 6 }}>
-                  <div style={{ fontSize: '0.48rem', color: '#c2772b', textTransform: 'uppercase', letterSpacing: 0.7, fontWeight: 700 }}>Starts at</div>
                   <div style={{ fontSize: '1.15rem', fontWeight: 300, color: '#1a1209', lineHeight: 1.1 }}>{longDisplay}</div>
-                </div>
-                <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', marginBottom: 8 }}>
-                  {['Furnished', 'Zero Brokerage'].map(f => (
-                    <span key={f} style={{ fontSize: '0.47rem', color: '#7a5530', background: '#fdf0e0', border: '1px solid #e8c88a', borderRadius: 20, padding: '2px 6px', fontWeight: 600 }}>{f}</span>
-                  ))}
                 </div>
                 <button onClick={() => handleSearch('long')} style={{ marginTop: 'auto', width: '100%', padding: '8px 0', borderRadius: 8, border: '1.5px solid #c2772b', background: 'transparent', color: '#c2772b', fontSize: '0.6rem', fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins',sans-serif" }}>
                   Explore Rooms
@@ -631,21 +619,14 @@ export default function HomePageNew1() {
               </div>
             </div>
             <div style={{ padding: '16px 18px 18px' }}>
-              <div style={{ fontSize: '0.72rem', color: '#6b5540', fontWeight: 500, marginBottom: 8 }}>Short trips · Business visits · Weekend getaways</div>
               <div style={{ marginBottom: 10 }}>
-                <span style={{ fontSize: '0.6rem', color: '#c2772b', textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: 600 }}>Starts at</span>
                 <div style={{ fontSize: '1.6rem', fontWeight: 300, color: '#1a1209', lineHeight: 1.1, marginTop: 2 }}>{shortDisplay}</div>
-              </div>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
-                {['AC Rooms', 'Wi-Fi', 'Housekeeping'].map(f => (
-                  <span key={f} style={{ fontSize: '0.62rem', color: '#7a5530', background: '#fdf0e0', border: '1px solid #e8c88a', borderRadius: 20, padding: '3px 10px', fontWeight: 600 }}>{f}</span>
-                ))}
               </div>
               <button onClick={() => handleSearch('short')}
                 style={{ width: '100%', padding: '10px 0', borderRadius: 10, border: 'none', background: '#c2772b', color: '#fff', fontSize: '0.84rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}
                 onMouseEnter={e => { e.currentTarget.style.background = '#a8631f'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = '#c2772b'; e.currentTarget.style.transform = 'translateY(0)'; }}>
-                Check Availability
+                Explore
               </button>
             </div>
           </div>
@@ -664,15 +645,8 @@ export default function HomePageNew1() {
               </div>
             </div>
             <div style={{ padding: '16px 18px 18px' }}>
-              <div style={{ fontSize: '0.72rem', color: '#6b5540', fontWeight: 500, marginBottom: 8 }}>Professionals · Students · Long-term residents</div>
               <div style={{ marginBottom: 10 }}>
-                <span style={{ fontSize: '0.6rem', color: '#c2772b', textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: 600 }}>Starts at</span>
                 <div style={{ fontSize: '1.6rem', fontWeight: 300, color: '#1a1209', lineHeight: 1.1, marginTop: 2 }}>{longDisplay}</div>
-              </div>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
-                {['Furnished', 'Zero Brokerage', 'Flexible Lease'].map(f => (
-                  <span key={f} style={{ fontSize: '0.62rem', color: '#7a5530', background: '#fdf0e0', border: '1px solid #e8c88a', borderRadius: 20, padding: '3px 10px', fontWeight: 600 }}>{f}</span>
-                ))}
               </div>
               <button onClick={() => handleSearch('long')}
                 style={{ width: '100%', padding: '10px 0', borderRadius: 10, border: '2px solid #c2772b', background: 'transparent', color: '#c2772b', fontSize: '0.84rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}
@@ -790,90 +764,151 @@ export default function HomePageNew1() {
               </div>
           </div>
 
-          {/* RIGHT panel */}
+          {/* RIGHT panel — Flip layout: Nightly=image-top/content-bottom, Monthly=content-top/image-bottom */}
+          <style>{`
+            @keyframes kenBurns {
+              0%   { transform: scale(1) translateX(0); }
+              100% { transform: scale(1.06) translateX(-8px); }
+            }
+            @keyframes shimLine {
+              0%   { transform: translateX(-100%); }
+              100% { transform: translateX(220%); }
+            }
+            @keyframes fadeUp {
+              from { opacity: 0; transform: translateY(10px); }
+              to   { opacity: 1; transform: translateY(0); }
+            }
+            .flip-card { flex: 1; display: flex; flex-direction: column; overflow: hidden; cursor: pointer; background: #fdf8f2; transition: box-shadow 0.3s; }
+            .flip-card:hover { box-shadow: inset 0 0 0 2px rgba(194,119,43,0.18); }
+            .flip-img { position: relative; flex: 0 0 52%; overflow: hidden; }
+            .flip-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.8s ease; }
+            .flip-card:hover .flip-img img { animation: kenBurns 5s ease forwards; }
+            .flip-body { flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 24px 20px; animation: fadeUp 0.5s ease both; }
+          `}</style>
+
           <div style={{ flex: 1, display: 'flex', minWidth: 0 }}>
 
-            {/* Nightly Stays */}
-            <div style={{ flex: 1, borderRight: '1px solid #f0ece4', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-              <div style={{ flex: '0 0 42%', position: 'relative', overflow: 'hidden' }}>
-                <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80&auto=format&fit=crop"
+            {/* ── NIGHTLY: Image TOP → Content BOTTOM ── */}
+            <div className="flip-card" onClick={() => handleSearch('short')}
+              style={{ borderRight: '1px solid #f0e8da' }}>
+
+              {/* IMAGE — top */}
+              <div className="flip-img">
+                <img
+                  src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=700&q=85&auto=format&fit=crop"
                   alt="Nightly Stay"
-                  onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80'; }}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block', transition: 'transform 0.4s ease' }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.04)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.35) 100%)' }} />
-                <div style={{ position: 'absolute', top: 10, left: 12, background: 'rgba(194,119,43,0.92)', borderRadius: 20, padding: '3px 10px' }}>
-                  <span style={{ fontSize: '0.58rem', color: '#fff', fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase' }}>🌙 Nightly Stays</span>
+                  onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=700&q=80'; }}
+                />
+                {/* soft bottom fade into content bg */}
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to bottom, transparent, #fdf8f2)' }} />
+                {/* Badge */}
+                <div style={{ position: 'absolute', top: 14, left: 14 }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(194,119,43,0.92)', borderRadius: 20, padding: '4px 12px', fontSize: '0.52rem', color: '#fff', fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase', boxShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>🌙 Nightly Stays</span>
+                </div>
+                {/* Top-right: small second image cut */}
+                <div style={{ position: 'absolute', top: 12, right: 12, width: 58, height: 44, borderRadius: 10, overflow: 'hidden', border: '2px solid rgba(255,255,255,0.7)', boxShadow: '0 4px 14px rgba(0,0,0,0.22)' }}>
+                  <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=150&q=75&auto=format&fit=crop" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    onError={e => { e.currentTarget.style.display = 'none'; }} />
                 </div>
               </div>
-              <div style={{ flex: 1, padding: '14px 20px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', background: 'linear-gradient(180deg, #fefcf8 0%, #fff 100%)', overflow: 'auto' }}>
-                <div style={{ fontSize: '0.72rem', color: '#6b5540', fontWeight: 500, marginBottom: 8, lineHeight: 1.4 }}>Short trips · Business visits · Weekend getaways</div>
-                <div style={{ marginBottom: 8 }}>
-                  <span style={{ fontSize: '0.62rem', color: '#c2772b', textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: 600 }}>Starts at</span>
-                  <div style={{ fontSize: 'clamp(1.3rem, 1.8vw, 1.75rem)', fontWeight: 300, color: '#1a1209', lineHeight: 1.1, marginTop: 2 }}>{shortDisplay}</div>
+
+              {/* CONTENT — bottom */}
+              <div className="flip-body" style={{ background: '#fdf8f2' }}>
+                {/* eyebrow */}
+                <div>
+                  <div style={{ fontSize: '0.5rem', color: '#b8966a', fontWeight: 600, letterSpacing: 1.8, textTransform: 'uppercase', marginBottom: 5 }}>Short Trips · Business · Weekend</div>
+                  <div style={{ fontSize: 'clamp(0.95rem, 1.4vw, 1.2rem)', fontWeight: 600, color: '#1a1209', lineHeight: 1.25, marginBottom: 12 }}>
+                    Stay the Night,<br />
+                    <span style={{ color: '#c2772b' }}>Own the Morning</span>
+                  </div>
+
+                  {/* Price */}
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, marginBottom: 4 }}>
+                    <span style={{ fontSize: '0.54rem', color: '#a08060', fontWeight: 500, letterSpacing: 0.4 }}>STARTING</span>
+                    <span style={{ fontSize: 'clamp(1.4rem, 1.9vw, 1.75rem)', fontWeight: 300, color: '#1a1209', lineHeight: 1, letterSpacing: -0.5 }}>{shortDisplay}</span>
+                  </div>
+
+                  {/* Shimmer bar */}
+                  <div style={{ position: 'relative', height: 2, width: '60%', background: 'rgba(194,119,43,0.15)', borderRadius: 2, overflow: 'hidden', marginBottom: 12 }}>
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, transparent, #c2772b, transparent)', animation: 'shimLine 2.2s ease-in-out infinite' }} />
+                  </div>
+
+                  {/* Tags */}
+                  <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 0 }}>
+                    {['AC Rooms', 'Wi-Fi', 'Same-day'].map(t => (
+                      <span key={t} style={{ fontSize: '0.48rem', color: '#8a6840', fontWeight: 600, background: 'rgba(194,119,43,0.08)', border: '1px solid rgba(194,119,43,0.2)', borderRadius: 20, padding: '2px 8px' }}>✦ {t}</span>
+                    ))}
+                  </div>
                 </div>
-                <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 8 }}>
-                  {['AC Rooms', 'Wi-Fi', 'Housekeeping'].map(f => (
-                    <span key={f} style={{ fontSize: '0.62rem', color: '#7a5530', background: '#fdf0e0', border: '1px solid #e8c88a', borderRadius: 20, padding: '3px 10px', fontWeight: 600 }}>{f}</span>
-                  ))}
-                </div>
-                <div style={{ borderTop: '1px solid #f5ede0', paddingTop: 8, display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 10 }}>
-                  {[['🛏', 'Private rooms & entire apartments'], ['📍', 'Pan-India locations available'], ['⚡', 'Same-day booking confirmed']].map(([icon, text]) => (
-                    <div key={text} style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-                      <span style={{ fontSize: '0.68rem', lineHeight: 1.4 }}>{icon}</span>
-                      <span style={{ fontSize: '0.67rem', color: '#6b5540', lineHeight: 1.4 }}>{text}</span>
-                    </div>
-                  ))}
-                </div>
-                <button onClick={() => handleSearch('short')}
-                  style={{ width: '100%', padding: '10px 0', borderRadius: 10, border: 'none', background: '#c2772b', color: '#fff', fontSize: '0.84rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#a8631f'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(194,119,43,0.35)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = '#c2772b'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}>
-                  Check Availability
+
+                {/* CTA */}
+                <button onClick={e => { e.stopPropagation(); handleSearch('short'); }}
+                  style={{ width: '100%', padding: '10px 0', borderRadius: 9, border: 'none', background: 'linear-gradient(135deg, #c2772b, #a85e1f)', color: '#fff', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer', fontFamily: "'Poppins',sans-serif", boxShadow: '0 4px 16px rgba(194,119,43,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.22s' }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(194,119,43,0.5)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(194,119,43,0.35)'; }}>
+                  Explore Nightly Stays →
                 </button>
               </div>
             </div>
 
-            {/* Monthly Rental */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-              <div style={{ flex: '0 0 42%', position: 'relative', overflow: 'hidden' }}>
-                <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&q=80&auto=format&fit=crop"
-                  alt="Monthly Rental"
-                  onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&q=80'; }}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block', transition: 'transform 0.4s ease' }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.04)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.35) 100%)' }} />
-                <div style={{ position: 'absolute', top: 10, left: 12, background: 'rgba(26,18,9,0.85)', borderRadius: 20, padding: '3px 10px' }}>
-                  <span style={{ fontSize: '0.58rem', color: '#f0c070', fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase' }}>🏠 Monthly Rental</span>
+            {/* ── MONTHLY: Content TOP → Image BOTTOM ── */}
+            <div className="flip-card" onClick={() => handleSearch('long')}>
+
+              {/* CONTENT — top */}
+              <div className="flip-body" style={{ flex: '0 0 48%', background: 'linear-gradient(160deg, #fdf5e8 0%, #faebd0 100%)', borderBottom: '1px solid #f0e0c0' }}>
+                <div>
+                  <div style={{ fontSize: '0.5rem', color: '#b8966a', fontWeight: 600, letterSpacing: 1.8, textTransform: 'uppercase', marginBottom: 5 }}>Professionals · Students · Long-term</div>
+                  {/* Badge */}
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(26,18,9,0.07)', border: '1px solid rgba(194,119,43,0.25)', borderRadius: 20, padding: '4px 12px', marginBottom: 8 }}>
+                    <span style={{ fontSize: '0.52rem', color: '#7a5025', fontWeight: 700, letterSpacing: 1.2, textTransform: 'uppercase' }}>🏠 Monthly Rental</span>
+                  </div>
+                  <div style={{ fontSize: 'clamp(0.95rem, 1.4vw, 1.2rem)', fontWeight: 600, color: '#1a1209', lineHeight: 1.25, marginBottom: 12 }}>
+                    Your City,<br />
+                    <span style={{ color: '#c2772b' }}>Your Home</span>
+                  </div>
+
+                  {/* Price */}
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, marginBottom: 4 }}>
+                    <span style={{ fontSize: '0.54rem', color: '#a08060', fontWeight: 500, letterSpacing: 0.4 }}>STARTING</span>
+                    <span style={{ fontSize: 'clamp(1.4rem, 1.9vw, 1.75rem)', fontWeight: 300, color: '#1a1209', lineHeight: 1, letterSpacing: -0.5 }}>{longDisplay}</span>
+                  </div>
+
+                  {/* Shimmer bar */}
+                  <div style={{ position: 'relative', height: 2, width: '60%', background: 'rgba(194,119,43,0.15)', borderRadius: 2, overflow: 'hidden', marginBottom: 12 }}>
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, transparent, #c2772b, transparent)', animation: 'shimLine 2.6s ease-in-out infinite' }} />
+                  </div>
+
+                  {/* Tags */}
+                  <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                    {['Furnished', 'Zero Brokerage', 'Flexible'].map(t => (
+                      <span key={t} style={{ fontSize: '0.48rem', color: '#8a6840', fontWeight: 600, background: 'rgba(194,119,43,0.08)', border: '1px solid rgba(194,119,43,0.2)', borderRadius: 20, padding: '2px 8px' }}>✦ {t}</span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div style={{ flex: 1, padding: '14px 20px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', overflow: 'auto' }}>
-                <div style={{ fontSize: '0.72rem', color: '#6b5540', fontWeight: 500, marginBottom: 8, lineHeight: 1.4 }}>Professionals · Students · Long-term residents</div>
-                <div style={{ marginBottom: 8 }}>
-                  <span style={{ fontSize: '0.62rem', color: '#c2772b', textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: 600 }}>Starts at</span>
-                  <div style={{ fontSize: 'clamp(1.3rem, 1.8vw, 1.75rem)', fontWeight: 300, color: '#1a1209', lineHeight: 1.1, marginTop: 2 }}>{longDisplay}</div>
-                </div>
-                <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 8 }}>
-                  {['Furnished', 'Zero Brokerage', 'Flexible Lease'].map(f => (
-                    <span key={f} style={{ fontSize: '0.62rem', color: '#7a5530', background: '#fdf0e0', border: '1px solid #e8c88a', borderRadius: 20, padding: '3px 10px', fontWeight: 600 }}>{f}</span>
-                  ))}
-                </div>
-                <div style={{ borderTop: '1px solid #f5ede0', paddingTop: 8, display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 10 }}>
-                  {[['🏠', 'PGs, flats & co-living spaces'], ['📄', 'Simple rent agreements'], ['🔑', 'Move in within 24 hours']].map(([icon, text]) => (
-                    <div key={text} style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-                      <span style={{ fontSize: '0.68rem', lineHeight: 1.4 }}>{icon}</span>
-                      <span style={{ fontSize: '0.67rem', color: '#6b5540', lineHeight: 1.4 }}>{text}</span>
-                    </div>
-                  ))}
-                </div>
-                <button onClick={() => handleSearch('long')}
-                  style={{ width: '100%', padding: '10px 0', borderRadius: 10, border: '2px solid #c2772b', background: 'transparent', color: '#c2772b', fontSize: '0.84rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#c2772b'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(194,119,43,0.3)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#c2772b'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}>
-                  Explore Rooms
+
+                {/* CTA */}
+                <button onClick={e => { e.stopPropagation(); handleSearch('long'); }}
+                  style={{ width: '100%', padding: '10px 0', borderRadius: 9, border: '1.5px solid #c2772b', background: 'transparent', color: '#c2772b', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer', fontFamily: "'Poppins',sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.22s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#c2772b'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#c2772b'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+                  Explore Monthly Stays →
                 </button>
+              </div>
+
+              {/* IMAGE — bottom */}
+              <div className="flip-img" style={{ flex: 1 }}>
+                <img
+                  src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=700&q=85&auto=format&fit=crop"
+                  alt="Monthly Rental"
+                  onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=700&q=80'; }}
+                />
+                {/* soft top fade into content bg */}
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to top, transparent, #faebd0)' }} />
+                {/* Bottom-right: small second image cut */}
+                <div style={{ position: 'absolute', bottom: 12, right: 12, width: 58, height: 44, borderRadius: 10, overflow: 'hidden', border: '2px solid rgba(255,255,255,0.7)', boxShadow: '0 4px 14px rgba(0,0,0,0.22)' }}>
+                  <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=150&q=75&auto=format&fit=crop" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    onError={e => { e.currentTarget.style.display = 'none'; }} />
+                </div>
               </div>
             </div>
 

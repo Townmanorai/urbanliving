@@ -647,118 +647,91 @@ const HoomieFooter = () => {
                   opacity: "0.95",
                 }}
               >
-                <span style={{ color: "" }}>OvikaLiving</span> is the flagship short-term rental brand of{" "}
-                <span style={{ color: "" }}>
-                  Townmanor Technologies Pvt. Ltd.
-                </span>
-                , representing the company's vision for{" "}
-                <span style={{ color: "" }}>Smart Urban Living.</span> Designed to
-                redefine the way people experience modern city life, OvikaLiving
+                <span>OvikaLiving</span> is the flagship short-term rental brand of{" "}
+                <span>Townmanor Technologies Pvt. Ltd.</span>, representing the company's vision for{" "}
+                <span>Smart Urban Living.</span> Designed to redefine the way people experience modern city life, OvikaLiving
                 integrates technology, design, and convenience to create connected
                 and intelligent living spaces.
               </p>
-
             </div>
 
-            {/* Quick Links - Desktop Grid */}
-            <div className="footer-col quicklinks-col desktop-links-grid">
-              <h3
-                style={{
-                  fontSize: "18px",
-                  fontWeight: "600",
-                  marginBottom: "12px",
-                }}
-              >
-                Quick Links
-              </h3>
+            {/* Column 1 — Desktop */}
+            <div className="footer-col desktop-links-grid">
               <LinkList
                 items={[
                   <Link to="/about" style={{ color: '#fff', textDecoration: 'none' }}>About Us</Link>,
                   <Link to="/faq" style={{ color: '#fff', textDecoration: 'none' }}>FAQ's</Link>,
                   <Link to="/terms-and-conditions" style={{ color: '#fff', textDecoration: 'none' }}>Terms and Conditions</Link>,
                   <Link to="/privacy-policy" style={{ color: '#fff', textDecoration: 'none' }}>Privacy Policy</Link>,
-                  <Link to="/refund-cancellation-policy" style={{ color: '#fff', textDecoration: 'none' }}>Refund and Cancellation Policy</Link>,
+                  <Link to="/refund-cancellation-policy" style={{ color: '#fff', textDecoration: 'none' }}>Refund & Cancellation</Link>,
                   <Link to="/subsription" style={{ color: '#fff', textDecoration: 'none' }}>Subscription Plan</Link>,
-                  <Link to="/career-support" style={{ color: '#fff', textDecoration: 'none' }}>Career Support</Link>,
-                  <Link to="/ovika-verified" style={{ color: '#fff', textDecoration: 'none', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    OvikaLiving Verified
-                    <img src="/ovikaver.png" alt="Verified" style={{ height: '18px', width: 'auto' }} />
-                  </Link>,
-                  <Link to="/ovika-self-verified" style={{ color: '#fff', textDecoration: 'none' }}>Property Self Verification</Link>,
                 ]}
               />
             </div>
 
-            {/* Contact Us - Desktop Grid */}
-            <div className="footer-col contactus-col desktop-links-grid">
-              <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-                <Link
-                  to="/contactus"
-                  style={{ color: "#fff", textDecoration: "none", fontSize: "13px", opacity: 0.9, transition: "opacity 0.2s" }}
-                  onMouseOver={e => e.currentTarget.style.opacity = "0.6"}
-                  onMouseOut={e => e.currentTarget.style.opacity = "0.9"}
-                >
-                  Contact Us
-                </Link>
-                <Link
-                  to="/legal-information"
-                  style={{ color: "#fff", textDecoration: "none", fontSize: "13px", opacity: 0.9, transition: "opacity 0.2s" }}
-                  onMouseOver={e => e.currentTarget.style.opacity = "0.6"}
-                  onMouseOut={e => e.currentTarget.style.opacity = "0.9"}
-                >
-                  Legal Information
-                </Link>
-              </div>
+            {/* Column 2 — Desktop */}
+            <div className="footer-col desktop-links-grid">
+              <LinkList
+                items={[
+                  <Link to="/career-support" style={{ color: '#fff', textDecoration: 'none' }}>Career Support</Link>,
+                  <Link to="/ovika-verified" style={{ color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    OvikaLiving Verified
+                    <img src="/ovikaver.png" alt="Verified" style={{ height: '18px', width: 'auto' }} />
+                  </Link>,
+                  <Link to="/ovika-self-verified" style={{ color: '#fff', textDecoration: 'none' }}>Self Verification</Link>,
+                  <Link to="/nightly-stays" style={{ color: '#fff', textDecoration: 'none' }}>Nightly Stays</Link>,
+                  <Link to="/monthly-rentals" style={{ color: '#fff', textDecoration: 'none' }}>Monthly Rental</Link>,
+                  <Link to="/properties?category=Signature+Stays" style={{ color: '#fff', textDecoration: 'none' }}>Signature Stays</Link>,
+                ]}
+              />
+            </div>
+
+            {/* Column 3 — Desktop */}
+            <div className="footer-col desktop-links-grid">
+              <LinkList
+                items={[
+                  <Link to="/listed1" style={{ color: '#fff', textDecoration: 'none' }}>List Property</Link>,
+                  <a href="https://www.townmanor.ai/" target="_blank" rel="noopener noreferrer" style={{ color: '#fff', textDecoration: 'none' }}>Explore Townmanor</a>,
+                  <Link to="/contactus" style={{ color: '#fff', textDecoration: 'none' }}>Contact Us</Link>,
+                  <Link to="/legal-information" style={{ color: '#fff', textDecoration: 'none' }}>Legal Information</Link>,
+                ]}
+              />
             </div>
 
           </div>
 
-          {/* Mobile Quick Links + Contact Us + Legal Info Side by Side */}
+          {/* Mobile Links — 2 equal columns, no headings */}
           <div className="footer-link-columns" style={{ display: "none" }}>
-            <div className="footer-col quicklinks-col">
-              <h3
-                style={{
-                  fontSize: "18px",
-                  fontWeight: "600",
-                  marginBottom: "12px",
-                }}
-              >
-                Quick Links
-              </h3>
+            <div className="footer-col">
               <LinkList
-                className="new-link-format"
                 items={[
                   <Link to="/about" style={{ color: '#fff', textDecoration: 'none' }}>About Us</Link>,
                   <Link to="/faq" style={{ color: '#fff', textDecoration: 'none' }}>FAQ's</Link>,
                   <Link to="/terms-and-conditions" style={{ color: '#fff', textDecoration: 'none' }}>Terms</Link>,
-                  <Link to="/privacy-policy" style={{ color: '#fff', textDecoration: 'none' }}>Privacy</Link>,
+                  <Link to="/privacy-policy" style={{ color: '#fff', textDecoration: 'none' }}>Privacy Policy</Link>,
                   <Link to="/refund-cancellation-policy" style={{ color: '#fff', textDecoration: 'none' }}>Refund Policy</Link>,
                   <Link to="/subsription" style={{ color: '#fff', textDecoration: 'none' }}>Subscription</Link>,
                   <Link to="/career-support" style={{ color: '#fff', textDecoration: 'none' }}>Career Support</Link>,
-                  <Link to="/ovika-verified" style={{ color: '#fff', textDecoration: 'none', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    Verified
-                    <img src="/ovikaver.png" alt="Verified" style={{ height: '18px', width: 'auto' }} />
+                  <Link to="/ovika-verified" style={{ color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    Verified <img src="/ovikaver.png" alt="Verified" style={{ height: '14px', width: 'auto' }} />
                   </Link>,
-                  <Link to="/ovika-self-verified" style={{ color: '#fff', textDecoration: 'none' }}>Property Self Verification</Link>,
                 ]}
               />
             </div>
 
-            <div className="footer-col contactus-col">
-              <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-                <Link
-                  to="/contactus"
-                  style={{ color: "#fff", textDecoration: "none", fontSize: "13px", opacity: 0.9 }}
-                >
-                  Contact Us
-                </Link>
-                <Link
-                  to="/legal-information"
-                  style={{ color: "#fff", textDecoration: "none", fontSize: "13px", opacity: 0.9 }}
-                >
-                  Legal Information
-                </Link>
-              </div>
+            <div className="footer-col">
+              <LinkList
+                items={[
+                  <Link to="/ovika-self-verified" style={{ color: '#fff', textDecoration: 'none' }}>Self Verification</Link>,
+                  <Link to="/nightly-stays" style={{ color: '#fff', textDecoration: 'none' }}>Nightly Stays</Link>,
+                  <Link to="/monthly-rentals" style={{ color: '#fff', textDecoration: 'none' }}>Monthly Rental</Link>,
+                  <Link to="/properties?category=Signature+Stays" style={{ color: '#fff', textDecoration: 'none' }}>Signature Stays</Link>,
+                  <Link to="/listed1" style={{ color: '#fff', textDecoration: 'none' }}>List Property</Link>,
+                  <Link to="/contactus" style={{ color: '#fff', textDecoration: 'none' }}>Contact Us</Link>,
+                  <Link to="/legal-information" style={{ color: '#fff', textDecoration: 'none' }}>Legal Info</Link>,
+                  <a href="https://www.townmanor.ai/" target="_blank" rel="noopener noreferrer" style={{ color: '#fff', textDecoration: 'none' }}>Townmanor</a>,
+                ]}
+              />
             </div>
 
           </div>

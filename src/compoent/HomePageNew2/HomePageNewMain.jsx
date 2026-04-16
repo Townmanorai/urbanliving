@@ -6,6 +6,7 @@ import Home7 from "../HomePageNew/Home7"
 import Home2 from "../HomePageNew/Home2"
 import Home6 from "../HomePageNew/Home6"
 import HomeReviews from "../HomePageNew/HomeReviews"
+import InspirationSection from './InspirationSection'
 
 export const HomePageNewMain = () => {
   return (
@@ -17,6 +18,7 @@ export const HomePageNewMain = () => {
       <HomeReviews />
       <Home2 />
       <Home6 />
+      <InspirationSection />
     </div>
   )
 }

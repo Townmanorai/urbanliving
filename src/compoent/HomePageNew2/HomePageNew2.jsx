@@ -17,8 +17,8 @@ const NIGHTLY = [
     badge: 'Nightly Rental',
     price: '₹799/night',
     btnText: 'View PGs',
-    img: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&q=80&auto=format&fit=crop',
-    imgFallback: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=600&q=80',
+    img: 'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?w=600&q=80&auto=format&fit=crop',
+    imgFallback: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&q=80',
     rentalType: 'long',
     category: 'PG',
   },
@@ -29,8 +29,8 @@ const NIGHTLY = [
     badge: 'Nightly Rental',
     price: '₹1,499/night',
     btnText: 'View Economy',
-    img: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80&auto=format&fit=crop',
-    imgFallback: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80',
+    img: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80&auto=format&fit=crop',
+    imgFallback: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80',
     rentalType: 'short',
     category: 'Economy Stay',
   },
@@ -41,8 +41,8 @@ const NIGHTLY = [
     badge: 'Nightly Rental',
     price: '₹2,499/night',
     btnText: 'View Premium',
-    img: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80&auto=format&fit=crop',
-    imgFallback: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=600&q=80',
+    img: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=600&q=80&auto=format&fit=crop',
+    imgFallback: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80',
     rentalType: 'short',
     category: 'Premium Stay',
   },
@@ -53,7 +53,7 @@ const NIGHTLY = [
     badge: 'Nightly Rental',
     price: '₹3,999/night',
     btnText: 'View Signature',
-    img: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=600&q=80&auto=format&fit=crop',
+    img: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80&auto=format&fit=crop',
     imgFallback: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=600&q=80',
     rentalType: 'short',
     category: 'Signature Stays',
@@ -68,8 +68,8 @@ const MONTHLY = [
     badge: 'Monthly Rental',
     price: '₹4,999/month',
     btnText: 'View PGs',
-    img: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&q=80&auto=format&fit=crop',
-    imgFallback: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=600&q=80',
+    img: 'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?w=600&q=80&auto=format&fit=crop',
+    imgFallback: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&q=80',
     rentalType: 'long',
     category: 'PG',
   },
@@ -80,8 +80,8 @@ const MONTHLY = [
     badge: 'Monthly Rental',
     price: '₹8,999/month',
     btnText: 'View Economy',
-    img: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80&auto=format&fit=crop',
-    imgFallback: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80',
+    img: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80&auto=format&fit=crop',
+    imgFallback: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80',
     rentalType: 'long',
     category: 'Economy Stay',
   },
@@ -92,8 +92,8 @@ const MONTHLY = [
     badge: 'Monthly Rental',
     price: '₹15,999/month',
     btnText: 'View Premium',
-    img: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80&auto=format&fit=crop',
-    imgFallback: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=600&q=80',
+    img: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=600&q=80&auto=format&fit=crop',
+    imgFallback: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80',
     rentalType: 'long',
     category: 'Premium Stay',
   },
@@ -104,7 +104,7 @@ const MONTHLY = [
     badge: 'Monthly Rental',
     price: '₹25,999/month',
     btnText: 'View Signature',
-    img: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=600&q=80&auto=format&fit=crop',
+    img: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80&auto=format&fit=crop',
     imgFallback: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=600&q=80',
     rentalType: 'long',
     category: 'Signature Stays',
@@ -170,19 +170,6 @@ export default function HomePageNew2() {
   if (bp === 'mobile') {
     return (
       <section style={{ ...sectionBg, padding: '24px 16px 32px', background: 'linear-gradient(180deg, #f5ead6 0%, #ede4cf 100%)' }}>
-
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 16 }}>
-          <div style={{ display: 'inline-flex', background: 'rgba(194,119,43,0.1)', border: '1px solid rgba(194,119,43,0.25)', borderRadius: 20, padding: '3px 12px', marginBottom: 8 }}>
-            <span style={{ fontSize: '0.55rem', color: '#c2772b', letterSpacing: 1.2, textTransform: 'uppercase', fontWeight: 600 }}>✦ Browse by Category</span>
-          </div>
-          <h2 style={{ color: '#1a1209', fontSize: '1.2rem', fontWeight: 600, margin: '0 0 5px', lineHeight: 1.25 }}>
-            Explore Stay Options
-          </h2>
-          <p style={{ color: '#6b5540', fontSize: '0.72rem', margin: 0, lineHeight: 1.5, fontWeight: 400 }}>
-            PGs, Economy, Premium &amp; Signature — all in one place
-          </p>
-        </div>
 
         {/* Tab switcher */}
         <TabSwitcher activeTab={activeTab} setActiveTab={setActiveTab} size="sm" />
@@ -252,14 +239,6 @@ export default function HomePageNew2() {
   if (bp === 'tablet') {
     return (
       <section style={{ ...sectionBg, padding: '36px 24px 72px' }}>
-        <div style={{ textAlign: 'center', marginBottom: 26 }}>
-          <div style={{ display: 'inline-flex', background: 'rgba(194,119,43,0.1)', border: '1px solid rgba(194,119,43,0.25)', borderRadius: 20, padding: '4px 16px', marginBottom: 10 }}>
-            <span style={{ fontSize: '0.6rem', color: '#c2772b', letterSpacing: 1.4, textTransform: 'uppercase', fontWeight: 600 }}>✦ Browse by Category</span>
-          </div>
-          <h2 style={{ color: '#1a1209', fontSize: '1.5rem', fontWeight: 600, margin: '0 0 8px', lineHeight: 1.2 }}>Explore Stay Options</h2>
-          <p style={{ color: '#6b5540', fontSize: '0.82rem', fontWeight: 400, margin: 0, lineHeight: 1.6 }}>From budget PGs to luxury villas — find exactly what fits you</p>
-        </div>
-
         <TabSwitcher activeTab={activeTab} setActiveTab={setActiveTab} size="md" />
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, maxWidth: 900, margin: '0 auto', paddingBottom: 8 }}>
@@ -307,14 +286,6 @@ export default function HomePageNew2() {
   /* ════════ DESKTOP (>1024px) ════════ */
   return (
     <section style={{ ...sectionBg, padding: '44px 40px 80px' }}>
-
-      <div style={{ textAlign: 'center', marginBottom: 32 }}>
-        <div style={{ display: 'inline-flex', background: 'rgba(194,119,43,0.1)', border: '1px solid rgba(194,119,43,0.25)', borderRadius: 20, padding: '4px 16px', marginBottom: 12 }}>
-          <span style={{ fontSize: '0.62rem', color: '#c2772b', letterSpacing: 1.4, textTransform: 'uppercase', fontWeight: 600 }}>✦ Browse by Category</span>
-        </div>
-        <h2 style={{ color: '#1a1209', fontSize: '1.75rem', fontWeight: 600, margin: '0 0 10px', lineHeight: 1.2 }}>Explore Stay Options</h2>
-        <p style={{ color: '#6b5540', fontSize: '0.88rem', fontWeight: 400, margin: 0, lineHeight: 1.6 }}>From budget PGs to luxury villas — find exactly what fits you</p>
-      </div>
 
       <TabSwitcher activeTab={activeTab} setActiveTab={setActiveTab} size="lg" />
 
