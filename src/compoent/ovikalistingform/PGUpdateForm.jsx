@@ -542,6 +542,34 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
           }))
         : [{ type: "Attached", count: 1 }];
 
+      const amenityList = Object.keys(form.amenities || {}).filter(k => form.amenities[k]);
+
+      // Rebuild meta so nightly-specific fields (amenities, propertyType, etc.) are never wiped on update
+      const metaPayload = {
+        propertyType: form.propertyType || "Standard PG",
+        propertyCategory: form.propertyCategory || "PG",
+        amenities: amenityList,
+        beds: Number(totalBeds) || 0,
+        area: form.area || "",
+        bathrooms: finalBathroomDetails,
+        bedroomDetails: form.bedroomDetails || [],
+        checkInTime: form.check_in_time || "12:00",
+        checkOutTime: form.check_out_time || "11:00",
+        smokingAllowed: !!form.smokingAllowed,
+        petsAllowed: !!form.petsAllowed,
+        eventsAllowed: !!form.eventsAllowed,
+        drinkingAllowed: !!form.drinkingAllowed,
+        maxGuests: Number(form.maxGuests) || Number(totalBeds) || 1,
+        weekendRate: Number(form.weekend_rate) || 0,
+        cleaningFee: Number(form.cleaning_fee) || 0,
+        weeklyDiscountPct: Number(form.weekly_discount_pct) || 0,
+        monthlyDiscountPct: Number(form.monthly_discount_pct) || 0,
+        bookingType: form.bookingType,
+        furnishing: form.furnishing || "",
+        preferredTenants: form.preferredTenants || [],
+        ownerId: form.owner_id || user?.id || "admin",
+      };
+
       const payload = {
         property_name: form.title || "Untitled",
         description: form.mainDescription || "",
@@ -555,7 +583,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
         max_guests: Number(form.maxGuests) || Number(totalBeds) || 1,
         booking_type: String(form.bookingType || "0"),
         owner_id: form.owner_id || user?.id || "admin",
-        
+
         smoking_allowed: !!form.smokingAllowed,
         pets_allowed: !!form.petsAllowed,
         events_allowed: !!form.eventsAllowed,
@@ -569,7 +597,9 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
         monthly_discount_pct: Number(form.monthly_discount_pct) || 0,
         cover_photo_index: coverIndex,
 
-        amenities: JSON.stringify(Object.keys(form.amenities || {}).filter(k => form.amenities[k])),
+        // Store amenities both at top-level AND inside meta so both read paths work
+        amenities: JSON.stringify(amenityList),
+        meta: JSON.stringify(metaPayload),
         bedrooms: JSON.stringify(form.bedroomDetails || []),
         // ── YEH FIX: real bathroom array save ho raha hai ─────────────────────
         bathrooms: JSON.stringify(finalBathroomDetails),

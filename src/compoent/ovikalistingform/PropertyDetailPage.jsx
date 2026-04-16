@@ -177,7 +177,12 @@ const transformPropertyData = (data) => {
 
   return {
     ...combined,
-    amenities: parseJsonField(data.amenities || parsedMeta.amenities),
+    amenities: (() => {
+      const fromData = parseJsonField(data.amenities);
+      const fromMeta = parseJsonField(parsedMeta.amenities);
+      // prefer whichever source has actual items — create form stores in meta only
+      return fromData.length > 0 ? fromData : fromMeta;
+    })(),
     photos: Array.isArray(data.photos) ? data.photos : (data.photos ? [data.photos] : []),
     parsedBedrooms,
     parsedBathrooms: parseJsonField(data.bathrooms || parsedMeta.bathrooms),
