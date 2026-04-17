@@ -1001,16 +1001,17 @@ const PropertyListPage = () => {
       });
     }
 
+    // When user is searching, preserve the keyword-relevance order from applyFilter.
+    // Signature-first boost only applies on default (no search) recommended view.
+    const isSearching = search && search.trim().length > 0;
     const sortedResults = [...filteredResults].sort((a, b) => {
-      const aIsVerified = a.property_name?.toLowerCase().includes('ovika') || a.property_name?.toLowerCase().includes('signature');
-      const bIsVerified = b.property_name?.toLowerCase().includes('ovika') || b.property_name?.toLowerCase().includes('signature');
-      if (sortBy === 'recommended') {
+      if (sortBy === 'price_asc') return (Number(a.price) || 0) - (Number(b.price) || 0);
+      if (sortBy === 'price_desc') return (Number(b.price) || 0) - (Number(a.price) || 0);
+      if (sortBy === 'recommended' && !isSearching) {
+        const aIsVerified = a.property_name?.toLowerCase().includes('ovika') || a.property_name?.toLowerCase().includes('signature');
+        const bIsVerified = b.property_name?.toLowerCase().includes('ovika') || b.property_name?.toLowerCase().includes('signature');
         if (aIsVerified && !bIsVerified) return -1;
         if (!aIsVerified && bIsVerified) return 1;
-      } else if (sortBy === 'price_asc') {
-        return (Number(a.price) || 0) - (Number(b.price) || 0);
-      } else if (sortBy === 'price_desc') {
-        return (Number(b.price) || 0) - (Number(a.price) || 0);
       }
       return 0;
     });
