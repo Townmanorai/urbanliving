@@ -772,12 +772,65 @@ const PropertyListPage = () => {
         }
 
     if (q.trim()) {
-      const qL = q.toLowerCase();
-      result = result.filter(p =>
-        p.property_name?.toLowerCase().includes(qL) ||
-        p.address?.toLowerCase().includes(qL) ||
-        p.city?.toLowerCase().includes(qL)
-      );
+      // ── Smart multi-keyword search ─────────────────────────────────────────
+      // Strategy:
+      //   1. Split query into keywords, strip stop-words
+      //   2. Keep any property matching AT LEAST 1 keyword
+      //   3. Sort by match count DESC — more keyword hits appear first
+      //   "girls pg in noida" → ["girls","pg","noida"]
+      //   A Girls PG in Noida scores 3 → top; a random Noida flat scores 1 → bottom
+
+      const STOP_WORDS = new Set(['in','at','near','for','the','a','an','and','or','of','to','with','by','on','from']);
+
+      const matchesProp = (p, token) => {
+        const t = token.toLowerCase();
+        const name    = (p.property_name  || '').toLowerCase();
+        const addr    = (p.address        || '').toLowerCase();
+        const city    = (p.city           || '').toLowerCase();
+        const sector  = (p.sector         || '').toLowerCase();
+        const cat     = (p.property_category || '').toLowerCase();
+        const type    = (p.property_type  || '').toLowerCase();
+        const subcat  = (p.property_subCategory || p.property_subcategory || '').toLowerCase();
+
+        if (name.includes(t) || addr.includes(t) || city.includes(t) || sector.includes(t)) return true;
+        if (cat.includes(t) || type.includes(t) || subcat.includes(t)) return true;
+
+        // Semantic shortcuts
+        if (t === 'pg' && cat === 'pg') return true;
+        if (t === 'girls' && (name.includes('girl') || cat.includes('girl') || subcat.includes('girl') || type.includes('girl'))) return true;
+        if (t === 'boys' && (name.includes('boy') || cat.includes('boy') || subcat.includes('boy') || type.includes('boy'))) return true;
+        if (t === 'studio' && type.includes('studio')) return true;
+        if ((t === 'apartment' || t === 'flat') && (type.includes('apartment') || type.includes('flat') || cat.includes('apartment'))) return true;
+        if (t === 'noida' && (addr.includes('noida') || city.includes('noida') || sector.includes('noida'))) return true;
+        if (t === 'greater' && (addr.includes('greater') || city.includes('greater'))) return true;
+        if (t === 'gurugram' || t === 'gurgaon') {
+          if (addr.includes('gurugram') || city.includes('gurugram') || addr.includes('gurgaon') || city.includes('gurgaon')) return true;
+        }
+        if (t === 'furnished' && (name.includes('furnished') || type.includes('furnished'))) return true;
+        if (t === 'premium' && (name.includes('premium') || type.includes('premium') || cat.includes('premium'))) return true;
+        if (t === 'economy' && (name.includes('economy') || type.includes('economy') || cat.includes('economy'))) return true;
+        if (t === 'signature' && name.includes('signature')) return true;
+
+        return false;
+      };
+
+      const qL = q.trim().toLowerCase();
+      const keywords = qL.split(/\s+/).filter(w => w.length > 1 && !STOP_WORDS.has(w));
+      // If all words were stop-words, treat the whole phrase as one keyword
+      const tokens = keywords.length > 0 ? keywords : [qL];
+
+      // Score each property by how many keywords it matches
+      const scored = result
+        .map(p => {
+          const score = tokens.reduce((acc, token) => acc + (matchesProp(p, token) ? 1 : 0), 0);
+          return { p, score };
+        })
+        .filter(({ score }) => score > 0);
+
+      // Sort: more matches first
+      scored.sort((a, b) => b.score - a.score);
+
+      result = scored.map(({ p }) => p);
     }
 
     return result;
