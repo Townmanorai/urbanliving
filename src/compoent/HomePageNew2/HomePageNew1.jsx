@@ -534,9 +534,9 @@ export default function HomePageNew1() {
               {/* Image top */}
               <div style={{ position: 'relative', flex: '0 0 52%', overflow: 'hidden', minHeight: 110 }}>
                 <img
-                  src="/tm3image.jpeg"
+                  src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&q=80&auto=format&fit=crop"
                   alt="Nightly Stay"
-                  onError={e => { e.currentTarget.src = '/p1.png'; }}
+                  onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80'; }}
                   style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 />
                 <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 36, background: 'linear-gradient(to bottom, transparent, #fdf8f2)' }} />
@@ -595,9 +595,9 @@ export default function HomePageNew1() {
               {/* Image bottom */}
               <div style={{ flex: 1, position: 'relative', overflow: 'hidden', minHeight: 90 }}>
                 <img
-                  src="/tm2newimage.jpeg"
+                  src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&q=80&auto=format&fit=crop"
                   alt="Monthly Rental"
-                  onError={e => { e.currentTarget.src = '/home1desktop.jpeg'; }}
+                  onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&q=80'; }}
                   style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 />
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 32, background: 'linear-gradient(to top, transparent, #faebd0)' }} />
@@ -663,8 +663,8 @@ export default function HomePageNew1() {
           {/* Nightly Card */}
           <div style={{ background: '#fff', borderRadius: 20, overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.1)', border: '1px solid #f0e8da' }}>
             <div style={{ height: 180, position: 'relative', overflow: 'hidden' }}>
-              <img src="/tm3image.jpeg" alt="Nightly Stay"
-                onError={e => { e.currentTarget.src = '/p1.png'; }}
+              <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80&auto=format&fit=crop" alt="Nightly Stay"
+                onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80'; }}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
                 onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.04)'; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }} />
@@ -689,8 +689,8 @@ export default function HomePageNew1() {
           {/* Monthly Card */}
           <div style={{ background: '#fff', borderRadius: 20, overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.1)', border: '1px solid #f0e8da' }}>
             <div style={{ height: 180, position: 'relative', overflow: 'hidden' }}>
-              <img src="/tm2newimage.jpeg" alt="Monthly Rental"
-                onError={e => { e.currentTarget.src = '/home1desktop.jpeg'; }}
+              <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&q=80&auto=format&fit=crop" alt="Monthly Rental"
+                onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=600&q=80'; }}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
                 onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.04)'; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }} />
@@ -844,9 +844,9 @@ export default function HomePageNew1() {
               {/* IMAGE — top */}
               <div className="flip-img">
                 <img
-                  src="/tm3image.jpeg"
+                  src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=700&q=85&auto=format&fit=crop"
                   alt="Nightly Stay"
-                  onError={e => { e.currentTarget.src = '/p1.png'; }}
+                  onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=700&q=80'; }}
                 />
                 {/* soft bottom fade into content bg */}
                 <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to bottom, transparent, #fdf8f2)' }} />
@@ -856,7 +856,7 @@ export default function HomePageNew1() {
                 </div>
                 {/* Top-right: small second image cut */}
                 <div style={{ position: 'absolute', top: 12, right: 12, width: 58, height: 44, borderRadius: 10, overflow: 'hidden', border: '2px solid rgba(255,255,255,0.7)', boxShadow: '0 4px 14px rgba(0,0,0,0.22)' }}>
-                  <img src="/p2.png" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=150&q=75&auto=format&fit=crop" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                     onError={e => { e.currentTarget.style.display = 'none'; }} />
                 </div>
               </div>
@@ -947,15 +947,15 @@ export default function HomePageNew1() {
               {/* IMAGE — bottom */}
               <div className="flip-img" style={{ flex: 1 }}>
                 <img
-                  src="/tm2newimage.jpeg"
+                  src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=700&q=85&auto=format&fit=crop"
                   alt="Monthly Rental"
-                  onError={e => { e.currentTarget.src = '/home1desktop.jpeg'; }}
+                  onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=700&q=80'; }}
                 />
                 {/* soft top fade into content bg */}
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to top, transparent, #faebd0)' }} />
                 {/* Bottom-right: small second image cut */}
                 <div style={{ position: 'absolute', bottom: 12, right: 12, width: 58, height: 44, borderRadius: 10, overflow: 'hidden', border: '2px solid rgba(255,255,255,0.7)', boxShadow: '0 4px 14px rgba(0,0,0,0.22)' }}>
-                  <img src="/p3.png" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=150&q=75&auto=format&fit=crop" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                     onError={e => { e.currentTarget.style.display = 'none'; }} />
                 </div>
               </div>
