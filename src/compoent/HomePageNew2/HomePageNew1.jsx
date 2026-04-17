@@ -26,8 +26,27 @@ const typeIcon = { City: '🏙', Locality: '📍', Category: '🔍', Near: '📌
 
 /* ── Search Bar with Suggestions ── */
 function SearchBar({ searchText, setSearchText, showSuggestions, setShowSuggestions, searchRef, filteredSuggestions, handleSearch, handleSuggestionClick, handleKeyDown, compact, placeholder }) {
+  const wrapRef = useRef(null);
+  const [dropPos, setDropPos] = useState(null);
+
+  // Recalculate dropdown position whenever it opens or window changes.
+  // Uses position:fixed so it escapes any overflow:hidden parent (e.g. the main card).
+  useEffect(() => {
+    if (!showSuggestions) { setDropPos(null); return; }
+    const update = () => {
+      const el = wrapRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      setDropPos({ top: r.bottom + 6, left: r.left, width: r.width });
+    };
+    update();
+    window.addEventListener('scroll', update, true);
+    window.addEventListener('resize', update);
+    return () => { window.removeEventListener('scroll', update, true); window.removeEventListener('resize', update); };
+  }, [showSuggestions]);
+
   return (
-    <div ref={searchRef} style={{ position: 'relative' }}>
+    <div ref={el => { wrapRef.current = el; if (searchRef) searchRef.current = el; }} style={{ position: 'relative' }}>
       <div style={{
         background: '#fff',
         borderRadius: 14,
@@ -74,14 +93,17 @@ function SearchBar({ searchText, setSearchText, showSuggestions, setShowSuggesti
         </button>
       </div>
 
-      {/* Suggestions Dropdown */}
-      {showSuggestions && filteredSuggestions.length > 0 && (
+      {/* Suggestions Dropdown — position:fixed escapes overflow:hidden parents */}
+      {showSuggestions && filteredSuggestions.length > 0 && dropPos && (
         <div style={{
-          position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0,
+          position: 'fixed',
+          top: dropPos.top,
+          left: dropPos.left,
+          width: dropPos.width,
           background: '#fff', borderRadius: 12,
-          boxShadow: '0 12px 40px rgba(0,0,0,0.14)',
+          boxShadow: '0 12px 40px rgba(0,0,0,0.16)',
           border: '1.5px solid #f0e8da',
-          zIndex: 999, overflow: 'hidden',
+          zIndex: 99999, overflow: 'hidden',
         }}>
           {searchText.trim() === '' && (
             <div style={{ padding: '8px 14px 4px', fontSize: '0.6rem', color: '#b8a080', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }}>
@@ -112,8 +134,8 @@ function SearchBar({ searchText, setSearchText, showSuggestions, setShowSuggesti
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#1a1209' }}>
                   {searchText.trim() ? (
-                    s.label.split(new RegExp(`(${searchText})`, 'gi')).map((part, j) =>
-                      part.toLowerCase() === searchText.toLowerCase()
+                    s.label.split(new RegExp(`(${searchText.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')).map((part, j) =>
+                      part.toLowerCase() === searchText.trim().toLowerCase()
                         ? <span key={j} style={{ color: '#c2772b' }}>{part}</span>
                         : part
                     )
@@ -402,14 +424,9 @@ export default function HomePageNew1() {
     { label: 'Noida', type: 'City' },
     { label: 'Greater Noida', type: 'City' },
     { label: 'PG in Noida', type: 'Category' },
-    { label: 'Sector 62, Noida', type: 'Locality' },
-    { label: 'Knowledge Park 3, Greater Noida', type: 'Locality' },
-    { label: 'Furnished Flat Noida', type: 'Category' },
-    { label: 'PG near IT Park Noida', type: 'Near' },
-    { label: 'Monthly Rental Noida', type: 'Category' },
   ];
   const filteredSuggestions = searchText.trim().length > 0
-    ? SUGGESTIONS.filter(s => s.label.toLowerCase().includes(searchText.toLowerCase())).slice(0, 10)
+    ? SUGGESTIONS.filter(s => s.label.toLowerCase().includes(searchText.toLowerCase())).slice(0, 3)
     : POPULAR_DEFAULT;
 
   const handleSearch = (rentalType) => {
@@ -433,12 +450,20 @@ export default function HomePageNew1() {
     if (e.key === 'Enter') handleSearch(null);
   };
 
+  // Quick-nav chips: each maps to a specific /properties URL
+  const QUICK_CHIPS = [
+    { label: 'Signature Properties', nav: () => { const p = new URLSearchParams(); p.set('category', 'Signature Stays'); navigate(`/properties?${p}`); } },
+    { label: 'PGs',                  nav: () => { const p = new URLSearchParams(); p.set('category', 'PG'); p.set('rentalType', 'long'); navigate(`/properties?${p}`); } },
+    { label: 'Economy',              nav: () => { const p = new URLSearchParams(); p.set('property_type', 'Co-living Space'); navigate(`/properties?${p}`); } },
+    { label: 'Premium',              nav: () => { const p = new URLSearchParams(); p.set('category', 'Apartment'); navigate(`/properties?${p}`); } },
+    { label: 'Gurugram',             nav: () => { const p = new URLSearchParams(); p.set('search', 'Gurugram'); p.set('city', 'Gurugram'); navigate(`/properties?${p}`); } },
+  ];
+
   const shortDisplay = ratesLoading ? '—' : (shortRate ? `${fmt(shortRate)}/night` : '₹2,499/night');
   const longDisplay = '₹4,999/month';
 
   /* ════════ MOBILE (≤640px) ════════ */
   if (bp === 'mobile') {
-    const popularChips = ['PG in Sector 62', 'Studio Apartment', 'Co-Living Space', '1BHK', 'Short Stay', 'PG near Metro', 'Furnished Flat'];
     return (
       <div style={{ background: '#fff', fontFamily: "'Poppins',sans-serif", boxSizing: 'border-box' }}>
 
@@ -469,16 +494,16 @@ export default function HomePageNew1() {
             handleKeyDown={handleKeyDown}
           />
 
-          {/* Popular Searches */}
+          {/* Quick Nav Chips */}
           <div style={{ marginTop: 14, marginBottom: 16 }}>
             <div style={{ fontSize: '0.57rem', color: '#b0987c', fontWeight: 600, letterSpacing: 1.1, textTransform: 'uppercase', marginBottom: 8 }}>
               Popular Searches
             </div>
             <div style={{ display: 'flex', gap: 7, overflowX: 'auto', paddingBottom: 2, msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
-              {popularChips.map(chip => (
+              {QUICK_CHIPS.map(chip => (
                 <button
-                  key={chip}
-                  onClick={() => { setSearchText(chip); handleSearch(null); }}
+                  key={chip.label}
+                  onClick={chip.nav}
                   style={{
                     flexShrink: 0, background: '#fdf6ee', border: '1px solid #e8c88a',
                     borderRadius: 20, padding: '5px 13px', fontSize: '0.67rem', fontWeight: 600,
@@ -486,7 +511,7 @@ export default function HomePageNew1() {
                     whiteSpace: 'nowrap', outline: 'none',
                   }}
                 >
-                  {chip}
+                  {chip.label}
                 </button>
               ))}
             </div>
@@ -739,19 +764,13 @@ export default function HomePageNew1() {
               {/* Search bar */}
               <SearchBar compact={false} searchText={searchText} setSearchText={setSearchText} showSuggestions={showSuggestions} setShowSuggestions={setShowSuggestions} searchRef={searchRef} filteredSuggestions={filteredSuggestions} handleSearch={handleSearch} handleSuggestionClick={handleSuggestionClick} handleKeyDown={handleKeyDown} />
 
-              {/* Popular searches */}
+              {/* Quick Nav Chips */}
               <div style={{ marginTop: 18 }}>
                 <div style={{ fontSize: '0.58rem', color: '#b8a080', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>🔍 Popular Searches</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                  {[
-                    { label: 'PG in Sector 62', rentalType: 'long' },
-                    { label: 'Studio Apartment', rentalType: 'short' },
-                    { label: 'Co-Living Space', rentalType: 'long' },
-                    { label: '1BHK Monthly', rentalType: 'long' },
-                    { label: 'Short Stay Noida', rentalType: 'short' },
-                  ].map(tag => (
-                    <span key={tag.label}
-                      onClick={() => handleSearch(tag.rentalType)}
+                  {QUICK_CHIPS.map(chip => (
+                    <span key={chip.label}
+                      onClick={chip.nav}
                       style={{
                         fontSize: '0.68rem', color: '#6b5540', background: '#fff',
                         border: '1px solid #e8d8c0', borderRadius: 20, padding: '5px 12px',
@@ -759,7 +778,7 @@ export default function HomePageNew1() {
                       }}
                       onMouseEnter={e => { e.currentTarget.style.background = '#fdf0e0'; e.currentTarget.style.borderColor = '#c2772b'; e.currentTarget.style.color = '#c2772b'; }}
                       onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#e8d8c0'; e.currentTarget.style.color = '#6b5540'; }}
-                    >{tag.label}</span>
+                    >{chip.label}</span>
                   ))}
                 </div>
               </div>

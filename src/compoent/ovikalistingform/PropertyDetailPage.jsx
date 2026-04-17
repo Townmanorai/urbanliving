@@ -67,6 +67,18 @@ const formatCurrency = (num) => {
   return Number(num).toLocaleString('en-IN');
 };
 
+// Converts "HH:MM" (24-hour) → "H:MM AM/PM"  e.g. "00:00" → "12:00 AM", "13:30" → "1:30 PM"
+const formatTime12h = (time) => {
+  if (!time) return '';
+  const parts = String(time).split(':');
+  const h = parseInt(parts[0], 10);
+  const m = parseInt(parts[1] || '0', 10);
+  if (isNaN(h)) return time;
+  const period = h < 12 ? 'AM' : 'PM';
+  const hour12 = h % 12 || 12;
+  return `${hour12}:${String(m).padStart(2, '0')} ${period}`;
+};
+
 
 const parseJsonFieldForCount = (field) => {
   if (!field) return [];
@@ -662,15 +674,40 @@ const ImageViewer = ({ images, initialIndex, onClose }) => {
   );
 };
 
-// ─── PHOTO GALLERY SLIDER  (ONNX — exact same as ImageClassificationModal) ──
-const GALLERY_CLASSES = ['bathroom','bedroom','dining','gaming','kitchen','laundry','living','office','terrace','yard'];
-const GALLERY_COLORS  = { bathroom:'#3b82f6', bedroom:'#8b5cf6', dining:'#f97316', gaming:'#ef4444', kitchen:'#22c55e', laundry:'#06b6d4', living:'#14b8a6', office:'#6366f1', terrace:'#eab308', yard:'#84cc16' };
-const GALLERY_ICONS   = { bathroom:'🚿', bedroom:'🛏️', dining:'🍽️', gaming:'🎮', kitchen:'🍳', laundry:'👕', living:'🛋️', office:'💼', terrace:'🌇', yard:'🌿' };
-const GALLERY_LABELS  = { bathroom:'Bathroom', bedroom:'Bedroom', dining:'Dining Area', gaming:'Gaming Room', kitchen:'Kitchen', laundry:'Laundry', living:'Living Room', office:'Office / Study', terrace:'Terrace', yard:'Yard / Garden' };
-const GALLERY_MEAN    = [0.485, 0.456, 0.406];
-const GALLERY_STD     = [0.229, 0.224, 0.225];
+// ─── PHOTO GALLERY SLIDER  (ONNX — mirrors ImageClassificationModal) ──────────
+// Display group maps — gaming removed (merged into living)
+const GALLERY_COLORS  = { bathroom:'#3b82f6', bedroom:'#8b5cf6', kitchen:'#22c55e', living:'#14b8a6', terrace:'#eab308', yard:'#84cc16' };
+const GALLERY_ICONS   = { bathroom:'🚿', bedroom:'🛏️', kitchen:'🍳', living:'🛋️', terrace:'🌇', yard:'🌿' };
+const GALLERY_LABELS  = { bathroom:'Bathroom', bedroom:'Bedroom', kitchen:'Kitchen & Dining', living:'Living Room', terrace:'Terrace', yard:'Yard / Garden' };
 
-// ── Exact copy of ImageClassificationModal's softmax ──
+// Default meta matches the current bestmodel.onnx (MobileNetV3).
+// After export_vit_to_onnx.py is run → /public/model_meta.json overrides at runtime.
+const GALLERY_DEFAULT_META = {
+  classes:    ['bathroom','bedroom','dining','gaming','kitchen','laundry','living','office','terrace','yard'],
+  image_mean: [0.485, 0.456, 0.406],
+  image_std:  [0.229, 0.224, 0.225],
+  input_key:  'input',
+};
+
+// Semantic merge groups: probabilities of these classes are pooled into the target key
+// before the winner is picked — eliminates confusion between visually similar classes
+const GALLERY_POOL = {
+  kitchen: ['kitchen', 'dining'],   // dining photos always go to Kitchen & Dining
+  living:  ['living',  'gaming'],   // gaming room looks like living room → merge
+};
+
+// Display order (gaming excluded — pooled into living)
+const GALLERY_DISPLAY_ORDER = ['bedroom','bathroom','living','kitchen','terrace','yard'];
+
+// Thresholds:
+//  STRONG  — 2 out of 3 centered crops agree  → only need 33% avg confidence
+//  WEAK    — crops disagree                    → need 42% avg confidence
+//  ALWAYS  — if any single crop scores ≥ this, that class is locked in regardless
+const GALLERY_THRESH_STRONG = 0.33;
+const GALLERY_THRESH_WEAK   = 0.42;
+const GALLERY_THRESH_LOCK   = 0.65; // single-crop lock-in (very high confidence)
+
+// ── softmax ────────────────────────────────────────────────────────────────────
 function gallerySoftmax(arr) {
   const max  = Math.max(...arr);
   const exps = arr.map(v => Math.exp(v - max));
@@ -678,69 +715,148 @@ function gallerySoftmax(arr) {
   return exps.map(v => v / sum);
 }
 
-// ── imageToTensor — fetch→blob to avoid browser-cache CORS taint issue ──
-// Problem: property page shows images WITHOUT crossOrigin → browser caches them
-// without CORS headers. Then classifying with crossOrigin='anonymous' hits the
-// cached non-CORS version → SecurityError. Fix: fetch as blob (same-origin blob
-// URL → canvas reads freely, no taint).
-async function galleryImageToTensor(url) {
-  const MEAN = GALLERY_MEAN, STD = GALLERY_STD;
-
-  const buildTensor = (img) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = canvas.height = 224;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, 224, 224);
-    const { data } = ctx.getImageData(0, 0, 224, 224);
-    const tensor = new Float32Array(3 * 224 * 224);
-    for (let i = 0; i < 224 * 224; i++) {
-      tensor[i]               = (data[i*4]   / 255 - MEAN[0]) / STD[0];
-      tensor[224*224 + i]     = (data[i*4+1] / 255 - MEAN[1]) / STD[1];
-      tensor[224*224*2 + i]   = (data[i*4+2] / 255 - MEAN[2]) / STD[2];
-    }
-    return tensor;
-  };
-
-  const loadFrom = (src, useCors) => new Promise((res, rej) => {
-    const img = new Image();
-    if (useCors) img.crossOrigin = 'anonymous';
-    img.onload  = () => { try { res(buildTensor(img)); } catch(e) { rej(e); } };
-    img.onerror = rej;
-    img.src = src;
-  });
-
-  // Strategy 1: fetch → blob URL (bypasses cache taint — most reliable)
+// ── Load image via fetch→blob to avoid browser-cache CORS taint ───────────────
+async function galleryLoadImage(url) {
   try {
     const resp   = await fetch(url, { cache: 'no-store' });
     const blob   = await resp.blob();
     const objUrl = URL.createObjectURL(blob);
-    try   { const t = await loadFrom(objUrl, false); return t; }
-    finally { URL.revokeObjectURL(objUrl); }
+    return await new Promise((res, rej) => {
+      const img = new Image();
+      img.onload  = () => { URL.revokeObjectURL(objUrl); res(img); };
+      img.onerror = () => { URL.revokeObjectURL(objUrl); rej(new Error('load')); };
+      img.src = objUrl;
+    });
   } catch { /* fall through */ }
-
-  // Strategy 2: cache-bust + crossOrigin (forces fresh CORS-aware request)
   try {
     const bust = url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
-    return await loadFrom(bust, true);
+    return await new Promise((res, rej) => {
+      const img = new Image(); img.crossOrigin = 'anonymous';
+      img.onload = () => res(img); img.onerror = rej; img.src = bust;
+    });
   } catch { /* fall through */ }
-
-  // Strategy 3: direct crossOrigin (works if not cached yet)
-  return loadFrom(url, true);
+  return new Promise((res, rej) => {
+    const img = new Image(); img.crossOrigin = 'anonymous';
+    img.onload = () => res(img); img.onerror = rej; img.src = url;
+  });
 }
 
-// ── Exact copy of ImageClassificationModal's classifyImage ──
-async function galleryClassifyOne(session, url) {
-  const tensorData  = await galleryImageToTensor(url);
-  const inputTensor = new ort.Tensor('float32', tensorData, [1, 3, 224, 224]);
-  const feeds       = { input: inputTensor };
-  const results     = await session.run(feeds);
-  const outputKey   = Object.keys(results)[0];
-  const logits      = Array.from(results[outputKey].data);
-  const probs       = gallerySoftmax(logits);
-  const sorted      = probs
-    .map((p, i) => ({ label: GALLERY_CLASSES[i], confidence: p }))
+// ── Build tensor from a crop region ───────────────────────────────────────────
+function galleryBuildCropTensor(img, cropX, cropY, cropW, cropH, mean, std) {
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = 224;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, 224, 224);
+  const { data } = ctx.getImageData(0, 0, 224, 224);
+  const tensor = new Float32Array(3 * 224 * 224);
+  for (let i = 0; i < 224 * 224; i++) {
+    tensor[i]             = (data[i*4]   / 255 - mean[0]) / std[0];
+    tensor[224*224 + i]   = (data[i*4+1] / 255 - mean[1]) / std[1];
+    tensor[224*224*2 + i] = (data[i*4+2] / 255 - mean[2]) / std[2];
+  }
+  return tensor;
+}
+
+// ── Apply semantic pooling on a probs array (mutates in place) ────────────────
+function galleryApplyPooling(avgProbs, classes) {
+  for (const [primaryKey, memberKeys] of Object.entries(GALLERY_POOL)) {
+    const pi = classes.indexOf(primaryKey);
+    if (pi < 0) continue;
+    for (const mk of memberKeys) {
+      if (mk === primaryKey) continue;
+      const mi = classes.indexOf(mk);
+      if (mi >= 0) { avgProbs[pi] += avgProbs[mi]; avgProbs[mi] = 0; }
+    }
+  }
+  ['laundry','office'].forEach(cls => { const i = classes.indexOf(cls); if (i >= 0) avgProbs[i] = 0; });
+}
+
+// ── Classification engine ──────────────────────────────────────────────────────
+//
+//  Strategy: 3 centered crops (full → 90% center → 80% center), weighted average,
+//  adaptive threshold based on crop agreement.
+//
+//  WHY centered only (no corners):
+//  Property photos are wide-angle. Corner crops show wall/ceiling/floor with zero
+//  room-specific features. Running 5 crops including corners drags a 52% bedroom
+//  confidence down to ~30% → wrong "Others". All 3 crops here stay focused on the
+//  main room content, giving consistent signals.
+//
+//  WHY adaptive threshold:
+//  If 2+ crops independently vote the same top class → strong signal → threshold 0.33.
+//  If crops disagree → uncertain image → require 0.42 to avoid wrong hard calls.
+//  If any single crop scores ≥ 0.65 → lock it in regardless (very clear image).
+//
+async function galleryClassifyOne(session, url, meta) {
+  const { classes, image_mean, image_std, input_key } = meta;
+
+  // ── Step 1: Load image once ──────────────────────────────────────────────
+  const img = await galleryLoadImage(url);
+  const W = img.naturalWidth || img.width;
+  const H = img.naturalHeight || img.height;
+
+  // ── Step 2: 3 centered crops with decreasing size + weights ─────────────
+  //  Crop 0: full image           weight 0.50  (most context)
+  //  Crop 1: 90% center square    weight 0.30  (removes thin border noise)
+  //  Crop 2: 80% center square    weight 0.20  (focuses on main subject)
+  const cropDefs = [
+    { r: 1.00, w: 0.50 },
+    { r: 0.90, w: 0.30 },
+    { r: 0.80, w: 0.20 },
+  ];
+
+  // ── Step 3: Run inference on all 3 crops ────────────────────────────────
+  const cropResults = []; // { probs, top1 }
+  for (const { r, w } of cropDefs) {
+    const cw   = Math.floor(W * r), ch = Math.floor(H * r);
+    const cx   = Math.floor((W - cw) / 2), cy = Math.floor((H - ch) / 2);
+    const td   = galleryBuildCropTensor(img, cx, cy, cw, ch, image_mean, image_std);
+    const t    = new ort.Tensor('float32', td, [1, 3, 224, 224]);
+    const out  = await session.run({ [input_key]: t });
+    const prob = gallerySoftmax(Array.from(Object.values(out)[0].data));
+    // Apply pooling per-crop before voting so dining/gaming are merged correctly
+    const pooled = [...prob];
+    galleryApplyPooling(pooled, classes);
+    ['laundry','office'].forEach(cls => { const i = classes.indexOf(cls); if (i >= 0) pooled[i] = 0; });
+    const top1 = classes[pooled.indexOf(Math.max(...pooled))];
+    cropResults.push({ probs: prob, pooledProbs: pooled, top1, weight: w });
+  }
+
+  // ── Step 4: Weighted average of raw probs, then apply pooling once ───────
+  const avgProbs = new Array(classes.length).fill(0);
+  for (const { probs, weight } of cropResults) {
+    for (let i = 0; i < classes.length; i++) avgProbs[i] += probs[i] * weight;
+  }
+  galleryApplyPooling(avgProbs, classes);
+
+  // ── Step 5: Count votes (how many crops agree on the same top class) ─────
+  const voteCounts = {};
+  for (const { top1 } of cropResults) voteCounts[top1] = (voteCounts[top1] || 0) + 1;
+
+  // ── Step 6: Pick winner from weighted-averaged pooled probs ──────────────
+  const sorted = avgProbs
+    .map((p, i) => ({ label: classes[i], confidence: p }))
+    .filter(x => x.confidence > 0)
     .sort((a, b) => b.confidence - a.confidence);
-  return { label: sorted[0].label, confidence: sorted[0].confidence, top3: sorted.slice(0, 3) };
+
+  if (!sorted.length) return { label: '_other', confidence: 0, top3: [] };
+
+  const winner = sorted[0];
+  const votes  = voteCounts[winner.label] || 0;
+
+  // Lock-in: any single crop gave ≥ 65% for this class → trust it
+  const maxSingleCropConf = Math.max(...cropResults.map(c => c.pooledProbs[classes.indexOf(winner.label)] || 0));
+  if (maxSingleCropConf >= GALLERY_THRESH_LOCK) {
+    return { label: winner.label, confidence: winner.confidence, top3: sorted.slice(0, 3) };
+  }
+
+  // Adaptive threshold based on how many crops agree
+  const threshold = votes >= 2 ? GALLERY_THRESH_STRONG : GALLERY_THRESH_WEAK;
+  if (winner.confidence < threshold) {
+    return { label: '_other', confidence: winner.confidence, top3: sorted.slice(0, 3) };
+  }
+
+  return { label: winner.label, confidence: winner.confidence, top3: sorted.slice(0, 3) };
 }
 
 const PhotoGallerySlider = ({ property, onClose }) => {
@@ -752,6 +868,7 @@ const PhotoGallerySlider = ({ property, onClose }) => {
   const [lightbox,    setLightbox]    = useState({ open: false, urls: [], idx: 0 });
   const [visible,     setVisible]     = useState(false);
   const sessionRef  = useRef(null);
+  const metaRef     = useRef(GALLERY_DEFAULT_META);
   const closingRef  = useRef(false);
 
   // Slide up on mount
@@ -790,11 +907,20 @@ const PhotoGallerySlider = ({ property, onClose }) => {
     return () => window.removeEventListener('keydown', onKey);
   }, [lightbox]);
 
-  // ── Load ONNX model (exact same as ImageClassificationModal) ──
+  // ── Load model_meta.json + ONNX model ────────────────────────────────────
   useEffect(() => {
     (async () => {
       try {
         setModelStatus('loading');
+
+        // Load model_meta.json (generated by export_vit_to_onnx.py)
+        try {
+          const metaRes = await fetch('/model_meta.json');
+          if (metaRes.ok) metaRef.current = await metaRes.json();
+        } catch {
+          console.warn('model_meta.json not found, using default ViT meta');
+        }
+
         sessionRef.current = await ort.InferenceSession.create('/bestmodel.onnx', {
           executionProviders: ['wasm'],
         });
@@ -806,11 +932,10 @@ const PhotoGallerySlider = ({ property, onClose }) => {
     })();
   }, []);
 
-  // ── Start classifying once model is ready (exact same as ImageClassificationModal) ──
+  // ── Start classifying once model is ready ────────────────────────────────
   useEffect(() => {
     if (modelStatus !== 'ready') return;
 
-    // getPhotos logic — exact copy from ImageClassificationModal
     let list = [];
     if (Array.isArray(property.photos)) list = property.photos;
     else if (typeof property.photos === 'string') {
@@ -830,7 +955,7 @@ const PhotoGallerySlider = ({ property, onClose }) => {
     let completed = 0;
     list.forEach(async (url) => {
       try {
-        const res = await galleryClassifyOne(sessionRef.current, url);
+        const res = await galleryClassifyOne(sessionRef.current, url, metaRef.current);
         setResults(prev => ({ ...prev, [url]: { ...res, loading: false } }));
       } catch (e) {
         console.warn('classify failed for', url, e);
@@ -849,7 +974,7 @@ const PhotoGallerySlider = ({ property, onClose }) => {
     setTimeout(onClose, 300);
   };
 
-  // Build groups
+  // Build groups — classifier already handles pooling; just bucket by label
   const grouped = {};
   photos.forEach(url => {
     const r = results[url];
@@ -859,8 +984,8 @@ const PhotoGallerySlider = ({ property, onClose }) => {
     grouped[lbl].push(url);
   });
 
-  const classifying   = done < photos.length;
-  const knownGroups   = GALLERY_CLASSES.filter(g => grouped[g]?.length > 0);
+  const classifying = done < photos.length;
+  const knownGroups = GALLERY_DISPLAY_ORDER.filter(g => grouped[g]?.length > 0);
   const otherPhotos   = grouped['_other'] || [];
   const displayGroups = activeTab === 'all' ? knownGroups : (knownGroups.includes(activeTab) ? [activeTab] : []);
 
@@ -947,8 +1072,8 @@ const PhotoGallerySlider = ({ property, onClose }) => {
                     <img src={getPhotoUrl(url)} alt="" loading="lazy" />
                     <div className="pgs-card-tag pgs-card-tag--classifying">
                       {!r || r.loading ? '⏳ Classifying...'
-                        : r.error ? 'Other'
-                        : `${GALLERY_ICONS[r.label]} ${GALLERY_LABELS[r.label]}`}
+                        : (r.error || r.label === '_other') ? '📦 Other'
+                        : `${GALLERY_ICONS[r.label] || '📷'} ${GALLERY_LABELS[r.label] || r.label}`}
                     </div>
                   </div>
                 );
@@ -981,7 +1106,7 @@ const PhotoGallerySlider = ({ property, onClose }) => {
             {activeTab === 'all' && otherPhotos.length > 0 && (
               <div className="pgs-section">
                 <div className="pgs-section-hdr">
-                  <span className="pgs-section-name">Other Images</span>
+                  <span className="pgs-section-name">📦 Others</span>
                   <span className="pgs-section-cnt">{otherPhotos.length}</span>
                 </div>
                 <div className="pgs-grid">
@@ -2765,13 +2890,13 @@ const PropertyDetailPage = () => {
                   {(property.check_in_time || property.meta?.check_in_time) && (
                     <div className="amenity-card rule-card">
                       <div className="rule-icon"><Clock size={18} color="#6366f1" /></div>
-                      <div className="rule-info"><span className="rule-label">Check-In</span><span>{property.check_in_time || property.meta?.check_in_time}</span></div>
+                      <div className="rule-info"><span className="rule-label">Check-In</span><span>{formatTime12h(property.check_in_time || property.meta?.check_in_time)}</span></div>
                     </div>
                   )}
                   {(property.check_out_time || property.meta?.check_out_time) && (
                     <div className="amenity-card rule-card">
                       <div className="rule-icon"><Clock size={18} color="#16a34a" /></div>
-                      <div className="rule-info"><span className="rule-label">Check-Out</span><span>{property.check_out_time || property.meta?.check_out_time}</span></div>
+                      <div className="rule-info"><span className="rule-label">Check-Out</span><span>{formatTime12h(property.check_out_time || property.meta?.check_out_time)}</span></div>
                     </div>
                   )}
                   {(property.securityDeposit > 0 || isOvikaOwnProperty) && (
@@ -2926,11 +3051,11 @@ const PropertyDetailPage = () => {
                 <div className="date-picker-mock">
                   <div className="date-box">
                     <label>{pricingMode === 'monthly' ? 'CHECK-IN TIME' : 'CHECK-IN'}</label>
-                    <span>{formData.checkInDate ? new Date(formData.checkInDate).toLocaleDateString() : (property.check_in_time || 'Select Date')}</span>
+                    <span>{formData.checkInDate ? new Date(formData.checkInDate).toLocaleDateString() : (formatTime12h(property.check_in_time) || 'Select Date')}</span>
                   </div>
                   <div className="date-box">
                     <label>{pricingMode === 'monthly' ? 'NOTICE PERIOD' : 'CHECK-OUT TIME'}</label>
-                    <span>{pricingMode === 'monthly' ? (() => { const np = property.noticePeriod ?? property.meta?.noticePeriod; return (property.property_name?.toLowerCase().includes('signature') || Number(np) === 0) ? 'Nil' : `${np || 30} Days`; })() : (property.check_out_time || property.meta?.check_out_time || '11:00')}</span>
+                    <span>{pricingMode === 'monthly' ? (() => { const np = property.noticePeriod ?? property.meta?.noticePeriod; return (property.property_name?.toLowerCase().includes('signature') || Number(np) === 0) ? 'Nil' : `${np || 30} Days`; })() : formatTime12h(property.check_out_time || property.meta?.check_out_time || '11:00')}</span>
                   </div>
                 </div>
 

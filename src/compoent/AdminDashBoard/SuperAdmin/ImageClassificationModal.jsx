@@ -4,28 +4,31 @@ import * as ort from 'onnxruntime-web';
 // Disable multi-threading to avoid extra module loading issues
 ort.env.wasm.numThreads = 1;
 
-const CLASSES = ['bathroom','bedroom','dining','gaming','kitchen','laundry','living','office','terrace','yard'];
-
+// Display group maps — gaming removed (pooled into living)
 const ROOM_COLORS = {
-  bathroom: '#3b82f6', bedroom: '#8b5cf6', dining: '#f97316',
-  gaming: '#ef4444',   kitchen: '#22c55e', laundry: '#06b6d4',
-  living:  '#14b8a6',  office:  '#6366f1', terrace: '#eab308',
-  yard:    '#84cc16',
+  bathroom: '#3b82f6', bedroom: '#8b5cf6',
+  kitchen:  '#22c55e', living:  '#14b8a6',
+  terrace:  '#eab308', yard:    '#84cc16',
 };
-const ROOM_ICONS = {
-  bathroom: '🚿', bedroom: '🛏️', dining: '🍽️', gaming: '🎮',
-  kitchen:  '🍳', laundry: '👕', living: '🛋️', office: '💼',
-  terrace:  '🌇', yard:    '🌿',
-};
+const ROOM_ICONS  = { bathroom:'🚿', bedroom:'🛏️', kitchen:'🍳', living:'🛋️', terrace:'🌇', yard:'🌿' };
 const ROOM_LABELS = {
-  bathroom: 'Bathroom',    bedroom: 'Bedroom',       dining:  'Dining Area',
-  gaming:   'Gaming Room', kitchen: 'Kitchen',        laundry: 'Laundry',
-  living:   'Living Room', office:  'Office / Study', terrace: 'Terrace',
-  yard:     'Yard / Garden',
+  bathroom: 'Bathroom', bedroom: 'Bedroom', kitchen: 'Kitchen & Dining',
+  living:   'Living Room', terrace: 'Terrace', yard: 'Yard / Garden',
 };
 
-const MEAN = [0.485, 0.456, 0.406];
-const STD  = [0.229, 0.224, 0.225];
+// Semantic merge: probabilities of member classes pooled into primary before winner picked
+const ROOM_POOL = {
+  kitchen: ['kitchen', 'dining'],
+  living:  ['living',  'gaming'],
+};
+
+// Display order for tabs
+const DISPLAY_ORDER = ['bedroom','bathroom','living','kitchen','terrace','yard'];
+
+// Thresholds (mirrors PropertyDetailPage logic exactly)
+const ROOM_THRESH_STRONG = 0.33; // 2+ crops agree
+const ROOM_THRESH_WEAK   = 0.42; // crops disagree
+const ROOM_THRESH_LOCK   = 0.65; // single-crop lock-in
 
 // ── softmax ───────────────────────────────────────────────────────────────────
 function softmax(arr) {
@@ -35,53 +38,106 @@ function softmax(arr) {
   return exps.map(v => v / sum);
 }
 
-// ── image url → Float32Array tensor [1,3,224,224] ─────────────────────────────
-async function imageToTensor(url) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      try {
-        const canvas = document.createElement('canvas');
-        canvas.width  = 224;
-        canvas.height = 224;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, 224, 224);
-        const { data } = ctx.getImageData(0, 0, 224, 224); // RGBA
+// ── Build tensor from a crop region ──────────────────────────────────────────
+function buildCropTensor(img, cropX, cropY, cropW, cropH, mean, std) {
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = 224;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, 224, 224);
+  const { data } = ctx.getImageData(0, 0, 224, 224);
+  const tensor = new Float32Array(3 * 224 * 224);
+  for (let i = 0; i < 224 * 224; i++) {
+    tensor[i]             = (data[i*4]   / 255 - mean[0]) / std[0];
+    tensor[224*224 + i]   = (data[i*4+1] / 255 - mean[1]) / std[1];
+    tensor[224*224*2 + i] = (data[i*4+2] / 255 - mean[2]) / std[2];
+  }
+  return tensor;
+}
 
-        const tensor = new Float32Array(3 * 224 * 224);
-        for (let i = 0; i < 224 * 224; i++) {
-          tensor[i]                 = (data[i * 4]     / 255 - MEAN[0]) / STD[0]; // R
-          tensor[224 * 224 + i]     = (data[i * 4 + 1] / 255 - MEAN[1]) / STD[1]; // G
-          tensor[224 * 224 * 2 + i] = (data[i * 4 + 2] / 255 - MEAN[2]) / STD[2]; // B
-        }
-        resolve(tensor);
-      } catch (e) { reject(e); }
-    };
-    img.onerror = reject;
-    img.src = url;
+// ── Apply semantic pooling on probs array ─────────────────────────────────────
+function applyPooling(avgProbs, classes) {
+  for (const [pk, members] of Object.entries(ROOM_POOL)) {
+    const pi = classes.indexOf(pk);
+    if (pi < 0) continue;
+    for (const mk of members) {
+      if (mk === pk) continue;
+      const mi = classes.indexOf(mk);
+      if (mi >= 0) { avgProbs[pi] += avgProbs[mi]; avgProbs[mi] = 0; }
+    }
+  }
+  ['laundry','office'].forEach(cls => { const i = classes.indexOf(cls); if (i >= 0) avgProbs[i] = 0; });
+}
+
+// ── Load image (modal — no cache taint issue, direct CORS load) ───────────────
+function loadImageForModal(url) {
+  return new Promise((res, rej) => {
+    const img = new Image(); img.crossOrigin = 'anonymous';
+    img.onload = () => res(img); img.onerror = rej; img.src = url;
   });
 }
 
-// ── classify one image using loaded ONNX session ──────────────────────────────
-async function classifyImage(session, url) {
-  const tensorData  = await imageToTensor(url);
-  const inputTensor = new ort.Tensor('float32', tensorData, [1, 3, 224, 224]);
-  const feeds       = { input: inputTensor };
-  const results     = await session.run(feeds);
-  const outputKey   = Object.keys(results)[0];
-  const logits      = Array.from(results[outputKey].data);
-  const probs       = softmax(logits);
+// ── Classification engine: 3 centered crops + adaptive threshold ──────────────
+async function classifyImage(session, url, meta) {
+  const { classes, image_mean, image_std, input_key } = meta;
 
-  const sorted = probs
-    .map((p, i) => ({ label: CLASSES[i], confidence: p }))
+  const img = await loadImageForModal(url);
+  const W = img.naturalWidth || img.width;
+  const H = img.naturalHeight || img.height;
+
+  // 3 centered crops: full → 90% center → 80% center (no corners — they show
+  // wall/ceiling/floor and dilute the signal for property photos)
+  const cropDefs = [
+    { r: 1.00, w: 0.50 },
+    { r: 0.90, w: 0.30 },
+    { r: 0.80, w: 0.20 },
+  ];
+
+  const cropResults = [];
+  for (const { r, w } of cropDefs) {
+    const cw  = Math.floor(W * r), ch = Math.floor(H * r);
+    const cx  = Math.floor((W - cw) / 2), cy = Math.floor((H - ch) / 2);
+    const td  = buildCropTensor(img, cx, cy, cw, ch, image_mean, image_std);
+    const t   = new ort.Tensor('float32', td, [1, 3, 224, 224]);
+    const out = await session.run({ [input_key]: t });
+    const prob = softmax(Array.from(Object.values(out)[0].data));
+    const pooled = [...prob];
+    applyPooling(pooled, classes);
+    const top1 = classes[pooled.indexOf(Math.max(...pooled))];
+    cropResults.push({ probs: prob, pooledProbs: pooled, top1, weight: w });
+  }
+
+  // Weighted average of raw probs, then pool once
+  const avgProbs = new Array(classes.length).fill(0);
+  for (const { probs, weight } of cropResults) {
+    for (let i = 0; i < classes.length; i++) avgProbs[i] += probs[i] * weight;
+  }
+  applyPooling(avgProbs, classes);
+
+  // Vote count
+  const voteCounts = {};
+  for (const { top1 } of cropResults) voteCounts[top1] = (voteCounts[top1] || 0) + 1;
+
+  const sorted = avgProbs
+    .map((p, i) => ({ label: classes[i], confidence: p }))
+    .filter(x => x.confidence > 0)
     .sort((a, b) => b.confidence - a.confidence);
 
-  return {
-    label:      sorted[0].label,
-    confidence: sorted[0].confidence,
-    top3:       sorted.slice(0, 3),
-  };
+  if (!sorted.length) return { label: '_error', confidence: 0, top3: [] };
+
+  const winner = sorted[0];
+  const votes  = voteCounts[winner.label] || 0;
+
+  // Single-crop lock-in
+  const maxSingle = Math.max(...cropResults.map(c => c.pooledProbs[classes.indexOf(winner.label)] || 0));
+  if (maxSingle >= ROOM_THRESH_LOCK) {
+    return { label: winner.label, confidence: winner.confidence, top3: sorted.slice(0, 3) };
+  }
+
+  const threshold = votes >= 2 ? ROOM_THRESH_STRONG : ROOM_THRESH_WEAK;
+  if (winner.confidence < threshold) {
+    return { label: '_error', confidence: winner.confidence, top3: sorted.slice(0, 3) };
+  }
+  return { label: winner.label, confidence: winner.confidence, top3: sorted.slice(0, 3) };
 }
 
 // ── parse photos from property ────────────────────────────────────────────────
@@ -95,6 +151,16 @@ function getPhotos(property) {
   return photos.map(p => (typeof p === 'string' ? p.trim() : '')).filter(Boolean);
 }
 
+// Default meta matches the current bestmodel.onnx (MobileNetV3).
+// When export_vit_to_onnx.py is run, it writes /public/model_meta.json with
+// ViT values — the frontend loads that file at runtime and overrides these defaults.
+const DEFAULT_META = {
+  classes:    ['bathroom','bedroom','dining','gaming','kitchen','laundry','living','office','terrace','yard'],
+  image_mean: [0.485, 0.456, 0.406],
+  image_std:  [0.229, 0.224, 0.225],
+  input_key:  'input',
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ImageClassificationModal({ property, onClose }) {
   const [results, setResults]       = useState({});
@@ -104,6 +170,7 @@ export default function ImageClassificationModal({ property, onClose }) {
   const [activeGroup, setActiveGroup] = useState('all');
   const [expandedUrl, setExpandedUrl] = useState(null);
   const sessionRef = useRef(null);
+  const metaRef    = useRef(DEFAULT_META);
 
   // Scroll lock
   useEffect(() => {
@@ -111,11 +178,20 @@ export default function ImageClassificationModal({ property, onClose }) {
     return () => { document.body.style.overflow = ''; };
   }, []);
 
-  // ── Load ONNX model once ──────────────────────────────────────────────────
+  // ── Load model_meta.json + ONNX model ─────────────────────────────────────
   useEffect(() => {
     (async () => {
       try {
         setModelStatus('loading');
+
+        // Load model_meta.json (generated by export_vit_to_onnx.py)
+        try {
+          const metaRes = await fetch('/model_meta.json');
+          if (metaRes.ok) metaRef.current = await metaRes.json();
+        } catch {
+          console.warn('model_meta.json not found, using default ViT meta');
+        }
+
         sessionRef.current = await ort.InferenceSession.create('/bestmodel.onnx', {
           executionProviders: ['wasm'],
         });
@@ -144,7 +220,7 @@ export default function ImageClassificationModal({ property, onClose }) {
     let completed = 0;
     list.forEach(async (url) => {
       try {
-        const res = await classifyImage(sessionRef.current, url);
+        const res = await classifyImage(sessionRef.current, url, metaRef.current);
         setResults(prev => ({ ...prev, [url]: { ...res, loading: false } }));
       } catch (e) {
         console.warn('classify failed for', url, e);
@@ -155,18 +231,18 @@ export default function ImageClassificationModal({ property, onClose }) {
     });
   }, [modelStatus, property]);
 
-  // ── Build grouped map ─────────────────────────────────────────────────────
+  // ── Build grouped map — classifier already handles pooling/thresholding ──────
   const grouped = {};
   photos.forEach(url => {
     const r = results[url];
     if (!r || r.loading) return;
-    const label = r.error ? '_error' : (r.label || '_unknown');
+    const label = r.error ? '_error' : (r.label || '_error');
     if (!grouped[label]) grouped[label] = [];
     grouped[label].push(url);
   });
 
   const classifying   = done < photos.length;
-  const groups        = Object.keys(grouped).filter(g => g !== '_error').sort();
+  const groups        = DISPLAY_ORDER.filter(g => grouped[g]?.length > 0);
   const errorUrls     = grouped['_error'] || [];
   const displayGroups = activeGroup === 'all' ? groups : (groups.includes(activeGroup) ? [activeGroup] : []);
 
@@ -259,14 +335,20 @@ export default function ImageClassificationModal({ property, onClose }) {
                         <span style={{ fontSize:'11px', color:'#94a3b8' }}>Classifying...</span>
                       ) : results[url]?.error ? (
                         <span style={{ fontSize:'11px', color:'#ef4444' }}>Error</span>
-                      ) : (
-                        <span style={{ fontSize:'11px', fontWeight:'700', color:ROOM_COLORS[results[url]?.label]||'#1e293b' }}>
-                          {ROOM_ICONS[results[url]?.label]} {ROOM_LABELS[results[url]?.label]||results[url]?.label}
-                          <span style={{ color:'#94a3b8', fontWeight:'500', marginLeft:'4px' }}>
-                            {Math.round((results[url]?.confidence||0)*100)}%
-                          </span>
-                        </span>
-                      )}
+                      ) : (() => {
+                          const lbl = results[url]?.label;
+                          const isOther = !lbl || lbl === '_error';
+                          return (
+                            <span style={{ fontSize:'11px', fontWeight:'700', color: isOther ? '#94a3b8' : (ROOM_COLORS[lbl]||'#1e293b') }}>
+                              {isOther ? '📦 Other' : `${ROOM_ICONS[lbl]||'📷'} ${ROOM_LABELS[lbl]||lbl}`}
+                              {!isOther && (
+                                <span style={{ color:'#94a3b8', fontWeight:'500', marginLeft:'4px' }}>
+                                  {Math.round((results[url]?.confidence||0)*100)}%
+                                </span>
+                              )}
+                            </span>
+                          );
+                        })()}
                     </div>
                   </div>
                 ))}
@@ -311,13 +393,13 @@ export default function ImageClassificationModal({ property, onClose }) {
                   <div style={{ marginBottom:'28px' }}>
                     <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'12px' }}>
                       <div style={{ width:'12px', height:'12px', borderRadius:'50%', background:'#94a3b8', flexShrink:0 }} />
-                      <span style={{ fontWeight:'700', fontSize:'15px', color:'#94a3b8' }}>Unclassified ({errorUrls.length})</span>
+                      <span style={{ fontWeight:'700', fontSize:'15px', color:'#94a3b8' }}>📦 Others ({errorUrls.length})</span>
                     </div>
                     <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(165px, 1fr))', gap:'12px' }}>
                       {errorUrls.map(url => (
                         <div key={url} style={{ borderRadius:'12px', overflow:'hidden', border:'1px dashed #cbd5e1' }}>
                           <img src={url} alt="" style={{ width:'100%', height:'140px', objectFit:'cover', display:'block' }} onError={e=>{e.target.style.display='none';}} />
-                          <div style={{ padding:'6px 10px', background:'#f8fafc', fontSize:'11px', color:'#94a3b8', textAlign:'center' }}>CORS blocked</div>
+                          <div style={{ padding:'6px 10px', background:'#f8fafc', fontSize:'11px', color:'#94a3b8', textAlign:'center' }}>Other</div>
                         </div>
                       ))}
                     </div>
