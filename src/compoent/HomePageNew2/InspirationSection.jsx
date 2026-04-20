@@ -12,20 +12,19 @@ const TABS = ['Popular', 'PGs', 'Hotels', 'Premium Stays', 'Economy Stays', 'Sig
 
 // All data based on REAL API data — only sectors with 3+ actual properties
 const DATA = {
-  // Top sectors by total property count (3+ props each)
   Popular: [
-    { city: 'Sector 15, Noida',   type: 'PG & Co-Living' },
-    { city: 'Sector 62, Noida',   type: 'PG Accommodation' },
-    { city: 'Sector 16, Noida',   type: 'PG Accommodation' },
-    { city: 'Sector 126, Noida',  type: 'PG & Apartment' },
-    { city: 'Sector 27, Noida',   type: 'Co-Living Space' },
-    { city: 'Sector 19, Noida',   type: 'PG Accommodation' },
-    { city: 'Sector 18, Noida',   type: 'PG Accommodation' },
-    { city: 'Sector 63, Noida',   type: 'PG & Co-Living' },
-    { city: 'Sector 72, Noida',   type: 'Co-Living Space' },
-    { city: 'Sector 132, Noida',  type: 'PG Accommodation' },
-    { city: 'Sector 52, Noida',   type: 'PG Accommodation' },
-    { city: 'Sector 48, Noida',   type: 'PG Accommodation' },
+    { city: 'Sector 137, Noida',               type: 'Signature Stay',       navTab: 'Signature Stays' },
+    { city: 'Sector 143, Noida',               type: 'Signature Stay',       navTab: 'Signature Stays' },
+    { city: 'Sector 168, Noida',               type: 'Premium Apartment',    navTab: 'Premium Stays' },
+    { city: 'Greater Noida',                   type: 'Luxury Flat',          navTab: 'Premium Stays' },
+    { city: 'Sector 15, Noida',                type: 'PG & Co-Living',       navTab: 'PGs' },
+    { city: 'Sector 62, Noida',                type: 'PG Accommodation',     navTab: 'PGs' },
+    { city: 'Noida',                           type: 'Hotel Stay',           navTab: 'Hotels' },
+    { city: 'Delhi',                           type: 'Hotel Stay',           navTab: 'Hotels' },
+    { city: 'Sector 130, Noida',               type: 'Economy Stay',         navTab: 'Economy Stays' },
+    { city: 'Sector 72, Noida',                type: 'Co-Living Space',      navTab: 'Economy Stays' },
+    { city: 'Gurugram',                        type: 'Luxury Apartment',     navTab: 'Premium Stays' },
+    { city: 'Knowledge Park 3, Greater Noida', type: 'Signature Stay',       navTab: 'Signature Stays' },
   ],
 
   // PG category (3+ props per sector) → navigates to Monthly Rental
@@ -85,11 +84,11 @@ const DATA = {
   ],
 };
 
-function getSearchPath(tab, city) {
+function getSearchPath(tab, city, navTab) {
+  const resolvedTab = navTab || tab;
   const p = new URLSearchParams();
 
-  // Signature Stays — no city filter, show all signature properties
-  if (tab === 'Signature Stays') {
+  if (resolvedTab === 'Signature Stays') {
     p.set('category', 'Signature Stays');
     return `/properties?${p}`;
   }
@@ -97,18 +96,15 @@ function getSearchPath(tab, city) {
   p.set('search', city);
   p.set('city', city);
 
-  if (tab === 'PGs') {
-    // PGs always go to Monthly Rental
+  if (resolvedTab === 'PGs') {
     p.set('category', 'PG');
     p.set('rentalType', 'long');
-  } else if (tab === 'Hotels') {
+  } else if (resolvedTab === 'Hotels') {
     p.set('property_type', 'Hotel Room');
-  } else if (tab === 'Premium Stays') {
-    p.set('category', 'Apartment');
-  } else if (tab === 'Economy Stays') {
-    p.set('property_type', 'Co-living Space');
-  } else if (tab === 'Signature Stays') {
-    p.set('category', 'Signature Stays');
+  } else if (resolvedTab === 'Premium Stays') {
+    p.set('category', 'Premium Stay');
+  } else if (resolvedTab === 'Economy Stays') {
+    p.set('category', 'Economy Stay');
   }
   return `/properties?${p}`;
 }
@@ -205,17 +201,17 @@ export default function InspirationSection() {
             <div
               key={i}
               className="insp-item"
-              onClick={() => navigate(getSearchPath(activeTab, item.city))}
+              onClick={() => navigate(getSearchPath(activeTab, item.city, item.navTab))}
               style={{
                 cursor: 'pointer',
-                flex: bp === 'mobile' ? '1 1 calc(50% - 5px)' : bp === 'tablet' ? '1 1 calc(33.33% - 11px)' : '1 1 calc(16.66% - 14px)',
+                flex: bp === 'mobile' ? '0 0 calc(33.33% - 7px)' : bp === 'tablet' ? '0 0 calc(33.33% - 11px)' : '1 1 calc(16.66% - 14px)',
                 minWidth: 0,
               }}
             >
-              <div className="insp-city" style={{ fontSize: bp === 'mobile' ? '0.78rem' : '0.875rem', fontWeight: 600, color: '#1a1209', lineHeight: 1.3 }}>
+              <div className="insp-city" style={{ fontSize: bp === 'mobile' ? '0.68rem' : '0.875rem', fontWeight: 600, color: '#1a1209', lineHeight: 1.3 }}>
                 {item.city}
               </div>
-              <div style={{ fontSize: bp === 'mobile' ? '0.7rem' : '0.8rem', color: '#c2772b', marginTop: 2, fontWeight: 400 }}>
+              <div style={{ fontSize: bp === 'mobile' ? '0.62rem' : '0.8rem', color: '#c2772b', marginTop: 2, fontWeight: 400 }}>
                 {item.type}
               </div>
             </div>
