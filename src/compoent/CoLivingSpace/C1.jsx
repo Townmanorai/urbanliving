@@ -457,20 +457,14 @@ export default function OvikaLiving() {
       }} />
 
       {/* ── NAVBAR ── */}
-      <nav style={styles.nav} className="rs-nav">
-        <div style={styles.logoWrap}>
-          <span style={styles.logoOL}>OL</span>
-          <span style={styles.logoText}>OvikaLiving<span style={styles.logoTM}>™</span></span>
-        </div>
-      </nav>
 
       {/* ── HERO ── */}
       <div style={styles.heroOuter}>
       <section style={styles.hero} className="rs-hero">
         <div style={styles.heroContent} className="rs-hero-content">
-          <h1 style={styles.heroTitle} className="rs-hero-title">Ovika Co-Living Spaces</h1>
+          <h1 style={styles.heroTitle} className="rs-hero-title">OvikaLiving Co-Living Spaces</h1>
           <p style={styles.heroSubtitle} className="rs-hero-subtitle">
-            Smart Community Living — <span style={styles.gold}>Launching Soon</span>
+            Smart Community Living
           </p>
           <p style={styles.heroDesc} className="rs-hero-desc">
             Premium shared living spaces designed for students, young professionals,
@@ -501,7 +495,7 @@ export default function OvikaLiving() {
           <h2 style={styles.featuresHeading}>
             Live Smart. <span style={styles.gold}>Live Connected.</span>
           </h2>
-          <p style={styles.featuresSub}>Worldwide co-living spaces in Noida or Greater Noida.</p>
+          <p style={styles.featuresSub}>Co-living spaces in Noida &amp; Greater Noida.</p>
           <ul style={styles.checklist}>
             {["Fully furnished homes", "Flexible monthly stays", "Community lifestyle", "Smart digital booking", "Prime locations near offices & metro"].map((item) => (
               <li key={item} style={styles.checklistItem}>
@@ -525,15 +519,6 @@ export default function OvikaLiving() {
           <button style={styles.btnPrimaryFull} onClick={() => { setShowPartnerModal(true); setPartnerStatus(""); }}>
             Partner With OvikaLiving
           </button>
-          <div style={styles.browseBlock}>
-            <p style={styles.browseLabel}><strong>Launching Soon in</strong></p>
-            <p style={styles.browseSub}>
-              Explore Signature Stays on <span style={styles.gold}>OvikaLiving™</span>
-            </p>
-            <a href="/properties" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-              <button style={styles.btnPrimarySm}>Browse Stays</button>
-            </a>
-          </div>
         </div>
 
       </section>
@@ -586,8 +571,7 @@ export default function OvikaLiving() {
       {/* ── FORM ── */}
       <section style={styles.formSection} className="rs-form">
         <div style={styles.formWrap}>
-          <h2 style={styles.formTitle}>Be the First to Experience Ovika Co-Living</h2>
-          <p style={styles.formSub}>Launching Soon in Noida &amp; Greater Noida.</p>
+          <h2 style={styles.formTitle}>Be the First to Experience OvikaLiving Co-Living</h2>
           <div style={styles.formFields} className="rs-form-fields">
             <input style={styles.input} type="text" placeholder="Name" name="name" value={formData.name} onChange={handleChange} />
             <input style={styles.input} type="tel" placeholder="Phone" name="phone_number" value={formData.phone_number} onChange={handleChange} />
@@ -608,10 +592,6 @@ export default function OvikaLiving() {
 
       {/* ── FOOTER ── */}
       <footer style={styles.footer} className="rs-footer">
-        <p style={styles.footerText} className="rs-footer-text">
-          Launching Soon in{" "}
-          <span style={styles.footerCity}>Noida &amp; Greater Noida</span> 🎉
-        </p>
         <p style={styles.footerSub}>First 50 residents receive special launch benefits</p>
         <div style={styles.footerLogoWrap}>
           <img src="/ol.jpeg" alt="OvikaLiving Logo" style={styles.footerLogoImg} />
