@@ -286,7 +286,7 @@ const RefundAndCancellation = () => {
             <li>Applicable consumer protection laws</li>
             <li>Contractual principles under Indian law</li>
           </ul>
-          <p>Courts within India shall have exclusive jurisdiction.</p>
+          <p>Courts within Noida Gautam Budhnagar shall have exclusive jurisdiction.</p>
         </div>
       </div>
 

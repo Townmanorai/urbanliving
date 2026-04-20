@@ -452,11 +452,11 @@ export default function HomePageNew1() {
 
   // Quick-nav chips: each maps to a specific /properties URL
   const QUICK_CHIPS = [
-    { label: 'Signature Properties', nav: () => { const p = new URLSearchParams(); p.set('category', 'Signature Stays'); navigate(`/properties?${p}`); } },
-    { label: 'PGs',                  nav: () => { const p = new URLSearchParams(); p.set('category', 'PG'); p.set('rentalType', 'long'); navigate(`/properties?${p}`); } },
-    { label: 'Economy',              nav: () => { const p = new URLSearchParams(); p.set('property_type', 'Co-living Space'); navigate(`/properties?${p}`); } },
-    { label: 'Premium',              nav: () => { const p = new URLSearchParams(); p.set('category', 'Apartment'); navigate(`/properties?${p}`); } },
-    { label: 'Gurugram',             nav: () => { const p = new URLSearchParams(); p.set('search', 'Gurugram'); p.set('city', 'Gurugram'); navigate(`/properties?${p}`); } },
+    { label: 'Signature Stays', nav: () => { const p = new URLSearchParams(); p.set('category', 'Signature Stays'); navigate(`/properties?${p}`); } },
+    { label: 'Premium',         nav: () => { const p = new URLSearchParams(); p.set('category', 'Premium Stay'); navigate(`/properties?${p}`); } },
+    { label: 'Economy',         nav: () => { const p = new URLSearchParams(); p.set('category', 'Economy Stay'); navigate(`/properties?${p}`); } },
+    { label: 'PG',              nav: () => { const p = new URLSearchParams(); p.set('category', 'PG'); p.set('rentalType', 'long'); navigate(`/properties?${p}`); } },
+    { label: 'Co-living',       nav: () => { const p = new URLSearchParams(); p.set('search', 'co-living'); navigate(`/properties?${p}`); } },
   ];
 
   const shortDisplay = ratesLoading ? '—' : (shortRate ? `${fmt(shortRate)}/night` : '₹2,499/night');
@@ -473,11 +473,26 @@ export default function HomePageNew1() {
           {/* Title */}
           <h1 style={{ color: '#1a1209', fontSize: '1.45rem', fontWeight: 600, lineHeight: 1.2, margin: '0 0 5px' }}>
             Find Smart Stays<br />
-            <span style={{ color: '#c2772b' }}>in Noida</span>{' '}&amp; Greater Noida
+            <span style={{ color: '#c2772b' }}>Across NCR Cities</span>
           </h1>
-          <p style={{ color: '#8c7560', fontSize: '0.72rem', margin: '0 0 14px', lineHeight: 1.5, fontWeight: 400 }}>
-            Verified PGs, Apartments &amp; Premium Homes — India
+          <p style={{ color: '#8c7560', fontSize: '0.72rem', margin: '0 0 10px', lineHeight: 1.5, fontWeight: 400 }}>
+            Verified PGs, Apartments &amp; Premium Homes
           </p>
+
+          {/* City chips */}
+          <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2, marginBottom: 12, scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            {[
+              { label: 'Noida', city: 'Noida' },
+              { label: 'Greater Noida', city: 'Greater Noida' },
+              { label: 'Delhi', city: 'Delhi' },
+              { label: 'Gurugram', city: 'Gurugram' },
+            ].map(c => (
+              <button key={c.label} onClick={() => { const p = new URLSearchParams(); p.set('city', c.city); navigate(`/properties?${p}`); }}
+                style={{ flexShrink: 0, background: '#fff', border: '1.5px solid #e8c88a', borderRadius: 20, padding: '4px 13px', fontSize: '0.65rem', fontWeight: 600, color: '#7a5530', cursor: 'pointer', fontFamily: "'Poppins',sans-serif", whiteSpace: 'nowrap', outline: 'none' }}>
+                {c.label}
+              </button>
+            ))}
+          </div>
 
           {/* Search bar */}
           <SearchBar
@@ -646,9 +661,9 @@ export default function HomePageNew1() {
               <span style={{ fontSize: '0.6rem', color: '#fff', letterSpacing: 1.2, textTransform: 'uppercase', fontWeight: 600 }}>✦ Smart Stay Platform</span>
             </div>
             <h1 style={{ color: '#fff', fontSize: 'clamp(1.4rem, 2.5vw, 1.9rem)', fontWeight: 600, margin: 0, textShadow: '0 2px 14px rgba(0,0,0,0.7)', lineHeight: 1.2 }}>
-              Find Smart Stays<br /><span style={{ color: '#f0c070' }}>in Noida</span> &amp; Greater Noida
+              Find Smart Stays<br /><span style={{ color: '#f0c070' }}>Across NCR Cities</span>
             </h1>
-            <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.82rem', margin: '8px 0 0', lineHeight: 1.5 }}>Verified PGs, Apartments &amp; Premium Homes across India</p>
+            <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.82rem', margin: '8px 0 0', lineHeight: 1.5 }}>Verified PGs, Apartments &amp; Premium Homes</p>
           </div>
         </div>
 
@@ -755,11 +770,28 @@ export default function HomePageNew1() {
               </div>
               <h1 style={{ color: '#1a1209', fontSize: 'clamp(1.3rem, 1.8vw, 1.75rem)', fontWeight: 600, lineHeight: 1.2, margin: '0 0 10px' }}>
                 Find Smart Stays<br />
-                <span style={{ color: '#c2772b' }}>in Noida</span> &amp; Greater Noida
+                <span style={{ color: '#c2772b' }}>Across NCR Cities</span>
               </h1>
-              <p style={{ color: '#6b5540', fontSize: '0.84rem', fontWeight: 400, margin: '0 0 18px', lineHeight: 1.65 }}>
-                Verified PGs, Apartments &amp; Premium Homes across India
+              <p style={{ color: '#6b5540', fontSize: '0.84rem', fontWeight: 400, margin: '0 0 12px', lineHeight: 1.65 }}>
+                Verified PGs, Apartments &amp; Premium Homes
               </p>
+
+              {/* City chips */}
+              <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', marginBottom: 16 }}>
+                {[
+                  { label: 'Noida', city: 'Noida' },
+                  { label: 'Greater Noida', city: 'Greater Noida' },
+                  { label: 'Delhi', city: 'Delhi' },
+                  { label: 'Gurugram', city: 'Gurugram' },
+                ].map(c => (
+                  <button key={c.label} onClick={() => { const p = new URLSearchParams(); p.set('city', c.city); navigate(`/properties?${p}`); }}
+                    style={{ background: '#fff', border: '1.5px solid #e8c88a', borderRadius: 20, padding: '5px 15px', fontSize: '0.7rem', fontWeight: 600, color: '#7a5530', cursor: 'pointer', fontFamily: "'Poppins',sans-serif", whiteSpace: 'nowrap', outline: 'none', transition: 'all 0.2s' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#fdf0e0'; e.currentTarget.style.borderColor = '#c2772b'; e.currentTarget.style.color = '#c2772b'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#e8c88a'; e.currentTarget.style.color = '#7a5530'; }}>
+                    {c.label}
+                  </button>
+                ))}
+              </div>
 
               {/* Search bar */}
               <SearchBar compact={false} searchText={searchText} setSearchText={setSearchText} showSuggestions={showSuggestions} setShowSuggestions={setShowSuggestions} searchRef={searchRef} filteredSuggestions={filteredSuggestions} handleSearch={handleSearch} handleSuggestionClick={handleSuggestionClick} handleKeyDown={handleKeyDown} />

@@ -1001,19 +1001,29 @@ const PropertyListPage = () => {
       });
     }
 
-    const sortedResults = [...filteredResults].sort((a, b) => {
-      const aIsVerified = a.property_name?.toLowerCase().includes('ovika') || a.property_name?.toLowerCase().includes('signature');
-      const bIsVerified = b.property_name?.toLowerCase().includes('ovika') || b.property_name?.toLowerCase().includes('signature');
-      if (sortBy === 'recommended') {
-        if (aIsVerified && !bIsVerified) return -1;
-        if (!aIsVerified && bIsVerified) return 1;
-      } else if (sortBy === 'price_asc') {
-        return (Number(a.price) || 0) - (Number(b.price) || 0);
-      } else if (sortBy === 'price_desc') {
-        return (Number(b.price) || 0) - (Number(a.price) || 0);
-      }
-      return 0;
-    });
+    // When search query is active, results are already sorted by keyword match score
+    // — don't override with Signature-first pinning in that case
+    const isSearchActive = search && search.trim().length > 0;
+
+    const sortedResults = isSearchActive
+      ? (sortBy === 'price_asc'
+          ? [...filteredResults].sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0))
+          : sortBy === 'price_desc'
+          ? [...filteredResults].sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0))
+          : filteredResults) // recommended + search active → keep keyword score order
+      : [...filteredResults].sort((a, b) => {
+          const aIsVerified = a.property_name?.toLowerCase().includes('ovika') || a.property_name?.toLowerCase().includes('signature');
+          const bIsVerified = b.property_name?.toLowerCase().includes('ovika') || b.property_name?.toLowerCase().includes('signature');
+          if (sortBy === 'recommended') {
+            if (aIsVerified && !bIsVerified) return -1;
+            if (!aIsVerified && bIsVerified) return 1;
+          } else if (sortBy === 'price_asc') {
+            return (Number(a.price) || 0) - (Number(b.price) || 0);
+          } else if (sortBy === 'price_desc') {
+            return (Number(b.price) || 0) - (Number(a.price) || 0);
+          }
+          return 0;
+        });
     setFiltered(sortedResults);
     setCurrentPage(1);
   }, [search, activeCat, properties, rentalType, priceMin, priceMax, roomsFilter, propTypeFilter, amenitiesFilter, furnishingFilter, tenantFilter, foodFilter, petsFilter, coupleFilter, sortBy]);

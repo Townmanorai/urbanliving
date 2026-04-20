@@ -8,8 +8,8 @@ const LinkList = ({ items }) => (
     style={{
       display: "flex",
       flexDirection: "column",
-      gap: "15px",
-      marginTop: "4px",
+      gap: "8px",
+      marginTop: "2px",
     }}
   >
     {items.map((item, index) => (
@@ -32,39 +32,61 @@ const LinkList = ({ items }) => (
 );
 
 const mobileCSS = `
+/* ── Desktop logo layout ── */
+.footer-logo-img {
+  width: 160px;
+  display: block;
+  margin-bottom: -70px;
+}
+.footer-logo-desc {
+  font-size: 11.5px;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+.footer-col.logo-col {
+  margin-top: -20px;
+}
+
 @media (max-width: 786px) {
   .footer-container {
-    padding: 40px 20px 10px !important;
-    margin: 10px !important;
+    padding: 16px 16px 8px !important;
+    margin: 8px !important;
     text-align: center !important;
     border-radius: 18px !important;
   }
-  
+
   .footer-grid {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    gap: 35px !important;
-    margin-bottom: 30px !important;
+    gap: 6px !important;
+    margin-bottom: 10px !important;
   }
-  
-  .desktop-links-grid {
-    display: none !important;
-  }
-  
-  .logo-col {
+
+  .footer-col.logo-col {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
     width: 100% !important;
     text-align: center !important;
   }
-  
-  .logo-col img {
-    margin: -50px auto !important;
+
+  .footer-logo-img {
+    width: 90px !important;
+    display: block !important;
+    margin: 0 auto -30px auto !important;
   }
-  
-  .logo-col p {
+
+  .footer-logo-desc {
+    font-size: 9px !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+    padding: 0 8px !important;
     text-align: center !important;
-    font-size: 10px !important;
-    margin-top:-44px;
+    opacity: 0.9 !important;
+  }
+
+  .desktop-links-grid {
+    display: none !important;
   }
 
   .footer-verified-badges {
@@ -85,12 +107,13 @@ const mobileCSS = `
     justify-content: space-between !important;
     align-items: flex-start !important;
     width: 100% !important;
-    gap: 15px !important;
+    gap: 10px !important;
   }
 
   .footer-link-columns .footer-col {
     flex: 1 !important;
     text-align: left !important;
+    min-width: 0 !important;
   }
 
   .footer-link-columns h3 {
@@ -160,7 +183,15 @@ const mobileCSS = `
   .footer-col.contactus-col span,
   .footer-col.contactus-col a,
   .footer-col.legal-col span {
-    font-size: 10px !important;
+    font-size: 9.5px !important;
+  }
+
+  .footer-link-columns > .footer-col > div {
+    gap: 7px !important;
+  }
+
+  .newsletter-row {
+    padding: 10px 0 !important;
   }
   
   .query-popup-overlay {
@@ -614,7 +645,7 @@ const HoomieFooter = () => {
         style={{
           background: "linear-gradient(180deg, #c98b3e 0%, #7c4e13 100%)",
           color: "#fff",
-          padding: "60px 40px 20px",
+          padding: "28px 40px 14px",
           borderRadius: "20px 20px 0 0",
           fontFamily: "Poppins, sans-serif",
           marginLeft: "20px",
@@ -629,29 +660,20 @@ const HoomieFooter = () => {
             style={{
               display: "grid",
               gridTemplateColumns: "1.5fr 1fr 1fr 1fr",
-              gap: "40px",
-              marginBottom: "60px",
+              gap: "28px",
+              marginBottom: "20px",
             }}
           >
             {/* Company Info */}
-            <div className="footer-col logo-col" style={{ marginTop: "-40px" }}>
+            <div className="footer-col logo-col">
               <img
                 src="/ovikalogo11.png"
                 alt="Urban Living Logo"
-                style={{ width: "200px", marginBottom: "-90px" }}
+                className="footer-logo-img"
               />
-              <p
-                style={{
-                  fontSize: "13px",
-                  lineHeight: "1.7",
-                  opacity: "0.95",
-                }}
-              >
+              <p className="footer-logo-desc">
                 <span>OvikaLiving</span> is the flagship short-term rental brand of{" "}
-                <span>Townmanor Technologies Pvt. Ltd.</span>, representing the company's vision for{" "}
-                <span>Smart Urban Living.</span> Designed to redefine the way people experience modern city life, OvikaLiving
-                integrates technology, design, and convenience to create connected
-                and intelligent living spaces.
+                <span>Townmanor Technologies Pvt. Ltd.</span> — built to redefine modern city living through technology, design, and convenience.
               </p>
             </div>
 
@@ -700,7 +722,7 @@ const HoomieFooter = () => {
 
           </div>
 
-          {/* Mobile Links — 2 equal columns, no headings */}
+          {/* Mobile Links — 3 columns */}
           <div className="footer-link-columns" style={{ display: "none" }}>
             <div className="footer-col">
               <LinkList
@@ -708,13 +730,9 @@ const HoomieFooter = () => {
                   <Link to="/about" style={{ color: '#fff', textDecoration: 'none' }}>About Us</Link>,
                   <Link to="/faq" style={{ color: '#fff', textDecoration: 'none' }}>FAQ's</Link>,
                   <Link to="/terms-and-conditions" style={{ color: '#fff', textDecoration: 'none' }}>Terms</Link>,
-                  <Link to="/privacy-policy" style={{ color: '#fff', textDecoration: 'none' }}>Privacy Policy</Link>,
-                  <Link to="/refund-cancellation-policy" style={{ color: '#fff', textDecoration: 'none' }}>Refund Policy</Link>,
+                  <Link to="/privacy-policy" style={{ color: '#fff', textDecoration: 'none' }}>Privacy</Link>,
+                  <Link to="/refund-cancellation-policy" style={{ color: '#fff', textDecoration: 'none' }}>Refund</Link>,
                   <Link to="/subsription" style={{ color: '#fff', textDecoration: 'none' }}>Subscription</Link>,
-                  <Link to="/career-support" style={{ color: '#fff', textDecoration: 'none' }}>Career Support</Link>,
-                  <Link to="/ovika-verified" style={{ color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    Verified <img src="/ovikaver.png" alt="Verified" style={{ height: '14px', width: 'auto' }} />
-                  </Link>,
                 ]}
               />
             </div>
@@ -722,14 +740,25 @@ const HoomieFooter = () => {
             <div className="footer-col">
               <LinkList
                 items={[
-                  <Link to="/ovika-self-verified" style={{ color: '#fff', textDecoration: 'none' }}>Self Verification</Link>,
+                  <Link to="/career-support" style={{ color: '#fff', textDecoration: 'none' }}>Career Support</Link>,
+                  <Link to="/ovika-verified" style={{ color: '#fff', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    Verified <img src="/ovikaver.png" alt="Verified" style={{ height: '12px', width: 'auto' }} />
+                  </Link>,
+                  <Link to="/ovika-self-verified" style={{ color: '#fff', textDecoration: 'none' }}>Self Verify</Link>,
                   <Link to="/nightly-stays" style={{ color: '#fff', textDecoration: 'none' }}>Nightly Stays</Link>,
                   <Link to="/monthly-rentals" style={{ color: '#fff', textDecoration: 'none' }}>Monthly Rental</Link>,
                   <Link to="/properties?category=Signature+Stays" style={{ color: '#fff', textDecoration: 'none' }}>Signature Stays</Link>,
+                ]}
+              />
+            </div>
+
+            <div className="footer-col">
+              <LinkList
+                items={[
                   <Link to="/listed1" style={{ color: '#fff', textDecoration: 'none' }}>List Property</Link>,
+                  <a href="https://www.townmanor.ai/" target="_blank" rel="noopener noreferrer" style={{ color: '#fff', textDecoration: 'none' }}>Townmanor</a>,
                   <Link to="/contactus" style={{ color: '#fff', textDecoration: 'none' }}>Contact Us</Link>,
                   <Link to="/legal-information" style={{ color: '#fff', textDecoration: 'none' }}>Legal Info</Link>,
-                  <a href="https://www.townmanor.ai/" target="_blank" rel="noopener noreferrer" style={{ color: '#fff', textDecoration: 'none' }}>Townmanor</a>,
                 ]}
               />
             </div>
@@ -740,7 +769,7 @@ const HoomieFooter = () => {
           <div
             className="newsletter-row"
             style={{
-              padding: "35px 0",
+              padding: "14px 0",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",

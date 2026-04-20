@@ -51,10 +51,12 @@ const BEDROOM_TYPES = ["King Bed", "Queen Bed", "Single Bed", "Bunk Bed", "Twin 
 const BATHROOM_TYPES = ["Attached", "Common", "Shared", "Private"];
 
 const AMENITIES_MASTER = {
-  "Safety & Security": ["CCTV", "Security Guard", "Fire Extinguisher", "Intercom", "Biometric Entry", "Gated Community", "Fire Alarm", "Smoke Detectors"],
+  "Safety & Security": ["CCTV", "Security Guard", "Fire Extinguisher", "Intercom", "Biometric Entry", "Gated Community", "Fire Alarm", "Smoke Detectors", "Electronic Entry Lock", "Electronic Bedroom Lock", "Sprinkler"],
   "Modern Living": ["Lift", "Power Backup", "Wi-Fi", "Swimming Pool", "Gym", "Clubhouse", "Central AC", "EV Charging Point"],
   "Basic Utilities": ["Water Supply 24/7", "Borewell", "Corporation Water", "Gas Pipeline", "Solar Water", "Reserved Parking", "Visitor Parking"],
-  "Indoor Features": ["Air Conditioner", "Geyser", "RO Water", "Washing Machine", "Refrigerator", "Inverter", "Wardrobe", "Study Table", "Smart TV", "Gas Stove"],
+  "Indoor Features": ["Air Conditioner", "Geyser", "RO Water", "Washing Machine", "Refrigerator", "Inverter", "Wardrobe", "Study Table", "Smart TV", "Google TV", "Gas Stove", "Iron & Board"],
+  "Bathroom": ["Bath Towels", "Soap & Shampoo"],
+  "Kitchen Appliances": ["Electric Kettle", "Hob", "Chimney", "Toaster", "Rice Cooker", "Coffee Maker", "Microwave", "Stovetop/oven", "Cooking utensils", "Induction Cooktop", "Dining Counter"],
   "Outer Spaces": ["Balcony", "Private Terrace", "Garden", "Park Area", "Pet Area", "Kids Play Area"]
 };
 
@@ -373,7 +375,16 @@ export default function SuperAdminDashboard() {
       // Ensure specific meta fields exist if missing
       parsedProp.meta.maintenanceCharge = parsedProp.meta.maintenanceCharge || parsedProp.maintenance_charge || "";
       parsedProp.meta.securityDeposit = parsedProp.meta.securityDeposit || parsedProp.security_deposit || "";
-      
+
+      // Pre-tick Bath Towels & Soap & Shampoo for all Signature properties
+      const SIGNATURE_IDS = new Set([77, 78, 79, 80, 81, 314, 315, 316, 317, 323]);
+      if (SIGNATURE_IDS.has(Number(parsedProp.id || parsedProp._id || 0))) {
+          if (!Array.isArray(parsedProp.amenities)) parsedProp.amenities = [];
+          ['Bath Towels', 'Soap & Shampoo'].forEach(e => {
+              if (!parsedProp.amenities.includes(e)) parsedProp.amenities.push(e);
+          });
+      }
+
       setEditingProp(parsedProp); 
       setIsCreatingProp(false);
   };

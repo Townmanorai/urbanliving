@@ -46,9 +46,11 @@ function TicketRow({ title, status }) {
 
 const AMENITIES = {
   Basic: ["Wi-Fi", "Heating", "Air conditioning", "Hot water"],
-  Kitchen: ["Refrigerator", "Stovetop/oven", "Microwave", "Cooking utensils"],
-  Entertainment: ["TV", "Streaming services"],
-  Safety: ["Smoke detector", "Carbon monoxide detector", "Fire extinguisher", "First aid kit"],
+  Kitchen: ["Refrigerator", "Stovetop/oven", "Microwave", "Cooking utensils", "Electric Kettle", "Hob", "Chimney", "RO", "Toaster", "Rice Cooker", "Coffee Maker", "Induction Cooktop", "Dining Counter"],
+  Bathroom: ["Bath Towels", "Soap & Shampoo"],
+  Appliances: ["Washing Machine", "Iron & Board"],
+  Entertainment: ["TV", "Google TV", "Streaming services"],
+  Safety: ["Smoke detector", "Carbon monoxide detector", "Fire extinguisher", "First aid kit", "Electronic Entry Lock", "Electronic Bedroom Lock", "Sprinkler"],
   Outdoor: ["Balcony/terrace", "Garden", "Parking space", "BBQ grill", "Tennis Court", "Golf Course"],
   Wellness: ["Pool", "Hot tub", "Sauna", "Gym"],
   Accessibility: ["Wheelchair accessible", "Elevator", "Ramp access"],
@@ -183,11 +185,13 @@ function EditPropertyModal({ property, onClose, onRefresh }) {
 
   const getInitialAmenities = () => {
     let am = getMeta('amenities');
-    if (Array.isArray(am)) return am;
-    if (typeof am === 'string') {
-      try { return JSON.parse(am); } catch (e) { return []; }
+    if (typeof am === 'string') { try { am = JSON.parse(am); } catch (e) { am = []; } }
+    if (!Array.isArray(am)) am = [];
+    const SIGNATURE_IDS = new Set([77, 78, 79, 80, 81, 314, 315, 316, 317, 323]);
+    if (SIGNATURE_IDS.has(Number(property.id || property._id || 0))) {
+      ['Bath Towels', 'Soap & Shampoo'].forEach(e => { if (!am.includes(e)) am = [...am, e]; });
     }
-    return [];
+    return am;
   };
 
   const getInitialBedroomDetails = () => {

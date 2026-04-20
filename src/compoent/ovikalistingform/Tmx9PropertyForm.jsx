@@ -8,9 +8,11 @@ const STORAGE_KEY = "user";
 
 const AMENITIES = {
   Basic: ["Wi-Fi", "Heating", "Air conditioning", "Hot water"],
-  Kitchen: ["Refrigerator", "Stovetop/oven", "Microwave", "Cooking utensils"],
-  Entertainment: ["TV", "Streaming services"],
-  Safety: ["Smoke detector", "Carbon monoxide detector", "Fire extinguisher", "First aid kit"],
+  Kitchen: ["Refrigerator", "Stovetop/oven", "Microwave", "Cooking utensils", "Electric Kettle", "Hob", "Chimney", "RO", "Toaster", "Rice Cooker", "Coffee Maker", "Induction Cooktop", "Dining Counter"],
+  Bathroom: ["Bath Towels", "Soap & Shampoo"],
+  Appliances: ["Washing Machine", "Iron & Board"],
+  Entertainment: ["TV", "Google TV", "Streaming services"],
+  Safety: ["Smoke detector", "Carbon monoxide detector", "Fire extinguisher", "First aid kit", "Electronic Entry Lock", "Electronic Bedroom Lock", "Sprinkler"],
   Outdoor: ["Balcony/terrace", "Garden", "Parking space", "BBQ grill", "Tennis Court", "Golf Course"],
   Wellness: ["Pool", "Hot tub", "Sauna", "Gym"],
   Accessibility: ["Wheelchair accessible", "Elevator", "Ramp access"],
