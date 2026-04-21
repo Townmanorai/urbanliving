@@ -592,6 +592,9 @@ console.log("booking_type:", fd.get("booking_type"));
   },
       };
       fd.append("meta", JSON.stringify(meta));
+      // top-level fields so PropertyDetailPage can read them without meta fallback
+      fd.append("amenities", JSON.stringify(meta.amenities));
+      fd.append("bedrooms", JSON.stringify(meta.bedrooms));
       fd.append(
   "guest_policy",
   JSON.stringify({

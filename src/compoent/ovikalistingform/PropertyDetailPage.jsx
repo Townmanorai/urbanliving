@@ -1392,11 +1392,14 @@ const PropertyDetailPage = () => {
   // ────────────────────────────────────────────────────────────────────────────
 
   const AMENITIES_GROUPS = {
-    "Safety & Security": ["CCTV", "Security Guard", "Fire Extinguisher", "Intercom", "Biometric Entry", "Gated Community", "Fire Alarm", "Sprinklers", "Smoke Detectors", "Emergency Exit"],
-    "Modern Living": ["Lift", "Power Backup", "Wi-Fi", "Swimming Pool", "Gym", "Clubhouse", "Modular Kitchen", "Chimney", "Central AC", "Smart Home Tech", "EV Charging Point"],
-    "Basic Utilities": ["Water Supply 24/7", "Borewell", "Corporation Water", "Gas Pipeline", "Solar Water", "Reserved Parking", "Visitor Parking", "STP Plant", "Waste Management"],
-    "Indoor Features": ["Air Conditioner", "Geyser", "RO Water", "Washing Machine", "Refrigerator", "Inverter", "Wardrobe", "Study Table", "Smart TV", "Gas Stove", "Dishwasher", "Microwave"],
-    "Outer Spaces": ["Balcony", "Private Terrace", "Garden", "Park Area", "Pet Area", "Kids Play Area", "Club House", "Jogging Track"]
+    "Safety & Security": ["CCTV", "Security Guard", "Fire Extinguisher", "Intercom", "Biometric Entry", "Gated Community", "Fire Alarm", "Sprinklers", "Sprinkler", "Smoke Detectors", "Smoke detector", "Emergency Exit", "Carbon monoxide detector", "First aid kit", "Electronic Entry Lock", "Electronic Bedroom Lock"],
+    "Modern Living": ["Lift", "Power Backup", "Wi-Fi", "Swimming Pool", "Pool", "Hot tub", "Sauna", "Gym", "Clubhouse", "Club House", "Modular Kitchen", "Chimney", "Central AC", "Air conditioning", "Air Conditioner", "Smart Home Tech", "EV Charging Point", "Heating"],
+    "Basic Utilities": ["Water Supply 24/7", "Borewell", "Corporation Water", "Gas Pipeline", "Solar Water", "Reserved Parking", "Visitor Parking", "STP Plant", "Waste Management", "Parking space", "Hot water"],
+    "Kitchen": ["Refrigerator", "Gas Stove", "Stovetop/oven", "Microwave", "Cooking utensils", "Electric Kettle", "Hob", "RO", "RO Water", "Toaster", "Rice Cooker", "Coffee Maker", "Induction Cooktop", "Dining Counter", "Dishwasher"],
+    "Indoor Features": ["Geyser", "Washing Machine", "Iron & Board", "Inverter", "Wardrobe", "Study Table", "TV", "Smart TV", "Google TV", "Streaming services"],
+    "Bathroom": ["Bath Towels", "Soap & Shampoo"],
+    "Outer Spaces": ["Balcony", "Balcony/terrace", "Private Terrace", "Garden", "Park Area", "Pet Area", "Kids Play Area", "Jogging Track", "BBQ grill", "Tennis Court", "Golf Course"],
+    "Accessibility": ["Wheelchair accessible", "Elevator", "Ramp access"]
   };
 
   const getGroupedAmenities = (amenitiesArr) => {

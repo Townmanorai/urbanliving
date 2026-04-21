@@ -519,6 +519,14 @@ export default function OvikaLiving() {
           <button style={styles.btnPrimaryFull} onClick={() => { setShowPartnerModal(true); setPartnerStatus(""); }}>
             Partner With OvikaLiving
           </button>
+          <div style={styles.browseBlock}>
+            <p style={styles.browseSub}>
+              Explore Signature Stays on <span style={styles.gold}>OvikaLiving™</span>
+            </p>
+            <a href="/properties" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+              <button style={styles.btnPrimarySm}>Browse Stays</button>
+            </a>
+          </div>
         </div>
 
       </section>
