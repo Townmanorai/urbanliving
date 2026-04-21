@@ -62,6 +62,7 @@ import  OvikaSelfVerified  from "./compoent/ovikalistingform/OvikaSelfVerified";
 import OwnerVerificationForm from "./compoent/ovikalistingform/OwnerVerificationForm";
 import { HomePageNewMain } from "./compoent/HomePageNew2/HomePageNewMain";
 import LegalInformation from "./compoent/LegalInformation/LegalInformation";
+import ROICalculator from "./compoent/ROICalculator/ROICalculator";
 
 // 🔒 Protected Route Component
 function RequireAuth({ children }) {
@@ -199,6 +200,7 @@ function App() {
           <Route path="/career-support" element={<RequireAuth><CareerSupport /></RequireAuth>} />
           <Route path="/coliving-space" element={<ColivingSpace />} />
           <Route path="/legal-information" element={<LegalInformation />} />
+          <Route path="/roi-calculator" element={<ROICalculator />} />
           <Route path="/support" element={<ContactMain />} />
           <Route path="/admindashboard" element={<ProtectedAdminLayout />}>
             <Route index element={<AdminDashBoard />} />
@@ -207,6 +209,7 @@ function App() {
             <Route path="properties" element={<Properties />} />
             <Route path="messages" element={<Message />} />
             <Route path="documents" element={<DashBoardDocuments />} />
+            <Route path="roi-calculator" element={<ROICalculator />} />
             <Route path="support" element={<Support />} />
             <Route path="listed" element={<PropertyListingForm />} />
            

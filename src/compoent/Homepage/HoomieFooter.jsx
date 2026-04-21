@@ -713,6 +713,7 @@ const HoomieFooter = () => {
               <LinkList
                 items={[
                   <Link to="/listed1" style={{ color: '#fff', textDecoration: 'none' }}>List Property</Link>,
+                  <Link to="/roi-calculator" style={{ color: '#fff', textDecoration: 'none' }}>ROI Calculator</Link>,
                   <a href="https://www.townmanor.ai/" target="_blank" rel="noopener noreferrer" style={{ color: '#fff', textDecoration: 'none' }}>Explore Townmanor</a>,
                   <Link to="/contactus" style={{ color: '#fff', textDecoration: 'none' }}>Contact Us</Link>,
                   <Link to="/legal-information" style={{ color: '#fff', textDecoration: 'none' }}>Legal Information</Link>,
@@ -756,6 +757,7 @@ const HoomieFooter = () => {
               <LinkList
                 items={[
                   <Link to="/listed1" style={{ color: '#fff', textDecoration: 'none' }}>List Property</Link>,
+                  <Link to="/roi-calculator" style={{ color: '#fff', textDecoration: 'none' }}>ROI Calculator</Link>,
                   <a href="https://www.townmanor.ai/" target="_blank" rel="noopener noreferrer" style={{ color: '#fff', textDecoration: 'none' }}>Townmanor</a>,
                   <Link to="/contactus" style={{ color: '#fff', textDecoration: 'none' }}>Contact Us</Link>,
                   <Link to="/legal-information" style={{ color: '#fff', textDecoration: 'none' }}>Legal Info</Link>,
