@@ -672,8 +672,8 @@ const HoomieFooter = () => {
                 className="footer-logo-img"
               />
               <p className="footer-logo-desc">
-                <span>OvikaLiving</span> is the flagship short-term rental brand of{" "}
-                <span>Townmanor Technologies Pvt. Ltd.</span> — built to redefine modern city living through technology, design, and convenience.
+                <span>OvikaLiving</span> — The Hybrid Rental &amp; Urban Living Brand of{" "}
+                <span>Townmanor Technologies Pvt. Ltd.</span> Transforming urban living through flexible spaces, smart rentals, and hassle-free experiences.
               </p>
             </div>
 
