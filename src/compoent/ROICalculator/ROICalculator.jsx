@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import './ROICalculator.css';
 
-const PLATFORM_FEE = 15;
 const DAYS = 30;
 
 function inr(n) {
@@ -74,21 +73,22 @@ function SliderRow({ label, value, min, max, step, onChange, display, hint }) {
 
 export default function ROICalculator() {
   const navigate = useNavigate();
-  const [nightlyRate, setRate]    = useState(3000);
-  const [occupancy, setOccupancy] = useState(70);
-  const [expenses, setExpenses]   = useState(3000);
-  const [propValue, setPropValue] = useState('');
+  const [nightlyRate, setRate]      = useState(3000);
+  const [occupancy, setOccupancy]   = useState(70);
+  const [platformFee, setPlatformFee] = useState(15);
+  const [expenses, setExpenses]     = useState(3000);
+  const [propValue, setPropValue]   = useState('');
 
   const calc = useMemo(() => {
     const nights      = Math.round((occupancy / 100) * DAYS);
     const gross       = nightlyRate * nights;
-    const fee         = Math.round(gross * PLATFORM_FEE / 100);
+    const fee         = Math.round(gross * platformFee / 100);
     const net         = Math.max(gross - fee - expenses, 0);
     const annual      = net * 12;
     const pv          = Number(propValue) || 0;
     const roiPct      = pv > 0 ? ((annual / pv) * 100).toFixed(2) : null;
     return { nights, gross, fee, net, annual, roiPct };
-  }, [nightlyRate, occupancy, expenses, propValue]);
+  }, [nightlyRate, occupancy, platformFee, expenses, propValue]);
 
   const slices = [
     { label: 'Net Earning',   value: calc.net,   color: '#c2772b' },
@@ -222,6 +222,14 @@ export default function ROICalculator() {
               hint={`${calc.nights} nights booked per month at ${occupancy}% occupancy`}
             />
             <SliderRow
+              label="Platform Fee"
+              value={platformFee}
+              min={0} max={30} step={1}
+              onChange={setPlatformFee}
+              display={<>{platformFee}<span style={{ fontSize: '0.8rem', fontWeight: 500 }}> %</span></>}
+              hint="OvikaLiving standard: 15%. Adjust if your deal differs."
+            />
+            <SliderRow
               label="Monthly Expenses"
               value={expenses}
               min={0} max={20000} step={500}
@@ -268,7 +276,7 @@ export default function ROICalculator() {
             <span className="roi-stat-val">{inr(calc.gross)}</span>
           </div>
           <div className="roi-stat-box">
-            <span className="roi-stat-label">Platform Fee ({PLATFORM_FEE}%)</span>
+            <span className="roi-stat-label">Platform Fee ({platformFee}%)</span>
             <span className="roi-stat-val neg">−{inr(calc.fee)}</span>
           </div>
           <div className="roi-stat-box">
@@ -328,7 +336,7 @@ export default function ROICalculator() {
               <p className="roi-info-text">
                 Set your expected nightly rate and occupancy using the sliders. The calculator multiplies your
                 nightly rate by the number of nights booked to get <strong>gross monthly revenue</strong>.
-                It then deducts the OvikaLiving platform fee (15%) and your monthly running expenses
+                It then deducts the platform fee ({platformFee}%) and your monthly running expenses
                 to show your <strong>real net take-home income</strong>. Optionally enter your property value
                 to see the annual ROI percentage.
               </p>
@@ -344,7 +352,7 @@ export default function ROICalculator() {
                 <li><strong>Currently on long-term rent?</strong> Compare and decide if switching to short-term makes more sense.</li>
                 <li><strong>Planning to invest?</strong> Use the ROI % field to evaluate rental yield before buying.</li>
                 <li><strong>Already listed?</strong> Adjust occupancy to see how improving bookings impacts monthly income.</li>
-                <li><strong>Transparent pricing:</strong> The 15% platform fee is clearly shown so you always know your actual take-home.</li>
+                <li><strong>Transparent pricing:</strong> The platform fee ({platformFee}%) is clearly shown so you always know your actual take-home.</li>
               </ul>
             </div>
           </div>
