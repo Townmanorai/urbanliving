@@ -394,6 +394,7 @@ const PropertyCard = ({ property, rentalType }) => {
 const SidebarContent = ({
   activeCat, setActiveCat,
   rentalType, setRentalType,
+  lockedRental,
   priceMin, setPriceMin, priceMax, setPriceMax,
   roomsFilter, setRoomsFilter,
   propTypeFilter, togglePropType,
@@ -440,29 +441,31 @@ const SidebarContent = ({
         <button onClick={resetSidebar} style={{ fontSize: 12, color: '#C98B3E', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: 0 }}>Reset All</button>
       </div>
 
-      {/* Stay Type: Nightly / Monthly */}
-      <div style={{ marginBottom: 18 }}>
-        {sectionTitle('Stay Type')}
-        <div style={{ display: 'flex', gap: 8 }}>
-          {[{ id: 'short', label: 'Nightly', icon: <FiMoon style={{ fontSize: 12 }} /> },
-            { id: 'long',  label: 'Monthly', icon: <FiCalendar style={{ fontSize: 12 }} /> }].map(({ id, label, icon }) => {
-            const active = rentalType === id;
-            return (
-              <button key={id} onClick={() => { const val = rentalType === id ? null : id; setRentalType(val); sessionStorage.setItem('ovika_rental_type', val || id); }} style={{
-                flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5,
-                padding: '8px 0', borderRadius: 9,
-                border: `1.5px solid ${active ? '#C98B3E' : '#e8e8e8'}`,
-                background: active ? '#FFF6EE' : '#fafafa',
-                color: active ? '#C98B3E' : '#555',
-                fontWeight: active ? 700 : 500, fontSize: 13,
-                cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.18s ease',
-              }}>
-                {icon}{label}
-              </button>
-            );
-          })}
+      {/* Stay Type: Nightly / Monthly — hidden on locked routes */}
+      {!lockedRental && (
+        <div style={{ marginBottom: 18 }}>
+          {sectionTitle('Stay Type')}
+          <div style={{ display: 'flex', gap: 8 }}>
+            {[{ id: 'short', label: 'Nightly', icon: <FiMoon style={{ fontSize: 12 }} /> },
+              { id: 'long',  label: 'Monthly', icon: <FiCalendar style={{ fontSize: 12 }} /> }].map(({ id, label, icon }) => {
+              const active = rentalType === id;
+              return (
+                <button key={id} onClick={() => { const val = rentalType === id ? null : id; setRentalType(val); sessionStorage.setItem('ovika_rental_type', val || id); }} style={{
+                  flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                  padding: '8px 0', borderRadius: 9,
+                  border: `1.5px solid ${active ? '#C98B3E' : '#e8e8e8'}`,
+                  background: active ? '#FFF6EE' : '#fafafa',
+                  color: active ? '#C98B3E' : '#555',
+                  fontWeight: active ? 700 : 500, fontSize: 13,
+                  cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.18s ease',
+                }}>
+                  {icon}{label}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Category */}
       <div style={{ marginBottom: 18 }}>
@@ -675,6 +678,16 @@ const PropertyListPage = () => {
   const ITEMS_PER_PAGE = 12;
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Detect locked route — /nightly-stays locks to short, /monthly-rentals locks to long
+  const lockedRental =
+    location.pathname === '/nightly-stays' ? 'short' :
+    location.pathname === '/monthly-rentals' ? 'long' : null;
+
+  const pageTitle =
+    lockedRental === 'short' ? 'Nightly Stays' :
+    lockedRental === 'long'  ? 'Monthly Rentals' :
+    'All Properties';
 
   const SHORT_TERM_TYPES = [
     'entire place', 'private room', 'shared room', 'hotel room', 'homestay'
@@ -1077,12 +1090,18 @@ const PropertyListPage = () => {
       if (match) setActiveCat(match);
     }
 
-    const rt = params.get('rentalType');
-    if (rt) {
-      setRentalType(rt);
+    // Locked route overrides everything
+    if (lockedRental) {
+      setRentalType(lockedRental);
+      sessionStorage.setItem('ovika_rental_type', lockedRental);
     } else {
-      const stored = sessionStorage.getItem('ovika_rental_type');
-      if (stored) setRentalType(stored);
+      const rt = params.get('rentalType');
+      if (rt) {
+        setRentalType(rt);
+      } else {
+        const stored = sessionStorage.getItem('ovika_rental_type');
+        if (stored) setRentalType(stored);
+      }
     }
 
     const q = params.get('search') || params.get('city');
@@ -1363,6 +1382,7 @@ const PropertyListPage = () => {
           <SidebarContent
             activeCat={activeCat} setActiveCat={setActiveCat}
             rentalType={rentalType} setRentalType={setRentalType}
+            lockedRental={lockedRental}
             priceMin={priceMin} setPriceMin={setPriceMin}
             priceMax={priceMax} setPriceMax={setPriceMax}
             roomsFilter={roomsFilter} setRoomsFilter={setRoomsFilter}
@@ -1516,6 +1536,7 @@ const PropertyListPage = () => {
           <SidebarContent
             activeCat={activeCat} setActiveCat={setActiveCat}
             rentalType={rentalType} setRentalType={setRentalType}
+            lockedRental={lockedRental}
             priceMin={priceMin} setPriceMin={setPriceMin}
             priceMax={priceMax} setPriceMax={setPriceMax}
             roomsFilter={roomsFilter} setRoomsFilter={setRoomsFilter}

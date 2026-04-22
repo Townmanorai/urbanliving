@@ -63,6 +63,7 @@ import OwnerVerificationForm from "./compoent/ovikalistingform/OwnerVerification
 import { HomePageNewMain } from "./compoent/HomePageNew2/HomePageNewMain";
 import LegalInformation from "./compoent/LegalInformation/LegalInformation";
 import ROICalculator from "./compoent/ROICalculator/ROICalculator";
+import CalendarBlocking from "./compoent/CalendarBlocking/CalendarBlocking";
 
 // 🔒 Protected Route Component
 function RequireAuth({ children }) {
@@ -159,8 +160,8 @@ function App() {
           <Route path="/subsription" element={<Subsriptionmain/>}/>
           <Route path="/notification" element={<Notification/>}/>
           <Route path="/contactus" element={<ContactMain/>}/>
-          <Route path="/nightly-stays" element={<Home9/>}/>
-          <Route path="/monthly-rentals" element={<Home10/>}/>
+          <Route path="/nightly-stays" element={<PropertyListPage />}/>
+          <Route path="/monthly-rentals" element={<PropertyListPage />}/>
 <Route path="/ovika-self-verified" element={<OvikaSelfVerified/>}/>
           <Route path="/owner-verification" element={<OwnerVerificationForm/>}/>
           {/* ✅ PROTECTED ROUTE – only after login */}
@@ -211,6 +212,7 @@ function App() {
             <Route path="documents" element={<DashBoardDocuments />} />
             <Route path="roi-calculator" element={<ROICalculator />} />
             <Route path="support" element={<Support />} />
+            <Route path="calendar" element={<CalendarBlocking />} />
             <Route path="listed" element={<PropertyListingForm />} />
            
           </Route>

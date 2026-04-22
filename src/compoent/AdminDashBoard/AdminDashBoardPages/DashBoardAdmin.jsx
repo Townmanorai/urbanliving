@@ -1151,9 +1151,14 @@ export default function DashBoardAdmin() {
         <section>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
             <h3 className={styles.sectionTitle} style={{ margin: 0 }}>My Properties</h3>
-            <button type="button" onClick={() => navigate(activeTab === 'monthly' ? '/list-pg' : '/listed1')} style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', background: '#c2772b', color: '#fff', padding: '9px 18px', borderRadius: '8px', border: 'none', fontSize: '14px', fontWeight: '600', cursor: 'pointer', flexShrink: 0, transition: 'background 0.2s ease' }}>
-              <Plus size={16} /> {activeTab === 'monthly' ? 'Add Monthly Rental' : 'Add Nightly Rental'}
-            </button>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <button type="button" onClick={() => navigate('/admindashboard/calendar')} style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', background: '#fff', color: '#c2772b', padding: '9px 18px', borderRadius: '8px', border: '1.5px solid #c2772b', fontSize: '14px', fontWeight: '600', cursor: 'pointer', flexShrink: 0, transition: 'background 0.2s ease' }}>
+                <Calendar size={16} /> Calendar Blocking
+              </button>
+              <button type="button" onClick={() => navigate(activeTab === 'monthly' ? '/list-pg' : '/listed1')} style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', background: '#c2772b', color: '#fff', padding: '9px 18px', borderRadius: '8px', border: 'none', fontSize: '14px', fontWeight: '600', cursor: 'pointer', flexShrink: 0, transition: 'background 0.2s ease' }}>
+                <Plus size={16} /> {activeTab === 'monthly' ? 'Add Monthly Rental' : 'Add Nightly Rental'}
+              </button>
+            </div>
           </div>
 
           {error && <p style={{ color: "red", marginBottom: '12px' }}>{error}</p>}

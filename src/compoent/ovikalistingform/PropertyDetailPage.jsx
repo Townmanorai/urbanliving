@@ -231,14 +231,41 @@ function buildDisabledDates(blockedRanges = []) {
   blockedRanges.forEach((r) => {
     const start = new Date(r.start);
     const end = new Date(r.end);
-    for (let d = new Date(start); toYMD(d) < toYMD(end); d = addDays(d, 1)) {
+    for (let d = new Date(start); toYMD(d) <= toYMD(end); d = addDays(d, 1)) {
       set.add(toYMD(d));
     }
   });
   return set;
 }
 
-async function getCalendar(propertyKey) {
+async function getCalendar(propertyKey, propertyId) {
+  // 1. Try backend API
+  try {
+    const res = await fetch(
+      `https://www.townmanor.ai/api/ovika/blocked-dates?property_id=${propertyId}`,
+      { credentials: 'include' }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      const dates = data.dates || data.blocked_dates || data.data || [];
+      if (Array.isArray(dates) && dates.length > 0) {
+        // Convert flat date array to blocked ranges for buildDisabledDates
+        return { blocked: dates.map((d) => ({ start: d, end: d })) };
+      }
+    }
+  } catch {}
+
+  // 2. Fallback: localStorage (set by CalendarBlocking component)
+  try {
+    const raw = localStorage.getItem(`ovika_blocked_${propertyId}`);
+    if (raw) {
+      const dates = JSON.parse(raw);
+      if (Array.isArray(dates) && dates.length > 0) {
+        return { blocked: dates.map((d) => ({ start: d, end: d })) };
+      }
+    }
+  } catch {}
+
   return { blocked: [] };
 }
 
@@ -1548,7 +1575,7 @@ const PropertyDetailPage = () => {
           const propertyIdStr = String(id);
           const propertyKeyMap = { '2': 'tm-luxe-1', '1': 'tm-luxe-2', '287': 'tm-luxe-3' };
           const propertyKey = propertyKeyMap[propertyIdStr] || `prop-${propertyIdStr}`;
-          const { blocked } = await getCalendar(propertyKey);
+          const { blocked } = await getCalendar(propertyKey, propertyIdStr);
           setDisabledDateSet(buildDisabledDates(blocked || []));
         } catch {}
       };
