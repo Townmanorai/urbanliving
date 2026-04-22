@@ -679,7 +679,39 @@ const PropertyListPage = () => {
   const SHORT_TERM_TYPES = [
     'entire place', 'private room', 'shared room', 'hotel room', 'homestay'
   ];
-  const isLongTermProperty = (p) => !SHORT_TERM_TYPES.includes((p.property_type || '').toLowerCase());
+
+  const parseMeta = (p) => {
+    if (!p.meta) return {};
+    if (typeof p.meta === 'object') return p.meta;
+    try { return JSON.parse(p.meta); } catch { return {}; }
+  };
+
+  const isLongTermProperty = (p) => {
+    // 1. Explicit rental_type field (set by forms after fix)
+    if (p.rental_type === 'short') return false;
+    if (p.rental_type === 'long') return true;
+
+    // 2. Top-level property_type check
+    const pt = (p.property_type || '').toLowerCase();
+    if (pt && SHORT_TERM_TYPES.includes(pt)) return false;
+
+    // 3. Meta inference for existing properties (before fix)
+    const meta = parseMeta(p);
+    // Tmx9PropertyForm nightly properties have meta.propertyType = "Entire place" / "Private room"
+    if (meta.propertyType && SHORT_TERM_TYPES.includes(meta.propertyType.toLowerCase())) return false;
+    // PGListingForm monthly properties have PG-specific fields
+    if (meta.usePerRoomPricing !== undefined) return true;
+    if (Array.isArray(meta.preferredTenants)) return true;
+    if (Array.isArray(meta.sharingTypes)) return true;
+
+    // 4. Property category check
+    if (p.property_category === 'PG') return true;
+    if (meta.propertyCategory === 'PG') return true;
+
+    // 5. If property_type is still unknown, assume nightly (short-term)
+    if (!pt) return false;
+    return !SHORT_TERM_TYPES.includes(pt);
+  };
 
   const getPgNightlyPrice = (p) => {
     const meta = (() => {
@@ -730,18 +762,22 @@ const PropertyListPage = () => {
     if (isMonthly) {
       result = result.filter(p => {
         if (SIGNATURE_MONTHLY_IDS.includes(Number(p.id || p.property_id))) return true;
+        if (p.rental_type === 'short') return false; // explicitly nightly → exclude from monthly
         return p.property_category === 'PG' || isLongTermProperty(p);
       });
     } else {
       result = result.filter(p => {
         if (SIGNATURE_NIGHTLY_IDS.includes(Number(p.id || p.property_id))) return true;
+        if (p.rental_type === 'long') return false; // explicitly monthly → exclude from nightly
         return p.property_category === 'PG' || !isLongTermProperty(p);
       });
 
       result = result.filter(p => {
         if (p.property_category !== 'PG') return true;
+        // Monthly PG properties (no nightly price) should NOT appear in nightly
         const nightlyPrice = getPgNightlyPrice(p);
-        return nightlyPrice === 0 || nightlyPrice <= 3000;
+        if (p.rental_type === 'long') return false;
+        return nightlyPrice > 0 && nightlyPrice <= 3000;
       });
     }
 

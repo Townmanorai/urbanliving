@@ -420,6 +420,9 @@ const PGListingForm = () => {
       fd.append("price", effectivePrice);
       fd.append("booking_type", String(form.bookingType));
       fd.append("owner_id", user?.id || "99");
+      fd.append("rental_type", "long");
+      fd.append("property_type", "long term");
+      fd.append("property_category", form.propertyCategory || "Flat");
       fd.append("bedrooms", JSON.stringify(form.bedroomDetails));
       fd.append("bathrooms", JSON.stringify((form.bathroomDetails || []).length > 0 ? form.bathroomDetails : [{ type: "Attached", count: form.bathrooms }]));
       fd.append("amenities", JSON.stringify(Object.keys(form.amenities).filter(k => form.amenities[k])));

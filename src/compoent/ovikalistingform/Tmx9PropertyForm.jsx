@@ -524,6 +524,9 @@ const Tmx9PropertyForm = () => {
       if (form.baseRate !== "" && form.baseRate !== null) fd.append("price", Number(form.baseRate).toFixed(2));
       fd.append("booking_type", String(form.bookingType));
       fd.append("owner_id", String(ownerId));
+      fd.append("rental_type", "short");
+      fd.append("property_type", (form.propertyType || "entire place").toLowerCase());
+      fd.append("property_category", form.propertyCategory || "Apartment");
       console.log("=== NIGHTLY FORM SUBMIT DATA ===");
 console.log("meta object:", JSON.parse(fd.get("meta") || "{}"));
 console.log("property_name:", fd.get("property_name"));

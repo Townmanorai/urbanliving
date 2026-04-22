@@ -1444,8 +1444,11 @@ const PropertyDetailPage = () => {
             setActiveImg(coverIdx);
           }
           setBookingType(Number(transformed.booking_type || 0));
+          // Use property's own rental_type first; fall back to user's session filter
           const storedRentalType = sessionStorage.getItem('ovika_rental_type') || 'short';
-          setPricingMode(storedRentalType === 'long' ? 'monthly' : 'daily');
+          const propertyRentalType = transformed.rental_type; // 'short', 'long', or undefined
+          const effectiveRentalType = propertyRentalType || storedRentalType;
+          setPricingMode(effectiveRentalType === 'long' ? 'monthly' : 'daily');
         } catch (err) {
           console.error("Failed to fetch property", err);
         } finally {
