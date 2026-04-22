@@ -52,6 +52,9 @@ const getValidPropertyId = (frontendId) => String(frontendId);
 const API_BASE_URL = 'https://www.townmanor.ai/api/ovika';
 const CALENDAR_API_BASE = 'https://www.townmanor.ai/api/booking/calendar';
 const BOOKING_REQUEST_API = 'https://www.townmanor.ai/api/booking-request';
+const BLOCKED_DATES_API = import.meta.env.DEV
+  ? 'http://localhost:3030/api/ovika/blocked-dates'
+  : 'https://townmanor.ai/api/ovika/blocked-dates';
 
 const getPhotoUrl = (photo) => {
   if (!photo) return null;
@@ -239,28 +242,26 @@ function buildDisabledDates(blockedRanges = []) {
 }
 
 async function getCalendar(propertyKey, propertyId) {
-  // 1. Try backend API
+  // 1. Try backend API — if it responds (even with empty array), trust it completely
   try {
-    const res = await fetch(
-      `https://www.townmanor.ai/api/ovika/blocked-dates?property_id=${propertyId}`,
-      { credentials: 'include' }
-    );
+    const res = await fetch(`${BLOCKED_DATES_API}?property_id=${propertyId}`);
     if (res.ok) {
       const data = await res.json();
       const dates = data.dates || data.blocked_dates || data.data || [];
-      if (Array.isArray(dates) && dates.length > 0) {
-        // Convert flat date array to blocked ranges for buildDisabledDates
+      if (Array.isArray(dates)) {
+        // Update localStorage cache to stay in sync
+        localStorage.setItem(`ovika_blocked_${propertyId}`, JSON.stringify(dates));
         return { blocked: dates.map((d) => ({ start: d, end: d })) };
       }
     }
   } catch {}
 
-  // 2. Fallback: localStorage (set by CalendarBlocking component)
+  // 2. Fallback: localStorage cache (only if API is unreachable)
   try {
     const raw = localStorage.getItem(`ovika_blocked_${propertyId}`);
     if (raw) {
       const dates = JSON.parse(raw);
-      if (Array.isArray(dates) && dates.length > 0) {
+      if (Array.isArray(dates)) {
         return { blocked: dates.map((d) => ({ start: d, end: d })) };
       }
     }

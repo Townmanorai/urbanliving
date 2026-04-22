@@ -4,6 +4,9 @@ import { AuthContext } from "../Login/AuthContext";
 import "./CalendarBlocking.css";
 
 const API_BASE = "https://www.townmanor.ai/api/ovika";
+const BLOCKED_DATES_API = import.meta.env.DEV
+  ? "http://localhost:3030/api/ovika/blocked-dates"
+  : "https://townmanor.ai/api/ovika/blocked-dates";
 const STORAGE_PREFIX = "ovika_blocked_";
 
 // ─── helpers ────────────────────────────────────────────────────────────────
@@ -17,7 +20,7 @@ const toYMD = (d) => {
 
 const today = toYMD(new Date());
 
-function getBlockedDates(propertyId) {
+function getBlockedDatesLocal(propertyId) {
   try {
     const raw = localStorage.getItem(STORAGE_PREFIX + propertyId);
     if (!raw) return [];
@@ -27,12 +30,64 @@ function getBlockedDates(propertyId) {
   }
 }
 
-function saveBlockedDates(propertyId, dates) {
+async function fetchBlockedDatesFromAPI(propertyId) {
+  try {
+    const res = await axios.get(BLOCKED_DATES_API, {
+      params: { property_id: propertyId },
+      timeout: 6000,
+    });
+    const data = res.data;
+    console.log(`📅 GET blocked-dates for property ${propertyId}:`, data);
+    const arr = Array.isArray(data) ? data
+      : Array.isArray(data?.dates) ? data.dates
+      : Array.isArray(data?.blocked_dates) ? data.blocked_dates
+      : null;
+    if (arr !== null) {
+      localStorage.setItem(STORAGE_PREFIX + propertyId, JSON.stringify(arr));
+      return arr;
+    }
+  } catch (err) {
+    console.error(`❌ GET blocked-dates failed for property ${propertyId}:`, err?.response?.status, err.message);
+  }
+  return getBlockedDatesLocal(propertyId);
+}
+
+function getUserIdFromStorage() {
+  try {
+    const raw = localStorage.getItem("user");
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    // Try all possible id fields
+    const id = parsed?.id || parsed?.owner_id || parsed?.ownerId || parsed?.user_id || parsed?._id || null;
+    console.log("👤 user from localStorage:", parsed, "→ id:", id);
+    return id ? Number(id) : null;
+  } catch {
+    return null;
+  }
+}
+
+async function saveBlockedDates(propertyId, dates, ownerId) {
   localStorage.setItem(STORAGE_PREFIX + propertyId, JSON.stringify(dates));
-  // Try API (fire-and-forget — backend may or may not support this yet)
-  axios
-    .post(`${API_BASE}/blocked-dates`, { property_id: propertyId, dates }, { withCredentials: true })
-    .catch(() => {});
+
+  // Get user_id from every possible source
+  const userId = Number(ownerId) || getUserIdFromStorage();
+
+  const payload = {
+    property_id: Number(propertyId),
+    dates,
+    user_id: userId,
+  };
+
+  console.log("📤 POST payload being sent:", JSON.stringify(payload));
+
+  try {
+    const res = await axios.post(BLOCKED_DATES_API, payload, { withCredentials: true });
+    console.log("✅ Blocked dates saved to server:", res.data);
+    return true;
+  } catch (err) {
+    console.error("❌ Failed to save:", err?.response?.status, err?.response?.data || err.message);
+    return false;
+  }
 }
 
 function extractOwnerId(obj) {
@@ -107,12 +162,23 @@ function MonthCalendar({ year, month, blocked, rangeStart, onDateClick }) {
 
 // ─── Property Calendar Block ─────────────────────────────────────────────────
 
-function PropertyCalendarBlock({ prop }) {
+function PropertyCalendarBlock({ prop, ownerId }) {
   const id = prop.id || prop._id;
-  const [blocked, setBlocked] = useState(() => getBlockedDates(id));
+  // Start from localStorage cache, then sync from API
+  const [blocked, setBlocked] = useState(() => getBlockedDatesLocal(id));
   const [rangeStart, setRangeStart] = useState(null);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState("");
+  const [loadingDates, setLoadingDates] = useState(true);
+
+  // Fetch from API on mount — ensures cross-device sync
+  useEffect(() => {
+    let cancelled = false;
+    fetchBlockedDatesFromAPI(id).then((dates) => {
+      if (!cancelled) { setBlocked(dates); setLoadingDates(false); }
+    });
+    return () => { cancelled = true; };
+  }, [id]);
 
   const now = new Date();
   const [viewOffset, setViewOffset] = useState(0); // 0 = current month, 1 = next, etc.
@@ -127,13 +193,14 @@ function PropertyCalendarBlock({ prop }) {
   };
 
   const persist = useCallback(
-    (newDates) => {
+    async (newDates) => {
       setSaving(true);
       setBlocked(newDates);
-      saveBlockedDates(id, newDates);
-      setTimeout(() => setSaving(false), 600);
+      const ok = await saveBlockedDates(id, newDates, ownerId);
+      setSaving(false);
+      if (!ok) showNotice("⚠️ Saved locally but server sync failed — check console");
     },
-    [id]
+    [id, ownerId]
   );
 
   const handleDateClick = (ymd) => {
@@ -198,7 +265,10 @@ function PropertyCalendarBlock({ prop }) {
           <h3 className="cb-prop-name">{name}</h3>
           <p className="cb-prop-address">{address}</p>
           <div className="cb-prop-stats">
-            <span className="cb-stat-chip cb-stat-blocked">{blocked.length} dates blocked</span>
+            {loadingDates
+              ? <span className="cb-stat-chip cb-stat-saving">Loading blocked dates…</span>
+              : <span className="cb-stat-chip cb-stat-blocked">{blocked.length} dates blocked</span>
+            }
             {rangeStart && (
               <span className="cb-stat-chip cb-stat-range">
                 📍 Start: {rangeStart} — click another date to block range
@@ -440,7 +510,7 @@ export default function CalendarBlocking() {
           ) : (
             <div className="cb-props-list">
               {filtered.map((prop) => (
-                <PropertyCalendarBlock key={prop.id || prop._id} prop={prop} />
+                <PropertyCalendarBlock key={prop.id || prop._id} prop={prop} ownerId={ownerId} />
               ))}
             </div>
           );
