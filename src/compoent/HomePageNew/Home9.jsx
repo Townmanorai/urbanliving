@@ -2,6 +2,7 @@ import React from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
 import "./Home9.css";
+import { navClick, auxNavClick } from '../../utils/navClick';
 
 const accommodations = [
   {
@@ -104,7 +105,8 @@ const Home9 = () => {
               <p className="nightly-stays__card-desc">{item.description}</p>
               <button
                 className="nightly-stays__btn"
-                onClick={() => navigate(item.filterPath)}
+                onClick={(e) => navClick(e, item.filterPath, navigate)}
+                onAuxClick={(e) => auxNavClick(e, item.filterPath)}
               >
                 View All Listings <span className="nightly-stays__btn-arrow">→</span>
               </button>

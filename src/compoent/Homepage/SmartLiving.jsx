@@ -6,6 +6,7 @@ import { TbBuildingEstate } from "react-icons/tb";
 import { BsFillDoorOpenFill } from "react-icons/bs";
 import { GoHome } from "react-icons/go";   // ✅ watermark
 import { useNavigate } from "react-router";
+import { navClick, auxNavClick } from '../../utils/navClick';
 
 import "./SmartLiving.css";
 
@@ -61,7 +62,8 @@ const SmartLiving = () => {
           </div>
           <span
             className="smart-living-left-arrow"
-            onClick={() => navigate("/tmluxe")}
+            onClick={(e) => navClick(e, "/tmluxe", navigate)}
+            onAuxClick={(e) => auxNavClick(e, "/tmluxe")}
           >
             <IoArrowForwardSharp size={15} />
           </span>

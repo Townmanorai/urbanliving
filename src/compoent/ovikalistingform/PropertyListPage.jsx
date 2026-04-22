@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { navClick, auxNavClick } from '../../utils/navClick';
 import { FiSearch, FiMapPin, FiHeart, FiPlus, FiStar, FiX, FiMoon, FiCalendar, FiTag, FiHome, FiTrendingUp, FiAward, FiClock } from 'react-icons/fi';
 import { BiBed, BiBath, BiArea } from 'react-icons/bi';
 
@@ -166,7 +167,8 @@ const PropertyCard = ({ property, rentalType }) => {
 
   return (
     <div
-      onClick={(e) => { if (!e.target.closest('[data-action]')) navigate(`/property/${property.id}`); }}
+      onClick={(e) => { if (!e.target.closest('[data-action]')) navClick(e, `/property/${property.id}`, navigate); }}
+      onAuxClick={(e) => { if (!e.target.closest('[data-action]')) auxNavClick(e, `/property/${property.id}`); }}
       onMouseEnter={e => {
         e.currentTarget.style.transform = 'translateY(-4px)';
         e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.14)';
@@ -366,7 +368,8 @@ const PropertyCard = ({ property, rentalType }) => {
           <button
             className="plp-card-cta"
             data-action="view"
-            onClick={e => { e.stopPropagation(); navigate(`/property/${property.id}`); }}
+            onClick={e => { e.stopPropagation(); navClick(e, `/property/${property.id}`, navigate); }}
+            onAuxClick={e => { e.stopPropagation(); auxNavClick(e, `/property/${property.id}`); }}
             onMouseEnter={e => { e.currentTarget.style.background = '#AF7834'; e.currentTarget.style.transform = 'scale(1.01)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = '#C98B3E'; e.currentTarget.style.transform = 'scale(1)'; }}
             style={{

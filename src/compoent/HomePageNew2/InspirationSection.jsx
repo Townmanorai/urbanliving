@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { navClick, auxNavClick } from '../../utils/navClick';
 
 function getBreakpoint() {
   const w = window.innerWidth;
@@ -201,7 +202,8 @@ export default function InspirationSection() {
             <div
               key={i}
               className="insp-item"
-              onClick={() => navigate(getSearchPath(activeTab, item.city, item.navTab))}
+              onClick={(e) => navClick(e, getSearchPath(activeTab, item.city, item.navTab), navigate)}
+              onAuxClick={(e) => auxNavClick(e, getSearchPath(activeTab, item.city, item.navTab))}
               style={{
                 cursor: 'pointer',
                 flex: bp === 'mobile' ? '0 0 calc(33.33% - 7px)' : bp === 'tablet' ? '0 0 calc(33.33% - 11px)' : '1 1 calc(16.66% - 14px)',

@@ -4,6 +4,7 @@ import { UserCircle2 } from "lucide-react";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { AuthContext } from "../Login/AuthContext";
+import { navClick, auxNavClick } from '../../utils/navClick';
 
 const globalCSS = `
 @keyframes slideDownSidebar {
@@ -94,20 +95,20 @@ export default function Navbar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSignatureStaysClick = () => {
+  const handleSignatureStaysClick = (e) => {
     setSideMenuOpen(false);
     setHamburgerMenuOpen(false);
-    navigate("/properties?category=Signature+Stays");
+    navClick(e, "/properties?category=Signature+Stays", navigate);
   };
 
-  const handleLogin = () => navigate("/login");
-  const goDashboard = () => { setSideMenuOpen(false); setHamburgerMenuOpen(false); navigate("/dashboard"); };
+  const handleLogin = (e) => navClick(e, "/login", navigate);
+  const goDashboard = (e) => { setSideMenuOpen(false); setHamburgerMenuOpen(false); navClick(e, "/dashboard", navigate); };
   const goListingPage = () => { setSideMenuOpen(false); setHamburgerMenuOpen(false); setRentalCategoryPopup(true); };
-  const goOwnerDashboard = () => { setSideMenuOpen(false); setHamburgerMenuOpen(false); navigate("/admindashboard"); };
+  const goOwnerDashboard = (e) => { setSideMenuOpen(false); setHamburgerMenuOpen(false); navClick(e, "/admindashboard", navigate); };
   const handleBecomeHostClick = () => setRentalCategoryPopup(true);
-  const goCareer = () => { setSideMenuOpen(false); setHamburgerMenuOpen(false); navigate("/career-support"); };
-  const goOvikaVerified = () => { setSideMenuOpen(false); setHamburgerMenuOpen(false); navigate("/ovika-verified"); };
-  const goSelfVerified  = () => { setSideMenuOpen(false); setHamburgerMenuOpen(false); navigate("/ovika-self-verified"); };
+  const goCareer = (e) => { setSideMenuOpen(false); setHamburgerMenuOpen(false); navClick(e, "/career-support", navigate); };
+  const goOvikaVerified = (e) => { setSideMenuOpen(false); setHamburgerMenuOpen(false); navClick(e, "/ovika-verified", navigate); };
+  const goSelfVerified  = (e) => { setSideMenuOpen(false); setHamburgerMenuOpen(false); navClick(e, "/ovika-self-verified", navigate); };
 
   const handleRentalCategorySelect = (path) => {
     setRentalCategoryPopup(false);
@@ -169,7 +170,7 @@ export default function Navbar() {
           <div style={{ display: "flex", alignItems: "center", padding: "0 16px", height: 52 }}>
 
             {/* Logo — left */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", cursor: "pointer" }} onClick={() => navigate("/")}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", cursor: "pointer" }} onClick={(e) => navClick(e, "/", navigate)} onAuxClick={(e) => auxNavClick(e, "/")}>
               <img src="/ovikaliving_logo_clean.png" alt="OvikaLiving" style={{ height: 26, objectFit: "contain", background: "transparent", display: "block" }} />
             </div>
 
@@ -250,22 +251,23 @@ export default function Navbar() {
               {/* All nav items */}
               <div style={{ display: "flex", flexDirection: "column", gap: 2, padding: "12px 12px 8px", flex: 1 }}>
                 {[
-                  { icon: "🏠", label: "Home", sub: "Return to homepage", action: () => { closeMobileMenu(); navigate("/"); } },
-                  { icon: "🌙", label: "Nightly Stays", sub: "Short stays & nightly bookings", action: () => { closeMobileMenu(); navigate("/nightly-stays"); } },
-                  { icon: "📅", label: "Monthly Rental", sub: "Long term & monthly rentals", action: () => { closeMobileMenu(); navigate("/monthly-rentals"); } },
-                  { icon: "✨", label: "Signature Stays", sub: "Our curated premium properties", action: () => { closeMobileMenu(); handleSignatureStaysClick(); } },
-                  { icon: "🏘️", label: "List Property", sub: "List your property and earn", action: () => { closeMobileMenu(); setRentalCategoryPopup(true); } },
-                  { icon: "📈", label: "ROI Calculator", sub: "See how much your flat can earn", action: () => { closeMobileMenu(); navigate("/roi-calculator"); } },
-                  { icon: "📊", label: "Profile", sub: "View your bookings & performance", action: () => { closeMobileMenu(); navigate("/dashboard"); } },
-                  { icon: "🛡️", label: "Owner Dashboard", sub: "Access owner controls", action: () => { closeMobileMenu(); navigate("/admindashboard"); } },
-                  { icon: "💬", label: "Subscription Plan", sub: "Grow Faster With the Right Plan", action: () => { closeMobileMenu(); navigate("/subsription"); } },
-                  { icon: "📞", label: "Contact / Support", sub: "Get help and assistance", action: () => { closeMobileMenu(); navigate("/contactus"); } },
-                  { icon: "💼", label: "Career", sub: "Join our growing team", action: () => { closeMobileMenu(); goCareer(); } },
-                  { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: 18, height: "auto" }} />, label: "OvikaLiving Verified", sub: "Know about our verification process", action: () => { closeMobileMenu(); goOvikaVerified(); } },
-                  { icon: "✅", label: "Self Verification", sub: "Verify your property yourself", action: () => { closeMobileMenu(); goSelfVerified(); } },
-                  { icon: "🗺️", label: "Explore Townmanor", sub: "Discover amazing places", action: () => { closeMobileMenu(); window.open("https://www.townmanor.ai/", "_blank"); } },
+                  { icon: "🏠", label: "Home", path: "/", action: (e) => { closeMobileMenu(); navClick(e, "/", navigate); } },
+                  { icon: "🌙", label: "Nightly Stays", path: "/nightly-stays", action: (e) => { closeMobileMenu(); navClick(e, "/nightly-stays", navigate); } },
+                  { icon: "📅", label: "Monthly Rental", path: "/monthly-rentals", action: (e) => { closeMobileMenu(); navClick(e, "/monthly-rentals", navigate); } },
+                  { icon: "✨", label: "Signature Stays", path: "/properties?category=Signature+Stays", action: (e) => { closeMobileMenu(); handleSignatureStaysClick(e); } },
+                  { icon: "🏘️", label: "List Property", action: () => { closeMobileMenu(); setRentalCategoryPopup(true); } },
+                  { icon: "📈", label: "ROI Calculator", path: "/roi-calculator", action: (e) => { closeMobileMenu(); navClick(e, "/roi-calculator", navigate); } },
+                  { icon: "📊", label: "Profile", path: "/dashboard", action: (e) => { closeMobileMenu(); navClick(e, "/dashboard", navigate); } },
+                  { icon: "🛡️", label: "Owner Dashboard", path: "/admindashboard", action: (e) => { closeMobileMenu(); navClick(e, "/admindashboard", navigate); } },
+                  { icon: "💬", label: "Subscription Plan", path: "/subsription", action: (e) => { closeMobileMenu(); navClick(e, "/subsription", navigate); } },
+                  { icon: "📞", label: "Contact / Support", path: "/contactus", action: (e) => { closeMobileMenu(); navClick(e, "/contactus", navigate); } },
+                  { icon: "💼", label: "Career", path: "/career-support", action: (e) => { closeMobileMenu(); goCareer(e); } },
+                  { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: 18, height: "auto" }} />, label: "OvikaLiving Verified", path: "/ovika-verified", action: (e) => { closeMobileMenu(); goOvikaVerified(e); } },
+                  { icon: "✅", label: "Self Verification", path: "/ovika-self-verified", action: (e) => { closeMobileMenu(); goSelfVerified(e); } },
+                  { icon: "🗺️", label: "Explore Townmanor", action: () => { closeMobileMenu(); window.open("https://www.townmanor.ai/", "_blank"); } },
                 ].map((item) => (
-                  <button key={item.label} onClick={item.action}
+                  <button key={item.label} onClick={(e) => item.action(e)}
+                    onAuxClick={(e) => item.path ? auxNavClick(e, item.path) : null}
                     style={{ border: "none", background: "transparent", padding: "9px 8px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", width: "100%", borderRadius: 10, transition: "background 0.15s", textAlign: "left" }}
                     onMouseEnter={(e) => { e.currentTarget.style.background = "#fef9f2"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
@@ -315,7 +317,8 @@ export default function Navbar() {
           {/* LEFT: Logo */}
           <div
             style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", cursor: "pointer", flexShrink: 0, marginRight: 40 }}
-            onClick={() => navigate("/")}
+            onClick={(e) => navClick(e, "/", navigate)}
+            onAuxClick={(e) => auxNavClick(e, "/")}
           >
             <img
               src="/ovikaliving_logo_clean.png"
@@ -327,14 +330,15 @@ export default function Navbar() {
           {/* RIGHT-ALIGNED: Nav text links */}
           <nav style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: "auto" }}>
             {[
-              { label: "Nightly Stays",   action: () => navigate("/nightly-stays") },
-              { label: "Monthly Rental", action: () => navigate("/monthly-rentals") },
+              { label: "Nightly Stays",   path: "/nightly-stays" },
+              { label: "Monthly Rental",  path: "/monthly-rentals" },
               { label: "List Property",   action: handleBecomeHostClick },
-              { label: "Signature Stays", action: handleSignatureStaysClick },
-            ].map(({ label, action }) => (
+              { label: "Signature Stays", path: "/properties?category=Signature+Stays", action: handleSignatureStaysClick },
+            ].map(({ label, path, action }) => (
               <button
                 key={label}
-                onClick={action}
+                onClick={(e) => path ? navClick(e, path, navigate) : action(e)}
+                onAuxClick={(e) => path ? auxNavClick(e, path) : null}
                 style={{ border: "none", background: "transparent", cursor: "pointer", fontFamily: "Poppins, sans-serif", fontSize: 13.5, fontWeight: 500, color: "#232323", padding: "8px 14px", borderRadius: 8, transition: "all 0.18s ease", whiteSpace: "nowrap" }}
                 onMouseEnter={(e) => { e.currentTarget.style.color = "#c2772b"; e.currentTarget.style.background = "#fdf8f2"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.color = "#232323"; e.currentTarget.style.background = "transparent"; }}
@@ -360,6 +364,7 @@ export default function Navbar() {
             ) : (
               <button
                 onClick={handleLogin}
+                onAuxClick={(e) => auxNavClick(e, "/login")}
                 style={{ border: "1.5px solid #c2772b", background: "#fff", color: "#c2772b", fontWeight: 500, fontSize: 13, borderRadius: 22, padding: "6px 20px", height: 34, display: "flex", alignItems: "center", cursor: "pointer", fontFamily: "Poppins, sans-serif", transition: "all 0.25s", boxShadow: "0 1px 6px rgba(194,119,43,0.12)", letterSpacing: "0.3px" }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = "#fef9f2"; e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 3px 12px rgba(194,119,43,0.22)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 1px 6px rgba(194,119,43,0.12)"; }}
@@ -414,22 +419,22 @@ export default function Navbar() {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
               {[
-                { icon: "🏠", label: "Home", sub: "Return to homepage", action: () => { setHamburgerMenuOpen(false); navigate("/"); } },
-                { icon: "🌙", label: "Nightly Stays", sub: "Short stays & nightly bookings", action: () => { setHamburgerMenuOpen(false); navigate("/nightly-stays"); } },
-                { icon: "📅", label: "Monthly Rental", sub: "Long term & monthly rentals", action: () => { setHamburgerMenuOpen(false); navigate("/monthly-rentals"); } },
-                { icon: "✨", label: "Signature Stays", sub: "Our curated premium properties", action: handleSignatureStaysClick },
-                { icon: "🏘️", label: "List Property", sub: "List your property and earn", action: () => { setHamburgerMenuOpen(false); setRentalCategoryPopup(true); } },
-                { icon: "📈", label: "ROI Calculator", sub: "See how much your flat can earn", action: () => { setHamburgerMenuOpen(false); navigate("/roi-calculator"); } },
-                { icon: "📊", label: "Profile", sub: "View your bookings & performance", action: () => { setHamburgerMenuOpen(false); navigate("/dashboard"); } },
-                { icon: "🛡️", label: "Owner Dashboard", sub: "Access owner controls", action: () => { setHamburgerMenuOpen(false); navigate("/admindashboard"); } },
-                { icon: "💬", label: "Subscription Plan", sub: "Grow Faster With the Right Plan", action: () => { setHamburgerMenuOpen(false); navigate("/subsription"); } },
-                { icon: "📞", label: "Contact / Support", sub: "Get help and assistance", action: () => { setHamburgerMenuOpen(false); navigate("/contactus"); } },
-                { icon: "💼", label: "Career", sub: "Join our growing team", action: goCareer },
-                { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: '20px', height: 'auto' }} />, label: "OvikaLiving Verified", sub: "Know about our verification process", action: goOvikaVerified },
-                { icon: "✅", label: "Property Self Verification", sub: "Verify your property yourself", action: goSelfVerified },
-                { icon: "🗺️", label: "Explore Townmanor", sub: "Discover amazing places", action: () => { setHamburgerMenuOpen(false); window.open("https://www.townmanor.ai/", "_blank"); } },
+                { icon: "🏠", label: "Home", path: "/", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/", navigate); } },
+                { icon: "🌙", label: "Nightly Stays", path: "/nightly-stays", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/nightly-stays", navigate); } },
+                { icon: "📅", label: "Monthly Rental", path: "/monthly-rentals", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/monthly-rentals", navigate); } },
+                { icon: "✨", label: "Signature Stays", path: "/properties?category=Signature+Stays", action: handleSignatureStaysClick },
+                { icon: "🏘️", label: "List Property", action: () => { setHamburgerMenuOpen(false); setRentalCategoryPopup(true); } },
+                { icon: "📈", label: "ROI Calculator", path: "/roi-calculator", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/roi-calculator", navigate); } },
+                { icon: "📊", label: "Profile", path: "/dashboard", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/dashboard", navigate); } },
+                { icon: "🛡️", label: "Owner Dashboard", path: "/admindashboard", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/admindashboard", navigate); } },
+                { icon: "💬", label: "Subscription Plan", path: "/subsription", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/subsription", navigate); } },
+                { icon: "📞", label: "Contact / Support", path: "/contactus", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/contactus", navigate); } },
+                { icon: "💼", label: "Career", path: "/career-support", action: goCareer },
+                { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: '20px', height: 'auto' }} />, label: "OvikaLiving Verified", path: "/ovika-verified", action: goOvikaVerified },
+                { icon: "✅", label: "Property Self Verification", path: "/ovika-self-verified", action: goSelfVerified },
+                { icon: "🗺️", label: "Explore Townmanor", action: () => { setHamburgerMenuOpen(false); window.open("https://www.townmanor.ai/", "_blank"); } },
               ].map((item) => (
-                <button key={item.label} onClick={item.action} style={{ border: "none", background: "transparent", padding: "7px 4px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", width: "100%", borderRadius: 8, transition: "background 0.15s" }}
+                <button key={item.label} onClick={(e) => item.action(e)} onAuxClick={(e) => item.path ? auxNavClick(e, item.path) : null} style={{ border: "none", background: "transparent", padding: "7px 4px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", width: "100%", borderRadius: 8, transition: "background 0.15s" }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = "#fef9f2"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
                 >
@@ -481,17 +486,17 @@ export default function Navbar() {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
               {[
-                { icon: "🏖️", label: "Book a Stay", sub: "Browse and book properties", action: () => { setSideMenuOpen(false); navigate("/properties"); } },
-                { icon: "✨", label: "Signature Stays", sub: "Our curated premium properties", action: handleSignatureStaysClick },
+                { icon: "🏖️", label: "Book a Stay", path: "/properties", sub: "Browse and book properties", action: (e) => { setSideMenuOpen(false); navClick(e, "/properties", navigate); } },
+                { icon: "✨", label: "Signature Stays", path: "/properties?category=Signature+Stays", sub: "Our curated premium properties", action: handleSignatureStaysClick },
                 { icon: "🏘️", label: "Become a Host", sub: "List your property and earn", action: goListingPage },
-                { icon: "📈", label: "ROI Calculator", sub: "See how much your flat can earn", action: () => { setSideMenuOpen(false); navigate("/roi-calculator"); } },
-                { icon: "📊", label: "Profile", sub: "View your bookings & performance", action: goDashboard },
-                { icon: "🛡️", label: "Owner Dashboard", sub: "Access owner controls", action: goOwnerDashboard },
-                { icon: "💼", label: "Career", sub: "Join our growing team", action: goCareer },
-                { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: '20px', height: 'auto' }} />, label: "OvikaLiving Verified", sub: "Know about our verification process", action: goOvikaVerified },
-                { icon: "✅", label: "Property Self Verification", sub: "Verify your property yourself", action: goSelfVerified },
+                { icon: "📈", label: "ROI Calculator", path: "/roi-calculator", sub: "See how much your flat can earn", action: (e) => { setSideMenuOpen(false); navClick(e, "/roi-calculator", navigate); } },
+                { icon: "📊", label: "Profile", path: "/dashboard", sub: "View your bookings & performance", action: goDashboard },
+                { icon: "🛡️", label: "Owner Dashboard", path: "/admindashboard", sub: "Access owner controls", action: goOwnerDashboard },
+                { icon: "💼", label: "Career", path: "/career-support", sub: "Join our growing team", action: goCareer },
+                { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: '20px', height: 'auto' }} />, label: "OvikaLiving Verified", path: "/ovika-verified", sub: "Know about our verification process", action: goOvikaVerified },
+                { icon: "✅", label: "Property Self Verification", path: "/ovika-self-verified", sub: "Verify your property yourself", action: goSelfVerified },
               ].map((item) => (
-                <button key={item.label} onClick={item.action} style={panelButtonStyle}>
+                <button key={item.label} onClick={(e) => item.action(e)} onAuxClick={(e) => item.path ? auxNavClick(e, item.path) : null} style={panelButtonStyle}>
                   <span style={{
                     ...iconBoxStyle,
                     width: 32,
@@ -506,7 +511,7 @@ export default function Navbar() {
                   </div>
                 </button>
               ))}
-              <button onClick={() => { setSideMenuOpen(false); navigate("/subsription"); }} style={panelButtonStyle}>
+              <button onClick={(e) => { setSideMenuOpen(false); navClick(e, "/subsription", navigate); }} onAuxClick={(e) => auxNavClick(e, "/subsription")} style={panelButtonStyle}>
                 <span style={iconBoxStyle}><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="3" stroke="#c2772b" strokeWidth="1.8" /><path d="M3 9H21" stroke="#c2772b" strokeWidth="1.8" /><circle cx="8" cy="14" r="1.4" fill="#c2772b" /><circle cx="12" cy="14" r="1.4" fill="#c2772b" /><circle cx="16" cy="14" r="1.4" fill="#c2772b" /></svg></span>
                 <div style={{ textAlign: "left" }}>
                   <div style={{ fontSize: 14, fontWeight: 500, color: "#232323" }}>Subscription Plan</div>

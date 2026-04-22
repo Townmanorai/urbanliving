@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Search } from 'lucide-react';
+import { navClick, auxNavClick } from '../../utils/navClick';
 
 const API_BASE_URL = 'https://www.townmanor.ai/api/ovika';
 const SHORT_TERM_TYPES = ['entire place', 'private room', 'shared room', 'hotel room', 'homestay'];
@@ -452,11 +453,11 @@ export default function HomePageNew1() {
 
   // Quick-nav chips: each maps to a specific /properties URL
   const QUICK_CHIPS = [
-    { label: 'Signature Stays', nav: () => { const p = new URLSearchParams(); p.set('category', 'Signature Stays'); navigate(`/properties?${p}`); } },
-    { label: 'Premium',         nav: () => { const p = new URLSearchParams(); p.set('category', 'Premium Stay'); navigate(`/properties?${p}`); } },
-    { label: 'Economy',         nav: () => { const p = new URLSearchParams(); p.set('category', 'Economy Stay'); navigate(`/properties?${p}`); } },
-    { label: 'PG',              nav: () => { const p = new URLSearchParams(); p.set('category', 'PG'); p.set('rentalType', 'long'); navigate(`/properties?${p}`); } },
-    { label: 'Co-living',       nav: () => { const p = new URLSearchParams(); p.set('search', 'co-living'); navigate(`/properties?${p}`); } },
+    { label: 'Signature Stays', path: () => { const p = new URLSearchParams(); p.set('category', 'Signature Stays'); return `/properties?${p}`; } },
+    { label: 'Premium',         path: () => { const p = new URLSearchParams(); p.set('category', 'Premium Stay'); return `/properties?${p}`; } },
+    { label: 'Economy',         path: () => { const p = new URLSearchParams(); p.set('category', 'Economy Stay'); return `/properties?${p}`; } },
+    { label: 'PG',              path: () => { const p = new URLSearchParams(); p.set('category', 'PG'); p.set('rentalType', 'long'); return `/properties?${p}`; } },
+    { label: 'Co-living',       path: () => { const p = new URLSearchParams(); p.set('search', 'co-living'); return `/properties?${p}`; } },
   ];
 
   const shortDisplay = ratesLoading ? '—' : (shortRate ? `${fmt(shortRate)}/night` : '₹2,499/night');
@@ -487,7 +488,7 @@ export default function HomePageNew1() {
               { label: 'Delhi', city: 'Delhi' },
               { label: 'Gurugram', city: 'Gurugram' },
             ].map(c => (
-              <button key={c.label} onClick={() => { const p = new URLSearchParams(); p.set('city', c.city); navigate(`/properties?${p}`); }}
+              <button key={c.label} onClick={(e) => { const p = new URLSearchParams(); p.set('city', c.city); navClick(e, `/properties?${p}`, navigate); }} onAuxClick={(e) => { const p = new URLSearchParams(); p.set('city', c.city); auxNavClick(e, `/properties?${p}`); }}
                 style={{ flexShrink: 0, background: '#fff', border: '1.5px solid #e8c88a', borderRadius: 20, padding: '4px 13px', fontSize: '0.65rem', fontWeight: 600, color: '#7a5530', cursor: 'pointer', fontFamily: "'Poppins',sans-serif", whiteSpace: 'nowrap', outline: 'none' }}>
                 {c.label}
               </button>
@@ -518,7 +519,8 @@ export default function HomePageNew1() {
               {QUICK_CHIPS.map(chip => (
                 <button
                   key={chip.label}
-                  onClick={chip.nav}
+                  onClick={(e) => navClick(e, chip.path(), navigate)}
+                  onAuxClick={(e) => auxNavClick(e, chip.path())}
                   style={{
                     flexShrink: 0, background: '#fdf6ee', border: '1px solid #e8c88a',
                     borderRadius: 20, padding: '5px 13px', fontSize: '0.67rem', fontWeight: 600,
@@ -784,7 +786,7 @@ export default function HomePageNew1() {
                   { label: 'Delhi', city: 'Delhi' },
                   { label: 'Gurugram', city: 'Gurugram' },
                 ].map(c => (
-                  <button key={c.label} onClick={() => { const p = new URLSearchParams(); p.set('city', c.city); navigate(`/properties?${p}`); }}
+                  <button key={c.label} onClick={(e) => { const p = new URLSearchParams(); p.set('city', c.city); navClick(e, `/properties?${p}`, navigate); }} onAuxClick={(e) => { const p = new URLSearchParams(); p.set('city', c.city); auxNavClick(e, `/properties?${p}`); }}
                     style={{ background: '#fff', border: '1.5px solid #e8c88a', borderRadius: 20, padding: '5px 15px', fontSize: '0.7rem', fontWeight: 600, color: '#7a5530', cursor: 'pointer', fontFamily: "'Poppins',sans-serif", whiteSpace: 'nowrap', outline: 'none', transition: 'all 0.2s' }}
                     onMouseEnter={e => { e.currentTarget.style.background = '#fdf0e0'; e.currentTarget.style.borderColor = '#c2772b'; e.currentTarget.style.color = '#c2772b'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#e8c88a'; e.currentTarget.style.color = '#7a5530'; }}>
@@ -802,7 +804,8 @@ export default function HomePageNew1() {
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                   {QUICK_CHIPS.map(chip => (
                     <span key={chip.label}
-                      onClick={chip.nav}
+                      onClick={(e) => navClick(e, chip.path(), navigate)}
+                  onAuxClick={(e) => auxNavClick(e, chip.path())}
                       style={{
                         fontSize: '0.68rem', color: '#6b5540', background: '#fff',
                         border: '1px solid #e8d8c0', borderRadius: 20, padding: '5px 12px',

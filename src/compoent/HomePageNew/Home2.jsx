@@ -2,6 +2,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home2.css";
+import { navClick, auxNavClick } from '../../utils/navClick';
 
 const FEATURES = [
   { icon: "🏠", label: "Fully Furnished" },
@@ -47,7 +48,7 @@ const Home2 = () => {
               ))}
             </div>
 
-            <button className="living-btn" onClick={() => navigate("/coliving-space")}>
+            <button className="living-btn" onClick={(e) => navClick(e, "/coliving-space", navigate)} onAuxClick={(e) => auxNavClick(e, "/coliving-space")}>
               Coming Soon <span className="arrow-main-new">→</span>
             </button>
           </div>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ListYourPropertyTM.css";
 import { IoArrowForward } from "react-icons/io5";
+import { navClick, auxNavClick } from '../../utils/navClick';
 
 const ListYourPropertyTM = () => {
   const navigate = useNavigate();
@@ -104,8 +105,8 @@ ${formData.message}
     }
   };
 
-  const handleListPropertyClick = () => {
-    navigate('/list-property');
+  const handleListPropertyClick = (e) => {
+    navClick(e, '/list-property', navigate);
   };
 
   return (
@@ -136,7 +137,7 @@ ${formData.message}
             <p className="tm-list-hero-description">
               Join Ovika and turn your property into a steady source of income. Whether it's an apartment, PG, or luxury villa, we make renting simple, safe, and rewarding.
             </p>
-            <button className="tm-list-hero-button" onClick={handleListPropertyClick}>
+            <button className="tm-list-hero-button" onClick={handleListPropertyClick} onAuxClick={(e) => auxNavClick(e, '/list-property')}>
               List Your Property <IoArrowForward className="arrow-icon" />
             </button>
           </div>

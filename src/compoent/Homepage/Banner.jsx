@@ -2,6 +2,7 @@ import React, { useState, useEffect} from 'react';
 import './Banner.css';
 import { IoArrowForwardSharp, IoSearch } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
+import { navClick, auxNavClick } from '../../utils/navClick';
 
 
 
@@ -25,7 +26,7 @@ function Banner() {
               <span className="tm">TM</span> <span className="luxe">Luxe</span>
             </h3>
             <p>For Luxury apartments</p>
-            <span id='left_arrow' onClick={() => navigate('/tmluxe')}>
+            <span id='left_arrow' onClick={(e) => navClick(e, '/tmluxe', navigate)} onAuxClick={(e) => auxNavClick(e, '/tmluxe')}>
               <IoArrowForwardSharp size={25} />
             </span>
           </div>

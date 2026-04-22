@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { navClick, auxNavClick } from '../../utils/navClick';
 
 function getBreakpoint() {
   const w = window.innerWidth;
@@ -151,12 +152,12 @@ export default function HomePageNew2() {
 
   const cats = activeTab === 'nightly' ? NIGHTLY : MONTHLY;
 
-  const handleNav = (cat) => {
+  const handleNav = (e, cat) => {
     const p = new URLSearchParams();
     p.set('rentalType', cat.rentalType);
     if (cat.category) p.set('category', cat.category);
     sessionStorage.setItem('ovika_rental_type', cat.rentalType);
-    navigate(`/properties?${p}`);
+    navClick(e, `/properties?${p}`, navigate);
   };
 
   const sectionBg = {
@@ -179,7 +180,7 @@ export default function HomePageNew2() {
         <div className="hw2-scroll" style={{ display: 'flex', overflowX: 'auto', gap: 9, marginBottom: 14, msOverflowStyle: 'none', scrollbarWidth: 'none', paddingBottom: 2 }}>
           {cats.map((cat) => (
             <div key={cat.id}
-              onClick={() => handleNav(cat)}
+              onClick={(e) => handleNav(e, cat)}
               style={{
                 flex: '0 0 44%',
                 background: '#fff', borderRadius: 14, overflow: 'hidden',
@@ -206,7 +207,7 @@ export default function HomePageNew2() {
                   <div style={{ fontSize: '0.7rem', fontWeight: 500, color: '#1a1209', marginTop: 1 }}>{cat.price}</div>
                 </div>
                 <button
-                  onClick={e => { e.stopPropagation(); handleNav(cat); }}
+                  onClick={e => { e.stopPropagation(); handleNav(e, cat); }}
                   style={{
                     marginTop: 'auto', width: '100%', padding: '6px 0', borderRadius: 7, border: 'none',
                     background: '#c2772b', color: '#fff',
@@ -247,7 +248,7 @@ export default function HomePageNew2() {
             <div key={cat.id}
               onMouseEnter={() => setHovered(cat.id)}
               onMouseLeave={() => setHovered(null)}
-              onClick={() => handleNav(cat)}
+              onClick={(e) => handleNav(e, cat)}
               style={{
                 background: '#fff', borderRadius: 20, overflow: 'hidden', cursor: 'pointer',
                 boxShadow: hovered === cat.id ? '0 16px 48px rgba(194,119,43,0.18)' : '0 4px 20px rgba(0,0,0,0.08)',
@@ -271,7 +272,7 @@ export default function HomePageNew2() {
                   <div style={{ fontSize: '0.58rem', color: '#c2772b', textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: 600 }}>Starts at</div>
                   <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#1a1209', marginTop: 2 }}>{cat.price}</div>
                 </div>
-                <button onClick={e => { e.stopPropagation(); handleNav(cat); }}
+                <button onClick={e => { e.stopPropagation(); handleNav(e, cat); }}
                   style={{ width: '100%', padding: '10px 0', borderRadius: 10, border: 'none', background: hovered === cat.id ? '#a8631f' : '#c2772b', color: '#fff', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Poppins', sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                   {cat.btnText} <ArrowRight size={14} />
                 </button>
@@ -295,7 +296,7 @@ export default function HomePageNew2() {
           <div key={cat.id}
             onMouseEnter={() => setHovered(cat.id)}
             onMouseLeave={() => setHovered(null)}
-            onClick={() => handleNav(cat)}
+            onClick={(e) => handleNav(e, cat)}
             style={{
               background: '#fff', borderRadius: 20, overflow: 'hidden', cursor: 'pointer',
               boxShadow: hovered === cat.id ? '0 16px 48px rgba(194,119,43,0.18)' : '0 4px 20px rgba(0,0,0,0.08)',
@@ -319,7 +320,7 @@ export default function HomePageNew2() {
                 <div style={{ fontSize: '0.6rem', color: '#c2772b', textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: 600 }}>Starts at</div>
                 <div style={{ fontSize: '1rem', fontWeight: 600, color: '#1a1209', marginTop: 3 }}>{cat.price}</div>
               </div>
-              <button onClick={e => { e.stopPropagation(); handleNav(cat); }}
+              <button onClick={e => { e.stopPropagation(); handleNav(e, cat); }}
                 style={{ width: '100%', padding: '10px 0', borderRadius: 10, border: 'none', background: hovered === cat.id ? '#a8631f' : '#c2772b', color: '#fff', fontSize: '0.84rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Poppins', sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}>
                 {cat.btnText} <ArrowRight size={15} />
               </button>

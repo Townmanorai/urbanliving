@@ -2,6 +2,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { navClick, auxNavClick } from '../../utils/navClick';
 
 // ✅ Real API data — 1 property per city (10 unique cities)
 const PROPERTIES = [
@@ -243,7 +244,8 @@ export default function SignatureStays() {
                 key={p.id}
                 onMouseEnter={() => setHoveredIdx(i)}
                 onMouseLeave={() => setHoveredIdx(null)}
-                onClick={() => navigate(`/property/${p.id}`)}
+                onClick={(e) => navClick(e, `/property/${p.id}`, navigate)}
+                onAuxClick={(e) => auxNavClick(e, `/property/${p.id}`)}
                 style={{
                   flexShrink: 0,
                   scrollSnapAlign: 'start',
@@ -364,7 +366,8 @@ export default function SignatureStays() {
       {/* ── CTA Button ── */}
       <div style={{ textAlign: 'center', marginTop: 'clamp(0.5rem, 2vw, 1.2rem)' }}>
         <button
-          onClick={() => navigate('/properties')}
+          onClick={(e) => navClick(e, '/properties', navigate)}
+          onAuxClick={(e) => auxNavClick(e, '/properties')}
           onMouseEnter={e => {
             e.currentTarget.style.transform = 'translateY(-2px)';
             e.currentTarget.style.boxShadow = '0 10px 32px rgba(194,119,43,0.55)';

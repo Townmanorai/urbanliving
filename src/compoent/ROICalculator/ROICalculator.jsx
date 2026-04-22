@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { navClick, auxNavClick } from '../../utils/navClick';
 import { Helmet } from 'react-helmet';
 import './ROICalculator.css';
 
@@ -305,7 +306,7 @@ export default function ROICalculator() {
             <p className="roi-cta-title">Ready to earn from your vacant flat?</p>
             <p className="roi-cta-sub">List on OvikaLiving — free setup, no lock-in</p>
           </div>
-          <button className="roi-cta-btn" onClick={() => navigate('/listed1')}>
+          <button className="roi-cta-btn" onClick={(e) => navClick(e, '/listed1', navigate)} onAuxClick={(e) => auxNavClick(e, '/listed1')}>
             List My Property →
           </button>
         </div>

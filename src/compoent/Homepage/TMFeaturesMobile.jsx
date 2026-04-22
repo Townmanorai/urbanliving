@@ -2,6 +2,7 @@ import React from "react";
 import "./TMFeaturesMobile.css";
 import { IoArrowForward } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import { navClick, auxNavClick } from '../../utils/navClick';
 
 const comingsoon = ()=>{
   alert("this part is Coming Soon Stay updated with us")
@@ -35,9 +36,7 @@ const TMFeaturesMobile = () => {
         With sophisticated interiors, modern amenities, and prime locations, TM Luxe is crafted for families,
         business travelers, and individuals seeking a luxurious living experience.
       </p>
-      <button className="tm-btn" onClick={()=>{
-        navigate('/tmluxe')
-      }}>
+      <button className="tm-btn" onClick={(e) => navClick(e, '/tmluxe', navigate)} onAuxClick={(e) => auxNavClick(e, '/tmluxe')}>
         Know more <IoArrowForward className="arrow-icon" />
       </button>
     </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaQuestionCircle, FaComments, FaPhone, FaArrowRight } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import "./BookingDashboard.css";
+import { navClick, auxNavClick } from '../../utils/navClick';
 
 const BookingDashboard = () => {
   const [stats, setStats] = useState({
@@ -161,7 +162,7 @@ const BookingDashboard = () => {
             <p className="action-text">
               Browse through our curated collection of premium properties and find your perfect getaway
             </p>
-            <button onClick={() => navigate("/tmluxe")} className="explore-btn">
+            <button onClick={(e) => navClick(e, "/tmluxe", navigate)} onAuxClick={(e) => auxNavClick(e, "/tmluxe")} className="explore-btn">
               <span>Start Exploring</span>
               <FaArrowRight className="btn-arrow" />
             </button>

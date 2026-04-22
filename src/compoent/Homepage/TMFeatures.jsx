@@ -3,6 +3,7 @@ import "./TMFeatures.css";
 import { IoArrowForward } from "react-icons/io5";
 
 import { useNavigate } from "react-router";
+import { navClick, auxNavClick } from '../../utils/navClick';
 
 const TMFeatures = () => {
 
@@ -30,7 +31,7 @@ const TMFeatures = () => {
               With sophisticated interiors, modern amenities, and prime locations, TM Luxe is crafted for those 
               seeking a luxurious living experience.
             </p>
-            <button className="tm-feature-button" onClick={()=>navigate('/tmluxe')}>
+            <button className="tm-feature-button" onClick={(e)=>navClick(e,'/tmluxe',navigate)} onAuxClick={(e)=>auxNavClick(e,'/tmluxe')}>
               Know more <IoArrowForward className="arrow-icon" />
             </button>
           </div>
