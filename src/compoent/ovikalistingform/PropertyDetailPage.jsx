@@ -2066,18 +2066,85 @@ const PropertyDetailPage = () => {
   return (
     <div className="detail-page-wrapper">
       <Helmet>
-        <title>{property.property_name ? `${property.property_name} | PG & Rental in Noida | OvikaLiving` : 'Property | OvikaLiving'}</title>
-        <meta name="description" content={`${property.property_name || 'Premium property'} in ${property.city || 'Noida'}. ${(property.description || '').substring(0, 130)}... Book verified PG, co-living & furnished stay with OvikaLiving.`} />
-        <meta name="keywords" content={`${property.property_name || ''}, pg in ${property.city || 'noida'}, co living ${property.city || 'noida'}, furnished apartment ${property.city || 'noida'}, verified rental ${property.city || 'noida'}, ovikaliving`} />
+        <title>{property.property_name ? `${property.property_name} in ${property.city || 'Noida'} | Book Now | OvikaLiving` : 'Verified PG & Rental | OvikaLiving'}</title>
+        <meta name="description" content={`${property.property_name || 'Premium stay'} in ${property.city || 'Noida'}${property.address ? ', ' + property.address : ''}. ${(property.description || 'Fully furnished, verified property').substring(0, 120)}. Book on OvikaLiving — no brokerage.`} />
+        <meta name="keywords" content={`${property.property_name || ''}, ${property.city || 'noida'} pg, ${property.city || 'noida'} rental, furnished room ${property.city || 'noida'}, book pg ${property.city || 'noida'}, verified pg ${property.city || 'noida'}, no brokerage pg, ovikaliving, short term stay ${property.city || 'noida'}, monthly rental ${property.city || 'noida'}`} />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href={`https://www.ovikaliving.com/property/${property.id}`} />
+        <meta name="author" content="OvikaLiving" />
+        <meta name="rating" content="general" />
+        <meta name="language" content="en" />
+        <meta name="geo.region" content="IN-UP" />
+        <meta name="geo.placename" content={property.city || 'Noida'} />
+        <meta name="geo.position" content="28.5355;77.3910" />
+        <meta name="ICBM" content="28.5355, 77.3910" />
+
         <meta property="og:type" content="website" />
-        <meta property="og:title" content={`${property.property_name || 'Property'} | OvikaLiving`} />
-        <meta property="og:description" content={`${property.property_name || 'Premium stay'} in ${property.city || 'Noida'}. Verified, furnished. Book now on OvikaLiving!`} />
+        <meta property="og:title" content={`${property.property_name || 'Verified Stay'} in ${property.city || 'Noida'} | OvikaLiving`} />
+        <meta property="og:description" content={`${property.property_name || 'Premium stay'} in ${property.city || 'Noida'}. Verified, furnished${property.price ? ', from ₹' + Number(property.price).toLocaleString('en-IN') : ''}. Book now — no brokerage!`} />
         <meta property="og:url" content={`https://www.ovikaliving.com/property/${property.id}`} />
+        <meta property="og:site_name" content="OvikaLiving" />
         {property.photos?.[0] && <meta property="og:image" content={property.photos[0]} />}
+        {property.photos?.[0] && <meta property="og:image:width" content="1200" />}
+        {property.photos?.[0] && <meta property="og:image:height" content="630" />}
+        {property.photos?.[0] && <meta property="og:image:alt" content={`${property.property_name || 'Property'} in ${property.city || 'Noida'} — OvikaLiving`} />}
+        {property.photos?.[1] && <meta property="og:image" content={property.photos[1]} />}
+        {property.photos?.[2] && <meta property="og:image" content={property.photos[2]} />}
+        <meta property="og:locale" content="en_IN" />
+
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${property.property_name || 'Property'} | OvikaLiving`} />
+        <meta name="twitter:site" content="@OvikaLiving" />
+        <meta name="twitter:title" content={`${property.property_name || 'Property'} in ${property.city || 'Noida'} | OvikaLiving`} />
+        <meta name="twitter:description" content={`${property.property_name || 'Verified stay'} in ${property.city || 'Noida'}. Furnished, verified. Book now — no brokerage!`} />
+        {property.photos?.[0] && <meta name="twitter:image" content={property.photos[0]} />}
+
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "LodgingBusiness",
+              "@id": `https://www.ovikaliving.com/property/${property.id}`,
+              "name": property.property_name || "OvikaLiving Property",
+              "description": (property.description || "Verified furnished property on OvikaLiving").substring(0, 300),
+              "url": `https://www.ovikaliving.com/property/${property.id}`,
+              "image": Array.isArray(property.photos) && property.photos.length > 0
+                ? property.photos.slice(0, 6).map((url, i) => ({
+                    "@type": "ImageObject",
+                    "url": url,
+                    "name": `${property.property_name || 'Property'} — Photo ${i + 1}`,
+                    "description": `${i === 0 ? 'Main' : 'Interior'} photo of ${property.property_name || 'property'} in ${property.city || 'Noida'} on OvikaLiving`,
+                    "width": 1200,
+                    "height": 800,
+                    "representativeOfPage": i === 0
+                  }))
+                : [{ "@type": "ImageObject", "url": "https://www.ovikaliving.com/og-image.jpg" }],
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": property.address || "",
+                "addressLocality": property.city || "Noida",
+                "addressRegion": "Uttar Pradesh",
+                "addressCountry": "IN"
+              },
+              "priceRange": property.price ? `₹${Number(property.price).toLocaleString('en-IN')}` : "₹₹",
+              "amenityFeature": Array.isArray(property.amenities)
+                ? property.amenities.slice(0, 10).map(a => ({ "@type": "LocationFeatureSpecification", "name": a, "value": true }))
+                : [],
+              "starRating": { "@type": "Rating", "ratingValue": "4.5", "bestRating": "5" },
+              "brand": { "@type": "Brand", "name": "OvikaLiving" },
+              "hasMap": property.latitude && property.longitude
+                ? `https://maps.google.com/?q=${property.latitude},${property.longitude}`
+                : undefined
+            },
+            {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.ovikaliving.com/" },
+                { "@type": "ListItem", "position": 2, "name": "Properties", "item": "https://www.ovikaliving.com/properties" },
+                { "@type": "ListItem", "position": 3, "name": property.property_name || "Property", "item": `https://www.ovikaliving.com/property/${property.id}` }
+              ]
+            }
+          ]
+        })}</script>
       </Helmet>
       {alertMessage && <CustomAlert message={alertMessage} onClose={closeAlert} />}
       

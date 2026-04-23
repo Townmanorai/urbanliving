@@ -310,9 +310,49 @@ function ShieldIcon() {
   );
 }
 
+import { Helmet } from 'react-helmet';
+
 export default function LegalInformation() {
   return (
     <div className="legal-page">
+      <Helmet>
+        <title>Legal Information | OvikaLiving — GST, MSME & Company Registration</title>
+        <meta name="description" content="Official legal information of OvikaLiving by Townmanor Technologies Pvt. Ltd. — GST registration, MSME certificate, company incorporation details and compliance documents." />
+        <meta name="keywords" content="ovikaliving legal, townmanor technologies, ovikaliving gst number, ovikaliving msme, ovikaliving company registration, ovikaliving cin number, ovikaliving compliance, proptech startup noida" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.ovikaliving.com/legal-information" />
+        <meta name="author" content="OvikaLiving" />
+        <meta name="rating" content="general" />
+        <meta name="language" content="en" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Legal Information | OvikaLiving — GST, MSME & Company Registration" />
+        <meta property="og:description" content="Official legal & compliance details of OvikaLiving by Townmanor Technologies Pvt. Ltd. GST, MSME, company registration documents." />
+        <meta property="og:url" content="https://www.ovikaliving.com/legal-information" />
+        <meta property="og:site_name" content="OvikaLiving" />
+        <meta property="og:image" content="https://www.ovikaliving.com/og-homepage.jpg" />
+        <meta property="og:locale" content="en_IN" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:site" content="@OvikaLiving" />
+        <meta name="twitter:title" content="Legal Information | OvikaLiving" />
+        <meta name="twitter:description" content="GST, MSME & company registration details of OvikaLiving by Townmanor Technologies Pvt. Ltd." />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "@id": "https://www.ovikaliving.com/legal-information",
+          "url": "https://www.ovikaliving.com/legal-information",
+          "name": "Legal Information | OvikaLiving",
+          "description": "Official legal information of OvikaLiving — GST, MSME and company registration details.",
+          "isPartOf": { "@id": "https://www.ovikaliving.com/#website" },
+          "inLanguage": "en-IN",
+          "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.ovikaliving.com/" },
+              { "@type": "ListItem", "position": 2, "name": "Legal Information", "item": "https://www.ovikaliving.com/legal-information" }
+            ]
+          }
+        })}</script>
+      </Helmet>
       <style>{styles}</style>
 
       {/* Hero */}

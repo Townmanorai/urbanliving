@@ -1287,11 +1287,34 @@ const PropertyListPage = () => {
         }
       `}</style>
       <Helmet>
-        <title>Browse Verified PG, Co-Living & Short-Term Rentals in Noida | OvikaLiving Properties</title>
-        <meta name="description" content="Browse all verified PG accommodations, co-living spaces, furnished apartments & nightly stays in Noida, Greater Noida, Delhi & Gurugram on OvikaLiving. Filter by sector, budget & amenities. Best PG under ₹10K, ₹15K & ₹20K. No brokerage. Instant booking." />
-        <meta name="keywords" content="ovikaliving properties, browse pg noida, all pg noida, pg listing noida, co living noida, furnished apartment noida, pg for working professionals noida, pg for students noida, pg with food noida, pg with wifi noida, pg with ac noida, furnished apartment greater noida, best pg noida, verified pg noida, no brokerage pg noida, short term stay noida, monthly rentals noida, pg near metro noida, co living spaces noida, studio apartment noida, affordable pg noida, premium pg noida, short-term rentals noida, co-living spaces noida, monthly rental apartments noida, remote workers noida, startup founders noida, interns noida, corporate employees noida, freelancers noida, digital nomads noida, IT professionals noida, MBA students noida, working professionals noida, pg sector 62 noida, pg sector 63 noida, pg sector 18 noida, pg sector 16 noida, pg sector 50 noida, pg sector 51 noida, pg sector 52 noida, pg sector 44 noida, pg sector 45 noida, pg sector 46 noida, pg sector 47 noida, pg sector 48 noida, pg sector 49 noida, pg sector 15 noida, pg sector 22 noida, pg sector 27 noida, pg sector 29 noida, pg sector 30 noida, pg sector 32 noida, pg sector 33 noida, pg sector 34 noida, pg sector 35 noida, pg sector 36 noida, pg sector 37 noida, pg sector 38 noida, pg sector 39 noida, pg sector 40 noida, pg sector 41 noida, pg sector 42 noida, pg sector 43 noida, pg sector 53 noida, pg sector 54 noida, pg sector 55 noida, pg sector 56 noida, pg sector 57 noida, pg sector 58 noida, pg sector 59 noida, pg sector 60 noida, pg sector 61 noida, pg sector 64 noida, pg sector 65 noida, pg sector 66 noida, pg sector 68 noida, pg sector 70 noida, pg sector 71 noida, pg sector 72 noida, pg sector 74 noida, pg sector 75 noida, pg sector 76 noida, pg sector 77 noida, pg sector 78 noida, pg sector 100 noida, pg sector 104 noida, pg sector 105 noida, pg sector 107 noida, pg sector 108 noida, pg sector 110 noida, pg sector 119 noida, pg sector 120 noida, pg sector 121 noida, pg sector 122 noida, pg sector 125 noida, pg sector 126 noida, pg sector 128 noida, pg sector 130 noida, pg sector 131 noida, pg sector 132 noida, pg sector 133 noida, pg sector 134 noida, pg sector 135 noida, pg sector 136 noida, pg sector 137 noida, pg knowledge park greater noida, pg alpha greater noida, pg beta greater noida, pg gamma greater noida, pg delta greater noida, pg omega greater noida, pg pari chowk greater noida, pg sector pi greater noida, pg chi greater noida, pg sigma greater noida, pg mu greater noida, pg xi greater noida, pg tau greater noida, pg phi greater noida, pg eta greater noida, pg zeta greater noida, pg theta greater noida, pg greater noida west, pg noida extension, नोएडा में पीजी, को लिविंग नोएडा, किराये का कमरा, फर्निश्ड फ्लैट, मासिक किराया, शॉर्ट स्टे, रिमोट वर्कर नोएडा, स्टार्टअप फाउंडर नोएडा, इंटर्न के लिए पीजी, नोएडा में किराया, सस्ता पीजी नोएडा, वाईफाई वाला पीजी, खाने वाला पीजी, लड़कों के लिए पीजी, लड़कियों के लिए पीजी, ग्रेटर नोएडा पीजी, नोएडा में कमरा किराये पर, फर्निश्ड अपार्टमेंट नोएडा, को-लिविंग स्पेस नोएडा, मंथली रेंटल नोएडा, pg under 10000 noida, pg under 15000 noida, pg under 20000 noida, furnished flat under 25000 noida, studio apartment noida, 1bhk noida, 2bhk noida, fully furnished apartment noida, semi-furnished apartment noida, serviced apartment noida, co-living noida, paying guest noida, shared accommodation noida, private room noida, shared room noida, single occupancy pg noida, double occupancy pg noida, wifi included pg noida, meals included pg noida, ac room pg noida, gym pg noida, housekeeping pg noida, laundry pg noida, parking pg noida, security pg noida, cctv pg noida, power backup pg noida, best pg in noida under 20000, fully furnished pg noida no brokerage, verified pg noida, best co-living noida under 20000" />
+        {/* ── Dynamic title/description per route ── */}
+        {lockedRental === 'short' ? (
+          <title>Nightly Stays in Noida | Book Furnished Short-Term Rentals | OvikaLiving</title>
+        ) : lockedRental === 'long' ? (
+          <title>Monthly Rentals & PG in Noida | Furnished Rooms from ₹8,000/mo | OvikaLiving</title>
+        ) : (
+          <title>Browse Verified PG, Co-Living & Short-Term Rentals in Noida | OvikaLiving</title>
+        )}
+
+        {lockedRental === 'short' ? (
+          <meta name="description" content="Book verified nightly stays, furnished apartments & short-term rentals in Noida, Greater Noida & Delhi on OvikaLiving. Flexible check-in, hotel-quality amenities. No brokerage. Instant booking from ₹999/night." />
+        ) : lockedRental === 'long' ? (
+          <meta name="description" content="Find verified PG, co-living & monthly rental rooms in Noida & Greater Noida. All sectors covered. Starting ₹8,000/month. Meals, Wi-Fi, AC included. Zero brokerage. Book on OvikaLiving." />
+        ) : (
+          <meta name="description" content="Browse all verified PG, co-living spaces, furnished apartments & nightly stays in Noida, Greater Noida, Delhi & Gurugram on OvikaLiving. Filter by sector, budget & amenities. No brokerage. Instant booking." />
+        )}
+
+        <meta name="keywords" content="ovikaliving properties, browse pg noida, all pg noida, pg listing noida, co living noida, furnished apartment noida, nightly stays noida, short term rental noida, monthly rental noida, pg for working professionals noida, pg for students noida, pg with food noida, pg with wifi noida, pg with ac noida, furnished apartment greater noida, best pg noida, verified pg noida, no brokerage pg noida, pg near metro noida, studio apartment noida, affordable pg noida, premium pg noida, remote workers noida, startup founders noida, interns noida, corporate employees noida, IT professionals noida, pg sector 62 noida, pg sector 63 noida, pg sector 18 noida, pg sector 16 noida, pg sector 50 noida, pg sector 130 noida, pg sector 137 noida, pg sector 144 noida, pg knowledge park greater noida, pg alpha greater noida, pg beta greater noida, pg gamma greater noida, pg greater noida west, pg noida extension, नोएडा में पीजी, को लिविंग नोएडा, किराये का कमरा, फर्निश्ड फ्लैट, मासिक किराया, शॉर्ट स्टे, pg under 10000 noida, pg under 15000 noida, pg under 20000 noida, furnished flat under 25000 noida, 1bhk noida, 2bhk noida, fully furnished apartment noida, serviced apartment noida, paying guest noida, shared accommodation noida, single occupancy pg noida, double occupancy pg noida, wifi included pg noida, meals included pg noida, ac room pg noida, best pg in noida under 20000, fully furnished pg noida no brokerage, verified pg noida, best co-living noida under 20000" />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://www.ovikaliving.com/properties" />
+
+        {lockedRental === 'short' ? (
+          <link rel="canonical" href="https://www.ovikaliving.com/nightly-stays" />
+        ) : lockedRental === 'long' ? (
+          <link rel="canonical" href="https://www.ovikaliving.com/monthly-rentals" />
+        ) : (
+          <link rel="canonical" href="https://www.ovikaliving.com/properties" />
+        )}
+
         <meta name="author" content="OvikaLiving" />
         <meta name="rating" content="general" />
         <meta name="revisit-after" content="7 days" />
@@ -1300,67 +1323,65 @@ const PropertyListPage = () => {
         <meta name="geo.placename" content="Noida" />
         <meta name="geo.position" content="28.5355;77.3910" />
         <meta name="ICBM" content="28.5355, 77.3910" />
+
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Browse PG, Co-Living & Furnished Rentals in Noida | OvikaLiving Properties" />
-        <meta property="og:description" content="All verified PG, co-living & furnished stays in Noida & Greater Noida. Filter by sector, budget & amenities. No brokerage. Book now!" />
-        <meta property="og:url" content="https://www.ovikaliving.com/properties" />
+        <meta property="og:title" content={lockedRental === 'short' ? 'Nightly Stays in Noida | Book Short-Term Rentals | OvikaLiving' : lockedRental === 'long' ? 'Monthly Rentals & PG in Noida | OvikaLiving' : 'Browse PG, Co-Living & Furnished Rentals in Noida | OvikaLiving'} />
+        <meta property="og:description" content={lockedRental === 'short' ? 'Verified nightly stays & short-term furnished rentals in Noida. Flexible check-in from ₹999/night. No brokerage. Book now!' : lockedRental === 'long' ? 'Best PG & monthly rental rooms in Noida from ₹8,000/mo. Meals, Wi-Fi, AC. Verified. Zero brokerage. Book now!' : 'All verified PG, co-living & furnished stays in Noida & Greater Noida. No brokerage. Book now!'} />
+        <meta property="og:url" content={lockedRental === 'short' ? 'https://www.ovikaliving.com/nightly-stays' : lockedRental === 'long' ? 'https://www.ovikaliving.com/monthly-rentals' : 'https://www.ovikaliving.com/properties'} />
         <meta property="og:site_name" content="OvikaLiving" />
-        <meta property="og:image" content="https://www.ovikaliving.com/og-image.jpg" />
+        <meta property="og:image" content="https://www.ovikaliving.com/og-properties.jpg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="OvikaLiving — Verified PG and Rentals in Noida" />
         <meta property="og:locale" content="en_IN" />
+
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Browse All PG & Co-Living in Noida | OvikaLiving" />
-        <meta name="twitter:description" content="Best PG, co-living & furnished rentals in Noida & Greater Noida. All sectors covered. Verified, no brokerage!" />
+        <meta name="twitter:site" content="@OvikaLiving" />
+        <meta name="twitter:title" content={lockedRental === 'short' ? 'Nightly Stays in Noida | OvikaLiving' : lockedRental === 'long' ? 'Monthly Rentals & PG Noida | OvikaLiving' : 'Browse All PG & Co-Living in Noida | OvikaLiving'} />
+        <meta name="twitter:description" content={lockedRental === 'short' ? 'Book verified short-term stays in Noida from ₹999/night. No brokerage.' : lockedRental === 'long' ? 'PG & monthly rooms in Noida from ₹8K/mo. Wi-Fi, meals, AC. Zero brokerage.' : 'Best PG, co-living & furnished rentals in Noida. All sectors. No brokerage!'} />
         <meta name="twitter:image" content="https://www.ovikaliving.com/og-properties.jpg" />
+
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@graph": [
             {
               "@type": "WebPage",
-              "@id": "https://www.ovikaliving.com/properties",
-              "url": "https://www.ovikaliving.com/properties",
-              "name": "Browse Verified PG, Co-Living & Short-Term Rentals in Noida | OvikaLiving",
-              "description": "All verified PG, co-living spaces, furnished apartments & nightly stays in Noida, Greater Noida, Delhi & Gurugram. Filter by sector, budget & amenities.",
+              "@id": lockedRental === 'short' ? "https://www.ovikaliving.com/nightly-stays" : lockedRental === 'long' ? "https://www.ovikaliving.com/monthly-rentals" : "https://www.ovikaliving.com/properties",
+              "url": lockedRental === 'short' ? "https://www.ovikaliving.com/nightly-stays" : lockedRental === 'long' ? "https://www.ovikaliving.com/monthly-rentals" : "https://www.ovikaliving.com/properties",
+              "name": lockedRental === 'short' ? "Nightly Stays in Noida | OvikaLiving" : lockedRental === 'long' ? "Monthly Rentals & PG in Noida | OvikaLiving" : "Browse Verified PG, Co-Living & Rentals in Noida | OvikaLiving",
+              "description": lockedRental === 'short' ? "Verified nightly stays, furnished apartments & short-term rentals in Noida. Flexible check-in. No brokerage." : lockedRental === 'long' ? "Verified PG, co-living & monthly rental rooms in Noida from ₹8,000/month. All amenities. Zero brokerage." : "All verified PG, co-living spaces, furnished apartments & nightly stays in Noida & Greater Noida.",
               "isPartOf": { "@id": "https://www.ovikaliving.com/#website" },
               "inLanguage": "en-IN",
               "breadcrumb": {
                 "@type": "BreadcrumbList",
                 "itemListElement": [
                   { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.ovikaliving.com/" },
-                  { "@type": "ListItem", "position": 2, "name": "Properties", "item": "https://www.ovikaliving.com/properties" }
+                  { "@type": "ListItem", "position": 2, "name": lockedRental === 'short' ? "Nightly Stays" : lockedRental === 'long' ? "Monthly Rentals" : "Properties", "item": lockedRental === 'short' ? "https://www.ovikaliving.com/nightly-stays" : lockedRental === 'long' ? "https://www.ovikaliving.com/monthly-rentals" : "https://www.ovikaliving.com/properties" }
                 ]
               }
             },
             {
               "@type": "ItemList",
-              "name": "PG & Short-Term Rentals in Noida — OvikaLiving",
-              "description": "Verified PG accommodations, co-living spaces, furnished apartments and nightly stays listed on OvikaLiving across Noida, Greater Noida, Delhi and Gurugram.",
-              "url": "https://www.ovikaliving.com/properties",
+              "name": lockedRental === 'short' ? "Nightly Stays in Noida — OvikaLiving" : lockedRental === 'long' ? "Monthly PG & Rentals in Noida — OvikaLiving" : "PG & Rentals in Noida — OvikaLiving",
+              "description": lockedRental === 'short' ? "Verified short-term furnished apartments and nightly stays in Noida, Greater Noida and Delhi." : lockedRental === 'long' ? "Verified PG rooms, co-living and monthly rental accommodations in Noida and Greater Noida." : "Verified PG, co-living spaces, furnished apartments and nightly stays listed on OvikaLiving.",
+              "url": lockedRental === 'short' ? "https://www.ovikaliving.com/nightly-stays" : lockedRental === 'long' ? "https://www.ovikaliving.com/monthly-rentals" : "https://www.ovikaliving.com/properties",
               "numberOfItems": "200+",
               "itemListOrder": "https://schema.org/ItemListOrderDescending"
             },
             {
               "@type": "FAQPage",
-              "mainEntity": [
-                {
-                  "@type": "Question",
-                  "name": "How to find a PG in Noida without brokerage?",
-                  "acceptedAnswer": { "@type": "Answer", "text": "On OvikaLiving, all PG listings are verified and available directly with zero brokerage. Browse by sector, budget and amenities on the properties page and book instantly." }
-                },
-                {
-                  "@type": "Question",
-                  "name": "What is the best co-living space in Noida?",
-                  "acceptedAnswer": { "@type": "Answer", "text": "OvikaLiving offers premium co-living spaces in Noida sectors 15, 27, 62, 130, 137, 144 and more. All spaces are furnished, verified and include amenities like Wi-Fi, AC, housekeeping and security." }
-                },
-                {
-                  "@type": "Question",
-                  "name": "What are OvikaLiving Signature Stays?",
-                  "acceptedAnswer": { "@type": "Answer", "text": "Ovika Signature Stays are OvikaLiving's curated premium short-term rental properties, offering hotel-quality amenities, professional management and flexible nightly or monthly bookings in Noida and Greater Noida." }
-                },
-                {
-                  "@type": "Question",
-                  "name": "Can I book a furnished apartment in Noida for one month?",
-                  "acceptedAnswer": { "@type": "Answer", "text": "Yes. OvikaLiving offers fully furnished apartments in Noida, Greater Noida, Delhi and Gurugram for monthly stays. Filter by monthly rental on the properties page to find options starting from ₹8,000/month." }
-                }
+              "mainEntity": lockedRental === 'short' ? [
+                { "@type": "Question", "name": "How to book a nightly stay in Noida?", "acceptedAnswer": { "@type": "Answer", "text": "Browse nightly stays on OvikaLiving, select your dates on the property page, complete verification and pay online. Instant confirmation with no brokerage." } },
+                { "@type": "Question", "name": "What is the cheapest nightly stay in Noida?", "acceptedAnswer": { "@type": "Answer", "text": "Nightly stays on OvikaLiving start from ₹999/night in Noida. Premium Signature Stays with hotel-quality amenities are available from ₹2,000/night." } },
+                { "@type": "Question", "name": "Can I stay for just one night in Noida?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. OvikaLiving offers fully furnished properties available for single-night bookings in Noida and Greater Noida. No minimum stay requirement on most listings." } }
+              ] : lockedRental === 'long' ? [
+                { "@type": "Question", "name": "How to find a PG in Noida without brokerage?", "acceptedAnswer": { "@type": "Answer", "text": "On OvikaLiving, all PG listings are verified and available directly with zero brokerage. Browse by sector, budget and amenities and book instantly." } },
+                { "@type": "Question", "name": "What is the best PG in Noida under ₹10,000?", "acceptedAnswer": { "@type": "Answer", "text": "OvikaLiving lists verified PG rooms in Noida under ₹10,000/month with amenities like Wi-Fi, housekeeping and power backup. Filter by budget on the monthly rentals page." } },
+                { "@type": "Question", "name": "Can I book a furnished room in Noida for one month?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. OvikaLiving offers fully furnished rooms and PG accommodations in Noida starting from ₹8,000/month. All listings are verified with zero brokerage." } }
+              ] : [
+                { "@type": "Question", "name": "How to find a PG in Noida without brokerage?", "acceptedAnswer": { "@type": "Answer", "text": "On OvikaLiving, all PG listings are verified and available directly with zero brokerage. Browse by sector, budget and amenities and book instantly." } },
+                { "@type": "Question", "name": "What are OvikaLiving Signature Stays?", "acceptedAnswer": { "@type": "Answer", "text": "Ovika Signature Stays are OvikaLiving's curated premium short-term rental properties, offering hotel-quality amenities, professional management and flexible nightly or monthly bookings in Noida and Greater Noida." } },
+                { "@type": "Question", "name": "Can I book a furnished apartment in Noida for one month?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. OvikaLiving offers fully furnished apartments in Noida, Greater Noida, Delhi and Gurugram for monthly stays starting from ₹8,000/month." } }
               ]
             }
           ]
