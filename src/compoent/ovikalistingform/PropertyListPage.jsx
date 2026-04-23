@@ -1098,6 +1098,7 @@ const PropertyListPage = () => {
       const rt = params.get('rentalType');
       if (rt) {
         setRentalType(rt);
+        sessionStorage.setItem('ovika_rental_type', rt);
       } else {
         const stored = sessionStorage.getItem('ovika_rental_type');
         if (stored) setRentalType(stored);
