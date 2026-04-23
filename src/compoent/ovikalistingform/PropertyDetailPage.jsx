@@ -1472,12 +1472,12 @@ const PropertyDetailPage = () => {
             setActiveImg(coverIdx);
           }
           setBookingType(Number(transformed.booking_type || 0));
-          // Determine pricing mode: PG is always monthly;
-          // explicit rental_type='long' → monthly; otherwise use session context
+          // Use session context (set by list page) as primary signal;
+          // property's own rental_type='long' also forces monthly, but 'short' does NOT
+          // override a monthly session (user navigated here from monthly context).
           const storedRentalType = sessionStorage.getItem('ovika_rental_type') || 'short';
-          const propertyRentalType = transformed.rental_type; // 'short', 'long', or undefined
-          const isPGCategory = transformed.property_category === 'PG';
-          const isMonthlyProperty = isPGCategory || propertyRentalType === 'long' || storedRentalType === 'long';
+          const propertyRentalType = transformed.rental_type;
+          const isMonthlyProperty = storedRentalType === 'long' || propertyRentalType === 'long';
           setPricingMode(isMonthlyProperty ? 'monthly' : 'daily');
         } catch (err) {
           console.error("Failed to fetch property", err);
