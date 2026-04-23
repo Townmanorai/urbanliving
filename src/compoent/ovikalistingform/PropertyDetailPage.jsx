@@ -1207,8 +1207,8 @@ const Calendar = ({ selectedDates, onDateSelect, minDate = new Date(), disabledD
   const handleDateClick = (date) => {
     if (!date || isDateDisabled(date)) return;
     const hasBlockedDateInRange = (start, end) => {
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        if (disabledDateSet.has(d.toISOString().split('T')[0])) return true;
+      for (let d = new Date(start); toYMD(d) <= toYMD(end); d.setDate(d.getDate() + 1)) {
+        if (disabledDateSet.has(toYMD(d))) return true;
       }
       return false;
     };
