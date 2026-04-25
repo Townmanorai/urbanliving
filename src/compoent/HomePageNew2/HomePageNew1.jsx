@@ -26,7 +26,7 @@ function getBreakpoint() {
 const typeIcon = { City: '🏙', Locality: '📍', Category: '🔍', Near: '📌', Amenity: '✨' };
 
 /* ── Search Bar with Suggestions ── */
-function SearchBar({ searchText, setSearchText, showSuggestions, setShowSuggestions, searchRef, filteredSuggestions, handleSearch, handleSuggestionClick, handleKeyDown, compact, placeholder }) {
+function SearchBar({ searchText, setSearchText, showSuggestions, setShowSuggestions, searchRef, filteredSuggestions, handleSearch, handleNearMe, locating, handleSuggestionClick, handleKeyDown, compact, placeholder }) {
   const wrapRef = useRef(null);
   const [dropPos, setDropPos] = useState(null);
 
@@ -75,6 +75,30 @@ function SearchBar({ searchText, setSearchText, showSuggestions, setShowSuggesti
             background: 'transparent',
           }}
         />
+        <button
+          onClick={() => !locating && handleNearMe()}
+          title="Near Me"
+          disabled={locating}
+          style={{
+            flexShrink: 0, width: 44, border: 'none', background: 'transparent',
+            color: locating ? '#c2772b' : '#c2772b', cursor: locating ? 'wait' : 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', transition: 'all 0.2s',
+            position: 'relative'
+          }}
+          onMouseEnter={e => { if(!locating) { e.currentTarget.style.color = '#a85e1f'; e.currentTarget.style.transform = 'scale(1.1)'; } }}
+          onMouseLeave={e => { if(!locating) { e.currentTarget.style.color = '#c2772b'; e.currentTarget.style.transform = 'scale(1)'; } }}
+        >
+          {locating ? (
+            <div style={{ position: 'relative', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <style>{`
+                    @keyframes pulsePin { 0% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.3); opacity: 1; } 100% { transform: scale(0.9); opacity: 0.7; } }
+                    @keyframes ripplePin { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(2.5); opacity: 0; } }
+                `}</style>
+                <div style={{ position: 'absolute', width: '100%', height: '100%', borderRadius: '50%', background: 'rgba(194,119,43,0.3)', animation: 'ripplePin 1.5s infinite' }} />
+                <MapPin size={18} style={{ animation: 'pulsePin 1s infinite', position: 'relative', zIndex: 1 }} />
+            </div>
+          ) : <MapPin size={18} />}
+        </button>
         <button
           onClick={() => handleSearch(null)}
           style={{
@@ -143,6 +167,7 @@ function SearchBar({ searchText, setSearchText, showSuggestions, setShowSuggesti
                   ) : s.label}
                 </div>
               </div>
+              {(s.type === 'Near' || s.label === 'Near Me') && <MapPin size={14} color="#c2772b" style={{ marginLeft: 6, flexShrink: 0 }} />}
               <span style={{ fontSize: '0.6rem', color: '#c2772b', background: 'rgba(194,119,43,0.1)', padding: '2px 8px', borderRadius: 10, fontWeight: 600, flexShrink: 0 }}>
                 {s.type}
               </span>
@@ -386,6 +411,7 @@ export default function HomePageNew1() {
   const [bp, setBp] = useState(getBreakpoint());
   const [shortRate, setShortRate] = useState(null);
   const [ratesLoading, setRatesLoading] = useState(true);
+  const [locating, setLocating] = useState(false);
   const searchRef = useRef(null);
 
   useEffect(() => {
@@ -422,23 +448,97 @@ export default function HomePageNew1() {
   }, []);
 
   const POPULAR_DEFAULT = [
+    { label: 'Near Me', type: 'Near' },
     { label: 'Noida', type: 'City' },
     { label: 'Greater Noida', type: 'City' },
     { label: 'PG in Noida', type: 'Category' },
   ];
-  const filteredSuggestions = searchText.trim().length > 0
-    ? SUGGESTIONS.filter(s => s.label.toLowerCase().includes(searchText.toLowerCase())).slice(0, 3)
+  const searchKeywords = searchText.toLowerCase().trim().split(/\s+/).filter(w => w.length > 1);
+  const filteredSuggestions = searchKeywords.length > 0
+    ? SUGGESTIONS.filter(s => {
+        const label = s.label.toLowerCase();
+        return searchKeywords.every(kw => label.includes(kw));
+      }).slice(0, 5)
     : POPULAR_DEFAULT;
 
   const handleSearch = (rentalType) => {
     const p = new URLSearchParams();
-    if (searchText.trim()) { p.set('search', searchText.trim()); p.set('city', searchText.trim()); }
-    if (rentalType) { p.set('rentalType', rentalType); sessionStorage.setItem('ovika_rental_type', rentalType); }
+    const text = searchText.trim();
+    const lowText = text.toLowerCase();
+    
+    // Check if we have stored coords from a previous "Detect" click
+    const storedLat = sessionStorage.getItem('ovika_user_lat');
+    const storedLng = sessionStorage.getItem('ovika_user_lng');
+    if (storedLat && storedLng && (lowText.includes('near') || lowText.includes('nearby') || lowText === 'nearby')) {
+        p.set('lat', storedLat);
+        p.set('lng', storedLng);
+        sessionStorage.removeItem('ovika_user_lat');
+        sessionStorage.removeItem('ovika_user_lng');
+    }
+
+    const isNearbyQuery = lowText.includes('near me') || lowText.includes('nearby') || lowText.includes('near by') || lowText.includes('around me');
+
+    if (isNearbyQuery) {
+      // Extract subject keywords (remove 'near me' phrases)
+      const cleanSearch = text.replace(/near\s*me|nearby|near\s*by|around\s*me/gi, '').trim();
+      handleNearMe(cleanSearch || 'Nearby', true);
+      return;
+    }
+
+    if (text) {
+      p.set('search', text);
+      p.set('city', text);
+
+      // detect rental type intent
+      if (!rentalType) {
+        if (lowText.includes('nightly') || lowText.includes('short') || lowText.includes('day')) {
+          rentalType = 'short';
+        } else if (lowText.includes('monthly') || lowText.includes('long') || lowText.includes('month') || lowText.includes('rent')) {
+          rentalType = 'long';
+        }
+      }
+    }
+
+    if (rentalType) {
+      p.set('rentalType', rentalType);
+      sessionStorage.setItem('ovika_rental_type', rentalType);
+    }
     navigate(`/properties?${p}`);
     setShowSuggestions(false);
   };
 
+  const handleNearMe = (explicitSearch, autoNavigate = false) => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const { latitude, longitude } = pos.coords;
+      sessionStorage.setItem('ovika_user_lat', latitude);
+      sessionStorage.setItem('ovika_user_lng', longitude);
+      
+      setTimeout(() => {
+        setLocating(false);
+        if (autoNavigate) {
+          const p = new URLSearchParams();
+          p.set('lat', latitude);
+          p.set('lng', longitude);
+          p.set('search', explicitSearch || 'Nearby');
+          navigate(`/properties?${p}`);
+        }
+      }, 600);
+    }, (err) => {
+      setLocating(false);
+      alert("Please enable location access to find properties near you.");
+    });
+  };
+
   const handleSuggestionClick = (suggestion) => {
+    if (suggestion.type === 'Near' || suggestion.label === 'Near Me') {
+      handleNearMe('Nearby', true);
+      return;
+    }
     setSearchText(suggestion.label);
     setShowSuggestions(false);
     const p = new URLSearchParams();
@@ -480,6 +580,28 @@ export default function HomePageNew1() {
             Verified PGs, Apartments &amp; Premium Homes
           </p>
 
+          {locating && (
+            <div style={{
+              position: 'fixed', inset: 0, background: 'rgba(255,255,255,0.7)',
+              backdropFilter: 'blur(4px)', zIndex: 10000, display: 'flex',
+              flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              gap: 15, animation: 'fadeIn 0.3s ease-in'
+            }}>
+                <style>{`
+                    @keyframes bounceIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+                    @keyframes shadowPulse { 0%, 100% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(1.5); opacity: 0.1; } }
+                `}</style>
+                <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <MapPin size={48} color="#c2772b" style={{ animation: 'bounceIcon 0.8s infinite ease-in-out' }} />
+                    <div style={{ width: 30, height: 6, background: '#000', borderRadius: '50%', marginTop: 10, animation: 'shadowPulse 0.8s infinite ease-in-out' }} />
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 600, color: '#1a1209' }}>Identifying Your Location</div>
+                    <div style={{ fontSize: '0.85rem', color: '#c2772b', marginTop: 4 }}>Finding the best properties near you...</div>
+                </div>
+            </div>
+          )}
+
           {/* City chips */}
           <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2, marginBottom: 12, scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {[
@@ -506,6 +628,8 @@ export default function HomePageNew1() {
             searchRef={searchRef}
             filteredSuggestions={filteredSuggestions}
             handleSearch={handleSearch}
+            handleNearMe={handleNearMe}
+            locating={locating}
             handleSuggestionClick={handleSuggestionClick}
             handleKeyDown={handleKeyDown}
           />
@@ -796,7 +920,7 @@ export default function HomePageNew1() {
               </div>
 
               {/* Search bar */}
-              <SearchBar compact={false} searchText={searchText} setSearchText={setSearchText} showSuggestions={showSuggestions} setShowSuggestions={setShowSuggestions} searchRef={searchRef} filteredSuggestions={filteredSuggestions} handleSearch={handleSearch} handleSuggestionClick={handleSuggestionClick} handleKeyDown={handleKeyDown} />
+              <SearchBar compact={false} searchText={searchText} setSearchText={setSearchText} showSuggestions={showSuggestions} setShowSuggestions={setShowSuggestions} searchRef={searchRef} filteredSuggestions={filteredSuggestions} handleSearch={handleSearch} handleNearMe={handleNearMe} locating={locating} handleSuggestionClick={handleSuggestionClick} handleKeyDown={handleKeyDown} />
 
               {/* Quick Nav Chips */}
               <div style={{ marginTop: 18 }}>

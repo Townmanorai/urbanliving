@@ -671,6 +671,8 @@ const PropertyListPage = () => {
   const [foodFilter, setFoodFilter] = useState(null);       // 'yes' | 'no'
   const [petsFilter, setPetsFilter] = useState(null);       // 'yes' | 'no'
   const [coupleFilter, setCoupleFilter] = useState(null);   // 'yes'
+  const [userLat, setUserLat] = useState(null);
+  const [userLng, setUserLng] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [listPopupOpen, setListPopupOpen] = useState(false);
   const [sortBy, setSortBy] = useState('recommended');
@@ -747,6 +749,9 @@ const PropertyListPage = () => {
     setPropTypeFilter([]); setAmenitiesFilter([]);
     setFurnishingFilter(null); setTenantFilter(null);
     setFoodFilter(null); setPetsFilter(null); setCoupleFilter(null);
+    setUserLat(null); setUserLng(null);
+    setSearch('');
+    if (sortBy === 'distance') setSortBy('recommended');
   };
 
   const getMeta = (p) => {
@@ -755,7 +760,37 @@ const PropertyListPage = () => {
     try { return JSON.parse(p.meta); } catch { return {}; }
   };
 
-  const applyFilter = (list, cat, q, rental) => {
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    if (!lat1 || !lon1 || !lat2 || !lon2) return Infinity;
+    const R = 6371; // km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
+  const getGuestPolicy = (p) => {
+    const raw = p.guest_policy;
+    if (!raw) return {};
+    if (typeof raw === 'string') { try { return JSON.parse(raw); } catch { return {}; } }
+    return raw;
+  };
+
+  const getAmenities = (p) => {
+    const m = getMeta(p);
+    let arr = [];
+    if (Array.isArray(p.amenities)) arr = p.amenities;
+    else if (typeof p.amenities === 'string') {
+      try { const parsed = JSON.parse(p.amenities); arr = Array.isArray(parsed) ? parsed : []; } catch { arr = []; }
+    }
+    const metaAms = Array.isArray(m.amenities) ? m.amenities : [];
+    return [...new Set([...arr, ...metaAms])].map(a => (a || '').toLowerCase());
+  };
+
+  const applyFilter = (list, cat, q, rental, uLat, uLng) => {
     let result = list;
     const isMonthly = rental === 'long';
 
@@ -834,7 +869,7 @@ const PropertyListPage = () => {
 
       const STOP_WORDS = new Set(['in','at','near','for','the','a','an','and','or','of','to','with','by','on','from']);
 
-      const matchesProp = (p, token) => {
+      const matchesProp = (p, token, fullQuery = '') => {
         const t = token.toLowerCase();
         const name    = (p.property_name  || '').toLowerCase();
         const addr    = (p.address        || '').toLowerCase();
@@ -843,25 +878,81 @@ const PropertyListPage = () => {
         const cat     = (p.property_category || '').toLowerCase();
         const type    = (p.property_type  || '').toLowerCase();
         const subcat  = (p.property_subCategory || p.property_subcategory || '').toLowerCase();
+        const amenities = getAmenities(p);
 
+        // Raw inclusion
         if (name.includes(t) || addr.includes(t) || city.includes(t) || sector.includes(t)) return true;
         if (cat.includes(t) || type.includes(t) || subcat.includes(t)) return true;
 
-        // Semantic shortcuts
-        if (t === 'pg' && cat === 'pg') return true;
-        if (t === 'girls' && (name.includes('girl') || cat.includes('girl') || subcat.includes('girl') || type.includes('girl'))) return true;
-        if (t === 'boys' && (name.includes('boy') || cat.includes('boy') || subcat.includes('boy') || type.includes('boy'))) return true;
-        if (t === 'studio' && type.includes('studio')) return true;
-        if ((t === 'apartment' || t === 'flat') && (type.includes('apartment') || type.includes('flat') || cat.includes('apartment'))) return true;
-        if (t === 'noida' && (addr.includes('noida') || city.includes('noida') || sector.includes('noida'))) return true;
-        if (t === 'greater' && (addr.includes('greater') || city.includes('greater'))) return true;
-        if (t === 'gurugram' || t === 'gurgaon') {
-          if (addr.includes('gurugram') || city.includes('gurugram') || addr.includes('gurgaon') || city.includes('gurgaon')) return true;
+        // Semantic shortcuts & Synonyms
+        const isPg = cat === 'pg' || type.includes('pg') || name.includes('pg');
+        const isFlat = type.includes('apartment') || type.includes('flat') || type.includes('studio') || cat.includes('apartment');
+
+        if ((t === 'pg' || t === 'room' || t === 'stay' || t === 'pgs') && isPg) return true;
+        if ((t === 'flat' || t === 'apartment' || t === 'house' || t === 'living' || t === 'accommodation') && isFlat) return true;
+        
+        if (t === 'girls' || t === 'female' || t === 'girl') {
+          if (name.includes('girl') || cat.includes('girl') || subcat.includes('girl') || type.includes('girl')) return true;
+          const pts = [
+            ...(Array.isArray(getMeta(p).preferredTenants) ? getMeta(p).preferredTenants : []),
+            ...(Array.isArray(getGuestPolicy(p).preferredTenants) ? getGuestPolicy(p).preferredTenants : [])
+          ].map(x => (x || '').toLowerCase());
+          if (pts.some(x => x.includes('female') || x.includes('girl'))) return true;
         }
-        if (t === 'furnished' && (name.includes('furnished') || type.includes('furnished'))) return true;
-        if (t === 'premium' && (name.includes('premium') || type.includes('premium') || cat.includes('premium'))) return true;
-        if (t === 'economy' && (name.includes('economy') || type.includes('economy') || cat.includes('economy'))) return true;
-        if (t === 'signature' && name.includes('signature')) return true;
+
+        if (t === 'boys' || t === 'male' || t === 'boy') {
+          if (name.includes('boy') || cat.includes('boy') || subcat.includes('boy') || type.includes('boy')) return true;
+          const pts = [
+            ...(Array.isArray(getMeta(p).preferredTenants) ? getMeta(p).preferredTenants : []),
+            ...(Array.isArray(getGuestPolicy(p).preferredTenants) ? getGuestPolicy(p).preferredTenants : [])
+          ].map(x => (x || '').toLowerCase());
+          if (pts.some(x => x.includes('male') || x.includes('boy'))) return true;
+        }
+
+        if (t === 'studio' && (type.includes('studio') || name.includes('studio'))) return true;
+        
+        // Extended City/Location
+        if ((t === 'noida' || t === 'ncr') && (city.includes('noida') || addr.includes('noida'))) return true;
+        if (t === 'greater' && (city.includes('greater') || addr.includes('greater'))) return true;
+        if (t === 'gurugram' || t === 'gurgaon' || t === 'ggn') {
+           if (city.includes('gurugram') || addr.includes('gurugram') || city.includes('gurgaon') || addr.includes('gurgaon')) return true;
+        }
+        if (t === 'delhi' && (city.includes('delhi') || addr.includes('delhi'))) return true;
+
+        // Amenities & Features
+        if (t === 'furnished' && (name.includes('furnished') || type.includes('furnished') || addr.includes('furnished'))) return true;
+        if (t === 'ac' && amenities.some(a => a.includes('ac') || a.includes('air conditioning'))) return true;
+        if (t === 'wifi' && amenities.some(a => a.includes('wi-fi') || a.includes('wifi') || a.includes('internet'))) return true;
+        if (t === 'food' && (amenities.some(a => a.includes('food') || a.includes('meal')) || getMeta(p).foodAvailable)) return true;
+
+        // Categories
+        if (t === 'signature' && (name.includes('signature') || cat.includes('signature'))) return true;
+        if (t === 'luxury' || t === 'luxe' || t === 'premium') {
+            if (name.includes('luxe') || name.includes('premium') || cat.includes('luxe') || cat.includes('premium')) return true;
+        }
+        if (t === 'economy' || t === 'budget') {
+            if (name.includes('economy') || name.includes('budget') || cat.includes('economy')) return true;
+        }
+
+        // Handle "Sector XX" queries
+        if (t.startsWith('sector')) {
+            const num = t.replace('sector', '').trim();
+            if (num && (sector.includes(num) || addr.includes(num))) return true;
+        }
+        if (/^\d+$/.test(t)) { // If token is just a number (e.g. "62")
+            if (sector.includes(t) || addr.includes(t) || name.includes(t)) return true;
+        }
+
+        // Price detection in query (e.g., "pg under 10000")
+        const fullQ = fullQuery.toLowerCase();
+        if (fullQ.includes('under') || fullQ.includes('below') || fullQ.includes('less than')) {
+            const match = fullQ.match(/(?:under|below|less than)\s*(?:rs\.?\s*)?(\d+)/i);
+            if (match) {
+                const maxPrice = parseInt(match[1]);
+                const pPrice = Number(p.price) || Number(p.base_rate) || 0;
+                if (pPrice > 0 && pPrice <= maxPrice) return true;
+            }
+        }
 
         return false;
       };
@@ -874,13 +965,39 @@ const PropertyListPage = () => {
       // Score each property by how many keywords it matches
       const scored = result
         .map(p => {
-          const score = tokens.reduce((acc, token) => acc + (matchesProp(p, token) ? 1 : 0), 0);
+          const score = tokens.reduce((acc, token) => {
+            const m = matchesProp(p, token, qL);
+            if (m) return acc + 1;
+            // Fuzzy-ish fallback: if token is long and mostly contained in name/addr
+            if (token.length > 3) {
+                const name = (p.property_name || '').toLowerCase();
+                const addr = (p.address || '').toLowerCase();
+                if (name.includes(token) || addr.includes(token)) return acc + 0.5;
+            }
+            return acc;
+          }, 0);
           return { p, score };
         })
         .filter(({ score }) => score > 0);
 
       // Sort: more matches first
-      scored.sort((a, b) => b.score - a.score);
+      scored.sort((a, b) => {
+        if (uLat && uLng) {
+          const latA = Number(a.p.latitude) || Number(getMeta(a.p).latitude) || 0;
+          const lngA = Number(a.p.longitude) || Number(getMeta(a.p).longitude) || 0;
+          const latB = Number(b.p.latitude) || Number(getMeta(b.p).latitude) || 0;
+          const lngB = Number(b.p.longitude) || Number(getMeta(b.p).longitude) || 0;
+          
+          if (latA && lngA && latB && lngB) {
+            const distA = calculateDistance(uLat, uLng, latA, lngA);
+            const distB = calculateDistance(uLat, uLng, latB, lngB);
+            // Combined score: keyword match weight + proximity weight
+            // Each unit of distance (km) reduces score slightly
+            return (b.score - (distB * 0.1)) - (a.score - (distA * 0.1));
+          }
+        }
+        return b.score - a.score;
+      });
 
       result = scored.map(({ p }) => p);
     }
@@ -903,7 +1020,7 @@ const PropertyListPage = () => {
 
   useEffect(() => { fetchProperties(); }, []);
   useEffect(() => {
-    let filteredResults = applyFilter(properties, activeCat, search, rentalType);
+    let filteredResults = applyFilter(properties, activeCat, search, rentalType, userLat, userLng);
 
     // Sidebar price filter (Signature Stays ke liye bypass — ID se already filtered hain)
     filteredResults = filteredResults.filter(p => {
@@ -937,27 +1054,6 @@ const PropertyListPage = () => {
       });
     }
 
-    // Helper: parse guest_policy safely
-    const getGuestPolicy = (p) => {
-      const raw = p.guest_policy;
-      if (!raw) return {};
-      if (typeof raw === 'string') { try { return JSON.parse(raw); } catch { return {}; } }
-      return raw;
-    };
-
-    // Helper: get flat amenities array from property
-    const getAmenities = (p) => {
-      const m = getMeta(p);
-      // p.amenities might be JSON string or array
-      let arr = [];
-      if (Array.isArray(p.amenities)) arr = p.amenities;
-      else if (typeof p.amenities === 'string') {
-        try { const parsed = JSON.parse(p.amenities); arr = Array.isArray(parsed) ? parsed : []; } catch { arr = []; }
-      }
-      // also check meta.amenities
-      const metaAms = Array.isArray(m.amenities) ? m.amenities : [];
-      return [...new Set([...arr, ...metaAms])].map(a => (a || '').toLowerCase());
-    };
 
     // Amenities filter — check both p.amenities and meta.amenities
     if (amenitiesFilter.length > 0) {
@@ -1066,6 +1162,13 @@ const PropertyListPage = () => {
       : [...filteredResults].sort((a, b) => {
           const aIsVerified = a.property_name?.toLowerCase().includes('ovika') || a.property_name?.toLowerCase().includes('signature');
           const bIsVerified = b.property_name?.toLowerCase().includes('ovika') || b.property_name?.toLowerCase().includes('signature');
+          
+          if (sortBy === 'distance' && userLat && userLng) {
+            const distA = calculateDistance(userLat, userLng, Number(a.latitude) || 0, Number(a.longitude) || 0);
+            const distB = calculateDistance(userLat, userLng, Number(b.latitude) || 0, Number(b.longitude) || 0);
+            return distA - distB;
+          }
+
           if (sortBy === 'recommended') {
             if (aIsVerified && !bIsVerified) return -1;
             if (!aIsVerified && bIsVerified) return 1;
@@ -1078,7 +1181,7 @@ const PropertyListPage = () => {
         });
     setFiltered(sortedResults);
     setCurrentPage(1);
-  }, [search, activeCat, properties, rentalType, priceMin, priceMax, roomsFilter, propTypeFilter, amenitiesFilter, furnishingFilter, tenantFilter, foodFilter, petsFilter, coupleFilter, sortBy]);
+  }, [search, activeCat, properties, rentalType, priceMin, priceMax, roomsFilter, propTypeFilter, amenitiesFilter, furnishingFilter, tenantFilter, foodFilter, petsFilter, coupleFilter, sortBy, userLat, userLng]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -1095,15 +1198,18 @@ const PropertyListPage = () => {
       setRentalType(lockedRental);
       sessionStorage.setItem('ovika_rental_type', lockedRental);
     } else {
-      const rt = params.get('rentalType');
-      if (rt) {
-        setRentalType(rt);
-        sessionStorage.setItem('ovika_rental_type', rt);
-      } else {
+      const rType = params.get('rentalType');
+      if (rType) setRentalType(rType);
+      else {
         const stored = sessionStorage.getItem('ovika_rental_type');
         if (stored) setRentalType(stored);
       }
     }
+
+    const lat = params.get('lat');
+    const lng = params.get('lng');
+    if (lat) setUserLat(Number(lat));
+    if (lng) setUserLng(Number(lng));
 
     const q = params.get('search') || params.get('city');
     if (q) setSearch(q);
@@ -1662,6 +1768,7 @@ const PropertyListPage = () => {
                   background: 'transparent', cursor: 'pointer', fontFamily: 'inherit', outline: 'none',
                 }}>
                   <option value="recommended">Best</option>
+                  {userLat && userLng && <option value="distance">Nearby</option>}
                   <option value="price_asc">Price ↑</option>
                   <option value="price_desc">Price ↓</option>
                 </select>
