@@ -1,14 +1,8 @@
-
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import "./App.css";
 import AnalyticsTracker from "./AnalyticsTracker";
-
-// Common components
 import Navbar from "./compoent/Homepage/Navbar";
 import HoomieFooter from "./compoent/Homepage/HoomieFooter";
-
-// Homepage & other main pages
-// import Home from "./compoent/Homepage/Home";
 import Home from "./compoent/Homepage/Home";
 import LuxeMain from "./compoent/Secondpage/LuxeMain";
 import ThirdMain from "./compoent/ThirdPage/ThirdMain";
@@ -22,11 +16,7 @@ import ListPropertyPage from "./compoent/ListProperty/ListPropertyPage";
 import SelfManage from "./compoent/FourthPage/SelfManage";
 import FifthMain from "./compoent/Fifth/FifthMain";
 import Ownermain from "./Owner/Ownermain";
-
-// Context
 import { AuthProvider, AuthContext } from "./compoent/Login/AuthContext";
-
-// Admin Dashboard Components
 import AdminDashboardLayout from "./compoent/AdminDashBoard/AdminDashboardLayout";
 import AdminDashBoard from "./compoent/AdminDashBoard/AdminDashBoardPages/DashBoardAdmin";
 import InquiriesBookings from "./compoent/AdminDashBoard/AdminDashBoardPages/InquiriesBookings";
@@ -64,50 +54,31 @@ import { HomePageNewMain } from "./compoent/HomePageNew2/HomePageNewMain";
 import LegalInformation from "./compoent/LegalInformation/LegalInformation";
 import ROICalculator from "./compoent/ROICalculator/ROICalculator";
 import CalendarBlocking from "./compoent/CalendarBlocking/CalendarBlocking";
-
-// 🔒 Protected Route Component
 function RequireAuth({ children }) {
   const { user } = useContext(AuthContext);
   const location = useLocation();
-
-  if (!user) {
-    // not logged in → send to login, with info from where user came
+if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
-
   return children;
 }
-
-// 🔒 Protected Admin Dashboard Layout Component
 function ProtectedAdminLayout() {
   const { user } = useContext(AuthContext);
   const location = useLocation();
 
   if (!user) {
-    // Agar user login nahi hai, to login page par redirect karo
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
-
-  // Agar user login hai, to AdminDashboardLayout render karo
   return <AdminDashboardLayout />;
 }
-
-// 🔄 Smart Scroll Restoration
-// - Back/Forward: restores exact scroll position
-// - Fresh navigation: scrolls to top
 function ScrollRestoration() {
   const { key } = useLocation();
-
-  useEffect(() => {
+useEffect(() => {
     const storageKey = `scroll_${key}`;
     const saved = sessionStorage.getItem(storageKey);
-
-    // Restore saved position or scroll to top — small delay for async content
     const restoreTimer = setTimeout(() => {
       window.scrollTo({ top: saved !== null ? parseInt(saved, 10) : 0, behavior: 'instant' });
     }, 50);
-
-    // Track scroll position as user scrolls
     let scrollTimer;
     const onScroll = () => {
       clearTimeout(scrollTimer);
@@ -121,26 +92,19 @@ function ScrollRestoration() {
       clearTimeout(restoreTimer);
       clearTimeout(scrollTimer);
       window.removeEventListener('scroll', onScroll);
-      // Final save on unmount (before navigation completes)
       sessionStorage.setItem(storageKey, String(Math.round(window.scrollY)));
     };
   }, [key]);
-
   return null;
 }
-
 function App() {
   return (
     <AuthProvider>
       <Router>
         <ScrollRestoration />
         <AnalyticsTracker />
-        {/* Top Navbar */}
         <Navbar />
-    
-        {/* All Routes */}
         <Routes>
-          {/* Main Website Pages */}
           <Route path="/home" element={<Home />} />
           <Route path="/home-main" element={<HomeMain />} />
           <Route path="/" element={<HomePageNewMain />} />
@@ -164,7 +128,6 @@ function App() {
           <Route path="/monthly-rentals" element={<PropertyListPage />}/>
 <Route path="/ovika-self-verified" element={<OvikaSelfVerified/>}/>
           <Route path="/owner-verification" element={<OwnerVerificationForm/>}/>
-          {/* ✅ PROTECTED ROUTE – only after login */}
           <Route
             path="/listed1"
             element={
@@ -189,8 +152,6 @@ function App() {
               </RequireAuth>
             }
           />
-
-          {/* Property Listing and Detail Pages */}
           <Route path="/properties" element={<PropertyListPage />} />
           <Route path="/property/:id" element={<PropertyDetailPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -213,22 +174,14 @@ function App() {
             <Route path="roi-calculator" element={<ROICalculator />} />
             <Route path="support" element={<Support />} />
             <Route path="calendar" element={<CalendarBlocking />} />
-            <Route path="listed" element={<PropertyListingForm />} />
-           
+            <Route path="listed" element={<PropertyListingForm />} />    
           </Route>
-
-          {/* Super Admin Dashboard - Already Protected */}
           <Route path="/admin-control-panel" element={<RequireAuth><SuperAdminDashboard /></RequireAuth>} />
         </Routes>
-
-        {/* Bottom Footer */}
         <HoomieFooter />
-        
-        {/* Cookie Consent Banner */}
         <CookieConsent />
       </Router>
     </AuthProvider>
   );
 }
-
 export default App;

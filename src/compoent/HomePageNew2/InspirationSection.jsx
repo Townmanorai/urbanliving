@@ -85,9 +85,15 @@ const DATA = {
   ],
 };
 
+function getRentalTypeForTab(tab) {
+  return tab === 'PGs' ? 'long' : 'short';
+}
+
 function getSearchPath(tab, city, navTab) {
   const resolvedTab = navTab || tab;
   const p = new URLSearchParams();
+  const rentalType = getRentalTypeForTab(resolvedTab);
+  p.set('rentalType', rentalType);
 
   if (resolvedTab === 'Signature Stays') {
     p.set('category', 'Signature Stays');
@@ -99,7 +105,6 @@ function getSearchPath(tab, city, navTab) {
 
   if (resolvedTab === 'PGs') {
     p.set('category', 'PG');
-    p.set('rentalType', 'long');
   } else if (resolvedTab === 'Hotels') {
     p.set('property_type', 'Hotel Room');
   } else if (resolvedTab === 'Premium Stays') {
@@ -202,8 +207,8 @@ export default function InspirationSection() {
             <div
               key={i}
               className="insp-item"
-              onClick={(e) => navClick(e, getSearchPath(activeTab, item.city, item.navTab), navigate)}
-              onAuxClick={(e) => auxNavClick(e, getSearchPath(activeTab, item.city, item.navTab))}
+              onClick={(e) => { sessionStorage.setItem('ovika_rental_type', getRentalTypeForTab(item.navTab || activeTab)); navClick(e, getSearchPath(activeTab, item.city, item.navTab), navigate); }}
+              onAuxClick={(e) => { sessionStorage.setItem('ovika_rental_type', getRentalTypeForTab(item.navTab || activeTab)); auxNavClick(e, getSearchPath(activeTab, item.city, item.navTab)); }}
               style={{
                 cursor: 'pointer',
                 flex: bp === 'mobile' ? '0 0 calc(33.33% - 7px)' : bp === 'tablet' ? '0 0 calc(33.33% - 11px)' : '1 1 calc(16.66% - 14px)',

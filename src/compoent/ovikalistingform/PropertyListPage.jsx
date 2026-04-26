@@ -167,8 +167,8 @@ const PropertyCard = ({ property, rentalType }) => {
 
   return (
     <div
-      onClick={(e) => { if (!e.target.closest('[data-action]')) navClick(e, `/property/${property.id}`, navigate); }}
-      onAuxClick={(e) => { if (!e.target.closest('[data-action]')) auxNavClick(e, `/property/${property.id}`); }}
+      onClick={(e) => { if (!e.target.closest('[data-action]')) { sessionStorage.setItem('ovika_rental_type', isMonthly ? 'long' : 'short'); navClick(e, `/property/${property.id}`, navigate); } }}
+      onAuxClick={(e) => { if (!e.target.closest('[data-action]')) { sessionStorage.setItem('ovika_rental_type', isMonthly ? 'long' : 'short'); auxNavClick(e, `/property/${property.id}`); } }}
       onMouseEnter={e => {
         e.currentTarget.style.transform = 'translateY(-4px)';
         e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.14)';
@@ -1199,7 +1199,7 @@ const PropertyListPage = () => {
       sessionStorage.setItem('ovika_rental_type', lockedRental);
     } else {
       const rType = params.get('rentalType');
-      if (rType) setRentalType(rType);
+      if (rType) { setRentalType(rType); sessionStorage.setItem('ovika_rental_type', rType); }
       else {
         const stored = sessionStorage.getItem('ovika_rental_type');
         if (stored) setRentalType(stored);

@@ -553,11 +553,11 @@ export default function HomePageNew1() {
 
   // Quick-nav chips: each maps to a specific /properties URL
   const QUICK_CHIPS = [
-    { label: 'Signature Stays', path: () => { const p = new URLSearchParams(); p.set('category', 'Signature Stays'); return `/properties?${p}`; } },
-    { label: 'Premium',         path: () => { const p = new URLSearchParams(); p.set('category', 'Premium Stay'); return `/properties?${p}`; } },
-    { label: 'Economy',         path: () => { const p = new URLSearchParams(); p.set('category', 'Economy Stay'); return `/properties?${p}`; } },
-    { label: 'PG',              path: () => { const p = new URLSearchParams(); p.set('category', 'PG'); p.set('rentalType', 'long'); return `/properties?${p}`; } },
-    { label: 'Co-living',       path: () => { const p = new URLSearchParams(); p.set('search', 'co-living'); return `/properties?${p}`; } },
+    { label: 'Signature Stays', rentalType: 'short', path: () => { const p = new URLSearchParams(); p.set('category', 'Signature Stays'); p.set('rentalType', 'short'); return `/properties?${p}`; } },
+    { label: 'Premium',         rentalType: 'short', path: () => { const p = new URLSearchParams(); p.set('category', 'Premium Stay');    p.set('rentalType', 'short'); return `/properties?${p}`; } },
+    { label: 'Economy',         rentalType: 'short', path: () => { const p = new URLSearchParams(); p.set('category', 'Economy Stay');    p.set('rentalType', 'short'); return `/properties?${p}`; } },
+    { label: 'PG',              rentalType: 'long',  path: () => { const p = new URLSearchParams(); p.set('category', 'PG');              p.set('rentalType', 'long');  return `/properties?${p}`; } },
+    { label: 'Co-living',       rentalType: 'short', path: () => { const p = new URLSearchParams(); p.set('search', 'co-living');         p.set('rentalType', 'short'); return `/properties?${p}`; } },
   ];
 
   const shortDisplay = ratesLoading ? '—' : (shortRate ? `${fmt(shortRate)}/night` : '₹2,499/night');
@@ -643,8 +643,8 @@ export default function HomePageNew1() {
               {QUICK_CHIPS.map(chip => (
                 <button
                   key={chip.label}
-                  onClick={(e) => navClick(e, chip.path(), navigate)}
-                  onAuxClick={(e) => auxNavClick(e, chip.path())}
+                  onClick={(e) => { sessionStorage.setItem('ovika_rental_type', chip.rentalType); navClick(e, chip.path(), navigate); }}
+                  onAuxClick={(e) => { sessionStorage.setItem('ovika_rental_type', chip.rentalType); auxNavClick(e, chip.path()); }}
                   style={{
                     flexShrink: 0, background: '#fdf6ee', border: '1px solid #e8c88a',
                     borderRadius: 20, padding: '5px 13px', fontSize: '0.67rem', fontWeight: 600,
@@ -928,8 +928,8 @@ export default function HomePageNew1() {
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                   {QUICK_CHIPS.map(chip => (
                     <span key={chip.label}
-                      onClick={(e) => navClick(e, chip.path(), navigate)}
-                  onAuxClick={(e) => auxNavClick(e, chip.path())}
+                      onClick={(e) => { sessionStorage.setItem('ovika_rental_type', chip.rentalType); navClick(e, chip.path(), navigate); }}
+                  onAuxClick={(e) => { sessionStorage.setItem('ovika_rental_type', chip.rentalType); auxNavClick(e, chip.path()); }}
                       style={{
                         fontSize: '0.68rem', color: '#6b5540', background: '#fff',
                         border: '1px solid #e8d8c0', borderRadius: 20, padding: '5px 12px',
