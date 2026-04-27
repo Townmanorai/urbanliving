@@ -2,7 +2,7 @@
 import React, { useContext, useState } from "react";
 import { Helmet } from "react-helmet";
 import "./AuthPage.css";
-import { useNavigate, useLocation } from "react-router";
+import { useNavigate, useLocation, Navigate } from "react-router";
 import { AuthContext } from "./AuthContext";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
@@ -14,6 +14,9 @@ export default function AuthPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const redirectTo = location.state?.from || "/";
+
+  // Already logged in — send away, replacing this entry so back won't return here
+  if (user) return <Navigate to={redirectTo} replace />;
 
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState("");
@@ -172,7 +175,7 @@ export default function AuthPage() {
       }
 
       console.log("Login final user (synced):", synced);
-      navigate(redirectTo);
+      navigate(redirectTo, { replace: true });
     } catch (error) {
       console.error("Login Error:", error);
       alert("Server error. See console.");

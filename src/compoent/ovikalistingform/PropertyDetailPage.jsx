@@ -1363,7 +1363,7 @@ const PropertyDetailPage = () => {
   const [otpInput, setOtpInput] = useState('');
   const [isOtpLoading, setIsOtpLoading] = useState(false);
   const [isMobileVerifying, setIsMobileVerifying] = useState(false);
-  const [pricing, setPricing] = useState({ subtotal: 0, discount: 0, discountPercentage: 0, gst: 0, total: 0, daysNeededForNextTier: 0, nextTierPercentage: 0 });
+  const [pricing, setPricing] = useState({ subtotal: 0, discount: 0, discountPercentage: 0, gst: 0, total: 0, daysNeededForNextTier: 0, nextTierPercentage: 0, couponDiscount: 0 });
   const [isPayNowEnabled, setIsPayNowEnabled] = useState(false);
   const [isPhotoUploading, setIsPhotoUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -1404,6 +1404,9 @@ const PropertyDetailPage = () => {
   const [pricingMode, setPricingMode] = useState('daily');
   const [selectedPrice, setSelectedPrice] = useState(null);
   const [rentalType, setRentalType] = useState(() => sessionStorage.getItem('ovika_rental_type') || 'short');
+  const [couponInput, setCouponInput] = useState('');
+  const [couponApplied, setCouponApplied] = useState(false);
+  const [couponError, setCouponError] = useState('');
 
   const token = Cookies.get('jwttoken');
   let username = '';
@@ -1557,19 +1560,23 @@ const PropertyDetailPage = () => {
         ? (oneMonthRent > 0 ? oneMonthRent : Number(property?.securityDeposit) || 0)
         : (!isMonthlyBooking && isOvikaProperty ? perNightPrice : 0);
       computedTotal = afterDiscount + gst + securityDeposit;
-      setPricing({ subtotal, discount: discountAmount, discountPercentage, gst, securityDeposit, total: computedTotal, daysNeededForNextTier, nextTierPercentage });
+      const isNightlyOffer = [77, 78, 79, 80, 81].includes(Number(property?.id));
+      const couponDiscount = (isNightlyOffer && couponApplied) ? 300 : 0;
+      computedTotal = Math.max(0, computedTotal - couponDiscount);
+      setPricing({ subtotal, discount: discountAmount, discountPercentage, gst, securityDeposit, total: computedTotal, daysNeededForNextTier, nextTierPercentage, couponDiscount });
     } else {
-      setPricing({ subtotal: 0, discount: 0, discountPercentage: 0, gst: 0, securityDeposit: 0, total: 0, daysNeededForNextTier: 0, nextTierPercentage: 0 });
+      setPricing({ subtotal: 0, discount: 0, discountPercentage: 0, gst: 0, securityDeposit: 0, total: 0, daysNeededForNextTier: 0, nextTierPercentage: 0, couponDiscount: 0 });
     }
-  }, [formData.checkInDate, formData.checkOutDate, property, pricingMode, selectedPrice, monthlyDuration]);
+  }, [formData.checkInDate, formData.checkOutDate, property, pricingMode, selectedPrice, monthlyDuration, couponApplied]);
 
   useEffect(() => {
-    const allStepsComplete =
-      (formData.checkInDate && formData.checkOutDate && pricing.total > 0) &&
-      (formData.aadhaarVerified || formData.passportVerified) &&
-      govIdStatus === 'valid';
-    setIsPayNowEnabled(allStepsComplete);
-  }, [formData, pricing, govIdStatus]);
+    const isNightlyOffer = [77, 78, 79, 80, 81].includes(Number(property?.id));
+    const baseReady = formData.checkInDate && formData.checkOutDate && pricing.total > 0;
+    const verificationReady = isNightlyOffer
+      ? ((formData.aadhaarVerified || formData.passportVerified) && govIdStatus === 'valid')
+      : true;
+    setIsPayNowEnabled(!!(baseReady && verificationReady));
+  }, [formData, pricing, govIdStatus, property]);
 
   useEffect(() => {
     if (showPaymentModal && step === 3) {
@@ -1715,6 +1722,7 @@ const PropertyDetailPage = () => {
   };
 
   const handleNext = () => {
+    const isNightlyOffer = [77, 78, 79, 80, 81].includes(Number(property?.id));
     if (step === 1 && bookingFor === 'someone_else') {
       if (!guestDetails.name || !guestDetails.address || !guestDetails.phone) {
         showAlert('Please fill all details for the guest (Name, Address, Mobile).');
@@ -1730,15 +1738,20 @@ const PropertyDetailPage = () => {
     if (step === 3 && bookingType === 1 && pricingMode !== 'monthly' && ownerApprovalStatus !== 'accepted') { showAlert('Please wait for owner approval.'); return; }
     if (step === 2 && !formData.termsAgreed) return;
     if (step === 3 && pricing.total <= 0) return;
-    if (step === 4) {
+    if (!isNightlyOffer && step === 3) { setStep(6); return; }
+    if (isNightlyOffer && step === 4) {
       if (!(formData.aadhaarVerified || formData.passportVerified)) { showAlert('Please verify your ID first.'); return; }
       if (!formData.mobileVerified) { showAlert('Please verify your mobile number.'); return; }
     }
-    if (step === 5 && govIdStatus !== 'valid') { showAlert('Please upload a valid government ID to continue.'); return; }
+    if (isNightlyOffer && step === 5 && govIdStatus !== 'valid') { showAlert('Please upload a valid government ID to continue.'); return; }
     if (step < steps.length) setStep(step + 1);
   };
 
-  const handlePrev = () => { if (step > 1) setStep(step - 1); };
+  const handlePrev = () => {
+    const isNightlyOffer = [77, 78, 79, 80, 81].includes(Number(property?.id));
+    if (!isNightlyOffer && step === 6) { setStep(3); return; }
+    if (step > 1) setStep(step - 1);
+  };
 
   const handleFileDrop = (e) => { e.preventDefault(); e.stopPropagation(); if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]); };
   const handleFileChange = (e) => { if (e.target.files.length > 0) handleFile(e.target.files[0]); };
@@ -2057,6 +2070,13 @@ const PropertyDetailPage = () => {
     [77, 78, 79, 80, 81].includes(Number(property.id))
   );
 
+  // ── Nightly offer properties: show 40% off badge + coupon field ──────────
+  const isNightlyOfferProperty = [77, 78, 79, 80, 81].includes(Number(property.id));
+  const nightlyOriginalPrice = isNightlyOfferProperty ? Math.round(displayBasePrice / 0.6) : 0;
+  const nightlyEffectivePrice = isNightlyOfferProperty
+    ? (couponApplied ? displayBasePrice - 300 : displayBasePrice)
+    : displayBasePrice;
+
   // ── OvikaLiving monthly rental properties with 1-month deposit ───────────
   const isOvikaMonthlyProperty = [315, 316, 317, 323].includes(Number(property.id));
 
@@ -2173,17 +2193,24 @@ const PropertyDetailPage = () => {
 
             <div className="pm-steps-bar">
               <div className="pm-steps-row">
-                {steps.map((stepName, index) => (
-                  <div key={index} className="pm-step-item">
-                    {index < steps.length - 1 && (
-                      <div className={`pm-step-line ${index < step ? 'pm-step-line--done' : ''}`}></div>
-                    )}
-                    <div className="pm-step-inner">
-                      <div className={`pm-step-dot ${index + 1 <= step ? 'pm-step-dot--done' : ''}`}>{index + 1}</div>
-                      <span className={`pm-step-label ${index + 1 === step ? 'pm-step-label--active' : ''}`}>{stepName}</span>
+                {(() => {
+                  const isNightlyOffer = [77, 78, 79, 80, 81].includes(Number(property?.id));
+                  const visibleSteps = isNightlyOffer
+                    ? steps
+                    : ['Property', 'Terms', 'Dates & Pricing', 'Payment'];
+                  const visibleStep = isNightlyOffer ? step : (step <= 3 ? step : 4);
+                  return visibleSteps.map((stepName, index) => (
+                    <div key={index} className="pm-step-item">
+                      {index < visibleSteps.length - 1 && (
+                        <div className={`pm-step-line ${index < visibleStep ? 'pm-step-line--done' : ''}`}></div>
+                      )}
+                      <div className="pm-step-inner">
+                        <div className={`pm-step-dot ${index + 1 <= visibleStep ? 'pm-step-dot--done' : ''}`}>{index + 1}</div>
+                        <span className={`pm-step-label ${index + 1 === visibleStep ? 'pm-step-label--active' : ''}`}>{stepName}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ));
+                })()}
               </div>
             </div>
 
@@ -2252,11 +2279,21 @@ const PropertyDetailPage = () => {
                       <h3 style={{ fontSize: '1.3rem', marginBottom: '0.5rem' }}>{property.property_name}</h3>
                       <p style={{ color: '#666', marginBottom: '0.5rem' }}>{property.city}, {property.address}</p>
                       <p style={{ color: '#555', fontSize: '0.95rem', marginBottom: '1rem' }}>{cleanDescription(property.description)}</p>
-                      <p style={{ fontSize: '1.5rem', fontWeight: '600', color: '#8b0000' }}>
-                        <MdCurrencyRupee style={{ display: 'inline', verticalAlign: 'middle' }} />
-                        {formatCurrency(displayBasePrice)}
-                        <span style={{ fontSize: '1rem', color: '#666' }}>/{pricingMode === 'monthly' ? 'month' : (property.billing_cycle || 'night')}</span>
-                      </p>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
+                        {isNightlyOfferProperty && (
+                          <span style={{ fontSize: '1rem', color: '#999', textDecoration: 'line-through' }}>
+                            ₹{formatCurrency(nightlyOriginalPrice)}
+                          </span>
+                        )}
+                        <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: '600', color: '#8b0000' }}>
+                          <MdCurrencyRupee style={{ display: 'inline', verticalAlign: 'middle' }} />
+                          {formatCurrency(isNightlyOfferProperty ? nightlyEffectivePrice : displayBasePrice)}
+                          <span style={{ fontSize: '1rem', color: '#666' }}>/{pricingMode === 'monthly' ? 'month' : (property.billing_cycle || 'night')}</span>
+                        </p>
+                        {isNightlyOfferProperty && (
+                          <span style={{ fontSize: '0.75rem', background: '#16a34a', color: '#fff', padding: '2px 7px', borderRadius: '4px', fontWeight: 600 }}>40% OFF</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2459,6 +2496,11 @@ const PropertyDetailPage = () => {
                         {pricing.discount > 0 && (
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid #e5e5e5', color: '#16a34a' }}>
                             <span>Discount ({pricing.discountPercentage}%)</span><span>-<MdCurrencyRupee style={{ display: 'inline' }} />{pricing.discount.toFixed(2)}</span>
+                          </div>
+                        )}
+                        {pricing.couponDiscount > 0 && (
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid #e5e5e5', color: '#16a34a' }}>
+                            <span>Coupon (OVIKA300)</span><span>-<MdCurrencyRupee style={{ display: 'inline' }} />{pricing.couponDiscount.toFixed(2)}</span>
                           </div>
                         )}
                         {pricing.securityDeposit > 0 && (
@@ -3137,7 +3179,7 @@ const PropertyDetailPage = () => {
                 <div className="price-area">
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                      <span className="amount">₹{formatCurrency(displayBasePrice)}</span>
+                      <span className="amount">₹{formatCurrency(isNightlyOfferProperty ? nightlyEffectivePrice : displayBasePrice)}</span>
                       <span className="unit">/{pricingMode === 'monthly' ? 'month' : (property.billing_cycle || 'night')}</span>
                     </div>
                     {showDistinctRoomPrices && (
@@ -3147,7 +3189,14 @@ const PropertyDetailPage = () => {
                     )}
                   </div>
                 </div>
-                <div className="review-badge"><FiStar /> <span>New</span></div>
+                {isNightlyOfferProperty ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+                    <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.6)', textDecoration: 'line-through' }}>₹{formatCurrency(nightlyOriginalPrice)}</span>
+                    <div style={{ background: '#16a34a', color: '#fff', fontSize: '0.68rem', fontWeight: 600, padding: '2px 7px', borderRadius: '4px' }}>40% OFF</div>
+                  </div>
+                ) : (
+                  <div className="review-badge"><FiStar /> <span>New</span></div>
+                )}
               </div>
 
               <div className="booking-details">
@@ -3187,6 +3236,37 @@ const PropertyDetailPage = () => {
                           : (isOvikaOwnProperty ? `1 night's rent` : `₹${formatCurrency(property.securityDeposit)}`)}
                         {' '}(Refundable)
                       </span>
+                    </div>
+                  )}
+                  {isNightlyOfferProperty && (
+                    <div style={{ marginTop: '10px' }}>
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <input
+                          type="text"
+                          value={couponInput}
+                          onChange={e => { setCouponInput(e.target.value.toUpperCase()); setCouponError(''); }}
+                          placeholder="Apply coupon"
+                          style={{ flex: 1, padding: '7px 10px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '0.8rem', outline: 'none' }}
+                        />
+                        <button
+                          onClick={() => {
+                            if (couponInput === 'OVIKA300') {
+                              setCouponApplied(true);
+                              setCouponError('');
+                            } else {
+                              setCouponApplied(false);
+                              setCouponError('Invalid coupon code');
+                            }
+                          }}
+                          style={{ padding: '7px 12px', background: '#b45309', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                        >Apply</button>
+                      </div>
+                      {couponApplied && (
+                        <div style={{ marginTop: '5px', fontSize: '0.75rem', color: '#16a34a', fontWeight: 600 }}>✓ OVIKA300 applied — ₹300 off!</div>
+                      )}
+                      {couponError && (
+                        <div style={{ marginTop: '5px', fontSize: '0.75rem', color: '#dc2626' }}>{couponError}</div>
+                      )}
                     </div>
                   )}
                 </div>
