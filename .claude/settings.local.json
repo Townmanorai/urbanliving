@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(npm install:*)",
-      "Bash(grep -E '\\\\.\\(png|jpg|jpeg|webp|avif\\)$')"
+      "Bash(grep -E '\\\\.\\(png|jpg|jpeg|webp|avif\\)$')",
+      "Bash(xargs grep *)"
     ]
   }
 }

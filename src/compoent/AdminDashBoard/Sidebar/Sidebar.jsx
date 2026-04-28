@@ -10,6 +10,7 @@ import {
   FaTimes,
   FaChartLine,
   FaCalendarAlt,
+  FaUniversity,
 } from "react-icons/fa";
 import axios from "axios";
 import { AuthContext } from "../../Login/AuthContext";
@@ -143,6 +144,12 @@ function Sidebar({ isOpen, onClose }) {
           <li>
             <NavLink to="/admindashboard/roi-calculator">
               <FaChartLine /> ROI Calculator
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink to="/admindashboard/bank-details">
+              <FaUniversity /> Bank Details
             </NavLink>
           </li>
 

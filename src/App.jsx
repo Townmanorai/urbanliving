@@ -54,6 +54,7 @@ import { HomePageNewMain } from "./compoent/HomePageNew2/HomePageNewMain";
 import LegalInformation from "./compoent/LegalInformation/LegalInformation";
 import ROICalculator from "./compoent/ROICalculator/ROICalculator";
 import CalendarBlocking from "./compoent/CalendarBlocking/CalendarBlocking";
+import BankDetails from "./compoent/AccountDetails/BankDetails";
 function RequireAuth({ children }) {
   const { user } = useContext(AuthContext);
   const location = useLocation();
@@ -172,6 +173,7 @@ function App() {
             <Route path="messages" element={<Message />} />
             <Route path="documents" element={<DashBoardDocuments />} />
             <Route path="roi-calculator" element={<ROICalculator />} />
+            <Route path="bank-details" element={<BankDetails standalone />} />
             <Route path="support" element={<Support />} />
             <Route path="calendar" element={<CalendarBlocking />} />
             <Route path="listed" element={<PropertyListingForm />} />    
