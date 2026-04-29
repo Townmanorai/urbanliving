@@ -575,7 +575,7 @@ const RoomTablePerRoom = ({ rooms, pricingMode, propertyPrice, propertyArea, onB
   );
 };
 
-const RoomTablePerRoomMobile = ({ rooms, pricingMode, propertyPrice, onBookNow, onEnquire, showEnquire }) => {
+const RoomTablePerRoomMobile = ({ rooms, pricingMode, propertyPrice, onBookNow, onEnquire, showEnquire, hideDeposit }) => {
   const priceUnit = pricingMode === 'monthly' ? 'month' : 'night';
   return (
     <div className="rm-mob-wrap">
@@ -616,7 +616,7 @@ const RoomTablePerRoomMobile = ({ rooms, pricingMode, propertyPrice, onBookNow, 
                     : <span style={{ color:'#94a3b8', fontStyle:'italic' }}>On Request</span>
                   }
                 </span>
-                {room.securityDeposit && (
+                {!hideDeposit && room.securityDeposit && (
                   <span className="rm-mob-deposit">Security Deposit: ₹{Number(room.securityDeposit).toLocaleString('en-IN')}</span>
                 )}
               </div>
@@ -1469,11 +1469,15 @@ const PropertyDetailPage = () => {
           const response = await axios.get(`${API_BASE_URL}/properties/${id}`);
           const data = response.data;
           const transformed = transformPropertyData(data?.data || data);
-          setProperty(transformed);
           const coverIdx = Number(transformed.cover_photo_index);
           if (!isNaN(coverIdx) && coverIdx > 0 && Array.isArray(transformed.photos) && coverIdx < transformed.photos.length) {
-            setActiveImg(coverIdx);
+            const reordered = [...transformed.photos];
+            const [coverPhoto] = reordered.splice(coverIdx, 1);
+            reordered.unshift(coverPhoto);
+            transformed.photos = reordered;
           }
+          setProperty(transformed);
+          setActiveImg(0);
           setBookingType(Number(transformed.booking_type || 0));
           // Use session context (set by list page) as primary signal;
           // property's own rental_type='long' also forces monthly, but 'short' does NOT
@@ -1556,12 +1560,12 @@ const PropertyDetailPage = () => {
       const oneMonthRent = isMonthlyBooking && isMonthlyOvika
         ? (selectedPrice || Number(property?.meta?.perMonthPrice) || Number(property?.meta?.monthlyPrice) || Number(property?.monthly_price) || Number(property?.price) || 0)
         : 0;
+      const isNightlyOffer = [77, 78, 79, 80, 81].includes(Number(property?.id));
       const securityDeposit = isMonthlyBooking
         ? (oneMonthRent > 0 ? oneMonthRent : Number(property?.securityDeposit) || 0)
-        : (!isMonthlyBooking && isOvikaProperty ? perNightPrice : 0);
+        : (!isMonthlyBooking && isOvikaProperty && !isNightlyOffer ? perNightPrice : 0);
       computedTotal = afterDiscount + gst + securityDeposit;
-      const isNightlyOffer = [77, 78, 79, 80, 81].includes(Number(property?.id));
-      const couponDiscount = (isNightlyOffer && couponApplied) ? 300 : 0;
+      const couponDiscount = (isNightlyOffer && couponApplied) ? 300 * Math.max(1, currentDays) : 0;
       computedTotal = Math.max(0, computedTotal - couponDiscount);
       setPricing({ subtotal, discount: discountAmount, discountPercentage, gst, securityDeposit, total: computedTotal, daysNeededForNextTier, nextTierPercentage, couponDiscount });
     } else {
@@ -1735,6 +1739,10 @@ const PropertyDetailPage = () => {
     }
     if (step === 3 && pricingMode === 'monthly' && monthlyDuration >= 12) { showAlert('Stays longer than 11 months require a rental agreement. Please contact us at +91 9310292309 to proceed.'); return; }
     if (step === 3 && (!formData.checkInDate || !formData.checkOutDate)) return;
+    if (step === 3 && isNightlyOffer && pricingMode !== 'monthly') {
+      const nights = Math.ceil(Math.abs(new Date(formData.checkOutDate) - new Date(formData.checkInDate)) / (1000 * 60 * 60 * 24));
+      if (nights < 2) { showAlert('Minimum 2 nights booking required for this property.'); return; }
+    }
     if (step === 3 && bookingType === 1 && pricingMode !== 'monthly' && ownerApprovalStatus !== 'accepted') { showAlert('Please wait for owner approval.'); return; }
     if (step === 2 && !formData.termsAgreed) return;
     if (step === 3 && pricing.total <= 0) return;
@@ -2500,7 +2508,7 @@ const PropertyDetailPage = () => {
                         )}
                         {pricing.couponDiscount > 0 && (
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid #e5e5e5', color: '#16a34a' }}>
-                            <span>Coupon (OVIKA300)</span><span>-<MdCurrencyRupee style={{ display: 'inline' }} />{pricing.couponDiscount.toFixed(2)}</span>
+                            <span>Coupon (OVIKA300 · ₹300/night)</span><span>-<MdCurrencyRupee style={{ display: 'inline' }} />{pricing.couponDiscount.toFixed(2)}</span>
                           </div>
                         )}
                         {pricing.securityDeposit > 0 && (
@@ -2859,7 +2867,7 @@ const PropertyDetailPage = () => {
                       area={property.area ? `${property.area} sqft` : '—'}
                       availableFrom={property.availableFrom || property.meta?.availableFrom}
                       onBookNow={handleRoomBookNow}
-                      showDeposit={!!(isOvikaOwnProperty && pricingMode !== 'monthly')}
+                      showDeposit={!!(isOvikaOwnProperty && !isNightlyOfferProperty && pricingMode !== 'monthly')}
                       depositAmount={displayBasePrice}
                       showMonthlyDeposit={!!(isOvikaMonthlyProperty && pricingMode === 'monthly')}
                     />
@@ -2892,6 +2900,7 @@ const PropertyDetailPage = () => {
                         : (Number(property.meta?.perNightPrice) || Number(property.price) || 0)}
                       onBookNow={handleRoomBookNow}
                       showEnquire={false}
+                      hideDeposit={isNightlyOfferProperty}
                     />
                   </>
                 )}
@@ -3008,6 +3017,7 @@ const PropertyDetailPage = () => {
                   onBookNow={handleRoomBookNow}
                   onEnquire={null}
                   showEnquire={false}
+                  hideDeposit={isNightlyOfferProperty}
                 />
               </div>
             </>
@@ -3262,7 +3272,7 @@ const PropertyDetailPage = () => {
                         >Apply</button>
                       </div>
                       {couponApplied && (
-                        <div style={{ marginTop: '5px', fontSize: '0.75rem', color: '#16a34a', fontWeight: 600 }}>✓ OVIKA300 applied — ₹300 off!</div>
+                        <div style={{ marginTop: '5px', fontSize: '0.75rem', color: '#16a34a', fontWeight: 600 }}>✓ OVIKA300 applied — ₹300 off per night!</div>
                       )}
                       {couponError && (
                         <div style={{ marginTop: '5px', fontSize: '0.75rem', color: '#dc2626' }}>{couponError}</div>

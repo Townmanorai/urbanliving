@@ -207,30 +207,6 @@ const PropertyCard = ({ property, rentalType }) => {
           pointerEvents: 'none',
         }} />
 
-        {/* Category badge — top left */}
-        {categoryLabel && (
-          <span className="plp-img-badge" style={{
-            position: 'absolute', top: 10, left: 10,
-            background: categoryColor.bg, color: categoryColor.text,
-            padding: '4px 10px', borderRadius: 20,
-            fontSize: 11, fontWeight: 400, letterSpacing: '0.01em',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-          }}>
-            {categoryLabel}
-          </span>
-        )}
-
-        {/* Nightly / Monthly badge — top right of image */}
-        <span className="plp-img-type-badge" style={{
-          position: 'absolute', top: 10, right: 46,
-          background: isMonthly ? 'rgba(201,139,62,0.92)' : 'rgba(15,15,15,0.75)',
-          color: '#fff',
-          padding: '4px 10px', borderRadius: 20, fontSize: 11,
-          fontWeight: 400, backdropFilter: 'blur(4px)',
-        }}>
-          {isMonthly ? 'Monthly' : 'Nightly'}
-        </span>
-
         {/* Favourite button */}
         <button
           data-action="fav"
