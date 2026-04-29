@@ -19,9 +19,6 @@ const getUserId = (user) => {
   } catch { return null; }
 };
 
-// ── Helpers ──────────────────────────────────────────────
-const isMasked = (val) => !val || val.includes('•');
-
 // ── Step bar ─────────────────────────────────────────────
 function StepBar({ step }) {
   return (
@@ -231,12 +228,8 @@ function ReviewRow({ label, value, onEdit }) {
 }
 
 function Step4Review({ form, onEdit }) {
-  const accountDisplay = form.accountNumber
-    ? (isMasked(form.accountNumber) ? form.accountNumber : '•'.repeat(Math.max(0, form.accountNumber.length - 4)) + form.accountNumber.slice(-4))
-    : '—';
-  const panDisplay = form.pan
-    ? (isMasked(form.pan) ? form.pan : form.pan)
-    : '—';
+  const accountDisplay = form.accountNumber || '—';
+  const panDisplay     = form.pan           || '—';
   const address = [form.line1, form.line2, form.city, form.state, form.pincode].filter(Boolean).join(', ');
 
   return (
@@ -381,14 +374,10 @@ export default function BankDetails({ standalone = false }) {
     }
     if (step === 2) {
       if (!form.accountType) { setApiErrors(['Please select account type (Current or Savings).']); return false; }
-      if (!isEditMode || !isMasked(form.accountNumber)) {
-        if (!form.accountNumber)    { setApiErrors(['Please enter your account number.']); return false; }
-        if (form.accountNumber !== form.confirmAccountNumber) { setApiErrors(['Account numbers do not match.']); return false; }
-      }
-      if (!form.ifsc)               { setApiErrors(['Please enter IFSC code.']); return false; }
-      if (!isEditMode || !isMasked(form.pan)) {
-        if (!form.pan)              { setApiErrors(['Please enter PAN.']); return false; }
-      }
+      if (!form.accountNumber)    { setApiErrors(['Please enter your account number.']); return false; }
+      if (form.accountNumber !== form.confirmAccountNumber) { setApiErrors(['Account numbers do not match.']); return false; }
+      if (!form.ifsc)             { setApiErrors(['Please enter IFSC code.']); return false; }
+      if (!form.pan)              { setApiErrors(['Please enter PAN.']); return false; }
     }
     if (step === 3) {
       if (!form.line1.trim()) { setApiErrors(['Address line 1 is required.']); return false; }
@@ -425,9 +414,8 @@ export default function BankDetails({ standalone = false }) {
         state:               form.state,
         pincode:             form.pincode,
       };
-      // Only send sensitive fields if owner actually typed a new value (not masked)
-      if (!isMasked(form.accountNumber)) body.account_number = form.accountNumber;
-      if (!isMasked(form.pan))           body.pan            = form.pan;
+      if (form.accountNumber) body.account_number = form.accountNumber;
+      if (form.pan)           body.pan            = form.pan;
 
       console.log('[BankDetails] POST body:', JSON.stringify(body, null, 2));
       await axios.post(`${API_BASE}/api/owner/bank-details`, body, axiosOpts);
