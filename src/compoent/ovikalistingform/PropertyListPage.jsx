@@ -165,201 +165,146 @@ const PropertyCard = ({ property, rentalType }) => {
     ? { bg: '#C98B3E', text: '#fff' }
     : { bg: '#E0A44A', text: '#fff' };
 
+  const allPhotos = Array.isArray(property.photos) ? property.photos : [];
+  const thumbPhotos = allPhotos.filter((_, i) => i !== Number(property.cover_photo_index)).slice(0, 3);
+
+  const getPhotoUrl = (photo) => {
+    if (!photo) return null;
+    if (photo.startsWith('http')) return photo;
+    return `${API_BASE_URL}/uploads/${photo.startsWith('/') ? photo.substring(1) : photo}`;
+  };
+
+  const fallbackImg = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+
   return (
     <div
+      className="plp-hcard"
       onClick={(e) => { if (!e.target.closest('[data-action]')) { sessionStorage.setItem('ovika_rental_type', isMonthly ? 'long' : 'short'); navClick(e, `/property/${property.id}`, navigate); } }}
       onAuxClick={(e) => { if (!e.target.closest('[data-action]')) { sessionStorage.setItem('ovika_rental_type', isMonthly ? 'long' : 'short'); auxNavClick(e, `/property/${property.id}`); } }}
-      onMouseEnter={e => {
-        e.currentTarget.style.transform = 'translateY(-4px)';
-        e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.14)';
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.07)';
-      }}
-      style={{
-        background: '#fff',
-        borderRadius: 16,
-        overflow: 'hidden',
-        cursor: 'pointer',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.07)',
-        transition: 'transform 0.25s ease, box-shadow 0.25s ease',
-        display: 'flex',
-        flexDirection: 'column',
-        border: '1px solid #f0f0f0',
-      }}
     >
-      {/* ── IMAGE ── */}
-      <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', overflow: 'hidden', background: '#f3f4f6' }}>
-        <img
-          src={coverPhoto}
-          alt={property.property_name}
-          onError={e => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'; }}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
-          onMouseEnter={e => e.target.style.transform = 'scale(1.06)'}
-          onMouseLeave={e => e.target.style.transform = 'scale(1)'}
-        />
-
-        {/* Gradient fade at bottom */}
-        <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0, height: '45%',
-          background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%)',
-          pointerEvents: 'none',
-        }} />
-
-        {/* Favourite button */}
-        <button
-          data-action="fav"
-          onClick={e => { e.stopPropagation(); setFav(!fav); }}
-          style={{
-            position: 'absolute', top: 10, right: 10,
-            width: 32, height: 32,
-            background: fav ? '#e84040' : 'rgba(255,255,255,0.9)',
-            border: 'none', borderRadius: '50%',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', backdropFilter: 'blur(6px)',
-            color: fav ? '#fff' : '#555', fontSize: 14,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            transition: 'all 0.2s ease',
-            zIndex: 2,
-          }}
-        >
-          <FiHeart style={{ fill: fav ? '#fff' : 'none' }} />
-        </button>
-
-        {/* Ovika Verified stamp */}
-        {property.property_name?.toLowerCase().includes('signature') && (
+      {/* ── LEFT: Image block ── */}
+      <div className="plp-hcard-imgblock">
+        {/* Main image */}
+        <div className="plp-hcard-mainimg">
           <img
-            src="/ovikaver.png"
-            alt="Verified"
-            style={{
-              position: 'absolute', bottom: 10, right: 10,
-              width: 52, height: 'auto',
-              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
-              pointerEvents: 'none', zIndex: 2,
-            }}
+            src={getPhotoUrl(coverPhoto) || fallbackImg}
+            alt={property.property_name}
+            onError={e => { e.target.onerror = null; e.target.src = fallbackImg; }}
           />
-        )}
-
-        {/* Price overlay — bottom left of image */}
-        <div style={{ position: 'absolute', bottom: 12, left: 14, zIndex: 2 }}>
-          {forceRequest ? (
-            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', fontStyle: 'italic' }}>Price on Request</span>
-          ) : (
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 3 }}>
-              {pricePrefix && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.8)', fontWeight: 500 }}>{pricePrefix}</span>}
-              <span className="plp-card-price" style={{ fontSize: 20, fontWeight: 800, color: '#fff', lineHeight: 1, textShadow: '0 1px 4px rgba(0,0,0,0.3)' }}>
-                {formatPrice(displayPrice)}
-              </span>
-              {displayPrice > 0 && (
-                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', fontWeight: 500 }}>{priceLabel}</span>
-              )}
-            </div>
+          {/* Category badge */}
+          <span className="plp-hcard-catbadge" style={{ background: categoryColor.bg, color: categoryColor.text }}>
+            <CategoryIcon id={categoryLabel} size={10} color={categoryColor.text} />
+            {categoryLabel}
+          </span>
+          {/* Fav button */}
+          <button
+            className="plp-hcard-fav"
+            data-action="fav"
+            onClick={e => { e.stopPropagation(); setFav(!fav); }}
+            style={{ background: fav ? '#e84040' : 'rgba(255,255,255,0.92)', color: fav ? '#fff' : '#555' }}
+          >
+            <FiHeart style={{ fill: fav ? '#fff' : 'none', fontSize: 13 }} />
+          </button>
+          {/* Verified logo — bottom-right of image */}
+          {property.property_name?.toLowerCase().includes('signature') && (
+            <img
+              src="/ovikaver.png"
+              alt="Ovika Verified"
+              style={{
+                position: 'absolute', bottom: 8, right: 8,
+                height: 38, width: 'auto',
+                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.35))',
+                pointerEvents: 'none', zIndex: 3,
+              }}
+            />
           )}
         </div>
+        {/* Thumbnail strip */}
+        {thumbPhotos.length > 0 && (
+          <div className="plp-hcard-thumbs">
+            {thumbPhotos.map((ph, i) => (
+              <div key={i} className="plp-hcard-thumb">
+                <img
+                  src={getPhotoUrl(ph) || fallbackImg}
+                  alt=""
+                  onError={e => { e.target.onerror = null; e.target.src = fallbackImg; }}
+                />
+                {i === thumbPhotos.length - 1 && allPhotos.length > 4 && (
+                  <div className="plp-hcard-thumb-more">+{allPhotos.length - 4}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* ── CARD BODY ── */}
-      <div className="plp-card-body" style={{ padding: '14px 16px 16px', display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
+      {/* ── RIGHT: Details block ── */}
+      <div className="plp-hcard-details">
 
-        {/* Name + Rating row */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 6 }}>
-          <h3 className="plp-card-title" style={{
-            fontSize: 14, fontWeight: 700, color: '#111',
-            lineHeight: 1.35, margin: 0, flex: 1,
-            overflow: 'hidden', display: '-webkit-box',
-            WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-          }}>
-            {property.property_name || 'Untitled Property'}
-          </h3>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0,
-            background: '#fffbf0', border: '1px solid #f0d8a0',
-            borderRadius: 20, padding: '2px 8px',
-          }}>
-            <FiStar style={{ fontSize: 11, color: '#C98B3E', fill: '#C98B3E' }} />
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#C98B3E' }}>{randomRating}</span>
+        {/* Top row: name + rating */}
+        <div className="plp-hcard-toprow">
+          <h3 className="plp-hcard-name">{property.property_name || 'Untitled Property'}</h3>
+          <div className="plp-hcard-rating">
+            <FiStar style={{ fontSize: 11, fill: '#fff', color: '#fff' }} />
+            <span>{randomRating}</span>
           </div>
         </div>
 
         {/* Location */}
-        <div className="plp-card-loc" style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#6b7280', fontSize: 12 }}>
-          <FiMapPin style={{ fontSize: 12, color: '#C98B3E', flexShrink: 0 }} />
-          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {property.city || 'City not specified'}{property.address ? `, ${property.address}` : ''}
-          </span>
+        <div className="plp-hcard-loc">
+          <FiMapPin style={{ fontSize: 11, color: '#C98B3E', flexShrink: 0 }} />
+          <span>{property.city || ''}{property.address ? `, ${property.address}` : ''}</span>
         </div>
 
-        {/* Specs row */}
-        {property.property_category !== 'PG' && (bedCount > 0 || bathCount > 0 || property.area) && (
-          <div className="plp-card-spec" style={{
-            display: 'flex', alignItems: 'center', gap: 0,
-            background: '#f9fafb', borderRadius: 10,
-            padding: '7px 10px',
-          }}>
-            {bedCount > 0 && (
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 5, justifyContent: 'center' }}>
-                <BiBed style={{ fontSize: 15, color: '#C98B3E' }} />
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>{bedCount} Bed</span>
-              </div>
-            )}
-            {bedCount > 0 && bathCount > 0 && <div style={{ width: 1, height: 14, background: '#e5e7eb' }} />}
-            {bathCount > 0 && (
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 5, justifyContent: 'center' }}>
-                <BiBath style={{ fontSize: 15, color: '#C98B3E' }} />
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>{bathCount} Bath</span>
-              </div>
-            )}
-            {(bedCount > 0 || bathCount > 0) && property.area > 0 && <div style={{ width: 1, height: 14, background: '#e5e7eb' }} />}
-            {property.area > 0 && (
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 5, justifyContent: 'center' }}>
-                <BiArea style={{ fontSize: 15, color: '#C98B3E' }} />
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>{property.area} sqft</span>
-              </div>
-            )}
+        {/* Specs — bed/bath/area */}
+        {property.property_category !== 'PG' && (bedCount > 0 || bathCount > 0 || property.area > 0) && (
+          <div className="plp-hcard-specs">
+            {bedCount > 0 && <span className="plp-hcard-spec-pill"><BiBed style={{ fontSize: 13 }} />{bedCount} Bed</span>}
+            {bathCount > 0 && <span className="plp-hcard-spec-pill"><BiBath style={{ fontSize: 13 }} />{bathCount} Bath</span>}
+            {property.area > 0 && <span className="plp-hcard-spec-pill"><BiArea style={{ fontSize: 13 }} />{property.area} sqft</span>}
           </div>
         )}
 
         {/* Amenity chips */}
         {Array.isArray(property.amenities) && property.amenities.length > 0 && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-            {property.amenities.slice(0, 3).map((a, i) => (
-              <span key={i} style={{
-                padding: '3px 9px', background: '#f3f4f6', color: '#6b7280',
-                borderRadius: 20, fontSize: 11, fontWeight: 500,
-              }}>{a}</span>
+          <div className="plp-hcard-amenities">
+            {property.amenities.slice(0, 5).map((a, i) => (
+              <span key={i} className="plp-hcard-chip">{a}</span>
             ))}
-            {property.amenities.length > 3 && (
-              <span style={{
-                padding: '3px 9px', background: '#FFF6EE', color: '#C98B3E',
-                border: '1px solid rgba(201,139,62,0.25)',
-                borderRadius: 20, fontSize: 11, fontWeight: 600,
-              }}>+{property.amenities.length - 3}</span>
+            {property.amenities.length > 5 && (
+              <span className="plp-hcard-chip plp-hcard-chip--more">+{property.amenities.length - 5} more</span>
             )}
           </div>
         )}
 
-        {/* View Details CTA */}
-        <div style={{ marginTop: 'auto', paddingTop: 10, borderTop: '1px solid #f3f4f6' }}>
-          <button
-            className="plp-card-cta"
-            data-action="view"
-            onClick={e => { e.stopPropagation(); navClick(e, `/property/${property.id}`, navigate); }}
-            onAuxClick={e => { e.stopPropagation(); auxNavClick(e, `/property/${property.id}`); }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#AF7834'; e.currentTarget.style.transform = 'scale(1.01)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#C98B3E'; e.currentTarget.style.transform = 'scale(1)'; }}
-            style={{
-              width: '100%', padding: '9px 0',
-              background: '#C98B3E', color: '#fff',
-              border: 'none', borderRadius: 10,
-              fontWeight: 400, fontSize: 13, cursor: 'pointer',
-              fontFamily: 'inherit', letterSpacing: '0.01em',
-              transition: 'background 0.2s ease, transform 0.15s ease',
-              boxShadow: '0 2px 8px rgba(201,139,62,0.3)',
-            }}
-          >
-            View Details
-          </button>
+
+        {/* Bottom: price + buttons */}
+        <div className="plp-hcard-bottom">
+          <div className="plp-hcard-price-block">
+            {forceRequest ? (
+              <span style={{ fontSize: 13, color: '#94a3b8', fontStyle: 'italic' }}>Price on Request</span>
+            ) : (
+              <>
+                {pricePrefix && <span className="plp-hcard-price-prefix">{pricePrefix}</span>}
+                <span className="plp-hcard-price">{formatPrice(displayPrice)}</span>
+                {displayPrice > 0 && <span className="plp-hcard-price-unit">{priceLabel}</span>}
+              </>
+            )}
+          </div>
+          <div className="plp-hcard-btns">
+            <button
+              className="plp-hcard-btn plp-hcard-btn--outline"
+              data-action="view"
+              onClick={e => { e.stopPropagation(); navClick(e, `/property/${property.id}`, navigate); }}
+              onAuxClick={e => { e.stopPropagation(); auxNavClick(e, `/property/${property.id}`); }}
+            >View Details</button>
+            <button
+              className="plp-hcard-btn plp-hcard-btn--fill"
+              data-action="book"
+              onClick={e => { e.stopPropagation(); sessionStorage.setItem('ovika_rental_type', isMonthly ? 'long' : 'short'); navClick(e, `/property/${property.id}`, navigate); }}
+              onAuxClick={e => { e.stopPropagation(); auxNavClick(e, `/property/${property.id}`); }}
+            >Book Now</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1291,11 +1236,211 @@ const PropertyListPage = () => {
           gap: 8px;
           flex-shrink: 0;
         }
-        /* ── Property grid ── */
+        /* ── Property list (desktop: single column horizontal cards) ── */
         .plp-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-          gap: 18px;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+
+        /* ── Horizontal card shell ── */
+        .plp-hcard {
+          display: flex;
+          flex-direction: row;
+          background: #fff;
+          border-radius: 14px;
+          border: 1px solid #ede8df;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+          overflow: hidden;
+          cursor: pointer;
+          transition: box-shadow 0.22s ease, transform 0.22s ease;
+          height: 210px;
+        }
+        .plp-hcard:hover {
+          box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+          transform: translateY(-2px);
+        }
+
+        /* ── Image block (left) ── */
+        .plp-hcard-imgblock {
+          display: flex;
+          flex-direction: row;
+          width: 340px;
+          flex-shrink: 0;
+          gap: 3px;
+          overflow: hidden;
+          border-radius: 14px 0 0 14px;
+        }
+        .plp-hcard-mainimg {
+          flex: 1;
+          position: relative;
+          min-width: 0;
+          overflow: hidden;
+          background: #f3f4f6;
+        }
+        .plp-hcard-mainimg img {
+          width: 100%; height: 100%;
+          object-fit: cover;
+          transition: transform 0.45s ease;
+          display: block;
+        }
+        .plp-hcard:hover .plp-hcard-mainimg img { transform: scale(1.05); }
+
+        .plp-hcard-catbadge {
+          position: absolute; top: 10px; left: 10px;
+          display: inline-flex; align-items: center; gap: 4px;
+          font-size: 10px; font-weight: 700; padding: 3px 8px;
+          border-radius: 20px; letter-spacing: 0.3px;
+          text-transform: uppercase;
+        }
+        .plp-hcard-fav {
+          position: absolute; top: 10px; right: 10px;
+          width: 28px; height: 28px; border-radius: 50%;
+          border: none; cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+          transition: all 0.2s ease;
+        }
+
+        /* Thumbnail strip (right of main img) */
+        .plp-hcard-thumbs {
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+          width: 90px;
+          flex-shrink: 0;
+          overflow: hidden;
+        }
+        .plp-hcard-thumb {
+          flex: 1;
+          position: relative;
+          overflow: hidden;
+          background: #e5e7eb;
+        }
+        .plp-hcard-thumb img {
+          width: 100%; height: 100%;
+          object-fit: cover; display: block;
+        }
+        .plp-hcard-thumb-more {
+          position: absolute; inset: 0;
+          background: rgba(0,0,0,0.45);
+          display: flex; align-items: center; justify-content: center;
+          color: #fff; font-size: 12px; font-weight: 700;
+        }
+
+        /* ── Details block (right) ── */
+        .plp-hcard-details {
+          flex: 1;
+          min-width: 0;
+          padding: 14px 18px 14px;
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+          overflow: hidden;
+        }
+        .plp-hcard-toprow {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 8px;
+        }
+        .plp-hcard-name {
+          font-size: 15px; font-weight: 700; color: #111;
+          margin: 0; line-height: 1.3;
+          overflow: hidden; display: -webkit-box;
+          -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+          flex: 1;
+        }
+        .plp-hcard-rating {
+          display: inline-flex; align-items: center; gap: 3px;
+          background: #2e7d32; color: #fff;
+          font-size: 12px; font-weight: 700;
+          padding: 3px 8px; border-radius: 6px; flex-shrink: 0;
+        }
+        .plp-hcard-loc {
+          display: flex; align-items: center; gap: 4px;
+          font-size: 12px; color: #6b7280;
+          overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .plp-hcard-specs {
+          display: flex; flex-wrap: wrap; gap: 6px;
+        }
+        .plp-hcard-spec-pill {
+          display: inline-flex; align-items: center; gap: 4px;
+          font-size: 12px; color: #374151; font-weight: 500;
+          background: #f3f4f6; border-radius: 20px; padding: 3px 10px;
+        }
+        .plp-hcard-amenities {
+          display: flex; flex-wrap: wrap; gap: 5px;
+        }
+        .plp-hcard-chip {
+          font-size: 11px; color: #555; font-weight: 500;
+          background: #f8f9fa; border: 1px solid #e5e7eb;
+          border-radius: 20px; padding: 2px 9px;
+        }
+        .plp-hcard-chip--more {
+          color: #C98B3E; border-color: rgba(201,139,62,0.3);
+          background: #FFF6EE; font-weight: 600;
+        }
+
+        /* Bottom: price + buttons */
+        .plp-hcard-bottom {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+          margin-top: auto;
+          padding-top: 10px;
+          border-top: 1px solid #f3f4f6;
+        }
+        .plp-hcard-price-block {
+          display: flex; align-items: baseline; gap: 4px;
+        }
+        .plp-hcard-price-prefix {
+          font-size: 11px; color: #94a3b8;
+        }
+        .plp-hcard-price {
+          font-size: 20px; font-weight: 700; color: #111; line-height: 1;
+        }
+        .plp-hcard-price-unit {
+          font-size: 12px; color: #6b7280;
+        }
+        .plp-hcard-btns {
+          display: flex; gap: 8px; flex-shrink: 0;
+        }
+        .plp-hcard-btn {
+          padding: 8px 18px; border-radius: 8px;
+          font-size: 13px; font-weight: 600; cursor: pointer;
+          font-family: inherit; transition: all 0.18s ease;
+          white-space: nowrap;
+        }
+        .plp-hcard-btn--outline {
+          background: #fff; color: #1e293b;
+          border: 1.5px solid #cbd5e1;
+        }
+        .plp-hcard-btn--outline:hover { background: #f8fafc; border-color: #94a3b8; }
+        .plp-hcard-btn--fill {
+          background: #C98B3E; color: #fff; border: none;
+          box-shadow: 0 2px 8px rgba(201,139,62,0.3);
+        }
+        .plp-hcard-btn--fill:hover { background: #AF7834; }
+
+        /* ── Mobile: revert to vertical card ── */
+        @media (max-width: 768px) {
+          .plp-grid { gap: 12px; }
+          .plp-hcard { flex-direction: column; height: auto; }
+          .plp-hcard-imgblock {
+            width: 100%; height: 200px;
+            border-radius: 14px 14px 0 0;
+            flex-direction: row;
+          }
+          .plp-hcard-thumbs { display: none; }
+          .plp-hcard-details { padding: 12px 14px 14px; gap: 5px; }
+          .plp-hcard-name { font-size: 13px; }
+          .plp-hcard-price { font-size: 17px; }
+          .plp-hcard-bottom { flex-wrap: wrap; gap: 8px; }
+          .plp-hcard-btns { width: 100%; }
+          .plp-hcard-btn { flex: 1; text-align: center; padding: 9px 0; }
         }
         /* ── Mobile overlay & drawer ── */
         .plp-filter-overlay {
