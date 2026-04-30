@@ -557,7 +557,7 @@ export default function HomePageNew1() {
     { label: 'Premium',         rentalType: 'short', path: () => { const p = new URLSearchParams(); p.set('category', 'Premium Stay');    p.set('rentalType', 'short'); return `/properties?${p}`; } },
     { label: 'Economy',         rentalType: 'short', path: () => { const p = new URLSearchParams(); p.set('category', 'Economy Stay');    p.set('rentalType', 'short'); return `/properties?${p}`; } },
     { label: 'PG',              rentalType: 'long',  path: () => { const p = new URLSearchParams(); p.set('category', 'PG');              p.set('rentalType', 'long');  return `/properties?${p}`; } },
-    { label: 'Co-living',       rentalType: 'short', path: () => { const p = new URLSearchParams(); p.set('search', 'co-living');         p.set('rentalType', 'short'); return `/properties?${p}`; } },
+    { label: 'Co-living',       rentalType: 'long',  path: () => { const p = new URLSearchParams(); p.set('category', 'PG'); p.set('rentalType', 'long'); p.set('search', 'co-living'); return `/properties?${p}`; } },
   ];
 
   const shortDisplay = ratesLoading ? '—' : (shortRate ? `${fmt(shortRate)}/night` : '₹2,499/night');

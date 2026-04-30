@@ -123,13 +123,27 @@ export default function Home1() {
     return `/properties?${p}`;
   };
 
+  const PG_KEYWORDS = ['pg', 'paying guest', 'hostel', 'boys pg', 'girls pg', 'co-living', 'coliving'];
+
   const handleSearch = () => {
     const p = new URLSearchParams();
-    if (city) { p.set('city', city); p.set('search', city); }
-    if (rentalType) p.set('rentalType', rentalType);
-    if (checkIn) p.set('checkIn', checkIn);
-    if (checkOut) p.set('checkOut', checkOut);
-    if (guests) p.set('guests', String(guests));
+    const searchTerm = (city || citySearch || '').toLowerCase().trim();
+    const isPgSearch = PG_KEYWORDS.some(kw => searchTerm.includes(kw));
+
+    if (isPgSearch) {
+      p.set('rentalType', 'long');
+      p.set('category', 'PG');
+      if (city) { p.set('city', city); p.set('search', city); }
+      else if (citySearch) p.set('search', citySearch);
+    } else {
+      if (city) { p.set('city', city); p.set('search', city); }
+      if (rentalType) p.set('rentalType', rentalType);
+      if (checkIn) p.set('checkIn', checkIn);
+      if (checkOut) p.set('checkOut', checkOut);
+      if (guests) p.set('guests', String(guests));
+    }
+
+    sessionStorage.setItem('ovika_rental_type', isPgSearch ? 'long' : (rentalType || ''));
     navigate(`/properties?${p}`);
   };
 
