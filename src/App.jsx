@@ -182,6 +182,42 @@ function App() {
         </Routes>
         <HoomieFooter />
         <CookieConsent />
+
+        {/* WhatsApp fixed button */}
+        <a
+          href="https://wa.me/919319392227"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            zIndex: 9999,
+            width: '54px',
+            height: '54px',
+            borderRadius: '50%',
+            background: '#25D366',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 4px 16px rgba(37,211,102,0.45)',
+            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+            textDecoration: 'none',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.transform = 'scale(1.1)';
+            e.currentTarget.style.boxShadow = '0 6px 22px rgba(37,211,102,0.6)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = '0 4px 16px rgba(37,211,102,0.45)';
+          }}
+          aria-label="Chat on WhatsApp"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32" fill="white">
+            <path d="M16 2C8.268 2 2 8.268 2 16c0 2.49.648 4.83 1.783 6.863L2 30l7.338-1.762A13.94 13.94 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm0 25.5a11.44 11.44 0 01-5.84-1.607l-.418-.248-4.354 1.046 1.074-4.234-.273-.435A11.46 11.46 0 014.5 16C4.5 9.649 9.649 4.5 16 4.5S27.5 9.649 27.5 16 22.351 27.5 16 27.5zm6.29-8.61c-.344-.172-2.037-1.004-2.352-1.119-.316-.115-.546-.172-.776.172s-.891 1.119-1.092 1.35c-.2.23-.402.258-.746.086-.344-.172-1.452-.535-2.766-1.707-1.022-.912-1.713-2.037-1.913-2.381-.2-.344-.021-.53.15-.701.155-.154.344-.402.516-.603.172-.201.229-.344.344-.574.115-.23.057-.43-.028-.602-.086-.172-.776-1.87-1.063-2.562-.28-.672-.564-.58-.776-.591l-.661-.012c-.23 0-.603.086-.918.43s-1.205 1.177-1.205 2.869 1.234 3.328 1.406 3.558c.172.23 2.43 3.71 5.887 5.202.823.355 1.465.567 1.966.726.826.263 1.578.226 2.172.137.662-.1 2.037-.832 2.324-1.635.287-.803.287-1.492.2-1.635-.086-.143-.316-.23-.66-.402z"/>
+          </svg>
+        </a>
       </Router>
     </AuthProvider>
   );
