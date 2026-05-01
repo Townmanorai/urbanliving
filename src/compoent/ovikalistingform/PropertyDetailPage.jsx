@@ -1479,12 +1479,11 @@ const PropertyDetailPage = () => {
           setProperty(transformed);
           setActiveImg(0);
           setBookingType(Number(transformed.booking_type || 0));
-          // Use session context (set by list page) as primary signal;
-          // property's own rental_type='long' also forces monthly, but 'short' does NOT
-          // override a monthly session (user navigated here from monthly context).
+          // Priority: URL param (shareable) > sessionStorage (list page nav) > property field
+          const urlParam = new URLSearchParams(location.search).get('rentalType');
           const storedRentalType = sessionStorage.getItem('ovika_rental_type') || 'short';
           const propertyRentalType = transformed.rental_type;
-          const isMonthlyProperty = storedRentalType === 'long' || propertyRentalType === 'long';
+          const isMonthlyProperty = urlParam === 'long' || storedRentalType === 'long' || propertyRentalType === 'long';
           setPricingMode(isMonthlyProperty ? 'monthly' : 'daily');
         } catch (err) {
           console.error("Failed to fetch property", err);

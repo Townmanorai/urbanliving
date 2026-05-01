@@ -179,8 +179,8 @@ const PropertyCard = ({ property, rentalType }) => {
   return (
     <div
       className="plp-hcard"
-      onClick={(e) => { if (!e.target.closest('[data-action]')) { sessionStorage.setItem('ovika_rental_type', isMonthly ? 'long' : 'short'); navClick(e, `/property/${property.id}`, navigate); } }}
-      onAuxClick={(e) => { if (!e.target.closest('[data-action]')) { sessionStorage.setItem('ovika_rental_type', isMonthly ? 'long' : 'short'); auxNavClick(e, `/property/${property.id}`); } }}
+      onClick={(e) => { if (!e.target.closest('[data-action]')) { const rt = isMonthly ? 'long' : 'short'; sessionStorage.setItem('ovika_rental_type', rt); navClick(e, `/property/${property.id}?rentalType=${rt}`, navigate); } }}
+      onAuxClick={(e) => { if (!e.target.closest('[data-action]')) { const rt = isMonthly ? 'long' : 'short'; sessionStorage.setItem('ovika_rental_type', rt); auxNavClick(e, `/property/${property.id}?rentalType=${rt}`); } }}
     >
       {/* ── LEFT: Image block ── */}
       <div className="plp-hcard-imgblock">
@@ -295,14 +295,14 @@ const PropertyCard = ({ property, rentalType }) => {
             <button
               className="plp-hcard-btn plp-hcard-btn--outline"
               data-action="view"
-              onClick={e => { e.stopPropagation(); navClick(e, `/property/${property.id}`, navigate); }}
-              onAuxClick={e => { e.stopPropagation(); auxNavClick(e, `/property/${property.id}`); }}
+              onClick={e => { e.stopPropagation(); const rt = isMonthly ? 'long' : 'short'; sessionStorage.setItem('ovika_rental_type', rt); navClick(e, `/property/${property.id}?rentalType=${rt}`, navigate); }}
+              onAuxClick={e => { e.stopPropagation(); const rt = isMonthly ? 'long' : 'short'; auxNavClick(e, `/property/${property.id}?rentalType=${rt}`); }}
             >View Details</button>
             <button
               className="plp-hcard-btn plp-hcard-btn--fill"
               data-action="book"
-              onClick={e => { e.stopPropagation(); sessionStorage.setItem('ovika_rental_type', isMonthly ? 'long' : 'short'); navClick(e, `/property/${property.id}`, navigate); }}
-              onAuxClick={e => { e.stopPropagation(); auxNavClick(e, `/property/${property.id}`); }}
+              onClick={e => { e.stopPropagation(); const rt = isMonthly ? 'long' : 'short'; sessionStorage.setItem('ovika_rental_type', rt); navClick(e, `/property/${property.id}?rentalType=${rt}`, navigate); }}
+              onAuxClick={e => { e.stopPropagation(); const rt = isMonthly ? 'long' : 'short'; auxNavClick(e, `/property/${property.id}?rentalType=${rt}`); }}
             >Book Now</button>
           </div>
         </div>
