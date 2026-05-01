@@ -1,12 +1,313 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { navClick, auxNavClick } from '../../utils/navClick';
-import { FiSearch, FiMapPin, FiHeart, FiPlus, FiStar, FiX, FiMoon, FiCalendar, FiTag, FiHome, FiTrendingUp, FiAward, FiClock } from 'react-icons/fi';
+import { FiSearch, FiMapPin, FiHeart, FiPlus, FiStar, FiX, FiMoon, FiCalendar, FiTag, FiHome, FiTrendingUp, FiAward, FiClock, FiMap, FiList } from 'react-icons/fi';
 import { BiBed, BiBath, BiArea } from 'react-icons/bi';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix leaflet default icon broken in webpack/vite builds
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
 
 const API_BASE_URL = 'https://www.townmanor.ai/api/ovika';
+
+const CITIES = [
+  'Delhi','Noida','Greater Noida','Ghaziabad','Gurugram','Faridabad',
+  'Agra','Lucknow','Kanpur','Prayagraj','Varanasi','Mathura','Vrindavan',
+  'Meerut','Bareilly','Aligarh','Moradabad','Hapur','Bulandshahr',
+  'Haridwar','Rishikesh','Dehradun','Sonipat','Panipat','Ambala',
+  'Karnal','Rohtak','Mumbai','Bengaluru','Hyderabad',
+];
+const PG_KEYWORDS = ['pg', 'paying guest', 'hostel', 'boys pg', 'girls pg', 'co-living', 'coliving'];
+
+function fmtDate(v) {
+  if (!v) return null;
+  return new Date(v).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+}
+
+// Module-level geocode cache (survives re-renders, cleared on page refresh)
+const _geocodeCache = {};
+
+async function nominatimGeocode(query) {
+  if (_geocodeCache[query]) return _geocodeCache[query];
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`,
+      { headers: { 'Accept-Language': 'en' } }
+    );
+    const data = await res.json();
+    if (data?.[0]) {
+      const result = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+      _geocodeCache[query] = result;
+      return result;
+    }
+  } catch {}
+  _geocodeCache[query] = null;
+  return null;
+}
+
+// Noida sector → approx center coordinates
+const NOIDA_SECTORS = {
+  1:[28.5687,77.3248],2:[28.5699,77.3287],3:[28.5681,77.3327],4:[28.5712,77.3374],
+  5:[28.5744,77.3400],6:[28.5760,77.3435],7:[28.5783,77.3468],8:[28.5800,77.3503],
+  9:[28.5820,77.3540],10:[28.5839,77.3576],11:[28.5855,77.3610],12:[28.5872,77.3647],
+  14:[28.5718,77.3520],15:[28.5731,77.3560],16:[28.5747,77.3596],17:[28.5765,77.3633],
+  18:[28.5782,77.3670],19:[28.5800,77.3707],20:[28.5816,77.3745],21:[28.5833,77.3782],
+  22:[28.5850,77.3818],23:[28.5866,77.3854],24:[28.5882,77.3890],25:[28.5745,77.3185],
+  26:[28.5760,77.3218],27:[28.5776,77.3251],28:[28.5640,77.3180],29:[28.5654,77.3215],
+  30:[28.5668,77.3250],31:[28.5682,77.3286],32:[28.5695,77.3322],33:[28.5709,77.3358],
+  34:[28.5722,77.3394],35:[28.5736,77.3430],36:[28.5640,77.3450],37:[28.5650,77.3482],
+  38:[28.5660,77.3515],39:[28.5670,77.3547],40:[28.5680,77.3580],41:[28.5690,77.3612],
+  42:[28.5700,77.3645],43:[28.5710,77.3678],44:[28.5720,77.3710],45:[28.5730,77.3743],
+  46:[28.5600,77.3480],47:[28.5610,77.3512],48:[28.5620,77.3545],49:[28.5630,77.3577],
+  50:[28.5640,77.3610],51:[28.5550,77.3440],52:[28.5558,77.3472],53:[28.5566,77.3504],
+  54:[28.5574,77.3537],55:[28.5582,77.3569],56:[28.5590,77.3601],57:[28.5598,77.3634],
+  58:[28.5606,77.3666],59:[28.5614,77.3698],60:[28.5622,77.3731],61:[28.5500,77.3490],
+  62:[28.5507,77.3523],63:[28.5514,77.3556],64:[28.5521,77.3588],65:[28.5528,77.3621],
+  66:[28.5535,77.3654],67:[28.5542,77.3686],68:[28.5549,77.3719],69:[28.5556,77.3752],
+  70:[28.5563,77.3784],71:[28.5450,77.3540],72:[28.5456,77.3573],73:[28.5462,77.3605],
+  74:[28.5468,77.3638],75:[28.5474,77.3670],76:[28.5480,77.3703],77:[28.5486,77.3735],
+  78:[28.5492,77.3768],79:[28.5498,77.3800],80:[28.5504,77.3833],81:[28.5400,77.3590],
+  82:[28.5405,77.3623],83:[28.5410,77.3655],84:[28.5415,77.3688],85:[28.5420,77.3720],
+  86:[28.5425,77.3753],87:[28.5430,77.3785],88:[28.5435,77.3818],89:[28.5440,77.3850],
+  90:[28.5445,77.3883],91:[28.5350,77.3630],92:[28.5354,77.3663],93:[28.5358,77.3695],
+  94:[28.5362,77.3728],95:[28.5366,77.3760],96:[28.5370,77.3793],97:[28.5374,77.3825],
+  98:[28.5378,77.3858],99:[28.5382,77.3890],100:[28.5386,77.3923],
+  101:[28.5300,77.3660],104:[28.5295,77.4000],105:[28.5230,77.4010],
+  110:[28.5180,77.3920],112:[28.5150,77.3870],113:[28.5140,77.3840],
+  115:[28.5120,77.3800],116:[28.5100,77.3760],117:[28.5090,77.3740],
+  118:[28.5080,77.3720],119:[28.5070,77.3700],120:[28.5060,77.3680],
+  121:[28.5050,77.3660],122:[28.5040,77.3640],123:[28.5030,77.3620],
+  124:[28.5020,77.3600],125:[28.5010,77.3580],126:[28.5000,77.3560],
+  127:[28.4990,77.3540],128:[28.4980,77.3520],129:[28.4970,77.3500],
+  130:[28.4960,77.3480],131:[28.4950,77.3460],132:[28.4940,77.3440],
+  133:[28.4930,77.3420],134:[28.4920,77.3400],135:[28.4910,77.3380],
+  136:[28.4900,77.3360],137:[28.4890,77.3340],
+};
+
+const CITY_COORDS = {
+  'noida': [28.5355, 77.3910],
+  'greater noida': [28.4744, 77.5040],
+  'delhi': [28.6139, 77.2090],
+  'gurugram': [28.4595, 77.0266],
+  'gurgaon': [28.4595, 77.0266],
+  'faridabad': [28.4089, 77.3178],
+  'ghaziabad': [28.6692, 77.4538],
+  'noida extension': [28.6100, 77.4300],
+};
+
+function getApproxCoords(p) {
+  const addr = (p.address || '').toLowerCase();
+  const city = (p.city || '').toLowerCase();
+
+  // Try to extract sector number from address
+  const sectorMatch = addr.match(/sector[\s-]*(\d+)/i) || (p.address || '').match(/sector[\s-]*(\d+)/i);
+  if (sectorMatch) {
+    const num = parseInt(sectorMatch[1]);
+    if (NOIDA_SECTORS[num]) {
+      // Add tiny random offset so overlapping pins don't stack exactly
+      return [NOIDA_SECTORS[num][0] + (Math.random() - 0.5) * 0.002, NOIDA_SECTORS[num][1] + (Math.random() - 0.5) * 0.002];
+    }
+  }
+
+  // Fall back to city center
+  for (const [key, coords] of Object.entries(CITY_COORDS)) {
+    if (city.includes(key) || addr.includes(key)) {
+      return [coords[0] + (Math.random() - 0.5) * 0.008, coords[1] + (Math.random() - 0.5) * 0.008];
+    }
+  }
+  return null;
+}
+
+function formatMapPrice(price) {
+  if (!price) return '';
+  if (price >= 100000) return `${(price / 100000).toFixed(1)}L`;
+  if (price >= 1000) return `${Math.round(price / 1000)}k`;
+  return String(price);
+}
+
+function createPriceIcon(price, isMonthly, isPG, isApprox) {
+  const accent = isPG ? '#7C3AED' : isMonthly ? '#C98B3E' : '#0f172a';
+  const label = price ? `₹${formatMapPrice(price)}` : '•';
+  const opacity = isApprox ? '0.85' : '1';
+  const tip = `<div style="position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid ${accent};"></div>`;
+  return L.divIcon({
+    html: `<div style="position:relative;display:inline-block;opacity:${opacity};">
+      <div style="
+        background:#fff;
+        color:${accent};
+        padding:5px 10px;
+        border-radius:20px;
+        font-size:12px;
+        font-weight:800;
+        white-space:nowrap;
+        box-shadow:0 3px 12px rgba(0,0,0,0.45), 0 1px 3px rgba(0,0,0,0.3);
+        border:2.5px solid ${accent};
+        line-height:1.2;
+        letter-spacing:-0.2px;
+      ">${label}</div>
+      ${tip}
+    </div>`,
+    className: '',
+    iconAnchor: [28, 36],
+  });
+}
+
+function MiniCalPLP({ value, onChange, onClose, title, minDate }) {
+  const today = new Date();
+  const initDate = value ? new Date(value) : today;
+  const [viewYear, setViewYear] = useState(initDate.getFullYear());
+  const [viewMonth, setViewMonth] = useState(initDate.getMonth());
+  const DAYS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < firstDay; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+  const sel = value ? new Date(value) : null;
+  const isSelected = d => sel && d === sel.getDate() && viewMonth === sel.getMonth() && viewYear === sel.getFullYear();
+  const isPast = d => {
+    if (!d || !minDate) return false;
+    const cell = new Date(viewYear, viewMonth, d);
+    const min = new Date(minDate); min.setHours(0,0,0,0);
+    return cell < min;
+  };
+  const handleDay = d => {
+    if (!d || isPast(d)) return;
+    onChange(`${viewYear}-${String(viewMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`);
+  };
+  return (
+    <div onMouseDown={e => e.stopPropagation()} style={{ background:'#fff', border:'1.5px solid #e8d9c0', borderRadius:12, padding:14, boxShadow:'0 8px 28px rgba(0,0,0,0.14)', minWidth:240, zIndex:1000 }}>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
+        <span style={{ fontSize:13, fontWeight:700, color:'#1a1a1a' }}>{title}</span>
+        <button onMouseDown={onClose} style={{ background:'none', border:'none', cursor:'pointer', color:'#999', fontSize:16, lineHeight:1 }}>×</button>
+      </div>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
+        <button onMouseDown={() => viewMonth === 0 ? (setViewMonth(11), setViewYear(y=>y-1)) : setViewMonth(m=>m-1)} style={{ background:'none', border:'1px solid #e8d9c0', borderRadius:6, padding:'2px 8px', cursor:'pointer', fontSize:14 }}>‹</button>
+        <span style={{ fontSize:13, fontWeight:600, color:'#1a1a1a' }}>{MONTHS[viewMonth]} {viewYear}</span>
+        <button onMouseDown={() => viewMonth === 11 ? (setViewMonth(0), setViewYear(y=>y+1)) : setViewMonth(m=>m+1)} style={{ background:'none', border:'1px solid #e8d9c0', borderRadius:6, padding:'2px 8px', cursor:'pointer', fontSize:14 }}>›</button>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:2 }}>
+        {DAYS.map(d => <div key={d} style={{ textAlign:'center', fontSize:10, fontWeight:600, color:'#b89a70', padding:'2px 0' }}>{d}</div>)}
+        {cells.map((d,i) => (
+          <div key={i} onMouseDown={() => handleDay(d)} style={{
+            textAlign:'center', fontSize:12, padding:'5px 2px', borderRadius:6, cursor: d && !isPast(d) ? 'pointer' : 'default',
+            background: isSelected(d) ? '#C98B3E' : 'transparent',
+            color: isSelected(d) ? '#fff' : isPast(d) ? '#ddd' : d ? '#1a1a1a' : 'transparent',
+            fontWeight: isSelected(d) ? 700 : 400,
+          }}>{d||''}</div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MapBoundsFitter({ coords }) {
+  const map = useMap();
+  useEffect(() => {
+    if (coords.length === 0) return;
+    if (coords.length === 1) { map.setView([coords[0].lat, coords[0].lng], 14); return; }
+    const bounds = L.latLngBounds(coords.map(c => [c.lat, c.lng]));
+    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+  }, [coords, map]);
+  return null;
+}
+
+function PropertyMapView({ properties, isMonthly, onCardClick }) {
+  const validProps = properties.filter(p => p._mapLat && p._mapLng);
+  const coords = validProps.map(p => ({ lat: p._mapLat, lng: p._mapLng }));
+  const center = coords.length > 0 ? [coords[0].lat, coords[0].lng] : [28.5355, 77.3910];
+
+  return (
+    <div style={{ height: '100%', width: '100%', borderRadius: 12, overflow: 'hidden', border: '1px solid #e8d9c0' }}>
+      <MapContainer center={center} zoom={13} style={{ height: '100%', width: '100%' }} zoomControl={true}>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <MapBoundsFitter coords={coords} />
+        {validProps.map(p => {
+          const isPG = p.property_category === 'PG';
+          const price = p._mapPrice || 0;
+          const photos = Array.isArray(p.photos) ? p.photos : [];
+          const coverPhoto = photos[Number(p.cover_photo_index) || 0] || photos[0];
+          const imgSrc = coverPhoto
+            ? (coverPhoto.startsWith('http') ? coverPhoto : `${API_BASE_URL.replace('/api/ovika', '')}${coverPhoto}`)
+            : null;
+
+          return (
+            <Marker
+              key={p.id}
+              position={[p._mapLat, p._mapLng]}
+              icon={createPriceIcon(price, isMonthly, isPG, p._coordsApprox)}
+            >
+              <Popup minWidth={220} maxWidth={260} className="plp-map-popup">
+                <div style={{ fontFamily: "'Inter', sans-serif", padding: 0 }}>
+                  {imgSrc && (
+                    <img
+                      src={imgSrc}
+                      alt={p.property_name}
+                      onError={e => { e.target.style.display = 'none'; }}
+                      style={{ width: '100%', height: 110, objectFit: 'cover', borderRadius: '6px 6px 0 0', display: 'block' }}
+                    />
+                  )}
+                  <div style={{ padding: '10px 12px 12px' }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a', marginBottom: 4, lineHeight: 1.3 }}>
+                      {p.property_name}
+                    </div>
+                    <div style={{ fontSize: 11.5, color: '#666', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <FiMapPin style={{ fontSize: 11, flexShrink: 0 }} />
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {[p.address, p.city].filter(Boolean).join(', ')}
+                      </span>
+                    </div>
+                    {price > 0 && (
+                      <div style={{ fontSize: 14, fontWeight: 700, color: '#C98B3E', marginBottom: 10 }}>
+                        ₹{price.toLocaleString('en-IN')}
+                        <span style={{ fontSize: 11, fontWeight: 400, color: '#888' }}>/{isMonthly ? 'month' : 'night'}</span>
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      {isPG && (
+                        <span style={{ background: '#7C3AED22', color: '#7C3AED', fontSize: 10.5, fontWeight: 700, padding: '2px 8px', borderRadius: 20 }}>PG</span>
+                      )}
+                      {isMonthly && !isPG && (
+                        <span style={{ background: '#C98B3E22', color: '#C98B3E', fontSize: 10.5, fontWeight: 700, padding: '2px 8px', borderRadius: 20 }}>Monthly</span>
+                      )}
+                      {!isMonthly && (
+                        <span style={{ background: '#11182722', color: '#374151', fontSize: 10.5, fontWeight: 700, padding: '2px 8px', borderRadius: 20 }}>Nightly</span>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => onCardClick(p)}
+                      style={{
+                        width: '100%', marginTop: 10, padding: '7px 0',
+                        background: '#C98B3E', color: '#fff', border: 'none',
+                        borderRadius: 8, fontSize: 12.5, fontWeight: 600,
+                        cursor: 'pointer', fontFamily: 'inherit',
+                      }}
+                    >
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
+      </MapContainer>
+    </div>
+  );
+}
 
 const CATEGORIES = [
   { id: 'PG', title: 'PG', minPrice: 0, maxPrice: 1499 },
@@ -598,6 +899,14 @@ const PropertyListPage = () => {
   const [listPopupOpen, setListPopupOpen] = useState(false);
   const [sortBy, setSortBy] = useState('recommended');
   const [currentPage, setCurrentPage] = useState(1);
+  const [mapView, setMapView] = useState(false);
+  const [geocodedCoords, setGeocodedCoords] = useState({});
+  const geocodeQueueRef = useRef(null);
+  const [showCitySug, setShowCitySug] = useState(false);
+  const [showCheckInCal, setShowCheckInCal] = useState(false);
+  const [showCheckOutCal, setShowCheckOutCal] = useState(false);
+  const [showGuestsBox, setShowGuestsBox] = useState(false);
+  const searchBoxRef = useRef(null);
   const ITEMS_PER_PAGE = 12;
   const navigate = useNavigate();
   const location = useLocation();
@@ -665,14 +974,42 @@ const PropertyListPage = () => {
     setAmenitiesFilter(prev => prev.includes(a) ? prev.filter(x => x !== a) : [...prev, a]);
   };
   const resetSidebar = () => {
-    setPriceMin(1000); setPriceMax(50000);
+    setPriceMin(1000); setPriceMax(500000);
     setRoomsFilter(null);
     setPropTypeFilter([]); setAmenitiesFilter([]);
     setFurnishingFilter(null); setTenantFilter(null);
     setFoodFilter(null); setPetsFilter(null); setCoupleFilter(null);
     setUserLat(null); setUserLng(null);
     setSearch('');
-    if (sortBy === 'distance') setSortBy('recommended');
+    setActiveCat(null);
+    setSortBy('recommended');
+    if (!lockedRental) {
+      setRentalType(null);
+      sessionStorage.removeItem('ovika_rental_type');
+    }
+  };
+
+  // Close search dropdowns on outside click
+  useEffect(() => {
+    const onOutside = e => {
+      if (searchBoxRef.current && !searchBoxRef.current.contains(e.target)) {
+        setShowCitySug(false); setShowCheckInCal(false); setShowCheckOutCal(false); setShowGuestsBox(false);
+      }
+    };
+    document.addEventListener('mousedown', onOutside);
+    return () => document.removeEventListener('mousedown', onOutside);
+  }, []);
+
+  const handleSearchSubmit = () => {
+    const term = search.trim().toLowerCase();
+    const isPg = PG_KEYWORDS.some(kw => term.includes(kw));
+    if (isPg && !lockedRental) {
+      setRentalType('long');
+      setActiveCat(CATEGORIES.find(c => c.id === 'PG') || null);
+      sessionStorage.setItem('ovika_rental_type', 'long');
+    }
+    setShowCitySug(false);
+    setCurrentPage(1);
   };
 
   const getMeta = (p) => {
@@ -1148,7 +1485,81 @@ const PropertyListPage = () => {
     if (cout) setCheckOut(cout);
   }, [location.search, properties]);
 
+  // Geocode filtered properties that lack lat/lng when map view is active
+  useEffect(() => {
+    if (!mapView || filtered.length === 0) return;
+
+    // Cancel any in-progress queue
+    if (geocodeQueueRef.current) clearTimeout(geocodeQueueRef.current);
+
+    const needsGeocode = filtered.filter(p => {
+      const meta = (() => { try { return typeof p.meta === 'object' ? p.meta : JSON.parse(p.meta || '{}'); } catch { return {}; } })();
+      const hasCoords = (Number(p.latitude) || Number(meta.latitude)) &&
+                        (Number(p.longitude) || Number(meta.longitude));
+      if (hasCoords) return false;
+      const key = [p.address, p.city, p.state || 'India'].filter(Boolean).join(', ').trim();
+      return key.length > 3 && !(_geocodeCache[key] !== undefined);
+    });
+
+    let i = 0;
+    const runNext = () => {
+      if (i >= needsGeocode.length) return;
+      const p = needsGeocode[i++];
+      const key = [p.address, p.city, p.state || 'India'].filter(Boolean).join(', ').trim();
+      nominatimGeocode(key).then(result => {
+        if (result) {
+          setGeocodedCoords(prev => ({ ...prev, [p.id]: result }));
+        }
+        geocodeQueueRef.current = setTimeout(runNext, 1200);
+      });
+    };
+    geocodeQueueRef.current = setTimeout(runNext, 100);
+
+    return () => { if (geocodeQueueRef.current) clearTimeout(geocodeQueueRef.current); };
+  }, [mapView, filtered]);
+
   const isMonthly = rentalType === 'long';
+
+  // Enrich filtered properties with map coords (exact → geocoded → approx sector/city) + resolved price
+  const filteredWithCoords = useMemo(() => filtered.map(p => {
+    const meta = (() => { try { return typeof p.meta === 'object' ? p.meta : JSON.parse(p.meta || '{}'); } catch { return {}; } })();
+
+    // Resolve display price — same logic as PropertyCard.getDisplayPrice()
+    let mapPrice = 0;
+    const isPGp = p.property_category === 'PG';
+    if (isPGp) {
+      if (isMonthly) {
+        const beds = (() => { try { return typeof p.bedrooms === 'string' ? JSON.parse(p.bedrooms) : (p.bedrooms || []); } catch { return []; } })();
+        const prices = beds.map(b => Number(b.price) || Number(b.monthly_price) || 0).filter(v => v > 0);
+        const minRoom = prices.length > 0 ? Math.min(...prices) : 0;
+        const monthly = minRoom || Number(meta.perMonthPrice) || Number(meta.monthlyPrice) || Number(p.monthly_price) || Number(p.base_rate) || 0;
+        mapPrice = monthly > 1500 ? monthly : 0;
+      } else {
+        mapPrice = Number(p.base_rate) || Number(p.price) || Number(meta.perNightPrice) || 0;
+      }
+    } else if (isMonthly) {
+      const monthly = Number(meta.perMonthPrice) || Number(meta.monthlyPrice) || Number(p.monthly_price) || Number(p.price) || 0;
+      mapPrice = monthly > 1500 ? monthly : 0;
+    } else {
+      mapPrice = Number(p.price) || 0;
+    }
+
+    // Resolve coordinates
+    let lat = Number(p.latitude) || Number(meta.latitude) || geocodedCoords[p.id]?.lat || null;
+    let lng = Number(p.longitude) || Number(meta.longitude) || geocodedCoords[p.id]?.lng || null;
+    let coordsApprox = false;
+    if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
+      const approx = getApproxCoords(p);
+      if (approx) { lat = approx[0]; lng = approx[1]; coordsApprox = true; }
+    }
+    return {
+      ...p,
+      _mapPrice: mapPrice,
+      _mapLat: lat && !isNaN(lat) ? lat : null,
+      _mapLng: lng && !isNaN(lng) ? lng : null,
+      _coordsApprox: coordsApprox,
+    };
+  }), [filtered, geocodedCoords, isMonthly]); // eslint-disable-line
 
   if (loading) return (
     <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -1227,8 +1638,9 @@ const PropertyListPage = () => {
           min-width: 0;
         }
         .plp-topbar-search {
-          flex: 0 1 280px;
-          min-width: 120px;
+          flex: 1 1 380px;
+          min-width: 200px;
+          max-width: 620px;
         }
         .plp-topbar-right {
           display: flex;
@@ -1474,10 +1886,15 @@ const PropertyListPage = () => {
           to   { opacity: 1; }
         }
         .plp-mobile-filter-btn { display: none; }
+        /* Map popup styling */
+        .plp-map-popup .leaflet-popup-content-wrapper { padding: 0; border-radius: 10px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+        .plp-map-popup .leaflet-popup-content { margin: 0; width: 240px !important; }
+        .plp-map-popup .leaflet-popup-tip-container { display: none; }
         /* ── Responsive ── */
         @media (max-width: 860px) {
           .plp-sidebar { display: none; }
           .plp-mobile-filter-btn { display: inline-flex !important; }
+          .plp-mapview-btn { display: none !important; }
           .plp-right { padding-left: 0; }
           .plp-body { padding: 0 10px; }
           .plp-grid { grid-template-columns: 1fr; gap: 12px; }
@@ -1801,7 +2218,7 @@ const PropertyListPage = () => {
         </div>
 
         {/* ── RIGHT CONTENT ── */}
-        <div className="plp-right">
+        <div className="plp-right" style={mapView ? { overflow: 'hidden', display: 'flex', flexDirection: 'column' } : {}}>
           {/* ── Top bar with integrated search ── */}
           <div className="plp-topbar">
 
@@ -1843,36 +2260,104 @@ const PropertyListPage = () => {
               )}
             </div>
 
-            {/* Search input */}
-            <div className="plp-topbar-search">
-              <div
-                style={{
-                  background: '#faf7f3', border: '1.5px solid #e8d9c0',
-                  borderRadius: 10, display: 'flex', alignItems: 'center',
-                  padding: '7px 12px', gap: 7, transition: 'border-color 0.2s ease',
-                }}
-                onFocus={e => e.currentTarget.style.borderColor = '#C98B3E'}
-                onBlur={e => e.currentTarget.style.borderColor = '#e8d9c0'}
-              >
-                <FiSearch style={{ fontSize: 14, color: '#b89a70', flexShrink: 0 }} />
-                <input
-                  type="text"
-                  placeholder="Search city, area, property..."
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  style={{
-                    flex: 1, border: 'none', outline: 'none',
-                    fontSize: 13, color: '#1a1a1a', background: 'transparent',
-                    fontFamily: 'inherit', minWidth: 0,
-                  }}
-                />
-                {search && (
-                  <button onClick={() => setSearch('')} style={{
-                    width: 18, height: 18, borderRadius: '50%', border: 'none',
-                    background: '#e8d9c0', color: '#8B5E2A', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                  }}><FiX style={{ fontSize: 9 }} /></button>
+            {/* ── Enhanced Search Bar ── */}
+            <div className="plp-topbar-search" ref={searchBoxRef} style={{ position: 'relative' }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 0,
+                background: '#fff', border: '1.5px solid #e8d9c0',
+                borderRadius: 11, overflow: 'visible',
+                boxShadow: '0 1px 4px rgba(201,139,62,0.08)',
+              }}>
+                {/* City / keyword search */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px', flex: 1, minWidth: 0, borderRight: '1px solid #e8d9c0', position: 'relative' }}>
+                  <FiSearch style={{ fontSize: 13, color: '#b89a70', flexShrink: 0 }} />
+                  <input
+                    type="text"
+                    placeholder="City, area, property..."
+                    value={search}
+                    onChange={e => { setSearch(e.target.value); setShowCitySug(true); setCurrentPage(1); }}
+                    onFocus={() => setShowCitySug(true)}
+                    onKeyDown={e => { if (e.key === 'Enter') handleSearchSubmit(); }}
+                    style={{ flex: 1, border: 'none', outline: 'none', fontSize: 13, color: '#1a1a1a', background: 'transparent', fontFamily: 'inherit', minWidth: 0 }}
+                  />
+                  {search && <button onClick={() => { setSearch(''); setShowCitySug(false); }} style={{ width: 16, height: 16, borderRadius: '50%', border: 'none', background: '#e8d9c0', color: '#8B5E2A', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><FiX style={{ fontSize: 8 }} /></button>}
+                  {/* City suggestions dropdown */}
+                  {showCitySug && (
+                    <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 6, background: '#fff', border: '1.5px solid #e8d9c0', borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', zIndex: 999, maxHeight: 220, overflowY: 'auto' }}>
+                      {(search.trim()
+                        ? CITIES.filter(c => c.toLowerCase().includes(search.toLowerCase()))
+                        : CITIES
+                      ).map(city => (
+                        <div key={city} onMouseDown={() => { setSearch(city); setShowCitySug(false); setCurrentPage(1); }}
+                          style={{ padding: '8px 14px', fontSize: 13, color: '#1a1a1a', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}
+                          onMouseEnter={e => e.currentTarget.style.background = '#fdf5ec'}
+                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                        >
+                          <FiMapPin style={{ fontSize: 12, color: '#C98B3E' }} /> {city}
+                        </div>
+                      ))}
+                      {search.trim() && CITIES.filter(c => c.toLowerCase().includes(search.toLowerCase())).length === 0 && (
+                        <div style={{ padding: '10px 14px', fontSize: 12, color: '#999' }}>No matching city — searching "{search}"</div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Check-in (nightly only) */}
+                {!isMonthly && (
+                  <div
+                    onMouseDown={() => { setShowCheckInCal(v => !v); setShowCheckOutCal(false); setShowCitySug(false); setShowGuestsBox(false); }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 10px', cursor: 'pointer', borderRight: '1px solid #e8d9c0', flexShrink: 0, position: 'relative' }}
+                  >
+                    <FiCalendar style={{ fontSize: 12, color: '#b89a70' }} />
+                    <span style={{ fontSize: 12, color: checkIn ? '#1a1a1a' : '#b89a70', whiteSpace: 'nowrap' }}>{checkIn ? fmtDate(checkIn) : 'Check-in'}</span>
+                    {showCheckInCal && (
+                      <div style={{ position: 'absolute', top: '110%', left: 0, zIndex: 999 }}>
+                        <MiniCalPLP value={checkIn} onChange={v => { setCheckIn(v); setShowCheckInCal(false); if (!checkOut) setShowCheckOutCal(true); }} onClose={() => setShowCheckInCal(false)} title="Check-in" minDate={new Date().toISOString().split('T')[0]} />
+                      </div>
+                    )}
+                  </div>
                 )}
+
+                {/* Check-out (nightly only) */}
+                {!isMonthly && (
+                  <div
+                    onMouseDown={() => { setShowCheckOutCal(v => !v); setShowCheckInCal(false); setShowCitySug(false); setShowGuestsBox(false); }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 10px', cursor: 'pointer', borderRight: '1px solid #e8d9c0', flexShrink: 0, position: 'relative' }}
+                  >
+                    <FiCalendar style={{ fontSize: 12, color: '#b89a70' }} />
+                    <span style={{ fontSize: 12, color: checkOut ? '#1a1a1a' : '#b89a70', whiteSpace: 'nowrap' }}>{checkOut ? fmtDate(checkOut) : 'Check-out'}</span>
+                    {showCheckOutCal && (
+                      <div style={{ position: 'absolute', top: '110%', left: 0, zIndex: 999 }}>
+                        <MiniCalPLP value={checkOut} onChange={v => { setCheckOut(v); setShowCheckOutCal(false); }} onClose={() => setShowCheckOutCal(false)} title="Check-out" minDate={checkIn || new Date().toISOString().split('T')[0]} />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Guests */}
+                <div
+                  onMouseDown={() => { setShowGuestsBox(v => !v); setShowCitySug(false); setShowCheckInCal(false); setShowCheckOutCal(false); }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 10px', cursor: 'pointer', flexShrink: 0, position: 'relative', borderRight: '1px solid #e8d9c0' }}
+                >
+                  <FiHeart style={{ fontSize: 12, color: '#b89a70' }} />
+                  <span style={{ fontSize: 12, color: '#1a1a1a', whiteSpace: 'nowrap' }}>{guests} Guest{guests !== 1 ? 's' : ''}</span>
+                  {showGuestsBox && (
+                    <div onMouseDown={e => e.stopPropagation()} style={{ position: 'absolute', top: '110%', right: 0, background: '#fff', border: '1.5px solid #e8d9c0', borderRadius: 10, padding: '12px 16px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', zIndex: 999, display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <button onMouseDown={() => setGuests(g => Math.max(1, g - 1))} style={{ width: 28, height: 28, borderRadius: '50%', border: '1.5px solid #e8d9c0', background: '#faf7f3', cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8B5E2A' }}>−</button>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a', minWidth: 20, textAlign: 'center' }}>{guests}</span>
+                      <button onMouseDown={() => setGuests(g => g + 1)} style={{ width: 28, height: 28, borderRadius: '50%', border: '1.5px solid #e8d9c0', background: '#faf7f3', cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8B5E2A' }}>+</button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Search button */}
+                <button
+                  onMouseDown={handleSearchSubmit}
+                  style={{ padding: '6px 14px', background: '#C98B3E', color: '#fff', border: 'none', borderRadius: '0 9px 9px 0', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 5 }}
+                >
+                  <FiSearch style={{ fontSize: 13 }} />
+                </button>
               </div>
             </div>
 
@@ -1894,6 +2379,44 @@ const PropertyListPage = () => {
                   <option value="price_desc">Price ↓</option>
                 </select>
               </div>
+              {/* Map / List toggle — desktop only, theme-matched */}
+              <div
+                className="plp-mapview-btn"
+                style={{
+                  display: 'flex', alignItems: 'center',
+                  background: '#fdf8f2',
+                  borderRadius: 10, padding: 3, gap: 0,
+                  border: '1.5px solid #e0c9a6',
+                  boxShadow: '0 1px 4px rgba(201,139,62,0.12)',
+                }}
+              >
+                {[{ label: 'List', icon: <FiList style={{ fontSize: 13 }} />, val: false },
+                  { label: 'Map',  icon: <FiMap  style={{ fontSize: 13 }} />, val: true  }]
+                  .map(({ label, icon, val }) => {
+                    const active = mapView === val;
+                    return (
+                      <button
+                        key={label}
+                        onClick={() => setMapView(val)}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 5,
+                          padding: '6px 14px',
+                          background: active ? '#C98B3E' : 'transparent',
+                          color: active ? '#fff' : '#8B6A3A',
+                          border: 'none', borderRadius: 7,
+                          fontWeight: active ? 700 : 500,
+                          fontSize: 12.5,
+                          cursor: 'pointer', fontFamily: 'inherit',
+                          boxShadow: active ? '0 2px 8px rgba(201,139,62,0.35)' : 'none',
+                          transition: 'all 0.2s ease', whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {icon} {label}
+                      </button>
+                    );
+                  })
+                }
+              </div>
               <button
                 className="plp-list-btn"
                 onClick={() => setListPopupOpen(true)}
@@ -1913,115 +2436,142 @@ const PropertyListPage = () => {
             </div>
           </div>
 
-        {/* ── Properties Grid (paginated) ── */}
-        {(() => {
-          const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
-          const pageItems = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
-
-          if (filtered.length === 0) return (
-            <div style={{
-              textAlign: 'center', padding: '80px 24px',
-              background: '#fff', borderRadius: 16,
-              border: '2px dashed #e5e7eb',
-            }}>
-              <div style={{
-                width: 72, height: 72, borderRadius: '50%',
-                background: '#f5f5f5', display: 'flex', alignItems: 'center',
-                justifyContent: 'center', margin: '0 auto 18px',
-              }}>
-                <FiSearch style={{ fontSize: 32, color: '#ccc' }} />
-              </div>
-              <h3 style={{ fontSize: 20, fontWeight: 700, color: '#222', margin: '0 0 8px' }}>No Properties Found</h3>
-              <p style={{ color: '#9ca3af', fontSize: 15, margin: '0 0 24px' }}>
-                {search ? `No matches for "${search}"` : activeCat ? `No properties in ${activeCat.title}` : 'No properties available at the moment.'}
-              </p>
-              <button onClick={() => { setSearch(''); setActiveCat(null); resetSidebar(); }} style={{
-                padding: '10px 28px', background: '#C98B3E', color: '#fff',
-                border: 'none', borderRadius: 10, fontWeight: 600,
-                fontSize: 14, cursor: 'pointer', fontFamily: 'inherit',
-                boxShadow: '0 2px 8px rgba(201,139,62,0.3)',
-              }}>
-                Clear All Filters
-              </button>
-            </div>
-          );
-
-          return (
-            <>
-              <div className="plp-grid">
-                {pageItems.map(p => (
-                  <PropertyCard key={p.id} property={p} rentalType={rentalType} />
-                ))}
-              </div>
-
-              {/* ── Pagination ── */}
-              {totalPages > 1 && (
-                <div style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  gap: 6, marginTop: 32, paddingBottom: 8, flexWrap: 'wrap',
-                }}>
-                  {/* Prev */}
-                  <button
-                    onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); document.querySelector('.plp-right')?.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                    disabled={currentPage === 1}
-                    style={{
-                      padding: '8px 16px', borderRadius: 9, fontWeight: 600, fontSize: 13,
-                      border: '1.5px solid #e5e7eb', background: currentPage === 1 ? '#f9fafb' : '#fff',
-                      color: currentPage === 1 ? '#d1d5db' : '#374151',
-                      cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                      fontFamily: 'inherit', transition: 'all 0.18s ease',
-                    }}
-                  >← Prev</button>
-
-                  {/* Page numbers */}
-                  {Array.from({ length: totalPages }, (_, i) => i + 1)
-                    .filter(n => n === 1 || n === totalPages || Math.abs(n - currentPage) <= 2)
-                    .reduce((acc, n, idx, arr) => {
-                      if (idx > 0 && n - arr[idx - 1] > 1) acc.push('...');
-                      acc.push(n);
-                      return acc;
-                    }, [])
-                    .map((item, idx) => item === '...' ? (
-                      <span key={`dot-${idx}`} style={{ color: '#9ca3af', fontSize: 14, padding: '0 4px' }}>•••</span>
-                    ) : (
-                      <button
-                        key={item}
-                        onClick={() => { setCurrentPage(item); document.querySelector('.plp-right')?.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                        style={{
-                          width: 38, height: 38, borderRadius: 9, fontWeight: 700, fontSize: 14,
-                          border: '1.5px solid',
-                          borderColor: currentPage === item ? '#C98B3E' : '#e5e7eb',
-                          background: currentPage === item ? '#C98B3E' : '#fff',
-                          color: currentPage === item ? '#fff' : '#374151',
-                          cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.18s ease',
-                          boxShadow: currentPage === item ? '0 2px 8px rgba(201,139,62,0.3)' : 'none',
-                        }}
-                      >{item}</button>
-                    ))
-                  }
-
-                  {/* Next */}
-                  <button
-                    onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); document.querySelector('.plp-right')?.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                    disabled={currentPage === totalPages}
-                    style={{
-                      padding: '8px 16px', borderRadius: 9, fontWeight: 600, fontSize: 13,
-                      border: '1.5px solid #e5e7eb', background: currentPage === totalPages ? '#f9fafb' : '#fff',
-                      color: currentPage === totalPages ? '#d1d5db' : '#374151',
-                      cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                      fontFamily: 'inherit', transition: 'all 0.18s ease',
-                    }}
-                  >Next →</button>
-
-                  {/* Page info */}
-                  <span style={{ fontSize: 13, color: '#9ca3af', marginLeft: 8 }}>
-                    Page {currentPage} of {totalPages} &nbsp;·&nbsp; {filtered.length} properties
-                  </span>
+        {/* ── Properties Grid + optional Map split ── */}
+        {mapView ? (
+          /* ── MAP VIEW: compact list left + map right ── */
+          <div style={{ display: 'flex', gap: 12, height: 'calc(100% - 70px)', overflow: 'hidden' }}>
+            {/* Compact mini-card list */}
+            <div style={{ flex: '0 0 300px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8, paddingRight: 4, scrollbarWidth: 'thin' }}>
+              {filteredWithCoords.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '60px 16px', background: '#fff', borderRadius: 14, border: '2px dashed #e5e7eb' }}>
+                  <FiSearch style={{ fontSize: 28, color: '#ccc', display: 'block', margin: '0 auto 10px' }} />
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: '#222', margin: '0 0 10px' }}>No Properties Found</h3>
+                  <button onClick={() => { setSearch(''); setActiveCat(null); resetSidebar(); }} style={{ padding: '8px 20px', background: '#C98B3E', color: '#fff', border: 'none', borderRadius: 9, fontWeight: 600, fontSize: 12, cursor: 'pointer', fontFamily: 'inherit' }}>Clear Filters</button>
                 </div>
-              )}
-            </>
-          );
-        })()}
+              ) : filteredWithCoords.map(p => {
+                const price = p._mapPrice || 0;
+                const photos = Array.isArray(p.photos) ? p.photos : [];
+                const cover = photos[Number(p.cover_photo_index) || 0] || photos[0];
+                const imgSrc = cover ? (cover.startsWith('http') ? cover : `https://www.townmanor.ai${cover}`) : null;
+                const rt = isMonthly ? 'long' : 'short';
+                return (
+                  <div
+                    key={p.id}
+                    onClick={() => { sessionStorage.setItem('ovika_rental_type', rt); navigate(`/property/${p.id}?rentalType=${rt}`); }}
+                    style={{ display: 'flex', gap: 10, background: '#fff', borderRadius: 10, border: '1px solid #ede8df', padding: 10, cursor: 'pointer', transition: 'box-shadow 0.18s', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}
+                    onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.12)'}
+                    onMouseLeave={e => e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.05)'}
+                  >
+                    <div style={{ width: 80, height: 80, borderRadius: 8, overflow: 'hidden', flexShrink: 0, background: '#f3f4f6' }}>
+                      {imgSrc && <img src={imgSrc} alt={p.property_name} onError={e => { e.target.style.display = 'none'; }} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 12.5, fontWeight: 700, color: '#1a1a1a', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.3 }}>
+                        {p.property_name}
+                      </div>
+                      <div style={{ fontSize: 11, color: '#888', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <FiMapPin style={{ fontSize: 10, marginRight: 2 }} />{[p.address, p.city].filter(Boolean).join(', ')}
+                      </div>
+                      {price > 0 && (
+                        <div style={{ fontSize: 13, fontWeight: 700, color: '#C98B3E' }}>
+                          ₹{price.toLocaleString('en-IN')}<span style={{ fontSize: 10, fontWeight: 400, color: '#999' }}>/{isMonthly ? 'mo' : 'night'}</span>
+                        </div>
+                      )}
+                      {p._mapLat && p._mapLng && (
+                        <div style={{ fontSize: 10, color: p._coordsApprox ? '#f59e0b' : '#22c55e', marginTop: 3, display: 'flex', alignItems: 'center', gap: 3 }}>
+                          <span style={{ width: 6, height: 6, borderRadius: '50%', background: p._coordsApprox ? '#f59e0b' : '#22c55e', display: 'inline-block' }} />
+                          {p._coordsApprox ? 'Area pin' : 'Exact pin'}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {/* Map panel — fills remaining space */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <PropertyMapView
+                properties={filteredWithCoords}
+                isMonthly={isMonthly}
+                onCardClick={p => {
+                  const rt = isMonthly ? 'long' : 'short';
+                  sessionStorage.setItem('ovika_rental_type', rt);
+                  navigate(`/property/${p.id}?rentalType=${rt}`);
+                }}
+              />
+            </div>
+          </div>
+        ) : (
+          /* ── LIST VIEW (original) ── */
+          (() => {
+            const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+            const pageItems = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+            if (filtered.length === 0) return (
+              <div style={{ textAlign: 'center', padding: '80px 24px', background: '#fff', borderRadius: 16, border: '2px dashed #e5e7eb' }}>
+                <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
+                  <FiSearch style={{ fontSize: 32, color: '#ccc' }} />
+                </div>
+                <h3 style={{ fontSize: 20, fontWeight: 700, color: '#222', margin: '0 0 8px' }}>No Properties Found</h3>
+                <p style={{ color: '#9ca3af', fontSize: 15, margin: '0 0 24px' }}>
+                  {search ? `No matches for "${search}"` : activeCat ? `No properties in ${activeCat.title}` : 'No properties available at the moment.'}
+                </p>
+                <button onClick={() => { setSearch(''); setActiveCat(null); resetSidebar(); }} style={{ padding: '10px 28px', background: '#C98B3E', color: '#fff', border: 'none', borderRadius: 10, fontWeight: 600, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit', boxShadow: '0 2px 8px rgba(201,139,62,0.3)' }}>
+                  Clear All Filters
+                </button>
+              </div>
+            );
+
+            return (
+              <>
+                <div className="plp-grid">
+                  {pageItems.map(p => (
+                    <PropertyCard key={p.id} property={p} rentalType={rentalType} />
+                  ))}
+                </div>
+
+                {/* ── Pagination ── */}
+                {totalPages > 1 && (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 32, paddingBottom: 8, flexWrap: 'wrap' }}>
+                    <button
+                      onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); document.querySelector('.plp-right')?.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                      disabled={currentPage === 1}
+                      style={{ padding: '8px 16px', borderRadius: 9, fontWeight: 600, fontSize: 13, border: '1.5px solid #e5e7eb', background: currentPage === 1 ? '#f9fafb' : '#fff', color: currentPage === 1 ? '#d1d5db' : '#374151', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}
+                    >← Prev</button>
+
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                      .filter(n => n === 1 || n === totalPages || Math.abs(n - currentPage) <= 2)
+                      .reduce((acc, n, idx, arr) => {
+                        if (idx > 0 && n - arr[idx - 1] > 1) acc.push('...');
+                        acc.push(n);
+                        return acc;
+                      }, [])
+                      .map((item, idx) => item === '...' ? (
+                        <span key={`dot-${idx}`} style={{ color: '#9ca3af', fontSize: 14, padding: '0 4px' }}>•••</span>
+                      ) : (
+                        <button
+                          key={item}
+                          onClick={() => { setCurrentPage(item); document.querySelector('.plp-right')?.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                          style={{ width: 38, height: 38, borderRadius: 9, fontWeight: 700, fontSize: 14, border: '1.5px solid', borderColor: currentPage === item ? '#C98B3E' : '#e5e7eb', background: currentPage === item ? '#C98B3E' : '#fff', color: currentPage === item ? '#fff' : '#374151', cursor: 'pointer', fontFamily: 'inherit', boxShadow: currentPage === item ? '0 2px 8px rgba(201,139,62,0.3)' : 'none' }}
+                        >{item}</button>
+                      ))
+                    }
+
+                    <button
+                      onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); document.querySelector('.plp-right')?.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                      disabled={currentPage === totalPages}
+                      style={{ padding: '8px 16px', borderRadius: 9, fontWeight: 600, fontSize: 13, border: '1.5px solid #e5e7eb', background: currentPage === totalPages ? '#f9fafb' : '#fff', color: currentPage === totalPages ? '#d1d5db' : '#374151', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}
+                    >Next →</button>
+
+                    <span style={{ fontSize: 13, color: '#9ca3af', marginLeft: 8 }}>
+                      Page {currentPage} of {totalPages} &nbsp;·&nbsp; {filtered.length} properties
+                    </span>
+                  </div>
+                )}
+              </>
+            );
+          })()
+        )}
         </div>{/* end right content */}
       </div>{/* end plp-body */}
     </div>
