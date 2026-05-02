@@ -5,17 +5,29 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { navClick, auxNavClick } from '../../utils/navClick';
 import { FiSearch, FiMapPin, FiHeart, FiPlus, FiStar, FiX, FiMoon, FiCalendar, FiTag, FiHome, FiTrendingUp, FiAward, FiClock, FiMap, FiList } from 'react-icons/fi';
 import { BiBed, BiBath, BiArea } from 'react-icons/bi';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import { GoogleMap, MarkerF, InfoWindowF } from '@react-google-maps/api';
 
-// Fix leaflet default icon broken in webpack/vite builds
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-});
+const MAPTHRUST_API_KEY = 'AlzaSyMPwhjsTA8V3WjSO0SMbMsxq98NZIMXGAK';
+
+function useMapThrustLoader() {
+  const [isLoaded, setIsLoaded] = useState(() => !!(window.google && window.google.maps));
+  useEffect(() => {
+    if (window.google && window.google.maps) { setIsLoaded(true); return; }
+    if (document.getElementById('mapthrust-script')) {
+      const t = setInterval(() => {
+        if (window.google && window.google.maps) { setIsLoaded(true); clearInterval(t); }
+      }, 150);
+      return () => clearInterval(t);
+    }
+    const s = document.createElement('script');
+    s.id = 'mapthrust-script';
+    s.src = `https://maps.mapthrust.io/maps/api/js?key=${MAPTHRUST_API_KEY}`;
+    s.async = true;
+    s.onload = () => setIsLoaded(true);
+    document.head.appendChild(s);
+  }, []);
+  return { isLoaded };
+}
 
 const API_BASE_URL = 'https://www.townmanor.ai/api/ovika';
 
@@ -134,32 +146,6 @@ function formatMapPrice(price) {
   return String(price);
 }
 
-function createPriceIcon(price, isMonthly, isPG, isApprox) {
-  const accent = isPG ? '#7C3AED' : isMonthly ? '#C98B3E' : '#0f172a';
-  const label = price ? `₹${formatMapPrice(price)}` : '•';
-  const opacity = isApprox ? '0.85' : '1';
-  const tip = `<div style="position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid ${accent};"></div>`;
-  return L.divIcon({
-    html: `<div style="position:relative;display:inline-block;opacity:${opacity};">
-      <div style="
-        background:#fff;
-        color:${accent};
-        padding:5px 10px;
-        border-radius:20px;
-        font-size:12px;
-        font-weight:800;
-        white-space:nowrap;
-        box-shadow:0 3px 12px rgba(0,0,0,0.45), 0 1px 3px rgba(0,0,0,0.3);
-        border:2.5px solid ${accent};
-        line-height:1.2;
-        letter-spacing:-0.2px;
-      ">${label}</div>
-      ${tip}
-    </div>`,
-    className: '',
-    iconAnchor: [28, 36],
-  });
-}
 
 function MiniCalPLP({ value, onChange, onClose, title, minDate }) {
   const today = new Date();
@@ -211,100 +197,130 @@ function MiniCalPLP({ value, onChange, onClose, title, minDate }) {
   );
 }
 
-function MapBoundsFitter({ coords }) {
-  const map = useMap();
-  useEffect(() => {
-    if (coords.length === 0) return;
-    if (coords.length === 1) { map.setView([coords[0].lat, coords[0].lng], 14); return; }
-    const bounds = L.latLngBounds(coords.map(c => [c.lat, c.lng]));
-    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
-  }, [coords, map]);
-  return null;
-}
+const GM_MAP_OPTIONS = {
+  mapTypeControl: false,
+  streetViewControl: false,
+  fullscreenControl: false,
+  zoomControl: true,
+  styles: [{ featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }],
+};
 
 function PropertyMapView({ properties, isMonthly, onCardClick }) {
+  const { isLoaded } = useMapThrustLoader();
+  const [activePin, setActivePin] = useState(null);
+  const mapRef = useRef(null);
+
   const validProps = properties.filter(p => p._mapLat && p._mapLng);
-  const coords = validProps.map(p => ({ lat: p._mapLat, lng: p._mapLng }));
-  const center = coords.length > 0 ? [coords[0].lat, coords[0].lng] : [28.5355, 77.3910];
+  const center = validProps.length > 0
+    ? { lat: validProps[0]._mapLat, lng: validProps[0]._mapLng }
+    : { lat: 28.5355, lng: 77.3910 };
+
+  const fitBounds = useCallback((map, props) => {
+    if (!map || !window.google) return;
+    if (props.length > 1) {
+      const bounds = new window.google.maps.LatLngBounds();
+      props.forEach(p => bounds.extend({ lat: p._mapLat, lng: p._mapLng }));
+      map.fitBounds(bounds, { top: 60, right: 40, bottom: 40, left: 40 });
+    } else if (props.length === 1) {
+      map.setCenter({ lat: props[0]._mapLat, lng: props[0]._mapLng });
+      map.setZoom(14);
+    }
+  }, []);
+
+  const onMapLoad = useCallback((map) => {
+    mapRef.current = map;
+    fitBounds(map, validProps);
+  }, []);
+
+  // Re-fit bounds whenever filtered properties change
+  useEffect(() => {
+    if (mapRef.current && isLoaded) {
+      setActivePin(null);
+      fitBounds(mapRef.current, validProps);
+    }
+  }, [properties, isLoaded]);
+
+  if (!isLoaded) return (
+    <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f0e8', borderRadius: 12 }}>
+      <div style={{ width: 36, height: 36, border: '3px solid #e8d9c0', borderTopColor: '#C98B3E', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+    </div>
+  );
 
   return (
     <div style={{ height: '100%', width: '100%', borderRadius: 12, overflow: 'hidden', border: '1px solid #e8d9c0' }}>
-      <MapContainer center={center} zoom={13} style={{ height: '100%', width: '100%' }} zoomControl={true}>
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <MapBoundsFitter coords={coords} />
+      <GoogleMap
+        mapContainerStyle={{ width: '100%', height: '100%' }}
+        center={center}
+        zoom={13}
+        options={GM_MAP_OPTIONS}
+        onLoad={onMapLoad}
+      >
         {validProps.map(p => {
           const isPG = p.property_category === 'PG';
           const price = p._mapPrice || 0;
+          const accent = isPG ? '#7C3AED' : isMonthly ? '#C98B3E' : '#0f172a';
+          const label = price ? `₹${formatMapPrice(price)}` : '•';
+          const svgIcon = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
+            `<svg xmlns="http://www.w3.org/2000/svg" width="90" height="36">` +
+            `<rect x="2" y="2" width="86" height="26" rx="13" fill="white" stroke="${accent}" stroke-width="2.5"/>` +
+            `<text x="45" y="19" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="bold" fill="${accent}">${label}</text>` +
+            `<polygon points="45,32 39,27 51,27" fill="${accent}"/>` +
+            `</svg>`
+          )}`;
+
           const photos = Array.isArray(p.photos) ? p.photos : [];
           const coverPhoto = photos[Number(p.cover_photo_index) || 0] || photos[0];
           const imgSrc = coverPhoto
-            ? (coverPhoto.startsWith('http') ? coverPhoto : `${API_BASE_URL.replace('/api/ovika', '')}${coverPhoto}`)
+            ? (coverPhoto.startsWith('http') ? coverPhoto : `https://www.townmanor.ai${coverPhoto}`)
             : null;
 
           return (
-            <Marker
-              key={p.id}
-              position={[p._mapLat, p._mapLng]}
-              icon={createPriceIcon(price, isMonthly, isPG, p._coordsApprox)}
-            >
-              <Popup minWidth={220} maxWidth={260} className="plp-map-popup">
-                <div style={{ fontFamily: "'Inter', sans-serif", padding: 0 }}>
-                  {imgSrc && (
-                    <img
-                      src={imgSrc}
-                      alt={p.property_name}
-                      onError={e => { e.target.style.display = 'none'; }}
-                      style={{ width: '100%', height: 110, objectFit: 'cover', borderRadius: '6px 6px 0 0', display: 'block' }}
-                    />
-                  )}
-                  <div style={{ padding: '10px 12px 12px' }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a', marginBottom: 4, lineHeight: 1.3 }}>
-                      {p.property_name}
-                    </div>
-                    <div style={{ fontSize: 11.5, color: '#666', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <FiMapPin style={{ fontSize: 11, flexShrink: 0 }} />
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {[p.address, p.city].filter(Boolean).join(', ')}
-                      </span>
-                    </div>
-                    {price > 0 && (
-                      <div style={{ fontSize: 14, fontWeight: 700, color: '#C98B3E', marginBottom: 10 }}>
-                        ₹{price.toLocaleString('en-IN')}
-                        <span style={{ fontSize: 11, fontWeight: 400, color: '#888' }}>/{isMonthly ? 'month' : 'night'}</span>
-                      </div>
+            <React.Fragment key={p.id}>
+              <MarkerF
+                position={{ lat: p._mapLat, lng: p._mapLng }}
+                icon={{ url: svgIcon, scaledSize: new window.google.maps.Size(90, 36), anchor: new window.google.maps.Point(45, 36) }}
+                onClick={() => setActivePin(activePin === p.id ? null : p.id)}
+              />
+              {activePin === p.id && (
+                <InfoWindowF
+                  position={{ lat: p._mapLat, lng: p._mapLng }}
+                  onCloseClick={() => setActivePin(null)}
+                  options={{ pixelOffset: new window.google.maps.Size(0, -38) }}
+                >
+                  <div style={{ fontFamily: "'Inter', sans-serif", width: 230, padding: 0 }}>
+                    {imgSrc && (
+                      <img src={imgSrc} alt={p.property_name} onError={e => { e.target.style.display = 'none'; }}
+                        style={{ width: '100%', height: 110, objectFit: 'cover', borderRadius: '6px 6px 0 0', display: 'block' }} />
                     )}
-                    <div style={{ display: 'flex', gap: 8 }}>
-                      {isPG && (
-                        <span style={{ background: '#7C3AED22', color: '#7C3AED', fontSize: 10.5, fontWeight: 700, padding: '2px 8px', borderRadius: 20 }}>PG</span>
+                    <div style={{ padding: '10px 12px 12px' }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a', marginBottom: 3, lineHeight: 1.3 }}>{p.property_name}</div>
+                      <div style={{ fontSize: 11, color: '#888', marginBottom: 7, display: 'flex', alignItems: 'center', gap: 3 }}>
+                        <FiMapPin style={{ fontSize: 10, flexShrink: 0 }} />
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {[p.address, p.city].filter(Boolean).join(', ')}
+                        </span>
+                      </div>
+                      {price > 0 && (
+                        <div style={{ fontSize: 14, fontWeight: 700, color: accent, marginBottom: 8 }}>
+                          ₹{price.toLocaleString('en-IN')}<span style={{ fontSize: 11, fontWeight: 400, color: '#888' }}>/{isMonthly ? 'month' : 'night'}</span>
+                        </div>
                       )}
-                      {isMonthly && !isPG && (
-                        <span style={{ background: '#C98B3E22', color: '#C98B3E', fontSize: 10.5, fontWeight: 700, padding: '2px 8px', borderRadius: 20 }}>Monthly</span>
-                      )}
-                      {!isMonthly && (
-                        <span style={{ background: '#11182722', color: '#374151', fontSize: 10.5, fontWeight: 700, padding: '2px 8px', borderRadius: 20 }}>Nightly</span>
-                      )}
+                      <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+                        {isPG && <span style={{ background: '#7C3AED22', color: '#7C3AED', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20 }}>PG</span>}
+                        {isMonthly && !isPG && <span style={{ background: '#C98B3E22', color: '#C98B3E', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20 }}>Monthly</span>}
+                        {!isMonthly && <span style={{ background: '#11182722', color: '#374151', fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 20 }}>Nightly</span>}
+                      </div>
+                      <button onClick={() => onCardClick(p)} style={{ width: '100%', padding: '7px 0', background: '#C98B3E', color: '#fff', border: 'none', borderRadius: 8, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                        View Details
+                      </button>
                     </div>
-                    <button
-                      onClick={() => onCardClick(p)}
-                      style={{
-                        width: '100%', marginTop: 10, padding: '7px 0',
-                        background: '#C98B3E', color: '#fff', border: 'none',
-                        borderRadius: 8, fontSize: 12.5, fontWeight: 600,
-                        cursor: 'pointer', fontFamily: 'inherit',
-                      }}
-                    >
-                      View Details
-                    </button>
                   </div>
-                </div>
-              </Popup>
-            </Marker>
+                </InfoWindowF>
+              )}
+            </React.Fragment>
           );
         })}
-      </MapContainer>
+      </GoogleMap>
     </div>
   );
 }
