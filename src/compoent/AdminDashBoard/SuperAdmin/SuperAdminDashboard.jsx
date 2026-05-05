@@ -26,7 +26,8 @@ const Icons = {
   Refunds: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"></path><path d="M18 12c0-1.1.9-2 2-2H4"></path><path d="M16 16c-2.2 0-4-1.8-4-4s1.8-4 4-4 4 1.8 4 4-1.8 4-4 4z"></path></svg>,
   Settings: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>,
   Leads: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></svg>,
-  MetaLeads: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+  MetaLeads: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>,
+  Reviews: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
 };
 
 // Register Chart.js components
@@ -68,7 +69,7 @@ export default function SuperAdminDashboard() {
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [loginError, setLoginError] = useState('');
 
-  const [view, setView] = useState('dashboard'); // 'dashboard', 'properties', 'users', 'bookings', 'finance', 'settings', 'leads', 'meta-leads'
+  const [view, setView] = useState('dashboard'); // 'dashboard', 'properties', 'users', 'bookings', 'finance', 'settings', 'leads', 'meta-leads', 'reviews'
   const [properties, setProperties] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [usersList, setUsersList] = useState([]); // Real users from API
@@ -145,6 +146,15 @@ export default function SuperAdminDashboard() {
   const [metaLeadsStats, setMetaLeadsStats] = useState({ total: 0, new: 0, contacted: 0, converted: 0 });
   const META_LEADS_LIMIT = 20;
   const META_LEADS_API = "https://townmanor.ai/api/meta-leads";
+
+  // Reviews State
+  const [reviewsList, setReviewsList] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [reviewSearch, setReviewSearch] = useState('');
+  const [reviewStatusFilter, setReviewStatusFilter] = useState('ALL');
+  const [reviewPage, setReviewPage] = useState(1);
+  const REVIEWS_API = "https://townmanor.ai/api/feedback";
+  const REVIEWS_PER_PAGE = 10;
 
   // --- Fetch Data ---
   const fetchAllData = async () => {
@@ -276,6 +286,38 @@ export default function SuperAdminDashboard() {
         fetchMetaLeadsStats();
     }, 30000);
     return () => clearInterval(interval);
+  }, [view]);
+
+  const fetchReviews = async () => {
+    setReviewsLoading(true);
+    try {
+        const res = await axios.get(REVIEWS_API, { params: { limit: 200 }, withCredentials: true, validateStatus: false });
+        let data = [];
+        if (res.data?.feedbacks) data = res.data.feedbacks;
+        else if (res.data?.reviews) data = res.data.reviews;
+        else if (Array.isArray(res.data)) data = res.data;
+        setReviewsList(data);
+    } catch (e) {
+        console.error("Fetch reviews failed", e);
+    } finally {
+        setReviewsLoading(false);
+    }
+  };
+
+  const updateReviewStatus = async (reviewId, newStatus) => {
+    // Optimistic UI update
+    setReviewsList(prev => prev.map(r => r.id === reviewId ? { ...r, review_status: newStatus } : r));
+    try {
+        await axios.patch(`${REVIEWS_API}/${reviewId}/${newStatus}`, {}, { withCredentials: true });
+    } catch (e) {
+        console.error("Update review status failed", e);
+        // revert on failure
+        setReviewsList(prev => prev.map(r => r.id === reviewId ? { ...r, review_status: 'pending' } : r));
+    }
+  };
+
+  useEffect(() => {
+    if (view === 'reviews') fetchReviews();
   }, [view]);
 
   useEffect(() => {
@@ -848,6 +890,9 @@ export default function SuperAdminDashboard() {
                 <button className={view === 'meta-leads' ? 'active' : ''} onClick={() => setView('meta-leads')} style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '4px', paddingTop: '12px' }}>
                     <span className="sa-nav-icon"><Icons.MetaLeads /></span> Meta Leads
                 </button>
+                <button className={view === 'reviews' ? 'active' : ''} onClick={() => setView('reviews')}>
+                    <span className="sa-nav-icon"><Icons.Reviews /></span> Review Feedback
+                </button>
             </nav>
         </div>
         <div style={{ marginTop: 'auto', color: '#6b7280', fontSize: '12px' }}>
@@ -867,6 +912,7 @@ export default function SuperAdminDashboard() {
                 {view === 'leads' && 'Lead Generation Management'}
                 {view === 'settings' && 'Platform Settings'}
                 {view === 'meta-leads' && 'Meta Ads Leads (Real-Time)'}
+                {view === 'reviews' && 'Review Feedback Management'}
             </h2>
             <div className="sa-user-controls">
                 <span className="sa-admin-tag">Super Admin</span>
@@ -2022,6 +2068,212 @@ export default function SuperAdminDashboard() {
                                         onClick={() => setMetaLeadPage(p => p + 1)}
                                         style={{ backgroundColor: metaLeadPage >= totalPages ? '#e2e8f0' : '#6366f1', color: metaLeadPage >= totalPages ? '#94a3b8' : '#fff', cursor: metaLeadPage >= totalPages ? 'not-allowed' : 'pointer' }}
                                     >Next</button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                );
+            })()}
+
+            {/* VIEW: REVIEW FEEDBACK */}
+            {view === 'reviews' && (() => {
+                const filtered = reviewsList.filter(r => {
+                    if (reviewStatusFilter !== 'ALL' && r.review_status !== reviewStatusFilter) return false;
+                    if (!reviewSearch) return true;
+                    const s = reviewSearch.toLowerCase();
+                    return (r.username || '').toLowerCase().includes(s) ||
+                           (r.property_name || '').toLowerCase().includes(s) ||
+                           (r.remarks || '').toLowerCase().includes(s);
+                });
+                const totalPages = Math.ceil(filtered.length / REVIEWS_PER_PAGE);
+                const paginated = filtered.slice((reviewPage - 1) * REVIEWS_PER_PAGE, reviewPage * REVIEWS_PER_PAGE);
+
+                const pendingCount  = reviewsList.filter(r => r.review_status === 'pending').length;
+                const approvedCount = reviewsList.filter(r => r.review_status === 'approved').length;
+                const rejectedCount = reviewsList.filter(r => r.review_status === 'rejected').length;
+
+                const starColor = (n) => {
+                    if (n >= 5) return '#166534';
+                    if (n >= 4) return '#15803d';
+                    if (n >= 3) return '#d97706';
+                    return '#dc2626';
+                };
+
+                const Stars = ({ val }) => (
+                    <span style={{ color: '#f59e0b', fontSize: '13px', letterSpacing: '1px' }}>
+                        {'★'.repeat(Math.round(val || 0))}{'☆'.repeat(5 - Math.round(val || 0))}
+                    </span>
+                );
+
+                return (
+                <div>
+                    {/* Stats Cards */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
+                        <div className="sa-stat-card">
+                            <div className="sa-stat-label">Total Reviews</div>
+                            <div className="sa-stat-value">{reviewsList.length}</div>
+                        </div>
+                        <div className="sa-stat-card">
+                            <div className="sa-stat-label">Pending</div>
+                            <div className="sa-stat-value" style={{ color: '#f59e0b' }}>{pendingCount}</div>
+                        </div>
+                        <div className="sa-stat-card">
+                            <div className="sa-stat-label">Approved</div>
+                            <div className="sa-stat-value" style={{ color: '#10b981' }}>{approvedCount}</div>
+                        </div>
+                        <div className="sa-stat-card">
+                            <div className="sa-stat-label">Rejected</div>
+                            <div className="sa-stat-value" style={{ color: '#ef4444' }}>{rejectedCount}</div>
+                        </div>
+                    </div>
+
+                    <div className="sa-table-container">
+                        <div className="sa-table-header-row">
+                            <h3>Customer Reviews</h3>
+                            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                <select
+                                    className="sa-search-input"
+                                    style={{ width: '150px' }}
+                                    value={reviewStatusFilter}
+                                    onChange={(e) => { setReviewStatusFilter(e.target.value); setReviewPage(1); }}
+                                >
+                                    <option value="ALL">All Status</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                                <input
+                                    type="text"
+                                    placeholder="Search by name, property, review..."
+                                    className="sa-search-input"
+                                    value={reviewSearch}
+                                    onChange={(e) => { setReviewSearch(e.target.value); setReviewPage(1); }}
+                                />
+                                <button className="sa-btn-primary" onClick={fetchReviews} disabled={reviewsLoading}>
+                                    {reviewsLoading ? 'Loading...' : 'Refresh'}
+                                </button>
+                            </div>
+                        </div>
+
+                        <table className="sa-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>Property</th>
+                                    <th>Overall</th>
+                                    <th>Cleanliness</th>
+                                    <th>Location</th>
+                                    <th>Value</th>
+                                    <th>Staff</th>
+                                    <th>Review</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {paginated.map((r, idx) => {
+                                    const isPending  = r.review_status === 'pending';
+                                    const isApproved = r.review_status === 'approved';
+                                    const isRejected = r.review_status === 'rejected';
+                                    return (
+                                        <tr key={r.id || idx}>
+                                            <td style={{ whiteSpace: 'nowrap', fontSize: '12px', color: '#64748b' }}>
+                                                {r.created_at ? new Date(r.created_at).toLocaleDateString('en-IN') : '—'}
+                                            </td>
+                                            <td style={{ fontWeight: '600', minWidth: '110px' }}>{r.username || '—'}</td>
+                                            <td style={{ fontSize: '12px', maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#3b82f6' }} title={r.property_name}>
+                                                {r.property_name || '—'}
+                                            </td>
+                                            <td>
+                                                <span style={{ fontWeight: '700', fontSize: '14px', color: starColor(r.overall_experience) }}>
+                                                    {r.overall_experience} ★
+                                                </span>
+                                            </td>
+                                            <td><Stars val={r.cleanliness} /></td>
+                                            <td><Stars val={r.location} /></td>
+                                            <td><Stars val={r.value_for_money} /></td>
+                                            <td><Stars val={r.staff_behavior} /></td>
+                                            <td style={{ maxWidth: '200px' }}>
+                                                <div style={{ fontSize: '12px', color: '#374151', lineHeight: '1.5', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                                                    {r.remarks || '—'}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span style={{
+                                                    padding: '3px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: '700',
+                                                    background: isApproved ? '#f0fdf4' : isRejected ? '#fef2f2' : '#fffbeb',
+                                                    color:      isApproved ? '#16a34a' : isRejected ? '#dc2626' : '#d97706',
+                                                    border: `1px solid ${isApproved ? '#dcfce7' : isRejected ? '#fecaca' : '#fde68a'}`,
+                                                    textTransform: 'capitalize'
+                                                }}>
+                                                    {r.review_status || 'pending'}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {isPending && (
+                                                    <div style={{ display: 'flex', gap: '6px' }}>
+                                                        <button
+                                                            onClick={() => updateReviewStatus(r.id, 'approved')}
+                                                            style={{ padding: '5px 12px', borderRadius: '6px', border: 'none', background: '#10b981', color: '#fff', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
+                                                        >
+                                                            ✓ Approve
+                                                        </button>
+                                                        <button
+                                                            onClick={() => updateReviewStatus(r.id, 'rejected')}
+                                                            style={{ padding: '5px 12px', borderRadius: '6px', border: 'none', background: '#ef4444', color: '#fff', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
+                                                        >
+                                                            ✕ Reject
+                                                        </button>
+                                                    </div>
+                                                )}
+                                                {isApproved && (
+                                                    <div style={{ display: 'flex', gap: '6px' }}>
+                                                        <span style={{ fontSize: '12px', color: '#16a34a', fontWeight: '600' }}>✓ Live on site</span>
+                                                        <button
+                                                            onClick={() => updateReviewStatus(r.id, 'rejected')}
+                                                            style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid #fca5a5', background: '#fff', color: '#dc2626', fontSize: '11px', fontWeight: '600', cursor: 'pointer' }}
+                                                        >
+                                                            Reject
+                                                        </button>
+                                                    </div>
+                                                )}
+                                                {isRejected && (
+                                                    <button
+                                                        onClick={() => updateReviewStatus(r.id, 'approved')}
+                                                        style={{ padding: '5px 12px', borderRadius: '6px', border: '1px solid #a7f3d0', background: '#fff', color: '#10b981', fontSize: '12px', fontWeight: '600', cursor: 'pointer' }}
+                                                    >
+                                                        Re-Approve
+                                                    </button>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                                {paginated.length === 0 && (
+                                    <tr><td colSpan="11" className="sa-empty">No reviews found.</td></tr>
+                                )}
+                            </tbody>
+                        </table>
+
+                        {filtered.length > REVIEWS_PER_PAGE && (
+                            <div style={{ padding: '20px', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ fontSize: '13px', color: '#64748b' }}>
+                                    Showing {((reviewPage - 1) * REVIEWS_PER_PAGE) + 1}–{Math.min(reviewPage * REVIEWS_PER_PAGE, filtered.length)} of {filtered.length} reviews
+                                </div>
+                                <div style={{ display: 'flex', gap: '10px' }}>
+                                    <button className="sa-btn-primary" disabled={reviewPage === 1} onClick={() => setReviewPage(p => p - 1)}
+                                        style={{ backgroundColor: reviewPage === 1 ? '#e2e8f0' : '#3b82f6', color: reviewPage === 1 ? '#94a3b8' : '#fff', cursor: reviewPage === 1 ? 'not-allowed' : 'pointer' }}>
+                                        Previous
+                                    </button>
+                                    <span style={{ padding: '6px 14px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '6px', fontSize: '13px', fontWeight: '600' }}>
+                                        {reviewPage} / {totalPages}
+                                    </span>
+                                    <button className="sa-btn-primary" disabled={reviewPage >= totalPages} onClick={() => setReviewPage(p => p + 1)}
+                                        style={{ backgroundColor: reviewPage >= totalPages ? '#e2e8f0' : '#3b82f6', color: reviewPage >= totalPages ? '#94a3b8' : '#fff', cursor: reviewPage >= totalPages ? 'not-allowed' : 'pointer' }}>
+                                        Next
+                                    </button>
                                 </div>
                             </div>
                         )}

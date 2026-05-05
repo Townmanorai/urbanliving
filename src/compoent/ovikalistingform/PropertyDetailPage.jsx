@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import * as ort from 'onnxruntime-web';
 ort.env.wasm.numThreads = 1;
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import PropertyReviews from './Reviews/PropertyReviews';
 import { UserCircle } from "lucide-react";
 
 import { 
@@ -3475,6 +3476,12 @@ const PropertyDetailPage = () => {
           </>
         );
       })()}
+
+      {/* ── Ratings & Reviews ── */}
+      <div className="divider" />
+      <div className="text-section">
+        <PropertyReviews propertyId={id} />
+      </div>
 
     </div>
   );

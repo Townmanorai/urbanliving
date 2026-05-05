@@ -1,0 +1,257 @@
+/* ================================================
+   MY BOOKINGS — Themed to match OvikaLiving brand
+   ================================================ */
+
+.bd-container {
+  padding: 32px 28px;
+  max-width: 860px;
+}
+
+.bd-heading {
+  font-size: 26px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bd-heading::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(to right, #b60000 0%, transparent 100%);
+  border-radius: 2px;
+}
+
+/* ── Loading / Empty / Error ── */
+.bd-loading,
+.bd-empty,
+.bd-error {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 15px;
+  color: #6b7280;
+}
+.bd-error { color: #dc2626; }
+
+/* ── Card ── */
+.bd-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  margin-bottom: 20px;
+  overflow: hidden;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  border: 1px solid #f0f0f0;
+}
+
+.bd-card:hover {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+/* ── Cover Image Banner ── */
+.bd-cover {
+  position: relative;
+  height: 190px;
+  background-color: #f3f4f6;
+  background-size: cover;
+  background-position: center;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+}
+
+.bd-cover-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fff5f5 0%, #fef2f2 100%);
+}
+
+.bd-cover-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.18) 55%, transparent 100%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 18px 20px;
+  gap: 12px;
+}
+
+/* when no image, overlay is subtle */
+.bd-cover:not([style*="url"]) .bd-cover-overlay {
+  background: transparent;
+}
+.bd-cover:not([style*="url"]) .bd-prop-name { color: #111827; }
+.bd-cover:not([style*="url"]) .bd-prop-address { color: #6b7280; }
+
+.bd-prop-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.3;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+
+.bd-prop-address {
+  font-size: 12px;
+  color: rgba(255,255,255,0.82);
+  margin-top: 3px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+}
+
+/* ── Status Badge ── */
+.bd-status {
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: flex-start;
+  backdrop-filter: blur(6px);
+}
+.bd-status.cancelled,
+.bd-status.rejected   { background: rgba(254,226,226,0.92); color: #991b1b; }
+.bd-status.pending    { background: rgba(254,243,199,0.92); color: #92400e; }
+.bd-status.confirmed,
+.bd-status.paid       { background: rgba(209,250,229,0.92); color: #065f46; }
+.bd-status.default    { background: rgba(243,244,246,0.92); color: #374151; }
+
+/* ── Info Grid ── */
+.bd-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  padding: 0;
+}
+
+.bd-info-cell {
+  padding: 14px 22px;
+  border-right: 1px solid #f3f4f6;
+  border-bottom: 1px solid #f3f4f6;
+}
+.bd-info-cell:nth-child(3n) { border-right: none; }
+.bd-info-cell:nth-last-child(-n+3) { border-bottom: none; }
+
+.bd-info-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #9ca3af;
+  margin-bottom: 5px;
+}
+
+.bd-info-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+.bd-info-value.price {
+  font-size: 17px;
+  color: #b60000;
+  font-weight: 700;
+}
+
+/* ── More Info Box ── */
+.bd-more-info {
+  margin: 0 22px 4px;
+  padding: 14px 18px;
+  background: #f9fafb;
+  border-radius: 10px;
+  border: 1px dashed #d1d5db;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 24px;
+  font-size: 13px;
+}
+
+.bd-more-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bd-more-label { color: #6b7280; font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+.bd-more-value { color: #111827; font-weight: 600; }
+
+/* ── Actions ── */
+.bd-actions {
+  display: flex;
+  gap: 10px;
+  padding: 16px 22px;
+  flex-wrap: wrap;
+  background: #fafafa;
+  border-top: 1px solid #f3f4f6;
+}
+
+.bd-btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.2px;
+}
+
+.bd-btn-info {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+.bd-btn-info:hover { background: #e5e7eb; }
+
+.bd-btn-download {
+  background: #1677ff;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.25);
+}
+.bd-btn-download:hover { background: #0958d9; box-shadow: 0 4px 12px rgba(22, 119, 255, 0.35); transform: translateY(-1px); }
+
+.bd-btn-cancel {
+  background: #fff;
+  color: #dc2626;
+  border: 1.5px solid #fca5a5;
+}
+.bd-btn-cancel:hover { background: #fef2f2; border-color: #dc2626; }
+
+.bd-btn-feedback {
+  background: linear-gradient(135deg, #b60000, #dc2626);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(182, 0, 0, 0.25);
+  margin-left: auto;
+}
+.bd-btn-feedback:hover { opacity: 0.88; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(182, 0, 0, 0.35); }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .bd-container { padding: 20px 16px; }
+  .bd-heading { font-size: 20px; }
+  .bd-cover { height: 150px; }
+  .bd-info-grid { grid-template-columns: 1fr 1fr; }
+  .bd-info-cell:nth-child(3n) { border-right: 1px solid #f3f4f6; }
+  .bd-info-cell:nth-child(2n) { border-right: none; }
+  .bd-info-cell:nth-last-child(-n+3) { border-bottom: 1px solid #f3f4f6; }
+  .bd-info-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .bd-more-info { grid-template-columns: 1fr; }
+  .bd-btn-feedback { margin-left: 0; }
+}
+
+@media (max-width: 480px) {
+  .bd-info-grid { grid-template-columns: 1fr; }
+  .bd-info-cell { border-right: none !important; }
+  .bd-info-cell:not(:last-child) { border-bottom: 1px solid #f3f4f6 !important; }
+  .bd-actions { flex-direction: column; }
+  .bd-btn { width: 100%; text-align: center; }
+  .bd-card-header { flex-direction: column; gap: 8px; }
+}
