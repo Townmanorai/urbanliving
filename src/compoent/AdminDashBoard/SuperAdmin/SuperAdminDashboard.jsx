@@ -25,7 +25,8 @@ const Icons = {
   Finance: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>,
   Refunds: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"></path><path d="M18 12c0-1.1.9-2 2-2H4"></path><path d="M16 16c-2.2 0-4-1.8-4-4s1.8-4 4-4 4 1.8 4 4-1.8 4-4 4z"></path></svg>,
   Settings: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>,
-  Leads: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></svg>
+  Leads: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></svg>,
+  MetaLeads: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
 };
 
 // Register Chart.js components
@@ -67,7 +68,7 @@ export default function SuperAdminDashboard() {
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [loginError, setLoginError] = useState('');
 
-  const [view, setView] = useState('dashboard'); // 'dashboard', 'properties', 'users', 'bookings', 'finance', 'settings', 'leads'
+  const [view, setView] = useState('dashboard'); // 'dashboard', 'properties', 'users', 'bookings', 'finance', 'settings', 'leads', 'meta-leads'
   const [properties, setProperties] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [usersList, setUsersList] = useState([]); // Real users from API
@@ -132,6 +133,18 @@ export default function SuperAdminDashboard() {
   const [bookingPage, setBookingPage] = useState(1);
   const [leadFilterSource, setLeadFilterSource] = useState("ALL");
   const ITEMS_PER_PAGE = 10;
+
+  // Meta Leads State
+  const [metaLeads, setMetaLeads] = useState([]);
+  const [metaLeadsLoading, setMetaLeadsLoading] = useState(false);
+  const [metaLeadPage, setMetaLeadPage] = useState(1);
+  const [metaLeadSearch, setMetaLeadSearch] = useState("");
+  const [metaLeadStatusFilter, setMetaLeadStatusFilter] = useState("ALL");
+  const [metaLeadLastRefresh, setMetaLeadLastRefresh] = useState(null);
+  const [metaLeadsTotal, setMetaLeadsTotal] = useState(0);
+  const [metaLeadsStats, setMetaLeadsStats] = useState({ total: 0, new: 0, contacted: 0, converted: 0 });
+  const META_LEADS_LIMIT = 20;
+  const META_LEADS_API = "https://townmanor.ai/api/meta-leads";
 
   // --- Fetch Data ---
   const fetchAllData = async () => {
@@ -199,6 +212,71 @@ export default function SuperAdminDashboard() {
         console.error("Fetch leads failed", e);
     }
   };
+
+  const fetchMetaLeads = async (page = metaLeadPage, search = metaLeadSearch, status = metaLeadStatusFilter) => {
+    setMetaLeadsLoading(true);
+    try {
+        const params = { page, limit: META_LEADS_LIMIT };
+        if (search) params.search = search;
+        if (status !== 'ALL') params.status = status;
+        const res = await axios.get(META_LEADS_API, { params, validateStatus: false });
+        if (res.data && res.data.success) {
+            setMetaLeads(res.data.leads || []);
+            setMetaLeadsTotal(res.data.total || 0);
+        }
+        setMetaLeadLastRefresh(new Date());
+    } catch (e) {
+        console.error("Fetch meta leads failed", e);
+    } finally {
+        setMetaLeadsLoading(false);
+    }
+  };
+
+  const fetchMetaLeadsStats = async () => {
+    try {
+        const res = await axios.get(META_LEADS_API, { params: { limit: 1000 }, validateStatus: false });
+        if (res.data && res.data.success) {
+            const all = res.data.leads || [];
+            setMetaLeadsStats({
+                total: res.data.total || all.length,
+                new: all.filter(l => (l.lead_status || '').toLowerCase() === 'new').length,
+                contacted: all.filter(l => (l.lead_status || '').toLowerCase() === 'contacted').length,
+                converted: all.filter(l => (l.lead_status || '').toLowerCase() === 'converted').length,
+            });
+        }
+    } catch (e) {
+        console.error("Fetch meta leads stats failed", e);
+    }
+  };
+
+  const updateMetaLeadStatus = async (leadId, newStatus) => {
+    try {
+        await axios.patch(`${META_LEADS_API}/${leadId}/status`, { status: newStatus });
+        // Refresh both table and stats
+        fetchMetaLeads(metaLeadPage, metaLeadSearch, metaLeadStatusFilter);
+        fetchMetaLeadsStats();
+    } catch (e) {
+        console.error("Update meta lead status failed", e);
+    }
+  };
+
+  // Fetch when page/search/status changes
+  useEffect(() => {
+    if (view !== 'meta-leads') return;
+    fetchMetaLeads(metaLeadPage, metaLeadSearch, metaLeadStatusFilter);
+  }, [metaLeadPage, metaLeadSearch, metaLeadStatusFilter]);
+
+  // Auto-refresh every 30s + fetch stats on view enter
+  useEffect(() => {
+    if (view !== 'meta-leads') return;
+    fetchMetaLeads(1, '', 'ALL');
+    fetchMetaLeadsStats();
+    const interval = setInterval(() => {
+        fetchMetaLeads(metaLeadPage, metaLeadSearch, metaLeadStatusFilter);
+        fetchMetaLeadsStats();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [view]);
 
   useEffect(() => {
     calculateStats(properties, bookings, usersList);
@@ -767,6 +845,9 @@ export default function SuperAdminDashboard() {
                 <button className={view === 'settings' ? 'active' : ''} onClick={() => setView('settings')}>
                     <span className="sa-nav-icon"><Icons.Settings /></span> Settings
                 </button>
+                <button className={view === 'meta-leads' ? 'active' : ''} onClick={() => setView('meta-leads')} style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '4px', paddingTop: '12px' }}>
+                    <span className="sa-nav-icon"><Icons.MetaLeads /></span> Meta Leads
+                </button>
             </nav>
         </div>
         <div style={{ marginTop: 'auto', color: '#6b7280', fontSize: '12px' }}>
@@ -785,6 +866,7 @@ export default function SuperAdminDashboard() {
                 {view === 'finance' && 'Financial Reports'}
                 {view === 'leads' && 'Lead Generation Management'}
                 {view === 'settings' && 'Platform Settings'}
+                {view === 'meta-leads' && 'Meta Ads Leads (Real-Time)'}
             </h2>
             <div className="sa-user-controls">
                 <span className="sa-admin-tag">Super Admin</span>
@@ -1769,6 +1851,184 @@ export default function SuperAdminDashboard() {
                     </div>
                 </div>
             )}
+
+            {/* VIEW: META LEADS */}
+            {view === 'meta-leads' && (() => {
+                const totalPages = Math.ceil(metaLeadsTotal / META_LEADS_LIMIT);
+                const statusColors = {
+                    new:       { bg: '#eff6ff', color: '#2563eb', border: '#dbeafe' },
+                    contacted: { bg: '#fffbeb', color: '#d97706', border: '#fde68a' },
+                    converted: { bg: '#f0fdf4', color: '#16a34a', border: '#dcfce7' },
+                    lost:      { bg: '#fef2f2', color: '#dc2626', border: '#fecaca' },
+                };
+                return (
+                <div>
+                    {/* Stats Cards */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
+                        <div className="sa-stat-card">
+                            <div className="sa-stat-label">Total Meta Leads</div>
+                            <div className="sa-stat-value">{metaLeadsStats.total}</div>
+                        </div>
+                        <div className="sa-stat-card">
+                            <div className="sa-stat-label">New Leads</div>
+                            <div className="sa-stat-value" style={{ color: '#3b82f6' }}>{metaLeadsStats.new}</div>
+                        </div>
+                        <div className="sa-stat-card">
+                            <div className="sa-stat-label">Contacted</div>
+                            <div className="sa-stat-value" style={{ color: '#f59e0b' }}>{metaLeadsStats.contacted}</div>
+                        </div>
+                        <div className="sa-stat-card">
+                            <div className="sa-stat-label">Converted</div>
+                            <div className="sa-stat-value" style={{ color: '#10b981' }}>{metaLeadsStats.converted}</div>
+                        </div>
+                    </div>
+
+                    <div className="sa-table-container">
+                        <div className="sa-table-header-row">
+                            <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                Meta Ads Leads
+                                {metaLeadsLoading && <span style={{ fontSize: '12px', color: '#6366f1', fontWeight: 400 }}>Refreshing...</span>}
+                                {metaLeadLastRefresh && !metaLeadsLoading && (
+                                    <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 400 }}>
+                                        Last updated: {metaLeadLastRefresh.toLocaleTimeString()}
+                                    </span>
+                                )}
+                            </h3>
+                            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                <select
+                                    className="sa-search-input"
+                                    style={{ width: '160px' }}
+                                    value={metaLeadStatusFilter}
+                                    onChange={(e) => { setMetaLeadStatusFilter(e.target.value); setMetaLeadPage(1); }}
+                                >
+                                    <option value="ALL">All Status</option>
+                                    <option value="new">New</option>
+                                    <option value="contacted">Contacted</option>
+                                    <option value="converted">Converted</option>
+                                    <option value="lost">Lost</option>
+                                </select>
+                                <input
+                                    type="text"
+                                    placeholder="Search name, phone, location..."
+                                    className="sa-search-input"
+                                    value={metaLeadSearch}
+                                    onChange={(e) => { setMetaLeadSearch(e.target.value); setMetaLeadPage(1); }}
+                                />
+                                <button className="sa-btn-primary" onClick={() => { fetchMetaLeads(metaLeadPage, metaLeadSearch, metaLeadStatusFilter); fetchMetaLeadsStats(); }} disabled={metaLeadsLoading}>
+                                    {metaLeadsLoading ? 'Loading...' : 'Refresh'}
+                                </button>
+                            </div>
+                        </div>
+
+                        {metaLeads.length === 0 && !metaLeadsLoading ? (
+                            <div style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
+                                <div style={{ fontSize: '48px', marginBottom: '16px' }}>📋</div>
+                                <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>No Meta Leads Yet</div>
+                                <div style={{ fontSize: '13px', color: '#94a3b8' }}>
+                                    Leads will appear here automatically once the Meta webhook is live and ads start running.
+                                </div>
+                            </div>
+                        ) : (
+                            <table className="sa-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Full Name</th>
+                                        <th>Phone</th>
+                                        <th>Location</th>
+                                        <th>Room Type</th>
+                                        <th>Budget</th>
+                                        <th>Campaign</th>
+                                        <th>Ad Name</th>
+                                        <th>Platform</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {metaLeads.map((lead, idx) => {
+                                        const statusKey = (lead.lead_status || 'new').toLowerCase();
+                                        const sc = statusColors[statusKey] || statusColors.new;
+                                        return (
+                                            <tr key={lead.id || lead._id || idx}>
+                                                <td style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>
+                                                    {lead.created_time ? new Date(lead.created_time).toLocaleString('en-IN') : '—'}
+                                                </td>
+                                                <td style={{ fontWeight: '600' }}>{lead.full_name || '—'}</td>
+                                                <td style={{ fontFamily: 'monospace', fontSize: '13px' }}>{lead.phone || '—'}</td>
+                                                <td>{lead.location || '—'}</td>
+                                                <td>{lead.room_type ? <span className="sa-badge-type standard">{lead.room_type}</span> : '—'}</td>
+                                                <td style={{ fontWeight: '600', color: '#059669' }}>{lead.budget || '—'}</td>
+                                                <td style={{ fontSize: '12px', maxWidth: '130px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.campaign_name}>
+                                                    {lead.campaign_name || '—'}
+                                                </td>
+                                                <td style={{ fontSize: '12px', maxWidth: '130px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.ad_name}>
+                                                    {lead.ad_name || '—'}
+                                                </td>
+                                                <td>
+                                                    <span style={{
+                                                        padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600',
+                                                        background: (lead.platform || '').toLowerCase() === 'instagram' ? '#fdf2f8' : '#eff6ff',
+                                                        color:      (lead.platform || '').toLowerCase() === 'instagram' ? '#9333ea'  : '#2563eb',
+                                                        border: `1px solid ${(lead.platform || '').toLowerCase() === 'instagram' ? '#f5d0fe' : '#dbeafe'}`
+                                                    }}>
+                                                        {lead.platform || 'Meta'}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <select
+                                                        value={statusKey}
+                                                        onChange={(e) => updateMetaLeadStatus(lead.id || lead._id, e.target.value)}
+                                                        style={{
+                                                            padding: '4px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: '600',
+                                                            background: sc.bg, color: sc.color, border: `1px solid ${sc.border}`,
+                                                            cursor: 'pointer', outline: 'none', textTransform: 'capitalize'
+                                                        }}
+                                                    >
+                                                        <option value="new">New</option>
+                                                        <option value="contacted">Contacted</option>
+                                                        <option value="converted">Converted</option>
+                                                        <option value="lost">Lost</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                    {metaLeads.length === 0 && (
+                                        <tr><td colSpan="10" className="sa-empty">No leads match your search/filter.</td></tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        )}
+
+                        {/* Pagination */}
+                        {metaLeadsTotal > META_LEADS_LIMIT && (
+                            <div style={{ padding: '20px', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ fontSize: '13px', color: '#64748b' }}>
+                                    Showing {((metaLeadPage - 1) * META_LEADS_LIMIT) + 1}–{Math.min(metaLeadPage * META_LEADS_LIMIT, metaLeadsTotal)} of {metaLeadsTotal} leads
+                                </div>
+                                <div style={{ display: 'flex', gap: '10px' }}>
+                                    <button
+                                        className="sa-btn-primary"
+                                        disabled={metaLeadPage === 1}
+                                        onClick={() => setMetaLeadPage(p => p - 1)}
+                                        style={{ backgroundColor: metaLeadPage === 1 ? '#e2e8f0' : '#6366f1', color: metaLeadPage === 1 ? '#94a3b8' : '#fff', cursor: metaLeadPage === 1 ? 'not-allowed' : 'pointer' }}
+                                    >Previous</button>
+                                    <span style={{ padding: '6px 14px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '6px', fontSize: '13px', fontWeight: '600' }}>
+                                        {metaLeadPage} / {totalPages}
+                                    </span>
+                                    <button
+                                        className="sa-btn-primary"
+                                        disabled={metaLeadPage >= totalPages}
+                                        onClick={() => setMetaLeadPage(p => p + 1)}
+                                        style={{ backgroundColor: metaLeadPage >= totalPages ? '#e2e8f0' : '#6366f1', color: metaLeadPage >= totalPages ? '#94a3b8' : '#fff', cursor: metaLeadPage >= totalPages ? 'not-allowed' : 'pointer' }}
+                                    >Next</button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                );
+            })()}
 
             {/* EDIT PROPERTY MODAL */}
             {editingProp && (
