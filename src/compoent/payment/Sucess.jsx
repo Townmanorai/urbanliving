@@ -51,8 +51,13 @@ function Sucess() {
       
       const bookingRes = await fetch(`https://www.townmanor.ai/api/booking-request/${bookingId}`);
       const bookingData = await bookingRes.json();
-      const booking = bookingData.booking;
-      
+      const booking = bookingData?.booking || bookingData?.data || bookingData;
+
+      if (!booking || !booking.end_date) {
+        alert("Booking data not found. Cannot generate invoice.");
+        return;
+      }
+
       const userLocal = JSON.parse(localStorage.getItem('user') || '{}');
 
       // Add Logo (Top Left and Bottom Right)
@@ -182,14 +187,19 @@ function Sucess() {
       // Fetch booking details
       const bookingRes = await fetch(`https://www.townmanor.ai/api/booking-request/${bookingId}`)
       const bookingData = await bookingRes.json()
-      const booking = bookingData.booking
-      
+      const booking = bookingData?.booking || bookingData?.data || bookingData
+
+      if (!booking || !booking.end_date) {
+        console.error('Booking data unavailable or missing end_date')
+        return false
+      }
+
       // Get user data from localStorage
       const userLocal = JSON.parse(localStorage.getItem('user') || '{}')
-      
+
       // Calculate nights
       const nights = differenceInDays(
-        new Date(booking.end_date), 
+        new Date(booking.end_date),
         new Date(booking.start_date)
       )
       
