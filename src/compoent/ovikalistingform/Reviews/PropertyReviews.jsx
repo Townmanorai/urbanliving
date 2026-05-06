@@ -108,7 +108,6 @@ export default function PropertyReviews({ propertyId }) {
       {/* ── Heading ── */}
       <h3 className="pr-heading">
         Ratings &amp; Reviews
-        <span className="pr-iso-badge">⊙ ISO ≡ CERTIFIED</span>
       </h3>
 
       {/* ── Summary Row ── */}

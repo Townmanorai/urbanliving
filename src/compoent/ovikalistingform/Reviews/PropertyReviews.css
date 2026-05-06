@@ -45,12 +45,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #8b0000;
+  background: linear-gradient(135deg, #C98B3E, #a86e2a);
   color: #fff;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 14px 22px;
   min-width: 100px;
   flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(201,139,62,0.3);
 }
 
 .pr-score-number {
@@ -124,7 +125,7 @@
 
 .pr-bar-fill {
   height: 100%;
-  background: #c0392b;
+  background: linear-gradient(90deg, #C98B3E, #e0a84e);
   border-radius: 99px;
   transition: width 0.8s ease;
 }
@@ -184,7 +185,7 @@
 
 .pr-cat-mini-fill {
   height: 100%;
-  background: linear-gradient(90deg, #8b0000, #dc2626);
+  background: linear-gradient(90deg, #C98B3E, #e0a84e);
   border-radius: 99px;
 }
 
@@ -264,15 +265,15 @@
   font-size: 12px;
   font-weight: 700;
   color: #fff;
-  background: #8b0000;
+  background: #C98B3E;
   flex-shrink: 0;
 }
 
 .pr-star-badge.star-5 { background: #166534; }
 .pr-star-badge.star-4 { background: #15803d; }
-.pr-star-badge.star-3 { background: #d97706; }
-.pr-star-badge.star-2 { background: #c2410c; }
-.pr-star-badge.star-1 { background: #991b1b; }
+.pr-star-badge.star-3 { background: #C98B3E; }
+.pr-star-badge.star-2 { background: #a86e2a; }
+.pr-star-badge.star-1 { background: #7c5320; }
 
 /* ── Review Text ── */
 .pr-review-text {
@@ -283,7 +284,7 @@
 
 .pr-review-text a,
 .pr-review-text span.highlight {
-  color: #8b0000;
+  color: #C98B3E;
   text-decoration: none;
 }
 
@@ -295,7 +296,7 @@
 .pr-see-all-btn {
   background: none;
   border: none;
-  color: #8b0000;
+  color: #C98B3E;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
@@ -303,7 +304,7 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-.pr-see-all-btn:hover { color: #6b0000; }
+.pr-see-all-btn:hover { color: #a86e2a; }
 
 /* ── Loading / Empty ── */
 .pr-loading,

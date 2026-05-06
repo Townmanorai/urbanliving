@@ -2703,10 +2703,13 @@ const PropertyDetailPage = () => {
 
       {/* ── PAGE CONTENT ────────────────────────────────────────────────────── */}
       <div className="detail-header">
-        <button className="back-btn" onClick={() => navigate(-1)}><FiArrowLeft /> Back</button>
+        <button className="back-btn" onClick={() => navigate(-1)}>
+          <FiArrowLeft size={16} />
+          <span>Back</span>
+        </button>
         <div className="header-actions">
-          <button className="action-btn"><FiShare /> Share</button>
-          <button className="action-btn"><FiHeart /> Save</button>
+          <button className="action-btn action-btn--icon" title="Share"><FiShare size={16} /></button>
+          <button className="action-btn action-btn--icon" title="Save"><FiHeart size={16} /></button>
         </div>
       </div>
 

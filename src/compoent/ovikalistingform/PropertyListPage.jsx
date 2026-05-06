@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { Helmet } from 'react-helmet';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { navClick, auxNavClick } from '../../utils/navClick';
-import { FiSearch, FiMapPin, FiHeart, FiPlus, FiStar, FiX, FiMoon, FiCalendar, FiTag, FiHome, FiTrendingUp, FiAward, FiClock, FiMap, FiList } from 'react-icons/fi';
+import { FiSearch, FiMapPin, FiHeart, FiPlus, FiStar, FiX, FiMoon, FiCalendar, FiTag, FiHome, FiTrendingUp, FiAward, FiClock, FiMap, FiList, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { BiBed, BiBath, BiArea } from 'react-icons/bi';
 import { GoogleMap, MarkerF, InfoWindowF } from '@react-google-maps/api';
 
@@ -399,8 +399,11 @@ const getBathCount = (rawBathrooms) => {
 const PropertyCard = ({ property, rentalType }) => {
   const navigate = useNavigate();
   const [fav, setFav] = useState(false);
+  const [imgHovered, setImgHovered] = useState(false);
 
   const randomRating = useMemo(() => {
+    const FIVE_STAR_IDS = [77, 78, 79, 80, 81, 315, 316, 317, 323];
+    if (FIVE_STAR_IDS.includes(Number(property.id))) return '5.0';
     return (Math.random() * (4.9 - 4.1) + 4.1).toFixed(1);
   }, [property.id]);
 
@@ -483,7 +486,6 @@ const PropertyCard = ({ property, rentalType }) => {
     : { bg: '#E0A44A', text: '#fff' };
 
   const allPhotos = Array.isArray(property.photos) ? property.photos : [];
-  const thumbPhotos = allPhotos.filter((_, i) => i !== Number(property.cover_photo_index)).slice(0, 3);
 
   const getPhotoUrl = (photo) => {
     if (!photo) return null;
@@ -493,6 +495,10 @@ const PropertyCard = ({ property, rentalType }) => {
 
   const fallbackImg = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
 
+  const slidePhotos = allPhotos.length > 0 ? allPhotos : [coverPhoto];
+  const [slideIdx, setSlideIdx] = useState(Number(property.cover_photo_index) || 0);
+
+
   return (
     <div
       className="plp-hcard"
@@ -501,18 +507,13 @@ const PropertyCard = ({ property, rentalType }) => {
     >
       {/* ── LEFT: Image block ── */}
       <div className="plp-hcard-imgblock">
-        {/* Main image */}
-        <div className="plp-hcard-mainimg">
+        <div className="plp-hcard-mainimg" style={{ position: 'relative', overflow: 'hidden' }} onMouseEnter={() => setImgHovered(true)} onMouseLeave={() => setImgHovered(false)}>
           <img
-            src={getPhotoUrl(coverPhoto) || fallbackImg}
+            src={getPhotoUrl(slidePhotos[slideIdx]) || fallbackImg}
             alt={property.property_name}
             onError={e => { e.target.onerror = null; e.target.src = fallbackImg; }}
+            style={{ transition: 'opacity 0.5s ease', width: '100%', height: '100%', objectFit: 'cover' }}
           />
-          {/* Category badge */}
-          <span className="plp-hcard-catbadge" style={{ background: categoryColor.bg, color: categoryColor.text }}>
-            <CategoryIcon id={categoryLabel} size={10} color={categoryColor.text} />
-            {categoryLabel}
-          </span>
           {/* Fav button */}
           <button
             className="plp-hcard-fav"
@@ -522,37 +523,26 @@ const PropertyCard = ({ property, rentalType }) => {
           >
             <FiHeart style={{ fill: fav ? '#fff' : 'none', fontSize: 13 }} />
           </button>
-          {/* Verified logo — bottom-right of image */}
-          {property.property_name?.toLowerCase().includes('signature') && (
-            <img
-              src="/ovikaver.png"
-              alt="Ovika Verified"
-              style={{
-                position: 'absolute', bottom: 8, right: 8,
-                height: 38, width: 'auto',
-                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.35))',
-                pointerEvents: 'none', zIndex: 3,
-              }}
-            />
+          {/* Prev / Next buttons */}
+          {slidePhotos.length > 1 && (
+            <>
+              <button
+                data-action="prev"
+                onClick={e => { e.stopPropagation(); setSlideIdx(i => (i - 1 + slidePhotos.length) % slidePhotos.length); }}
+                style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.18)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.35)', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff', zIndex: 4, boxShadow: '0 2px 8px rgba(0,0,0,0.18)', opacity: imgHovered ? 1 : 0, transition: 'opacity 0.2s ease, background 0.2s ease' }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.35)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.18)'}
+              ><FiChevronLeft size={16} /></button>
+              <button
+                data-action="next"
+                onClick={e => { e.stopPropagation(); setSlideIdx(i => (i + 1) % slidePhotos.length); }}
+                style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.18)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.35)', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff', zIndex: 4, boxShadow: '0 2px 8px rgba(0,0,0,0.18)', opacity: imgHovered ? 1 : 0, transition: 'opacity 0.2s ease, background 0.2s ease' }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.35)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.18)'}
+              ><FiChevronRight size={16} /></button>
+            </>
           )}
         </div>
-        {/* Thumbnail strip */}
-        {thumbPhotos.length > 0 && (
-          <div className="plp-hcard-thumbs">
-            {thumbPhotos.map((ph, i) => (
-              <div key={i} className="plp-hcard-thumb">
-                <img
-                  src={getPhotoUrl(ph) || fallbackImg}
-                  alt=""
-                  onError={e => { e.target.onerror = null; e.target.src = fallbackImg; }}
-                />
-                {i === thumbPhotos.length - 1 && allPhotos.length > 4 && (
-                  <div className="plp-hcard-thumb-more">+{allPhotos.length - 4}</div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* ── RIGHT: Details block ── */}
@@ -560,7 +550,16 @@ const PropertyCard = ({ property, rentalType }) => {
 
         {/* Top row: name + rating */}
         <div className="plp-hcard-toprow">
-          <h3 className="plp-hcard-name">{property.property_name || 'Untitled Property'}</h3>
+          <h3 className="plp-hcard-name" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            {property.property_name || 'Untitled Property'}
+            {property.property_name?.toLowerCase().includes('signature') && (
+              <img
+                src="/ovikaver.png"
+                alt="Ovika Verified"
+                style={{ height: 22, width: 'auto', flexShrink: 0, filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.25))', pointerEvents: 'none' }}
+              />
+            )}
+          </h3>
           <div className="plp-hcard-rating">
             <FiStar style={{ fontSize: 11, fill: '#fff', color: '#fff' }} />
             <span>{randomRating}</span>
