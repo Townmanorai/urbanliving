@@ -2714,7 +2714,15 @@ const PropertyDetailPage = () => {
       </div>
 
       <section className="title-section">
-        <h1>{property.property_name}</h1>
+        <h1 style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          {property.property_name}
+          {(() => {
+            const m = property.meta && typeof property.meta === 'object' ? property.meta : (() => { try { return JSON.parse(property.meta || '{}'); } catch { return {}; } })();
+            return (m.verified_badge || property.property_name?.toLowerCase().includes('signature'))
+              ? <img src="/ovikaver.png" alt="Verified" style={{ height: 28, width: 'auto', filter: 'drop-shadow(0 1px 4px rgba(0,0,0,0.2))' }} />
+              : null;
+          })()}
+        </h1>
         <div className="location-row">
           <span>{property.city}, {property.address}</span>
           <span className="dot">•</span>

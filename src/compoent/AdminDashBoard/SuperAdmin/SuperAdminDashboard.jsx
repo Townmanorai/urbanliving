@@ -69,7 +69,14 @@ export default function SuperAdminDashboard() {
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [loginError, setLoginError] = useState('');
 
-  const [view, setView] = useState('dashboard'); // 'dashboard', 'properties', 'users', 'bookings', 'finance', 'settings', 'leads', 'meta-leads', 'reviews'
+  const [view, setView] = useState('dashboard'); // 'dashboard', 'properties', 'users', 'bookings', 'finance', 'settings', 'leads', 'meta-leads', 'reviews', 'verification'
+
+  // ── Verification Badge states ──
+  const [vbSearch, setVbSearch] = useState('');
+  const [vbCategory, setVbCategory] = useState('ALL');
+  const [vbRentalType, setVbRentalType] = useState('ALL');
+  const [vbCity, setVbCity] = useState('');
+  const [vbLoading, setVbLoading] = useState(false);
   const [properties, setProperties] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [usersList, setUsersList] = useState([]); // Real users from API
@@ -893,6 +900,9 @@ export default function SuperAdminDashboard() {
                 <button className={view === 'reviews' ? 'active' : ''} onClick={() => setView('reviews')}>
                     <span className="sa-nav-icon"><Icons.Reviews /></span> Review Feedback
                 </button>
+                <button className={view === 'verification' ? 'active' : ''} onClick={() => setView('verification')}>
+                    <span className="sa-nav-icon">🛡️</span> Verification Badges
+                </button>
             </nav>
         </div>
         <div style={{ marginTop: 'auto', color: '#6b7280', fontSize: '12px' }}>
@@ -913,6 +923,7 @@ export default function SuperAdminDashboard() {
                 {view === 'settings' && 'Platform Settings'}
                 {view === 'meta-leads' && 'Meta Ads Leads (Real-Time)'}
                 {view === 'reviews' && 'Review Feedback Management'}
+                {view === 'verification' && 'Verification Badge Management'}
             </h2>
             <div className="sa-user-controls">
                 <span className="sa-admin-tag">Super Admin</span>
@@ -2277,6 +2288,202 @@ export default function SuperAdminDashboard() {
                                 </div>
                             </div>
                         )}
+                    </div>
+                </div>
+                );
+            })()}
+
+            {/* VIEW: VERIFICATION BADGES */}
+            {view === 'verification' && (() => {
+                const getMeta = (p) => {
+                    if (!p.meta) return {};
+                    if (typeof p.meta === 'object') return p.meta;
+                    try { return JSON.parse(p.meta); } catch { return {}; }
+                };
+
+                const getPrice = (p) => {
+                    const meta = getMeta(p);
+                    return Number(p.price) || Number(meta.perNightPrice) || Number(meta.perMonthPrice) || Number(p.base_rate) || 0;
+                };
+
+                const getCoverImg = (p) => {
+                    const photos = Array.isArray(p.photos) ? p.photos : [];
+                    const idx = Number(p.cover_photo_index);
+                    const photo = (!isNaN(idx) && photos[idx]) ? photos[idx] : photos[0];
+                    if (!photo) return null;
+                    if (photo.startsWith('http')) return photo;
+                    return `https://www.townmanor.ai/api/uploads/${photo.startsWith('/') ? photo.substring(1) : photo}`;
+                };
+
+                const getRentalType = (p) => {
+                    const bt = Number(p.booking_type);
+                    if (bt === 0) return 'monthly';
+                    return 'nightly';
+                };
+
+                const filtered = properties.filter(p => {
+                    const meta = getMeta(p);
+                    const cat = (p.property_category || meta.propertyCategory || '').toLowerCase();
+                    const name = (p.property_name || '').toLowerCase();
+                    const city = (p.city || p.address || '').toLowerCase();
+                    const owner = (p.owner_name || '').toLowerCase();
+                    const rt = getRentalType(p);
+
+                    if (vbCategory !== 'ALL') {
+                        if (vbCategory === 'Signature' && !name.includes('signature') && !name.includes('ovika')) return false;
+                        if (vbCategory !== 'Signature' && cat !== vbCategory.toLowerCase()) return false;
+                    }
+                    if (vbRentalType !== 'ALL' && rt !== vbRentalType) return false;
+                    if (vbCity && !city.includes(vbCity.toLowerCase())) return false;
+                    if (vbSearch) {
+                        const s = vbSearch.toLowerCase();
+                        if (!name.includes(s) && !owner.includes(s) && !String(p.id).includes(s)) return false;
+                    }
+                    return true;
+                });
+
+                const toggleBadge = async (prop, add) => {
+                    setVbLoading(true);
+                    try {
+                        const meta = getMeta(prop);
+                        const updatedMeta = { ...meta, verified_badge: add };
+                        const body = { ...prop, meta: JSON.stringify(updatedMeta) };
+                        const res = await fetch(`https://www.townmanor.ai/api/ovika/properties/${prop.id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(body),
+                        });
+                        if (res.ok) {
+                            // Update local state immediately
+                            setProperties(prev => prev.map(p => p.id === prop.id
+                                ? { ...p, meta: updatedMeta }
+                                : p
+                            ));
+                            alert(`Badge ${add ? 'added to' : 'removed from'} "${prop.property_name}" successfully!`);
+                        } else {
+                            alert('Failed to update badge. Please try again.');
+                        }
+                    } catch {
+                        alert('Network error. Please try again.');
+                    } finally {
+                        setVbLoading(false);
+                    }
+                };
+
+                return (
+                <div style={{ padding: '0' }}>
+                    {/* Filters */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 20, background: '#fff', padding: '16px 20px', borderRadius: 12, border: '1px solid #e2e8f0', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+                        <input
+                            placeholder="Search name, owner, ID..."
+                            value={vbSearch}
+                            onChange={e => setVbSearch(e.target.value)}
+                            style={{ flex: '1 1 200px', padding: '8px 12px', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 13, outline: 'none' }}
+                        />
+                        <select value={vbCategory} onChange={e => setVbCategory(e.target.value)}
+                            style={{ padding: '8px 12px', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 13, background: '#fff', cursor: 'pointer' }}>
+                            <option value="ALL">All Categories</option>
+                            <option value="Signature">Signature Stays</option>
+                            <option value="Premium Stay">Premium Stay</option>
+                            <option value="Economy Stay">Economy Stay</option>
+                            <option value="PG">PG</option>
+                            <option value="Co-living">Co-living</option>
+                        </select>
+                        <select value={vbRentalType} onChange={e => setVbRentalType(e.target.value)}
+                            style={{ padding: '8px 12px', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 13, background: '#fff', cursor: 'pointer' }}>
+                            <option value="ALL">All Types</option>
+                            <option value="nightly">Nightly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                        <input
+                            placeholder="Filter by city..."
+                            value={vbCity}
+                            onChange={e => setVbCity(e.target.value)}
+                            style={{ width: 160, padding: '8px 12px', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 13, outline: 'none' }}
+                        />
+                        <span style={{ display: 'flex', alignItems: 'center', fontSize: 13, color: '#64748b', fontWeight: 600, marginLeft: 4 }}>
+                            {filtered.length} properties
+                        </span>
+                    </div>
+
+                    {/* Table */}
+                    <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+                        <div style={{ overflowX: 'auto' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                                <thead>
+                                    <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
+                                        {['ID', 'Image', 'Property Name', 'Owner', 'Category', 'Type', 'Location', 'Price', 'Badge', 'Actions'].map(h => (
+                                            <th key={h} style={{ padding: '12px 14px', textAlign: 'left', fontWeight: 700, color: '#374151', whiteSpace: 'nowrap', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{h}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filtered.length === 0 ? (
+                                        <tr><td colSpan={10} style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>No properties found</td></tr>
+                                    ) : filtered.map((p, idx) => {
+                                        const meta = getMeta(p);
+                                        const hasBadge = !!meta.verified_badge;
+                                        const coverImg = getCoverImg(p);
+                                        const price = getPrice(p);
+                                        const rt = getRentalType(p);
+                                        const cat = p.property_category || meta.propertyCategory || '—';
+                                        return (
+                                            <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9', background: idx % 2 === 0 ? '#fff' : '#fafbfc', transition: 'background 0.15s' }}
+                                                onMouseEnter={e => e.currentTarget.style.background = '#f0f9ff'}
+                                                onMouseLeave={e => e.currentTarget.style.background = idx % 2 === 0 ? '#fff' : '#fafbfc'}>
+                                                <td style={{ padding: '10px 14px', color: '#64748b', fontWeight: 600 }}>#{p.id}</td>
+                                                <td style={{ padding: '8px 14px' }}>
+                                                    {coverImg
+                                                        ? <img src={coverImg} alt="" style={{ width: 60, height: 44, objectFit: 'cover', borderRadius: 6, border: '1px solid #e2e8f0' }} onError={e => { e.target.style.display = 'none'; }} />
+                                                        : <div style={{ width: 60, height: 44, background: '#f1f5f9', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: 10 }}>No img</div>
+                                                    }
+                                                </td>
+                                                <td style={{ padding: '10px 14px', maxWidth: 180 }}>
+                                                    <div style={{ fontWeight: 600, color: '#0f172a', lineHeight: 1.3 }}>{p.property_name || '—'}</div>
+                                                </td>
+                                                <td style={{ padding: '10px 14px', color: '#374151' }}>{p.owner_name || '—'}</td>
+                                                <td style={{ padding: '10px 14px' }}>
+                                                    <span style={{ padding: '3px 8px', borderRadius: 20, fontSize: 11, fontWeight: 600, background: cat === 'PG' ? '#fef3c7' : cat === 'Economy Stay' ? '#f0fdf4' : '#fdf4ff', color: cat === 'PG' ? '#92400e' : cat === 'Economy Stay' ? '#166534' : '#7c3aed' }}>
+                                                        {cat}
+                                                    </span>
+                                                </td>
+                                                <td style={{ padding: '10px 14px' }}>
+                                                    <span style={{ padding: '3px 8px', borderRadius: 20, fontSize: 11, fontWeight: 600, background: rt === 'nightly' ? '#eff6ff' : '#f0fdf4', color: rt === 'nightly' ? '#1d4ed8' : '#15803d' }}>
+                                                        {rt === 'nightly' ? '🌙 Nightly' : '📅 Monthly'}
+                                                    </span>
+                                                </td>
+                                                <td style={{ padding: '10px 14px', color: '#374151', maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.city || p.address || '—'}</td>
+                                                <td style={{ padding: '10px 14px', fontWeight: 700, color: '#C98B3E' }}>
+                                                    {price ? `₹${price.toLocaleString('en-IN')}` : '—'}
+                                                </td>
+                                                <td style={{ padding: '10px 14px' }}>
+                                                    {hasBadge
+                                                        ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: '#d1fae5', color: '#065f46' }}>✔ Verified</span>
+                                                        : <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 20, fontSize: 11, fontWeight: 600, background: '#f1f5f9', color: '#94a3b8' }}>— None</span>
+                                                    }
+                                                </td>
+                                                <td style={{ padding: '10px 14px', whiteSpace: 'nowrap' }}>
+                                                    <div style={{ display: 'flex', gap: 6 }}>
+                                                        <button
+                                                            disabled={hasBadge || vbLoading}
+                                                            onClick={() => toggleBadge(p, true)}
+                                                            style={{ padding: '6px 12px', borderRadius: 7, border: 'none', cursor: hasBadge ? 'not-allowed' : 'pointer', fontWeight: 600, fontSize: 12, background: hasBadge ? '#e2e8f0' : '#C98B3E', color: hasBadge ? '#94a3b8' : '#fff', transition: 'all 0.15s', whiteSpace: 'nowrap' }}>
+                                                            + Add Badge
+                                                        </button>
+                                                        <button
+                                                            disabled={!hasBadge || vbLoading}
+                                                            onClick={() => toggleBadge(p, false)}
+                                                            style={{ padding: '6px 12px', borderRadius: 7, border: 'none', cursor: !hasBadge ? 'not-allowed' : 'pointer', fontWeight: 600, fontSize: 12, background: !hasBadge ? '#e2e8f0' : '#fee2e2', color: !hasBadge ? '#94a3b8' : '#dc2626', transition: 'all 0.15s', whiteSpace: 'nowrap' }}>
+                                                            ✕ Remove
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 );
