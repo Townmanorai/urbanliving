@@ -112,17 +112,21 @@ export default function PropertyReviews({ propertyId }) {
 
       {/* ── Summary Row ── */}
       <div className="pr-summary">
-        {/* Score Box */}
         <div className="pr-score-box">
-          <div className="pr-score-number">
-            {scoreDisplay}
-            <span className="pr-score-star">★</span>
-          </div>
-          <div className="pr-score-label">{ratingLabel(score)}</div>
-          <div className="pr-score-count">{totalCount} ratings</div>
+          {totalCount > 0 ? (
+            <>
+              <div className="pr-score-number">{scoreDisplay}<span className="pr-score-star">★</span></div>
+              <div className="pr-score-label">{ratingLabel(score)}</div>
+              <div className="pr-score-count">{totalCount} ratings</div>
+            </>
+          ) : (
+            <>
+              <div className="pr-score-number" style={{ fontSize: 22 }}>★★★★★</div>
+              <div className="pr-score-label">NEW</div>
+              <div className="pr-score-count">Be first to rate</div>
+            </>
+          )}
         </div>
-
-        {/* Bar Chart */}
         <div className="pr-bars">
           {starCounts.map(({ star, pct }) => (
             <div className="pr-bar-row" key={star}>
@@ -136,12 +140,16 @@ export default function PropertyReviews({ propertyId }) {
           ))}
         </div>
       </div>
-
       <div className="pr-inner-divider" />
 
       {/* ── Review Cards ── */}
       {totalCount === 0 ? (
-        <div className="pr-empty">No reviews yet. Be the first to review!</div>
+        <div className="pr-empty" style={{ textAlign: 'left', padding: '8px 0 32px', color: '#94a3b8' }}>
+          <p style={{ fontSize: 15, fontWeight: 500, color: '#374151', marginBottom: 6 }}>No guest reviews yet</p>
+          <p style={{ fontSize: 13, lineHeight: 1.6, maxWidth: 420 }}>
+            This property hasn't received any reviews yet. Be among the first to stay and share your experience.
+          </p>
+        </div>
       ) : (
         <>
           <div className="pr-review-list">

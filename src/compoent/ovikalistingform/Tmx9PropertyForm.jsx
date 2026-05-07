@@ -38,7 +38,7 @@ const PROPERTY_TYPES = ["Entire place", "Private room"];
 
 function useFilePreviews() {
   const [previews, setPreviews] = useState([]);
-  const update = (files) => {
+  const update = (files) => {                      
     const arr = Array.from(files || []).slice(0, 12);
     const readers = arr.map((file) => {
       return new Promise((res) => {
