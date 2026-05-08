@@ -151,6 +151,7 @@ export default function SuperAdminDashboard() {
   const [metaLeadLastRefresh, setMetaLeadLastRefresh] = useState(null);
   const [metaLeadsTotal, setMetaLeadsTotal] = useState(0);
   const [metaLeadsStats, setMetaLeadsStats] = useState({ total: 0, new: 0, contacted: 0, converted: 0 });
+  const [metaSyncing, setMetaSyncing] = useState(false);
   const META_LEADS_LIMIT = 20;
   const META_LEADS_API = "https://townmanor.ai/api/meta-leads";
 
@@ -271,11 +272,29 @@ export default function SuperAdminDashboard() {
   const updateMetaLeadStatus = async (leadId, newStatus) => {
     try {
         await axios.patch(`${META_LEADS_API}/${leadId}/status`, { status: newStatus });
-        // Refresh both table and stats
         fetchMetaLeads(metaLeadPage, metaLeadSearch, metaLeadStatusFilter);
         fetchMetaLeadsStats();
     } catch (e) {
         console.error("Update meta lead status failed", e);
+    }
+  };
+
+  const syncHistoricalLeads = async () => {
+    setMetaSyncing(true);
+    try {
+        const res = await axios.get(`${META_LEADS_API}/sync`, { validateStatus: false });
+        if (res.data && res.data.success !== false) {
+            fetchMetaLeads(1, metaLeadSearch, metaLeadStatusFilter);
+            fetchMetaLeadsStats();
+            alert('Historical leads synced successfully!');
+        } else {
+            alert('Sync completed. Check data below.');
+        }
+    } catch (e) {
+        console.error("Sync failed", e);
+        alert('Sync failed. Please try again.');
+    } finally {
+        setMetaSyncing(false);
     }
   };
 
@@ -1974,7 +1993,14 @@ export default function SuperAdminDashboard() {
                                     onChange={(e) => { setMetaLeadSearch(e.target.value); setMetaLeadPage(1); }}
                                 />
                                 <button className="sa-btn-primary" onClick={() => { fetchMetaLeads(metaLeadPage, metaLeadSearch, metaLeadStatusFilter); fetchMetaLeadsStats(); }} disabled={metaLeadsLoading}>
-                                    {metaLeadsLoading ? 'Loading...' : 'Refresh'}
+                                    {metaLeadsLoading ? 'Loading...' : '↻ Refresh'}
+                                </button>
+                                <button
+                                    onClick={syncHistoricalLeads}
+                                    disabled={metaSyncing || metaLeadsLoading}
+                                    style={{ padding: '8px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', background: metaSyncing ? '#f1f5f9' : '#fff', color: metaSyncing ? '#94a3b8' : '#374151', fontWeight: 600, fontSize: '13px', cursor: metaSyncing ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                                >
+                                    {metaSyncing ? '⏳ Syncing...' : '⇄ Sync Historical'}
                                 </button>
                             </div>
                         </div>
@@ -2018,7 +2044,7 @@ export default function SuperAdminDashboard() {
                                         return (
                                             <tr key={lead.id || lead._id || idx}>
                                                 <td style={{ whiteSpace: 'nowrap', fontSize: '11px', color: '#64748b' }}>
-                                                    {lead.created_time ? new Date(lead.created_time).toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—'}
+                                                    {(() => { const d = lead.created_time || lead.created_at; return d ? new Date(d).toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—'; })()}
                                                 </td>
                                                 <td style={{ fontWeight: '600', whiteSpace: 'nowrap' }}>{lead.full_name || '—'}</td>
                                                 <td>
