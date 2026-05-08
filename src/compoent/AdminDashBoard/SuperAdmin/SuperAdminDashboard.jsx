@@ -251,16 +251,18 @@ export default function SuperAdminDashboard() {
 
   const fetchMetaLeadsStats = async () => {
     try {
-        const res = await axios.get(META_LEADS_API, { params: { limit: 1000 }, validateStatus: false });
-        if (res.data && res.data.success) {
-            const all = res.data.leads || [];
-            setMetaLeadsStats({
-                total: res.data.total || all.length,
-                new: all.filter(l => (l.lead_status || '').toLowerCase() === 'new').length,
-                contacted: all.filter(l => (l.lead_status || '').toLowerCase() === 'contacted').length,
-                converted: all.filter(l => (l.lead_status || '').toLowerCase() === 'converted').length,
-            });
-        }
+        const [totalRes, newRes, contactedRes, convertedRes] = await Promise.all([
+            axios.get(META_LEADS_API, { params: { limit: 1 }, validateStatus: false }),
+            axios.get(META_LEADS_API, { params: { limit: 1, status: 'new' }, validateStatus: false }),
+            axios.get(META_LEADS_API, { params: { limit: 1, status: 'contacted' }, validateStatus: false }),
+            axios.get(META_LEADS_API, { params: { limit: 1, status: 'converted' }, validateStatus: false }),
+        ]);
+        setMetaLeadsStats({
+            total:     totalRes.data?.total     || 0,
+            new:       newRes.data?.total       || 0,
+            contacted: contactedRes.data?.total || 0,
+            converted: convertedRes.data?.total || 0,
+        });
     } catch (e) {
         console.error("Fetch meta leads stats failed", e);
     }
@@ -1989,10 +1991,11 @@ export default function SuperAdminDashboard() {
                             <table className="sa-table">
                                 <thead>
                                     <tr>
-                                        <th>Date & Time</th>
-                                        <th>Full Name</th>
+                                        <th>Date</th>
+                                        <th>Name</th>
                                         <th>Phone</th>
-                                        <th>Location</th>
+                                        <th>Email</th>
+                                        <th>City</th>
                                         <th>Room Type</th>
                                         <th>Budget</th>
                                         <th>Campaign</th>
@@ -2005,29 +2008,42 @@ export default function SuperAdminDashboard() {
                                     {metaLeads.map((lead, idx) => {
                                         const statusKey = (lead.lead_status || 'new').toLowerCase();
                                         const sc = statusColors[statusKey] || statusColors.new;
+                                        const platform = (lead.platform || '').toLowerCase();
+                                        const platformStyle = platform === 'instagram'
+                                            ? { bg: '#fdf2f8', color: '#9333ea', border: '#f5d0fe' }
+                                            : { bg: '#eff6ff', color: '#2563eb', border: '#dbeafe' };
+                                        const budget = lead.budget
+                                            ? (isNaN(Number(lead.budget)) ? lead.budget : `₹${Number(lead.budget).toLocaleString('en-IN')}`)
+                                            : '—';
                                         return (
                                             <tr key={lead.id || lead._id || idx}>
-                                                <td style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>
-                                                    {lead.created_time ? new Date(lead.created_time).toLocaleString('en-IN') : '—'}
+                                                <td style={{ whiteSpace: 'nowrap', fontSize: '11px', color: '#64748b' }}>
+                                                    {lead.created_time ? new Date(lead.created_time).toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—'}
                                                 </td>
-                                                <td style={{ fontWeight: '600' }}>{lead.full_name || '—'}</td>
-                                                <td style={{ fontFamily: 'monospace', fontSize: '13px' }}>{lead.phone || '—'}</td>
+                                                <td style={{ fontWeight: '600', whiteSpace: 'nowrap' }}>{lead.full_name || '—'}</td>
+                                                <td>
+                                                    <a href={`tel:${lead.phone}`} style={{ fontFamily: 'monospace', fontSize: '13px', color: '#0f172a', textDecoration: 'none' }}>
+                                                        {lead.phone || '—'}
+                                                    </a>
+                                                </td>
+                                                <td style={{ fontSize: '12px', maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.email}>
+                                                    {lead.email ? <a href={`mailto:${lead.email}`} style={{ color: '#6366f1', textDecoration: 'none' }}>{lead.email}</a> : '—'}
+                                                </td>
                                                 <td>{lead.location || '—'}</td>
-                                                <td>{lead.room_type ? <span className="sa-badge-type standard">{lead.room_type}</span> : '—'}</td>
-                                                <td style={{ fontWeight: '600', color: '#059669' }}>{lead.budget || '—'}</td>
-                                                <td style={{ fontSize: '12px', maxWidth: '130px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.campaign_name}>
+                                                <td>
+                                                    {lead.room_type
+                                                        ? <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: '11px', fontWeight: 600, background: '#f0fdf4', color: '#166534', border: '1px solid #dcfce7' }}>{lead.room_type}</span>
+                                                        : '—'}
+                                                </td>
+                                                <td style={{ fontWeight: '700', color: '#059669', whiteSpace: 'nowrap' }}>{budget}</td>
+                                                <td style={{ fontSize: '12px', maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#374151' }} title={lead.campaign_name}>
                                                     {lead.campaign_name || '—'}
                                                 </td>
-                                                <td style={{ fontSize: '12px', maxWidth: '130px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.ad_name}>
+                                                <td style={{ fontSize: '12px', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#374151' }} title={lead.ad_name}>
                                                     {lead.ad_name || '—'}
                                                 </td>
                                                 <td>
-                                                    <span style={{
-                                                        padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600',
-                                                        background: (lead.platform || '').toLowerCase() === 'instagram' ? '#fdf2f8' : '#eff6ff',
-                                                        color:      (lead.platform || '').toLowerCase() === 'instagram' ? '#9333ea'  : '#2563eb',
-                                                        border: `1px solid ${(lead.platform || '').toLowerCase() === 'instagram' ? '#f5d0fe' : '#dbeafe'}`
-                                                    }}>
+                                                    <span style={{ padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', background: platformStyle.bg, color: platformStyle.color, border: `1px solid ${platformStyle.border}`, textTransform: 'capitalize' }}>
                                                         {lead.platform || 'Meta'}
                                                     </span>
                                                 </td>
@@ -2035,23 +2051,19 @@ export default function SuperAdminDashboard() {
                                                     <select
                                                         value={statusKey}
                                                         onChange={(e) => updateMetaLeadStatus(lead.id || lead._id, e.target.value)}
-                                                        style={{
-                                                            padding: '4px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: '600',
-                                                            background: sc.bg, color: sc.color, border: `1px solid ${sc.border}`,
-                                                            cursor: 'pointer', outline: 'none', textTransform: 'capitalize'
-                                                        }}
+                                                        style={{ padding: '4px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: '600', background: sc.bg, color: sc.color, border: `1px solid ${sc.border}`, cursor: 'pointer', outline: 'none', textTransform: 'capitalize' }}
                                                     >
-                                                        <option value="new">New</option>
-                                                        <option value="contacted">Contacted</option>
-                                                        <option value="converted">Converted</option>
-                                                        <option value="lost">Lost</option>
+                                                        <option value="new">🔵 New</option>
+                                                        <option value="contacted">🟡 Contacted</option>
+                                                        <option value="converted">🟢 Converted</option>
+                                                        <option value="lost">🔴 Lost</option>
                                                     </select>
                                                 </td>
                                             </tr>
                                         );
                                     })}
                                     {metaLeads.length === 0 && (
-                                        <tr><td colSpan="10" className="sa-empty">No leads match your search/filter.</td></tr>
+                                        <tr><td colSpan="11" className="sa-empty">No leads match your search/filter.</td></tr>
                                     )}
                                 </tbody>
                             </table>
