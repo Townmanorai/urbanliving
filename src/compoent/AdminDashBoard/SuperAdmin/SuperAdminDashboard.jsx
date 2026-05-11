@@ -81,6 +81,7 @@ export default function SuperAdminDashboard() {
   // ── Self Verification states ──
   const [svList, setSvList] = useState([]);
   const [svLoading, setSvLoading] = useState(false);
+  const [svDebug, setSvDebug] = useState('');
   const [svSearch, setSvSearch] = useState('');
   const [svBadgeLoading, setSvBadgeLoading] = useState(false);
   const [svLightbox, setSvLightbox] = useState(null); // { url, title }
@@ -325,13 +326,17 @@ export default function SuperAdminDashboard() {
 
   const fetchSelfVerifications = async () => {
     setSvLoading(true);
+    setSvDebug('Fetching...');
     try {
-      const res = await axios.get('https://townmanor.ai/api/owner-verification/all', { validateStatus: false });
+      const res = await axios.get('https://www.townmanor.ai/api/owner-verification/all', { validateStatus: false });
       const payload = res.data;
-      const data = payload?.data || (Array.isArray(payload) ? payload : []);
+      const data = payload?.data || payload?.submissions || payload?.verifications || payload?.results || (Array.isArray(payload) ? payload : []);
       setSvList(Array.isArray(data) ? data : []);
+      const first = Array.isArray(data) && data.length > 0 ? data[0] : null;
+      const testPath = first?.exterior_photo ? `https://www.townmanor.ai/${(first.exterior_photo).replace(/^\//, '')}` : 'no path';
+      setSvDebug(`HTTP ${res.status} | ${Array.isArray(data) ? data.length : 0} items | img URL being tried: "${testPath}"`);
     } catch (e) {
-      console.error('Fetch self-verifications failed', e);
+      setSvDebug(`ERROR: ${e.message}`);
       setSvList([]);
     } finally {
       setSvLoading(false);
@@ -342,7 +347,7 @@ export default function SuperAdminDashboard() {
     setSvBadgeLoading(true);
     try {
       const res = await axios.patch(
-        `https://townmanor.ai/api/owner-verification/${sv.id}/status`,
+        `https://www.townmanor.ai/api/owner-verification/${sv.id}/status`,
         { status },
         { validateStatus: false }
       );
@@ -2577,7 +2582,7 @@ export default function SuperAdminDashboard() {
 
             {/* VIEW: SELF VERIFICATION */}
             {view === 'self-verification' && (() => {
-                const API_IMG = 'https://townmanor.ai';
+                const API_IMG = 'https://www.townmanor.ai';
 
                 const imgUrl = (path) => {
                     if (!path) return null;
@@ -2658,6 +2663,13 @@ export default function SuperAdminDashboard() {
                             </button>
                         </div>
                     </div>
+
+                    {/* Debug bar */}
+                    {svDebug && (
+                        <div style={{ margin: '0 0 12px', padding: '8px 14px', background: '#1e293b', color: '#94a3b8', borderRadius: 8, fontSize: 12, fontFamily: 'monospace' }}>
+                            🔍 {svDebug}
+                        </div>
+                    )}
 
                     {/* Table */}
                     {svLoading ? (
