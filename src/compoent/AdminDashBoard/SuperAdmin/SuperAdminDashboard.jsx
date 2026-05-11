@@ -69,7 +69,7 @@ export default function SuperAdminDashboard() {
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [loginError, setLoginError] = useState('');
 
-  const [view, setView] = useState('dashboard'); // 'dashboard', 'properties', 'users', 'bookings', 'finance', 'settings', 'leads', 'meta-leads', 'reviews', 'verification'
+  const [view, setView] = useState('dashboard'); // 'dashboard', 'properties', 'users', 'bookings', 'finance', 'settings', 'leads', 'meta-leads', 'reviews', 'verification', 'self-verification'
 
   // ── Verification Badge states ──
   const [vbSearch, setVbSearch] = useState('');
@@ -77,6 +77,13 @@ export default function SuperAdminDashboard() {
   const [vbRentalType, setVbRentalType] = useState('ALL');
   const [vbCity, setVbCity] = useState('');
   const [vbLoading, setVbLoading] = useState(false);
+
+  // ── Self Verification states ──
+  const [svList, setSvList] = useState([]);
+  const [svLoading, setSvLoading] = useState(false);
+  const [svSearch, setSvSearch] = useState('');
+  const [svBadgeLoading, setSvBadgeLoading] = useState(false);
+  const [svLightbox, setSvLightbox] = useState(null); // { url, title }
   const [properties, setProperties] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [usersList, setUsersList] = useState([]); // Real users from API
@@ -314,6 +321,45 @@ export default function SuperAdminDashboard() {
         fetchMetaLeadsStats();
     }, 30000);
     return () => clearInterval(interval);
+  }, [view]);
+
+  const fetchSelfVerifications = async () => {
+    setSvLoading(true);
+    try {
+      const res = await axios.get('https://townmanor.ai/api/owner-verification/all', { validateStatus: false });
+      const payload = res.data;
+      const data = payload?.data || (Array.isArray(payload) ? payload : []);
+      setSvList(Array.isArray(data) ? data : []);
+    } catch (e) {
+      console.error('Fetch self-verifications failed', e);
+      setSvList([]);
+    } finally {
+      setSvLoading(false);
+    }
+  };
+
+  const updateSvStatus = async (sv, status) => {
+    setSvBadgeLoading(true);
+    try {
+      const res = await axios.patch(
+        `https://townmanor.ai/api/owner-verification/${sv.id}/status`,
+        { status },
+        { validateStatus: false }
+      );
+      if (res.data?.success) {
+        setSvList(prev => prev.map(s => s.id === sv.id ? { ...s, verification_status: status } : s));
+      } else {
+        alert(res.data?.message || 'Status update failed');
+      }
+    } catch (e) {
+      alert('Network error. Please try again.');
+    } finally {
+      setSvBadgeLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (view === 'self-verification') fetchSelfVerifications();
   }, [view]);
 
   const fetchReviews = async () => {
@@ -924,6 +970,9 @@ export default function SuperAdminDashboard() {
                 <button className={view === 'verification' ? 'active' : ''} onClick={() => setView('verification')}>
                     <span className="sa-nav-icon">🛡️</span> Verification Badges
                 </button>
+                <button className={view === 'self-verification' ? 'active' : ''} onClick={() => setView('self-verification')}>
+                    <span className="sa-nav-icon">✅</span> Self Verification
+                </button>
             </nav>
         </div>
         <div style={{ marginTop: 'auto', color: '#6b7280', fontSize: '12px' }}>
@@ -945,6 +994,7 @@ export default function SuperAdminDashboard() {
                 {view === 'meta-leads' && 'Meta Ads Leads (Real-Time)'}
                 {view === 'reviews' && 'Review Feedback Management'}
                 {view === 'verification' && 'Verification Badge Management'}
+                {view === 'self-verification' && 'Self Verification Submissions'}
             </h2>
             <div className="sa-user-controls">
                 <span className="sa-admin-tag">Super Admin</span>
@@ -2521,6 +2571,222 @@ export default function SuperAdminDashboard() {
                             </table>
                         </div>
                     </div>
+                </div>
+                );
+            })()}
+
+            {/* VIEW: SELF VERIFICATION */}
+            {view === 'self-verification' && (() => {
+                const API_IMG = 'https://townmanor.ai';
+
+                const imgUrl = (path) => {
+                    if (!path) return null;
+                    if (path.startsWith('http')) return path;
+                    return `${API_IMG}/${path.replace(/^\//, '')}`;
+                };
+
+                const addBadge = async (sv, add) => {
+                    const propId = sv.property_id;
+                    if (!propId) { alert('Property ID not found in this submission.'); return; }
+                    setSvBadgeLoading(true);
+                    try {
+                        const res = await fetch(`https://www.townmanor.ai/api/ovika/properties/${propId}/badge`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ verified_badge: add }),
+                        });
+                        if (res.ok) {
+                            alert(`Badge ${add ? 'added to' : 'removed from'} Property #${propId} successfully!`);
+                        } else {
+                            const err = await res.json().catch(() => ({}));
+                            alert(`Failed: ${err.message || res.status}`);
+                        }
+                    } catch { alert('Network error. Please try again.'); }
+                    finally { setSvBadgeLoading(false); }
+                };
+
+                const statusColors = {
+                    submitted: { bg: '#eff6ff', color: '#3b82f6', label: 'Submitted' },
+                    approved:  { bg: '#f0fdf4', color: '#16a34a', label: 'Approved'  },
+                    rejected:  { bg: '#fef2f2', color: '#dc2626', label: 'Rejected'  },
+                };
+
+                const filtered = svList.filter(sv => {
+                    if (!svSearch) return true;
+                    const s = svSearch.toLowerCase();
+                    return (sv.mobile_number || '').includes(s) ||
+                        (sv.owner_id || '').toString().includes(s) ||
+                        (sv.property_id || '').toString().includes(s) ||
+                        (sv.map_address || '').toLowerCase().includes(s);
+                });
+
+                return (
+                <div>
+                    {/* Lightbox */}
+                    {svLightbox && (
+                        <div onClick={() => setSvLightbox(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div onClick={e => e.stopPropagation()} style={{ position: 'relative', maxWidth: '90vw', maxHeight: '90vh' }}>
+                                <button onClick={() => setSvLightbox(null)} style={{ position: 'absolute', top: -16, right: -16, background: '#fff', border: 'none', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer', fontWeight: 700, fontSize: 18, zIndex: 10 }}>×</button>
+                                {svLightbox.type === 'video'
+                                    ? <video src={svLightbox.url} controls style={{ maxWidth: '85vw', maxHeight: '85vh', borderRadius: 10 }} />
+                                    : <img src={svLightbox.url} alt={svLightbox.title} style={{ maxWidth: '85vw', maxHeight: '85vh', borderRadius: 10, objectFit: 'contain' }} />
+                                }
+                                <div style={{ color: '#fff', textAlign: 'center', marginTop: 8, fontSize: 13 }}>{svLightbox.title}</div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Header bar */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, background: '#fff', padding: '14px 20px', borderRadius: 12, border: '1px solid #e2e8f0' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <img src="/SelfVerified.jpeg" alt="Self Verified" style={{ height: 32, width: 'auto', borderRadius: 4 }} />
+                            <div>
+                                <div style={{ fontWeight: 700, fontSize: 15, color: '#0f172a' }}>Self Verification Submissions</div>
+                                <div style={{ fontSize: 12, color: '#64748b' }}>{filtered.length} of {svList.length} submissions</div>
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: 10 }}>
+                            <input
+                                placeholder="Search mobile, owner ID, property ID, address..."
+                                value={svSearch}
+                                onChange={e => setSvSearch(e.target.value)}
+                                style={{ padding: '8px 14px', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 13, width: 300, outline: 'none' }}
+                            />
+                            <button onClick={fetchSelfVerifications} disabled={svLoading}
+                                style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#C98B3E', color: '#fff', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>
+                                {svLoading ? 'Loading...' : '↻ Refresh'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Table */}
+                    {svLoading ? (
+                        <div style={{ padding: 60, textAlign: 'center', color: '#94a3b8', fontSize: 15 }}>Loading submissions...</div>
+                    ) : filtered.length === 0 ? (
+                        <div style={{ padding: 60, textAlign: 'center', color: '#94a3b8' }}>
+                            <div style={{ fontSize: 40, marginBottom: 12 }}>📋</div>
+                            <div style={{ fontWeight: 600 }}>No submissions yet</div>
+                            <div style={{ fontSize: 13, marginTop: 4 }}>Submissions from /owner-verification form will appear here.</div>
+                        </div>
+                    ) : (
+                        <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+                            <div style={{ overflowX: 'auto' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                                    <thead>
+                                        <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
+                                            {['#', 'Owner ID', 'Prop ID', 'Mobile', 'Status', 'Exterior', 'Interior', 'Video', 'Address', 'Location', 'Date', 'Actions'].map(h => (
+                                                <th key={h} style={{ padding: '12px 14px', textAlign: 'left', fontWeight: 700, color: '#374151', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>{h}</th>
+                                            ))}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filtered.map((sv, idx) => {
+                                            const interiorArr = Array.isArray(sv.interior_photos)
+                                                ? sv.interior_photos
+                                                : typeof sv.interior_photos === 'string'
+                                                    ? sv.interior_photos.split(',').filter(Boolean)
+                                                    : [];
+                                            const statusStyle = statusColors[sv.verification_status] || statusColors.submitted;
+                                            return (
+                                                <tr key={sv.id || idx} style={{ borderBottom: '1px solid #f1f5f9', background: idx % 2 === 0 ? '#fff' : '#fafbfc' }}>
+                                                    <td style={{ padding: '12px 14px', color: '#64748b', fontWeight: 600 }}>{sv.id || idx + 1}</td>
+                                                    <td style={{ padding: '12px 14px', fontWeight: 600 }}>{sv.owner_id || '—'}</td>
+                                                    <td style={{ padding: '12px 14px', fontWeight: 700, color: '#6366f1' }}>{sv.property_id || '—'}</td>
+                                                    <td style={{ padding: '12px 14px', fontFamily: 'monospace' }}>{sv.mobile_number || '—'}</td>
+
+                                                    {/* Status badge */}
+                                                    <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                                                        <span style={{ padding: '3px 10px', borderRadius: 20, background: statusStyle.bg, color: statusStyle.color, fontWeight: 700, fontSize: 11 }}>
+                                                            {statusStyle.label}
+                                                        </span>
+                                                    </td>
+
+                                                    {/* Exterior photo */}
+                                                    <td style={{ padding: '8px 14px' }}>
+                                                        {imgUrl(sv.exterior_photo)
+                                                            ? <img src={imgUrl(sv.exterior_photo)} alt="Exterior"
+                                                                onClick={() => setSvLightbox({ url: imgUrl(sv.exterior_photo), title: 'Exterior Photo', type: 'image' })}
+                                                                style={{ width: 64, height: 48, objectFit: 'cover', borderRadius: 6, cursor: 'pointer', border: '2px solid #e2e8f0' }} />
+                                                            : <span style={{ color: '#94a3b8' }}>—</span>}
+                                                    </td>
+
+                                                    {/* Interior photos */}
+                                                    <td style={{ padding: '8px 14px' }}>
+                                                        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                                                            {interiorArr.length === 0 && <span style={{ color: '#94a3b8' }}>—</span>}
+                                                            {interiorArr.slice(0, 3).map((ph, i) => (
+                                                                <img key={i} src={imgUrl(ph)} alt={`Interior ${i+1}`}
+                                                                    onClick={() => setSvLightbox({ url: imgUrl(ph), title: `Interior Photo ${i+1}`, type: 'image' })}
+                                                                    style={{ width: 44, height: 36, objectFit: 'cover', borderRadius: 5, cursor: 'pointer', border: '1px solid #e2e8f0' }} />
+                                                            ))}
+                                                            {interiorArr.length > 3 && (
+                                                                <div onClick={() => setSvLightbox({ url: imgUrl(interiorArr[3]), title: 'Interior Photo 4', type: 'image' })}
+                                                                    style={{ width: 44, height: 36, background: '#f1f5f9', borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#64748b', cursor: 'pointer' }}>
+                                                                    +{interiorArr.length - 3}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </td>
+
+                                                    {/* Video */}
+                                                    <td style={{ padding: '8px 14px' }}>
+                                                        {imgUrl(sv.walkthrough_video)
+                                                            ? <button onClick={() => setSvLightbox({ url: imgUrl(sv.walkthrough_video), title: 'Walkthrough Video', type: 'video' })}
+                                                                style={{ padding: '4px 10px', borderRadius: 6, border: '1px solid #C98B3E', background: '#fff8f1', color: '#C98B3E', fontWeight: 600, fontSize: 11, cursor: 'pointer' }}>▶ Play</button>
+                                                            : <span style={{ color: '#94a3b8' }}>—</span>}
+                                                    </td>
+
+                                                    <td style={{ padding: '12px 14px', maxWidth: 160, color: '#374151', fontSize: 12 }}>{sv.map_address || '—'}</td>
+
+                                                    <td style={{ padding: '12px 14px', fontSize: 12, color: '#64748b' }}>
+                                                        {sv.lat && sv.lng
+                                                            ? <a href={`https://maps.google.com/?q=${sv.lat},${sv.lng}`} target="_blank" rel="noreferrer" style={{ color: '#3b82f6', textDecoration: 'none' }}>📍 Map</a>
+                                                            : '—'}
+                                                    </td>
+
+                                                    <td style={{ padding: '12px 14px', fontSize: 11, color: '#64748b', whiteSpace: 'nowrap' }}>
+                                                        {sv.submitted_at || sv.created_at
+                                                            ? new Date(sv.submitted_at || sv.created_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+                                                            : '—'}
+                                                    </td>
+
+                                                    {/* Actions */}
+                                                    <td style={{ padding: '10px 14px', minWidth: 200 }}>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                                            {/* Status buttons */}
+                                                            <div style={{ display: 'flex', gap: 4 }}>
+                                                                <button disabled={svBadgeLoading || sv.verification_status === 'approved'}
+                                                                    onClick={() => updateSvStatus(sv, 'approved')}
+                                                                    style={{ padding: '4px 9px', borderRadius: 5, border: 'none', background: sv.verification_status === 'approved' ? '#bbf7d0' : '#dcfce7', color: '#16a34a', fontWeight: 700, fontSize: 11, cursor: sv.verification_status === 'approved' ? 'default' : 'pointer', whiteSpace: 'nowrap', opacity: sv.verification_status === 'approved' ? 0.7 : 1 }}>
+                                                                    ✓ Approve
+                                                                </button>
+                                                                <button disabled={svBadgeLoading || sv.verification_status === 'rejected'}
+                                                                    onClick={() => updateSvStatus(sv, 'rejected')}
+                                                                    style={{ padding: '4px 9px', borderRadius: 5, border: 'none', background: sv.verification_status === 'rejected' ? '#fecaca' : '#fee2e2', color: '#dc2626', fontWeight: 700, fontSize: 11, cursor: sv.verification_status === 'rejected' ? 'default' : 'pointer', whiteSpace: 'nowrap', opacity: sv.verification_status === 'rejected' ? 0.7 : 1 }}>
+                                                                    ✕ Reject
+                                                                </button>
+                                                            </div>
+                                                            {/* Badge buttons */}
+                                                            <div style={{ display: 'flex', gap: 4 }}>
+                                                                <button disabled={svBadgeLoading || !sv.property_id} onClick={() => addBadge(sv, true)}
+                                                                    style={{ padding: '4px 9px', borderRadius: 5, border: 'none', background: '#C98B3E', color: '#fff', fontWeight: 600, fontSize: 11, cursor: sv.property_id ? 'pointer' : 'not-allowed', whiteSpace: 'nowrap', opacity: sv.property_id ? 1 : 0.5 }}>
+                                                                    🏅 Add Badge
+                                                                </button>
+                                                                <button disabled={svBadgeLoading || !sv.property_id} onClick={() => addBadge(sv, false)}
+                                                                    style={{ padding: '4px 9px', borderRadius: 5, border: '1px solid #e2e8f0', background: '#f8fafc', color: '#64748b', fontWeight: 600, fontSize: 11, cursor: sv.property_id ? 'pointer' : 'not-allowed', whiteSpace: 'nowrap', opacity: sv.property_id ? 1 : 0.5 }}>
+                                                                    Remove
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
                 </div>
                 );
             })()}

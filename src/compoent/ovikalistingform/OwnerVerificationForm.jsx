@@ -245,7 +245,7 @@ export default function OwnerVerificationForm() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/api/owner-verification`, {
+      const res = await fetch(`${API_BASE}/owner-verification`, {
         method: 'POST',
         body: formData,
       });

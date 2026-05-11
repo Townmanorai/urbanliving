@@ -13,7 +13,8 @@
       "Bash(grep -n \"p\\\\\\\\.id\\\\|p\\\\\\\\._id\\\\|p\\\\\\\\.name\\\\|p\\\\\\\\.owner_id\\\\|p\\\\\\\\.owner\" \"c:\\\\\\\\Users\\\\\\\\user\\\\\\\\Desktop\\\\\\\\urbahn living\\\\\\\\urbanliving\\\\\\\\src\\\\\\\\compoent\\\\\\\\AdminDashBoard\\\\\\\\SuperAdmin\\\\\\\\SuperAdminDashboard.jsx\")",
       "Bash(grep -n \"p\\\\.verified\\\\|p\\\\.is_verified\\\\|p\\\\.badge\" \"c:\\\\\\\\Users\\\\\\\\user\\\\\\\\Desktop\\\\\\\\urbahn living\\\\\\\\urbanliving\\\\\\\\src\\\\\\\\compoent\\\\\\\\AdminDashBoard\\\\\\\\SuperAdmin\\\\\\\\SuperAdminDashboard.jsx\")",
       "Bash(grep -n \"property_name\\\\|property_type\\\\|property_category\" \"c:\\\\\\\\Users\\\\\\\\user\\\\\\\\Desktop\\\\\\\\urbahn living\\\\\\\\urbanliving\\\\\\\\src\\\\\\\\compoent\\\\\\\\AdminDashBoard\\\\\\\\SuperAdmin\\\\\\\\SuperAdminDashboard.jsx\")",
-      "Bash(ls -la \"c:\\\\\\\\Users\\\\\\\\user\\\\\\\\Desktop\\\\\\\\urbahn living\\\\\\\\urbanliving\\\\\\\\src\\\\\\\\compoent\\\\\\\\AdminDashBoard\\\\\\\\SuperAdmin\\\\\\\\\")"
+      "Bash(ls -la \"c:\\\\\\\\Users\\\\\\\\user\\\\\\\\Desktop\\\\\\\\urbahn living\\\\\\\\urbanliving\\\\\\\\src\\\\\\\\compoent\\\\\\\\AdminDashBoard\\\\\\\\SuperAdmin\\\\\\\\\")",
+      "Bash(xargs find -type f -name \"*.jsx\")"
     ]
   }
 }
