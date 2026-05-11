@@ -66,7 +66,7 @@ const PG_AMENITIES = {
 };
 
 const DEFAULT_CANCELLATION_POLICIES = ["Flexible", "Moderate", "Strict"];
-const DEFAULT_PROPERTY_CATEGORIES = ["Apartment", "House", "Villa", "Cabin", "Bungalow", "Studio", "Suite", "Hotel room", "PG", "Other"];
+const DEFAULT_PROPERTY_CATEGORIES = ["Apartment", "House", "Villa", "Cabin", "Bungalow", "Studio", "Suite", "Home Stays", "Hotel room", "PG", "Other"];
 const PROPERTY_TYPES = ["Entire place", "Private room", "Shared room", "Hotel room", "Homestay"];
 const PG_TYPES = ["Boys PG", "Girls PG", "Co-ed PG"];
 const SHARING_TYPES = ["Single Room", "Double Sharing", "Triple Sharing", "Four Sharing", "Dormitory"];
@@ -220,7 +220,7 @@ function EditPropertyModal({ property, onClose, onRefresh }) {
       ? String(property.price)
       : "",
     propertyType: isPG ? (getMeta('propertyType') || PG_TYPES[0]) : (property.property_type || getMeta('propertyType') || PROPERTY_TYPES[0]),
-    propertyCategory: getMeta('propertyCategory') || (isPG ? "PG" : DEFAULT_PROPERTY_CATEGORIES[0]),
+    propertyCategory: getMeta('propertyCategory') || property.property_category || (isPG ? "PG" : ""),
     address: property.address || "",
     city: property.city || "",
     country: property.country || getMeta('country') || "India",
