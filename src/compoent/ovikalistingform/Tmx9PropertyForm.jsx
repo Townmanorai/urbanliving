@@ -24,14 +24,15 @@ const DEFAULT_CANCELLATION_POLICIES = ["Flexible", "Moderate", "Strict"];
 const DEFAULT_PROPERTY_CATEGORIES = [
   "Apartment",
   "House",
-   "Villa",
-     "Bungalow",
+  "Villa",
+  "Bungalow",
   "Cabin",
   "Studio",
   "Suite",
+  "Home Stays",
   "PG",
   "Other",
-   "Hotel"
+  "Hotel"
 ];
 
 const PROPERTY_TYPES = ["Entire place", "Private room"];
@@ -598,6 +599,7 @@ console.log("booking_type:", fd.get("booking_type"));
       // top-level fields so PropertyDetailPage can read them without meta fallback
       fd.append("amenities", JSON.stringify(meta.amenities));
       fd.append("bedrooms", JSON.stringify(meta.bedrooms));
+      fd.append("bathrooms", JSON.stringify(meta.bathrooms));
       fd.append(
   "guest_policy",
   JSON.stringify({
