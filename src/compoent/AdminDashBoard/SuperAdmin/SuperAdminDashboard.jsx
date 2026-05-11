@@ -2383,25 +2383,23 @@ export default function SuperAdminDashboard() {
                 const toggleBadge = async (prop, add) => {
                     setVbLoading(true);
                     try {
-                        const meta = getMeta(prop);
-                        const updatedMeta = { ...meta, verified_badge: add };
-                        const body = { ...prop, meta: JSON.stringify(updatedMeta) };
-                        const res = await fetch(`https://www.townmanor.ai/api/ovika/properties/${prop.id}`, {
-                            method: 'PUT',
+                        const res = await fetch(`https://www.townmanor.ai/api/ovika/properties/${prop.id}/badge`, {
+                            method: 'PATCH',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(body),
+                            body: JSON.stringify({ verified_badge: add }),
                         });
                         if (res.ok) {
-                            // Update local state immediately
+                            const updatedMeta = { ...getMeta(prop), verified_badge: add };
                             setProperties(prev => prev.map(p => p.id === prop.id
                                 ? { ...p, meta: updatedMeta }
                                 : p
                             ));
                             alert(`Badge ${add ? 'added to' : 'removed from'} "${prop.property_name}" successfully!`);
                         } else {
-                            alert('Failed to update badge. Please try again.');
+                            const err = await res.json().catch(() => ({}));
+                            alert(`Failed: ${err.message || res.status + ' ' + res.statusText}`);
                         }
-                    } catch {
+                    } catch (e) {
                         alert('Network error. Please try again.');
                     } finally {
                         setVbLoading(false);
@@ -2460,7 +2458,7 @@ export default function SuperAdminDashboard() {
                                         <tr><td colSpan={10} style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>No properties found</td></tr>
                                     ) : filtered.map((p, idx) => {
                                         const meta = getMeta(p);
-                                        const hasBadge = !!meta.verified_badge;
+                                        const hasBadge = Number(p.verified_badge) === 1 || !!meta.verified_badge;
                                         const coverImg = getCoverImg(p);
                                         const price = getPrice(p);
                                         const rt = getRentalType(p);

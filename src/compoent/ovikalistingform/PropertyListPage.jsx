@@ -552,7 +552,7 @@ const PropertyCard = ({ property, rentalType }) => {
         <div className="plp-hcard-toprow">
           <h3 className="plp-hcard-name" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             {property.property_name || 'Untitled Property'}
-            {(property.property_name?.toLowerCase().includes('signature') || (() => { try { const m = typeof property.meta === 'object' ? property.meta : JSON.parse(property.meta || '{}'); return !!m.verified_badge; } catch { return false; } })()) && (
+            {(Number(property.verified_badge) === 1 || (() => { try { const m = typeof property.meta === 'object' ? property.meta : JSON.parse(property.meta || '{}'); return !!m.verified_badge; } catch { return false; } })()) && (
               <img
                 src="/ovikaver.png"
                 alt="Ovika Verified"

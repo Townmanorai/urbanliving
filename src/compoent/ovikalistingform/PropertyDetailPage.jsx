@@ -2717,8 +2717,9 @@ const PropertyDetailPage = () => {
         <h1 style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           {property.property_name}
           {(() => {
+            const topLevel = Number(property.verified_badge) === 1;
             const m = property.meta && typeof property.meta === 'object' ? property.meta : (() => { try { return JSON.parse(property.meta || '{}'); } catch { return {}; } })();
-            return (m.verified_badge || property.property_name?.toLowerCase().includes('signature'))
+            return (topLevel || !!m.verified_badge)
               ? <img src="/ovikaver.png" alt="Verified" style={{ height: 28, width: 'auto', filter: 'drop-shadow(0 1px 4px rgba(0,0,0,0.2))' }} />
               : null;
           })()}
