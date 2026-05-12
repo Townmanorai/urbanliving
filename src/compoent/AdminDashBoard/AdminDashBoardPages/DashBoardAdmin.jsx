@@ -1087,7 +1087,7 @@ export default function DashBoardAdmin() {
       <PropertyCard
         key={prop.id || prop._id || Math.random()}
         photoUrl={photoUrl} name={name} location={location} details={details} priceText={priceText}
-        onView={() => navigate(`/property/${prop.id || prop._id}`)}
+        onView={() => navigate(`/property/${prop.id || prop._id}${isMonthly ? '?rentalType=long' : ''}`)}
         onEdit={() => { if (isMonthly) { setEditingMonthlyProperty(prop); } else { setEditingProperty(prop); } }}
         onDelete={async () => {
           if (!window.confirm("Are you sure you want to delete this property?")) return;

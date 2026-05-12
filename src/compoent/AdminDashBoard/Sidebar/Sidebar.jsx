@@ -19,7 +19,6 @@ import { FaUserCircle } from "react-icons/fa";
 
 function Sidebar({ isOpen, onClose }) {
   const { user } = useContext(AuthContext);
-
   const [profile, setProfile] = useState({
     username: "",
     email: "",
