@@ -3,6 +3,31 @@ import "./PropertyReviews.css";
 
 const API_BASE = "https://townmanor.ai/api/feedback";
 
+/* ── Hardcoded reviews for Ovika Signature properties ── */
+const NIGHTLY_REVIEWS = [
+  { id: "n1", username: "Harsh", created_at: "2025-11-14", overall_experience: 5, cleanliness: 5, location: 5, value_for_money: 5, amenities: 5, staff_behavior: 5, review_status: "approved", remarks: "Great place to live in for business and personal residence. Do visit for great hospitality by the TownManor Team — will surely recommend anyone who is visiting IEML or Greater Noida." },
+  { id: "n2", username: "Pardeep", created_at: "2025-08-22", overall_experience: 5, cleanliness: 5, location: 5, value_for_money: 5, amenities: 5, staff_behavior: 5, review_status: "approved", remarks: "I had an amazing two-night stay at this beautiful property! Spotless, very comfortable, and exactly as described. The host was incredibly welcoming. Location is ideal — near the metro with easy access to Ola, Uber, restaurants and malls." },
+  { id: "n3", username: "Ananya Gupta", created_at: "2025-09-05", overall_experience: 5, cleanliness: 5, location: 5, value_for_money: 5, amenities: 5, staff_behavior: 5, review_status: "approved", remarks: "This was my first time using Signature Stays and I was blown away. The interiors are beautiful, the host was so welcoming, and the location is super convenient. Everything from check-in to check-out was seamless. A perfect stay!" },
+  { id: "n4", username: "Sankalp", created_at: "2025-11-03", overall_experience: 5, cleanliness: 5, location: 5, value_for_money: 5, amenities: 5, staff_behavior: 5, review_status: "approved", remarks: "It was amazing, nearby Metro so it's well connected and I was happy with the room and host. Lovely place if you are looking for a place in Sector 137." },
+];
+
+const MONTHLY_REVIEWS = [
+  { id: "m1", username: "Vikram Nair", created_at: "2025-10-18", overall_experience: 5, cleanliness: 5, location: 5, value_for_money: 5, amenities: 5, staff_behavior: 5, review_status: "approved", remarks: "Stayed here for a month during my project and it felt like a real home. Well-furnished, kitchen was stocked, and the neighbourhood is safe and quiet. The TownManor Team was incredibly helpful throughout. 10/10 experience." },
+  { id: "m2", username: "Neha Joshi", created_at: "2025-11-09", overall_experience: 5, cleanliness: 5, location: 5, value_for_money: 5, amenities: 5, staff_behavior: 5, review_status: "approved", remarks: "One of the best stays I've had! The apartment had all the amenities I needed and more. Close to the metro, malls, and restaurants. The host responded quickly to any queries. Would absolutely recommend to anyone visiting the NCR region." },
+  { id: "m3", username: "Rahul Verma", created_at: "2025-09-27", overall_experience: 5, cleanliness: 5, location: 5, value_for_money: 5, amenities: 5, staff_behavior: 5, review_status: "approved", remarks: "Had a wonderful experience here. The apartment was spacious and cozy at the same time. Great amenities, fast WiFi, and a very comfortable bed. Felt like home away from home. Highly recommend for anyone visiting Greater Noida." },
+  { id: "m4", username: "Akshay", created_at: "2025-08-11", overall_experience: 5, cleanliness: 5, location: 5, value_for_money: 5, amenities: 5, staff_behavior: 5, review_status: "approved", remarks: "We had an amazing experience at Townmanor — a big thank you to the owner for making it feel like our second home. The place is beautifully designed, peaceful, and thoughtfully maintained. Truly a hidden gem and a perfect getaway spot!" },
+];
+
+const NIGHTLY_IDS = [77, 78, 79, 80, 81];
+const MONTHLY_SIGNATURE_IDS = [315, 316, 317, 323];
+
+const getStaticReviews = (propertyId) => {
+  const id = Number(propertyId);
+  if (NIGHTLY_IDS.includes(id)) return NIGHTLY_REVIEWS;
+  if (MONTHLY_SIGNATURE_IDS.includes(id)) return MONTHLY_REVIEWS;
+  return [];
+};
+
 /* ── Avatar background colors ── */
 const AVATAR_COLORS = [
   "#8b0000", "#166534", "#1d4ed8", "#7c3aed",
@@ -71,9 +96,11 @@ export default function PropertyReviews({ propertyId }) {
         const approved = Array.isArray(list)
           ? list.filter(r => !r.review_status || r.review_status === 'approved')
           : [];
-        setReviews(approved);
+        const staticOnes = getStaticReviews(propertyId);
+        // Static reviews pehle, phir real API reviews
+        setReviews([...staticOnes, ...approved]);
       } catch {
-        setReviews([]);
+        setReviews(getStaticReviews(propertyId));
       } finally {
         setLoading(false);
       }
