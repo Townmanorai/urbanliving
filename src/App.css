@@ -7,10 +7,21 @@
    overflow-x: hidden !important;
 }
 
+/* ── iOS Safari / WebKit: stop automatic text size inflation ── */
+html {
+   -webkit-text-size-adjust: 100% !important;
+   -moz-text-size-adjust: 100% !important;
+   text-size-adjust: 100% !important;
+}
+
+/* ── Global stable font rendering (Safari + Chrome) ── */
 * {
    font-family: "Plus Jakarta Sans", "Inter", "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
-   
-   
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+   text-rendering: optimizeLegibility;
+   /* Prevent Safari from boosting font size in narrow containers */
+   -webkit-text-size-adjust: inherit;
 }
 
 h1,
@@ -29,4 +40,9 @@ b {
 
 * {
    font-weight: 400;
+}
+
+/* ── Flex/overflow containers: prevent iOS font scaling inside ── */
+p, span, div, a, li, td, th, label, input, textarea, button {
+   -webkit-text-size-adjust: 100% !important;
 }

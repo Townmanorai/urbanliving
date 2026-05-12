@@ -2720,7 +2720,7 @@ const PropertyDetailPage = () => {
             const topLevel = Number(property.verified_badge) === 1;
             const m = property.meta && typeof property.meta === 'object' ? property.meta : (() => { try { return JSON.parse(property.meta || '{}'); } catch { return {}; } })();
             return (topLevel || !!m.verified_badge)
-              ? <img src="/ovikaver.png" alt="Verified" style={{ height: 28, width: 'auto', filter: 'drop-shadow(0 1px 4px rgba(0,0,0,0.2))' }} />
+              ? <img src="/ovikaver.png" alt="Verified" style={{ height: 44, width: 'auto', filter: 'drop-shadow(0 1px 4px rgba(0,0,0,0.2))' }} />
               : null;
           })()}
         </h1>
@@ -2738,9 +2738,6 @@ const PropertyDetailPage = () => {
           {/* LEFT — big main image */}
           <div className="gallery-main" onClick={handleMainImageClick}>
             <img src={getPhotoUrl(photos[0]) || 'https://via.placeholder.com/800x500'} alt="Main Property" />
-            {property.property_name?.toLowerCase().includes('signature') && (
-              <img src="/ovikaver.png" alt="Verified" className="gallery-verified-badge" style={{ position: 'absolute', top: '8px', left: '8px', width: '60px', height: 'auto', zIndex: 5, pointerEvents: 'none', opacity: 0.92 }} />
-            )}
           </div>
 
           {/* RIGHT — 2 stacked images */}
@@ -2809,7 +2806,7 @@ const PropertyDetailPage = () => {
               <div className="feature-box"><BiArea className="f-icon"/><div><strong>{property.area || 'N/A'}</strong><span>Sq Ft</span></div></div>
               {property.max_guests > 0 && !isPG && <div className="feature-box"><FiUser className="f-icon"/><div><strong>{property.max_guests}</strong><span>Guests</span></div></div>}
               {property.facing && <div className="feature-box"><FiCompass className="f-icon"/><div><strong>{property.facing}</strong><span>Facing</span></div></div>}
-              {isOvikaOwnProperty && pricingMode !== 'monthly' && (
+              {isOvikaOwnProperty && !isNightlyOfferProperty && pricingMode !== 'monthly' && (
                 <div className="feature-box" style={{ borderLeft: '3px solid #16a34a' }}>
                   <FiLock className="f-icon" style={{ color: '#16a34a' }}/>
                   <div>
@@ -3066,7 +3063,7 @@ const PropertyDetailPage = () => {
                       <div className="rule-info"><span className="rule-label">Check-Out</span><span>{formatTime12h(property.check_out_time || property.meta?.check_out_time)}</span></div>
                     </div>
                   )}
-                  {(property.securityDeposit > 0 || isOvikaOwnProperty) && (
+                  {(property.securityDeposit > 0 || (isOvikaOwnProperty && !isNightlyOfferProperty)) && (
                     <div className="amenity-card rule-card">
                       <div className="rule-icon"><FiLock color="#8b0000" size={18} /></div>
                       <div className="rule-info">
@@ -3248,7 +3245,7 @@ const PropertyDetailPage = () => {
                         ? 'Request needed first'
                         : "You won't be charged yet"}
                   </p>
-                  {(property.securityDeposit > 0 || isOvikaOwnProperty || isOvikaMonthlyProperty) && (
+                  {(property.securityDeposit > 0 || (isOvikaOwnProperty && !isNightlyOfferProperty) || isOvikaMonthlyProperty) && (
                     <div style={{ display:'flex', alignItems:'center', gap:'5px', padding:'6px 10px', background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'6px', fontSize:'0.75rem', color:'#166534' }}>
                       <FiLock size={12} />
                       <span>

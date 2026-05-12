@@ -556,7 +556,7 @@ const PropertyCard = ({ property, rentalType }) => {
               <img
                 src="/ovikaver.png"
                 alt="Ovika Verified"
-                style={{ height: 22, width: 'auto', flexShrink: 0, filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.25))', pointerEvents: 'none' }}
+                style={{ height: 44, width: 'auto', flexShrink: 0, filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.25))', pointerEvents: 'none' }}
               />
             )}
           </h3>
