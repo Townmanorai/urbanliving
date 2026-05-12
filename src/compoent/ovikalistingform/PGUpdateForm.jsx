@@ -1301,6 +1301,60 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
                   <label>180 Days Discount (%)</label>
                   <input type="number" name="discount180Days" value={form.discount180Days} onChange={handleChange} placeholder="e.g. 10" />
                 </div>
+
+                {/* ── House Rules & Policies ── */}
+                <div className="field-group full">
+                  <div className="section-separator">House Rules &amp; Policies</div>
+                </div>
+
+                {[
+                  { key: 'smokingAllowed',       label: '🚬 Smoking Allowed' },
+                  { key: 'petsAllowed',           label: '🐾 Pets Allowed' },
+                  { key: 'eventsAllowed',         label: '🎉 Events Allowed' },
+                  { key: 'drinkingAllowed',       label: '🍺 Alcohol Allowed' },
+                  { key: 'outsideGuestsAllowed',  label: '👥 Outside Guests Allowed' },
+                ].map(({ key, label }) => (
+                  <div className="field-group" key={key}>
+                    <label>{label}</label>
+                    <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>
+                      {['Yes', 'No'].map(opt => (
+                        <button
+                          key={opt} type="button"
+                          onClick={() => setForm(f => ({ ...f, [key]: opt === 'Yes' }))}
+                          style={{ padding: '7px 22px', borderRadius: 8, border: `1.5px solid ${form[key] === (opt === 'Yes') ? '#c98b3e' : '#e5e7eb'}`, background: form[key] === (opt === 'Yes') ? '#fff7ed' : '#fff', color: form[key] === (opt === 'Yes') ? '#c98b3e' : '#6b7280', fontWeight: form[key] === (opt === 'Yes') ? 700 : 400, cursor: 'pointer', fontSize: 13 }}
+                        >{opt}</button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Guest Policy toggles */}
+                {[
+                  { label: '👪 Family Allowed',              check: () => form.preferredTenants?.includes('Family'),             toggle: () => { const has = form.preferredTenants?.includes('Family'); setForm(f => ({ ...f, preferredTenants: has ? f.preferredTenants.filter(t => t !== 'Family') : [...(f.preferredTenants || []), 'Family'] })); } },
+                  { label: '💑 Unmarried Couples Allowed',   check: () => form.houseRules?.includes('Couple Friendly'),          toggle: () => { const has = form.houseRules?.includes('Couple Friendly'); setForm(f => ({ ...f, houseRules: has ? (f.houseRules||[]).filter(r => r !== 'Couple Friendly') : [...(f.houseRules||[]), 'Couple Friendly'] })); } },
+                  { label: '🎓 Bachelors Allowed',           check: () => form.preferredTenants?.some(t => t.includes('Bachelors')), toggle: () => { const has = form.preferredTenants?.some(t => t.includes('Bachelors')); setForm(f => ({ ...f, preferredTenants: has ? f.preferredTenants.filter(t => !t.includes('Bachelors')) : [...(f.preferredTenants||[]), 'Bachelors (Any)'] })); } },
+                ].map(({ label, check, toggle }) => (
+                  <div className="field-group" key={label}>
+                    <label>{label}</label>
+                    <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>
+                      {['Yes', 'No'].map(opt => (
+                        <button
+                          key={opt} type="button"
+                          onClick={toggle}
+                          style={{ padding: '7px 22px', borderRadius: 8, border: `1.5px solid ${check() === (opt === 'Yes') ? '#c98b3e' : '#e5e7eb'}`, background: check() === (opt === 'Yes') ? '#fff7ed' : '#fff', color: check() === (opt === 'Yes') ? '#c98b3e' : '#6b7280', fontWeight: check() === (opt === 'Yes') ? 700 : 400, cursor: 'pointer', fontSize: 13 }}
+                        >{opt}</button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+                <div className="field-group full">
+                  <label>Cancellation Policy</label>
+                  <select name="cancellationPolicy" value={form.cancellationPolicy} onChange={handleChange}>
+                    {CANCELLATION_POLICIES.map(p => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </div>
+
               </div>
             </div>
           )}
