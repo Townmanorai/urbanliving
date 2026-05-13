@@ -646,13 +646,14 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
         bedrooms: JSON.stringify(form.bedroomDetails || []),
         bathrooms: JSON.stringify(finalBathroomDetails),
         photos: JSON.stringify(updatedPhotos),
-        meta: JSON.stringify(metaPayload),
         guest_policy: JSON.stringify({
           family_allowed: form.preferredTenants?.includes("Family"),
           unmarried_couple_allowed: form.houseRules?.includes("Couple Friendly"),
           bachelors_allowed: form.preferredTenants?.some(t => t.includes("Bachelors")),
           preferredTenants: form.preferredTenants || [],
           furnishing: form.furnishing || "",
+          cancellationPolicy: form.cancellationPolicy || "",
+          outsideGuestsAllowed: !!form.outsideGuestsAllowed,
         }),
       };
 
