@@ -630,7 +630,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
         smoking_allowed: !!form.smokingAllowed,
         pets_allowed: !!form.petsAllowed,
         events_allowed: !!form.eventsAllowed,
-        drinking_alcohol: !!form.drinkingAllowed,
+        drinking_allowed: !!form.drinkingAllowed,
 
         check_in_time: form.check_in_time || "12:00",
         check_out_time: form.check_out_time || "11:00",
@@ -638,13 +638,14 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
         cleaning_fee: Number(form.cleaning_fee) || 0,
         weekly_discount_pct: Number(form.weekly_discount_pct) || 0,
         monthly_discount_pct: Number(form.monthly_discount_pct) || 0,
+        cancellation_policy: form.cancellationPolicy || "",
         cover_photo_index: coverIndex,
 
         amenities: JSON.stringify(amenityList),
         bedrooms: JSON.stringify(form.bedroomDetails || []),
-        // ── YEH FIX: real bathroom array save ho raha hai ─────────────────────
         bathrooms: JSON.stringify(finalBathroomDetails),
         photos: JSON.stringify(updatedPhotos),
+        meta: JSON.stringify(metaPayload),
         guest_policy: JSON.stringify({
           family_allowed: form.preferredTenants?.includes("Family"),
           unmarried_couple_allowed: form.houseRules?.includes("Couple Friendly"),
