@@ -630,7 +630,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
         smoking_allowed: !!form.smokingAllowed,
         pets_allowed: !!form.petsAllowed,
         events_allowed: !!form.eventsAllowed,
-        drinking_allowed: !!form.drinkingAllowed,
+        drinking_alcohol: !!form.drinkingAllowed,
 
         check_in_time: form.check_in_time || "12:00",
         check_out_time: form.check_out_time || "11:00",

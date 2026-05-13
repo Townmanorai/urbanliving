@@ -149,7 +149,6 @@ export default function PropertyReviews({ propertyId }) {
           ) : (
             <>
               <div className="pr-score-number" style={{ fontSize: 22 }}>★★★★★</div>
-              <div className="pr-score-label">NEW</div>
               <div className="pr-score-count">Be first to rate</div>
             </>
           )}
