@@ -602,6 +602,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
         petsAllowed: !!form.petsAllowed,
         eventsAllowed: !!form.eventsAllowed,
         drinkingAllowed: !!form.drinkingAllowed,
+        outsideGuestsAllowed: !!form.outsideGuestsAllowed,
         maxGuests: Number(form.maxGuests) || Number(totalBeds) || 1,
         weekendRate: Number(form.weekend_rate) || 0,
         cleaningFee: Number(form.cleaning_fee) || 0,
@@ -610,6 +611,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
         bookingType: form.bookingType,
         furnishing: form.furnishing || "",
         preferredTenants: form.preferredTenants || [],
+        cancellationPolicy: form.cancellationPolicy || "",
         ownerId: form.owner_id || user?.id || "admin",
       };
 
@@ -638,7 +640,6 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
         cleaning_fee: Number(form.cleaning_fee) || 0,
         weekly_discount_pct: Number(form.weekly_discount_pct) || 0,
         monthly_discount_pct: Number(form.monthly_discount_pct) || 0,
-        cancellation_policy: form.cancellationPolicy || "",
         cover_photo_index: coverIndex,
 
         amenities: JSON.stringify(amenityList),

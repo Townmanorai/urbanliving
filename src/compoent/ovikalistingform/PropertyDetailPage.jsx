@@ -3362,9 +3362,9 @@ const PropertyDetailPage = () => {
             {(property.electricityCharges || property.meta?.electricityCharges) && <div className="amenity-card rule-card"><div className="rule-icon"><FiZap style={{ color: '#eab308' }} /></div><div className="rule-info"><span className="rule-label">Electricity</span><strong>{property.electricityCharges || property.meta?.electricityCharges}</strong></div></div>}
             {(property.gateClosingTime || property.meta?.gateClosingTime) && <div className="amenity-card rule-card"><div className="rule-icon"><Clock size={18} color="#ef4444" /></div><div className="rule-info"><span className="rule-label">Gate Closing</span><strong>{property.gateClosingTime || property.meta?.gateClosingTime}</strong></div></div>}
           </div>
-          {(property.cancellation_policy && property.cancellation_policy !== 'undefined') && (
+          {((property.cancellation_policy && property.cancellation_policy !== 'undefined') || property.meta?.cancellationPolicy) && (
             <div style={{ marginTop: '0.75rem', padding: '0.6rem 0.85rem', background: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontSize: '0.78rem', color: '#374151' }}><strong>Cancellation:</strong> {property.cancellation_policy}</span>
+              <span style={{ fontSize: '0.78rem', color: '#374151' }}><strong>Cancellation:</strong> {property.cancellation_policy || property.meta?.cancellationPolicy}</span>
               <a href="/refund-cancellation-policy" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.75rem', color: '#c98b3e', fontWeight: 700, whiteSpace: 'nowrap' }}>Read policy →</a>
             </div>
           )}
