@@ -1089,6 +1089,7 @@ export default function SuperAdminDashboard() {
                                 <th>Type</th>
                                 <th>Location</th>
                                 <th>Price</th>
+                                <th>Listed On</th>
                                 <th>Listed By (Owner)</th>
                                 <th>Actions</th>
                             </tr>
@@ -1118,7 +1119,6 @@ export default function SuperAdminDashboard() {
                                         <td><img src={img} alt="thumb" className="sa-prop-img" /></td>
                                         <td>
                                             <span className="sa-prop-name">{p.property_name || p.name || "Untitled"}</span>
-                                            <span className="sa-prop-meta">Updated: {new Date(p.updated_at || Date.now()).toLocaleDateString()}</span>
                                         </td>
                                         <td>
                                             <span className={`sa-badge-type ${type === 'PG' ? 'pg' : 'standard'}`}>
@@ -1127,6 +1127,20 @@ export default function SuperAdminDashboard() {
                                         </td>
                                         <td style={{ fontWeight: '500' }}>{p.city || p.address || "-"}</td>
                                         <td style={{ fontFamily: 'Inter', fontWeight: '600' }}>₹{Number(p.price).toLocaleString()}</td>
+                                        <td style={{ minWidth: 110, fontSize: 12 }}>
+                                            {(p.created_at || p.createdAt || p.updated_at || p.updatedAt) && !isNaN(new Date(p.created_at || p.createdAt || p.updated_at || p.updatedAt).getTime()) ? (
+                                              <>
+                                                <div style={{ fontWeight: 600, color: '#1e293b' }}>
+                                                  {new Date(p.created_at || p.createdAt || p.updated_at || p.updatedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                </div>
+                                                <div style={{ fontWeight: 700, color: '#6366f1', marginTop: 2 }}>
+                                                  {new Date(p.created_at || p.createdAt || p.updated_at || p.updatedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                                                </div>
+                                              </>
+                                            ) : (
+                                              <span style={{ color: '#64748b', fontWeight: 600 }}>N/A</span>
+                                            )}
+                                        </td>
                                         <td>
                                             <div style={{fontWeight:'600', color:'#1e293b', fontSize:'13px'}}>
                                                 {p.owner_name || "Unknown"}
@@ -1284,7 +1298,16 @@ export default function SuperAdminDashboard() {
                                                     </div>
                                                 </td>
                                                 <td style={{fontSize:'12px', color:'#475569'}}>
-                                                    {u.created_at ? new Date(u.created_at).toLocaleDateString() : '-'}
+                                                    {u.created_at ? (
+                                                      <>
+                                                        <div style={{ fontWeight: 600, color: '#1e293b' }}>
+                                                          {new Date(u.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                        </div>
+                                                        <div style={{ color: '#6366f1', fontWeight: 600, fontSize: '11px', marginTop: 2 }}>
+                                                          {new Date(u.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                                                        </div>
+                                                      </>
+                                                    ) : '-'}
                                                 </td>
                                                 <td>
                                                     <div className="sa-actions">

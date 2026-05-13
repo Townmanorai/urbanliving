@@ -2726,8 +2726,6 @@ const PropertyDetailPage = () => {
         </h1>
         <div className="location-row">
           <span>{property.city}, {property.address}</span>
-          <span className="dot">•</span>
-          <span className="rating"><FiStar className="star" /> New Listing</span>
         </div>
       </section>
 
@@ -2787,7 +2785,7 @@ const PropertyDetailPage = () => {
 
       <div className="content-grid">
         <div className="details-column">
-          <div className="features-bar">
+          {!(isPG && pricingMode === 'monthly') && <div className="features-bar">
               <div className="feature-box">
                 <BiBed className="f-icon"/>
                 <div>
@@ -2816,7 +2814,7 @@ const PropertyDetailPage = () => {
                   </div>
                 </div>
               )}
-            </div>
+            </div>}
 
           <div className="divider"></div>
 
@@ -3351,7 +3349,9 @@ const PropertyDetailPage = () => {
             <div className="amenity-card rule-card"><div className="rule-icon">{(property.drinking_allowed || property.drinkingAllowed || property.meta?.drinkingAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Alcohol</span><strong>{(property.drinking_allowed || property.drinkingAllowed || property.meta?.drinkingAllowed) ? 'Allowed' : 'Not allowed'}</strong></div></div>
             <div className="amenity-card rule-card"><div className="rule-icon">{guestPolicy.family_allowed ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Family</span><strong>{guestPolicy.family_allowed ? 'Allowed' : 'Not allowed'}</strong></div></div>
             <div className="amenity-card rule-card"><div className="rule-icon">{guestPolicy.unmarried_couple_allowed ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Unmarried Couples</span><strong>{guestPolicy.unmarried_couple_allowed ? 'Allowed' : 'Not allowed'}</strong></div></div>
-            <div className="amenity-card rule-card"><div className="rule-icon">{(guestPolicy.bachelors_allowed || guestPolicy.Bechelors) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Bachelor</span><strong>{(guestPolicy.bachelors_allowed || guestPolicy.Bechelors) ? 'Bachelors (Any)' : 'Not allowed'}</strong></div></div>
+            {isPG && (guestPolicy.bachelors_allowed != null || guestPolicy.Bechelors != null || property.meta?.bachelorAllowed != null) && (
+              <div className="amenity-card rule-card"><div className="rule-icon">{(guestPolicy.bachelors_allowed || guestPolicy.Bechelors || property.meta?.bachelorAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Bachelor</span><strong>{(guestPolicy.bachelors_allowed || guestPolicy.Bechelors || property.meta?.bachelorAllowed) ? 'Bachelors (Any)' : 'Not allowed'}</strong></div></div>
+            )}
             {preferredTenants.map((t, i) => (
               <div key={i} className="amenity-card rule-card">
                 <div className="rule-icon"><FiCheck className="text-green" /></div>

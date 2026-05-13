@@ -830,12 +830,19 @@ function EditPropertyModal({ property, onClose, onRefresh }) {
   );
 }
 
-function PropertyCard({ photoUrl, name, location, priceText, details, onEdit, onDelete, onView, onViewImages }) {
+function PropertyCard({ photoUrl, name, location, priceText, details, propertyId, onEdit, onDelete, onView, onViewImages }) {
   return (
     <div className={styles.propertyCard}>
       <img src={photoUrl} alt={name} className={styles.propertyImage} onClick={onView} style={{ cursor: "pointer" }} />
       <div className={styles.propertyMeta}>
-        <div className={styles.propertyTitle}>{name}</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 2 }}>
+          <div className={styles.propertyTitle} style={{ margin: 0 }}>{name}</div>
+          {propertyId && (
+            <span style={{ flexShrink: 0, background: '#f0f4ff', color: '#3b5bdb', border: '1px solid #c5d0fa', borderRadius: 6, fontSize: 11, fontWeight: 700, padding: '2px 8px', letterSpacing: '0.03em', whiteSpace: 'nowrap' }}>
+              ID: {propertyId}
+            </span>
+          )}
+        </div>
         <div className={styles.propertySubtitle}>{location}</div>
         {details && <div className={styles.propertyDetails}>{details}</div>}
         {priceText && <div className={styles.propertyPrice}>{priceText}</div>}
@@ -1087,6 +1094,7 @@ export default function DashBoardAdmin() {
       <PropertyCard
         key={prop.id || prop._id || Math.random()}
         photoUrl={photoUrl} name={name} location={location} details={details} priceText={priceText}
+        propertyId={prop.id || prop._id}
         onView={() => navigate(`/property/${prop.id || prop._id}${isMonthly ? '?rentalType=long' : ''}`)}
         onEdit={() => { if (isMonthly) { setEditingMonthlyProperty(prop); } else { setEditingProperty(prop); } }}
         onDelete={async () => {

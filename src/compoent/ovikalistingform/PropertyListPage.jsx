@@ -502,8 +502,8 @@ const PropertyCard = ({ property, rentalType }) => {
   return (
     <div
       className="plp-hcard"
-      onClick={(e) => { if (!e.target.closest('[data-action]')) { const rt = isMonthly ? 'long' : 'short'; sessionStorage.setItem('ovika_rental_type', rt); navClick(e, `/property/${property.id}?rentalType=${rt}`, navigate); } }}
-      onAuxClick={(e) => { if (!e.target.closest('[data-action]')) { const rt = isMonthly ? 'long' : 'short'; sessionStorage.setItem('ovika_rental_type', rt); auxNavClick(e, `/property/${property.id}?rentalType=${rt}`); } }}
+      onClick={(e) => { if (!e.target.closest('[data-action]')) { const rt = isMonthly ? 'long' : 'short'; sessionStorage.setItem('ovika_rental_type', rt); sessionStorage.setItem('plp_back_expected', 'true'); navClick(e, `/property/${property.id}?rentalType=${rt}`, navigate); } }}
+      onAuxClick={(e) => { if (!e.target.closest('[data-action]')) { const rt = isMonthly ? 'long' : 'short'; sessionStorage.setItem('ovika_rental_type', rt); sessionStorage.setItem('plp_back_expected', 'true'); auxNavClick(e, `/property/${property.id}?rentalType=${rt}`); } }}
     >
       {/* ── LEFT: Image block ── */}
       <div className="plp-hcard-imgblock">
@@ -611,14 +611,14 @@ const PropertyCard = ({ property, rentalType }) => {
             <button
               className="plp-hcard-btn plp-hcard-btn--outline"
               data-action="view"
-              onClick={e => { e.stopPropagation(); const rt = isMonthly ? 'long' : 'short'; sessionStorage.setItem('ovika_rental_type', rt); navClick(e, `/property/${property.id}?rentalType=${rt}`, navigate); }}
-              onAuxClick={e => { e.stopPropagation(); const rt = isMonthly ? 'long' : 'short'; auxNavClick(e, `/property/${property.id}?rentalType=${rt}`); }}
+              onClick={e => { e.stopPropagation(); const rt = isMonthly ? 'long' : 'short'; sessionStorage.setItem('ovika_rental_type', rt); sessionStorage.setItem('plp_back_expected', 'true'); navClick(e, `/property/${property.id}?rentalType=${rt}`, navigate); }}
+              onAuxClick={e => { e.stopPropagation(); const rt = isMonthly ? 'long' : 'short'; sessionStorage.setItem('plp_back_expected', 'true'); auxNavClick(e, `/property/${property.id}?rentalType=${rt}`); }}
             >View Details</button>
             <button
               className="plp-hcard-btn plp-hcard-btn--fill"
               data-action="book"
-              onClick={e => { e.stopPropagation(); const rt = isMonthly ? 'long' : 'short'; sessionStorage.setItem('ovika_rental_type', rt); navClick(e, `/property/${property.id}?rentalType=${rt}`, navigate); }}
-              onAuxClick={e => { e.stopPropagation(); const rt = isMonthly ? 'long' : 'short'; auxNavClick(e, `/property/${property.id}?rentalType=${rt}`); }}
+              onClick={e => { e.stopPropagation(); const rt = isMonthly ? 'long' : 'short'; sessionStorage.setItem('ovika_rental_type', rt); sessionStorage.setItem('plp_back_expected', 'true'); navClick(e, `/property/${property.id}?rentalType=${rt}`, navigate); }}
+              onAuxClick={e => { e.stopPropagation(); const rt = isMonthly ? 'long' : 'short'; sessionStorage.setItem('plp_back_expected', 'true'); auxNavClick(e, `/property/${property.id}?rentalType=${rt}`); }}
             >Book Now</button>
           </div>
         </div>
@@ -887,33 +887,47 @@ const SidebarContent = ({
 
 /* ─── Main Page ─────────────────────────────────── */
 const PropertyListPage = () => {
+  // ── Back-navigation detection (runs once per component mount) ──
+  // NOTE: plp_back_expected is removed only in useEffect (not here) so that
+  // React StrictMode's double-invoke doesn't clear it before the second render reads it.
+  const initRef = useRef(null);
+  const skipPageResetRef = useRef(false);
+  if (initRef.current === null) {
+    initRef.current = true;
+    const isBack = sessionStorage.getItem('plp_back_expected') === 'true';
+    if (!isBack) { sessionStorage.removeItem('plp_filter_state'); sessionStorage.removeItem('plp_scroll_y'); }
+    if (isBack) { skipPageResetRef.current = true; }
+  }
+  // ── Restore filter state from sessionStorage (back navigation) ──
+  const _ss = (() => { try { return JSON.parse(sessionStorage.getItem('plp_filter_state') || '{}'); } catch { return {}; } })();
+
   const [properties, setProperties] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [search, setSearch] = useState('');
-  const [activeCat, setActiveCat] = useState(null);
-  const [rentalType, setRentalType] = useState(null);
-  const [guests, setGuests] = useState(1);
-  const [checkIn, setCheckIn] = useState('');
-  const [checkOut, setCheckOut] = useState('');
+  const [search, setSearch] = useState(_ss.search ?? '');
+  const [activeCat, setActiveCat] = useState(_ss.activeCat ?? null);
+  const [rentalType, setRentalType] = useState(_ss.rentalType ?? null);
+  const [guests, setGuests] = useState(_ss.guests ?? 1);
+  const [checkIn, setCheckIn] = useState(_ss.checkIn ?? '');
+  const [checkOut, setCheckOut] = useState(_ss.checkOut ?? '');
   // Sidebar filter state
-  const [priceMin, setPriceMin] = useState(1000);
-  const [priceMax, setPriceMax] = useState(500000);
-  const [roomsFilter, setRoomsFilter] = useState(null);
-  const [propTypeFilter, setPropTypeFilter] = useState([]);
-  const [amenitiesFilter, setAmenitiesFilter] = useState([]);
-  const [furnishingFilter, setFurnishingFilter] = useState(null);
-  const [tenantFilter, setTenantFilter] = useState(null);
-  const [foodFilter, setFoodFilter] = useState(null);       // 'yes' | 'no'
-  const [petsFilter, setPetsFilter] = useState(null);       // 'yes' | 'no'
-  const [coupleFilter, setCoupleFilter] = useState(null);   // 'yes'
+  const [priceMin, setPriceMin] = useState(_ss.priceMin ?? 1000);
+  const [priceMax, setPriceMax] = useState(_ss.priceMax ?? 500000);
+  const [roomsFilter, setRoomsFilter] = useState(_ss.roomsFilter ?? null);
+  const [propTypeFilter, setPropTypeFilter] = useState(_ss.propTypeFilter ?? []);
+  const [amenitiesFilter, setAmenitiesFilter] = useState(_ss.amenitiesFilter ?? []);
+  const [furnishingFilter, setFurnishingFilter] = useState(_ss.furnishingFilter ?? null);
+  const [tenantFilter, setTenantFilter] = useState(_ss.tenantFilter ?? null);
+  const [foodFilter, setFoodFilter] = useState(_ss.foodFilter ?? null);
+  const [petsFilter, setPetsFilter] = useState(_ss.petsFilter ?? null);
+  const [coupleFilter, setCoupleFilter] = useState(_ss.coupleFilter ?? null);
   const [userLat, setUserLat] = useState(null);
   const [userLng, setUserLng] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [listPopupOpen, setListPopupOpen] = useState(false);
-  const [sortBy, setSortBy] = useState('recommended');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState(_ss.sortBy ?? 'recommended');
+  const [currentPage, setCurrentPage] = useState(_ss.currentPage ?? 1);
   const [mapView, setMapView] = useState(false);
   const [geocodedCoords, setGeocodedCoords] = useState({});
   const geocodeQueueRef = useRef(null);
@@ -922,6 +936,7 @@ const PropertyListPage = () => {
   const [showCheckOutCal, setShowCheckOutCal] = useState(false);
   const [showGuestsBox, setShowGuestsBox] = useState(false);
   const searchBoxRef = useRef(null);
+  const rightRef = useRef(null);
   const ITEMS_PER_PAGE = 12;
   const navigate = useNavigate();
   const location = useLocation();
@@ -1292,6 +1307,34 @@ const PropertyListPage = () => {
   };
 
   useEffect(() => { fetchProperties(); }, []);
+
+  // ── Remove back-nav flag after mount is confirmed (not in render body, to survive StrictMode double-invoke) ──
+  useEffect(() => {
+    sessionStorage.removeItem('plp_back_expected');
+  }, []);
+
+  // ── Save filter state to sessionStorage on every change ──
+  useEffect(() => {
+    sessionStorage.setItem('plp_filter_state', JSON.stringify({
+      search, activeCat, rentalType, guests, checkIn, checkOut,
+      priceMin, priceMax, roomsFilter, propTypeFilter, amenitiesFilter,
+      furnishingFilter, tenantFilter, foodFilter, petsFilter, coupleFilter,
+      sortBy, currentPage,
+    }));
+  }, [search, activeCat, rentalType, guests, checkIn, checkOut, priceMin, priceMax,
+      roomsFilter, propTypeFilter, amenitiesFilter, furnishingFilter, tenantFilter,
+      foodFilter, petsFilter, coupleFilter, sortBy, currentPage]);
+
+  // ── Restore scroll position after data loads (back navigation) ──
+  useEffect(() => {
+    if (!loading && rightRef.current) {
+      const scroll = Number(sessionStorage.getItem('plp_scroll_y') || 0);
+      if (scroll > 0) {
+        setTimeout(() => { if (rightRef.current) rightRef.current.scrollTop = scroll; }, 80);
+      }
+    }
+  }, [loading]);
+
   useEffect(() => {
     let filteredResults = applyFilter(properties, activeCat, search, rentalType, userLat, userLng);
 
@@ -1453,7 +1496,11 @@ const PropertyListPage = () => {
           return 0;
         });
     setFiltered(sortedResults);
-    setCurrentPage(1);
+    if (skipPageResetRef.current) {
+      skipPageResetRef.current = false; // skip only on first run after back navigation
+    } else {
+      setCurrentPage(1);
+    }
   }, [search, activeCat, properties, rentalType, priceMin, priceMax, roomsFilter, propTypeFilter, amenitiesFilter, furnishingFilter, tenantFilter, foodFilter, petsFilter, coupleFilter, sortBy, userLat, userLng]);
 
   useEffect(() => {
@@ -2233,7 +2280,12 @@ const PropertyListPage = () => {
         </div>
 
         {/* ── RIGHT CONTENT ── */}
-        <div className="plp-right" style={mapView ? { overflow: 'hidden', display: 'flex', flexDirection: 'column' } : {}}>
+        <div
+          className="plp-right"
+          ref={rightRef}
+          onScroll={(e) => sessionStorage.setItem('plp_scroll_y', e.currentTarget.scrollTop)}
+          style={mapView ? { overflow: 'hidden', display: 'flex', flexDirection: 'column' } : {}}
+        >
           {/* ── Top bar with integrated search ── */}
           <div className="plp-topbar">
 
