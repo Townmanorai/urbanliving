@@ -42,7 +42,7 @@ const WINDOW_TYPES = ["Normal", "Large / Full Sized", "French Windows", "Bay Win
 
 const FURNISHING_STATUS = ["Unfurnished", "Semi-Furnished", "Fully Furnished"];
 const SHARING_TYPES = ["Private Room", "Double Sharing", "Triple Sharing", "Four Sharing", "Five Sharing", "Dormitory"];
-const TENANT_PREFERENCES = ["Bachelors (Any)", "Bachelors (Female Only)", "Bachelors (Male Only)", "Family", "Working Professionals", "Student", "No Preference"];
+const TENANT_PREFERENCES = ["Bachelors (Female Only)", "Bachelors (Male Only)", "Family", "Working Professionals", "Student", "No Preference"];
 const CANCELLATION_POLICIES = ["Flexible: Full refund 1 day prior", "Moderate: Full refund 5 days prior", "Strict: 50% refund 7 days prior", "No Refund"];
 const FACING_OPTIONS = ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"];
 
@@ -130,7 +130,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
     floorType: FLOOR_TYPES[0],
     propertyAge: PROPERTY_AGE[0],
     carParking: "1 Open",
-    preferredTenants: [TENANT_PREFERENCES[0]],
+    preferredTenants: [],
     houseRules: ["Couple Friendly"],
     
     foodAvailable: false,
