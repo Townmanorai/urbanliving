@@ -3352,7 +3352,7 @@ const PropertyDetailPage = () => {
             {isPG && (guestPolicy.bachelors_allowed != null || guestPolicy.Bechelors != null || property.meta?.bachelorAllowed != null) && (
               <div className="amenity-card rule-card"><div className="rule-icon">{(guestPolicy.bachelors_allowed || guestPolicy.Bechelors || property.meta?.bachelorAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Bachelor</span><strong>{(guestPolicy.bachelors_allowed || guestPolicy.Bechelors || property.meta?.bachelorAllowed) ? 'Bachelors (Any)' : 'Not allowed'}</strong></div></div>
             )}
-            {preferredTenants.map((t, i) => (
+            {preferredTenants.filter(t => !t.toLowerCase().includes('bachelor')).map((t, i) => (
               <div key={i} className="amenity-card rule-card">
                 <div className="rule-icon"><FiCheck className="text-green" /></div>
                 <div className="rule-info"><span className="rule-label">Preferred</span><strong>{t}</strong></div>
