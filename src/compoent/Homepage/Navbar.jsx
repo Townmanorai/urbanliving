@@ -334,18 +334,40 @@ export default function Navbar() {
               { label: "Monthly Rental",  path: "/monthly-rentals" },
               { label: "List Property",   action: handleBecomeHostClick },
               { label: "Signature Stays", path: "/properties?category=Signature+Stays", action: handleSignatureStaysClick },
-            ].map(({ label, path, action }) => (
-              <button
-                key={label}
-                onClick={(e) => path ? navClick(e, path, navigate) : action(e)}
-                onAuxClick={(e) => path ? auxNavClick(e, path) : null}
-                style={{ border: "none", background: "transparent", cursor: "pointer", fontFamily: "Poppins, sans-serif", fontSize: 13.5, fontWeight: 500, color: "#232323", padding: "8px 14px", borderRadius: 8, transition: "all 0.18s ease", whiteSpace: "nowrap" }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = "#c2772b"; e.currentTarget.style.background = "#fdf8f2"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = "#232323"; e.currentTarget.style.background = "transparent"; }}
-              >
-                {label}
-              </button>
-            ))}
+              { label: "Buy Leads",       path: "/buy-leads" },
+            ].map(({ label, path, action }) => {
+              const isLeads = label === "Buy Leads";
+              return (
+                <button
+                  key={label}
+                  onClick={(e) => path ? navClick(e, path, navigate) : action(e)}
+                  onAuxClick={(e) => path ? auxNavClick(e, path) : null}
+                  style={{
+                    border: isLeads ? "1.5px solid #c2772b" : "none",
+                    background: isLeads ? "linear-gradient(135deg,#c2772b,#e0a94e)" : "transparent",
+                    cursor: "pointer",
+                    fontFamily: "Poppins, sans-serif",
+                    fontSize: 13.5,
+                    fontWeight: isLeads ? 700 : 500,
+                    color: isLeads ? "#fff" : "#232323",
+                    padding: isLeads ? "7px 16px" : "8px 14px",
+                    borderRadius: isLeads ? 20 : 8,
+                    transition: "all 0.18s ease",
+                    whiteSpace: "nowrap",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (isLeads) { e.currentTarget.style.opacity = "0.88"; }
+                    else { e.currentTarget.style.color = "#c2772b"; e.currentTarget.style.background = "#fdf8f2"; }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (isLeads) { e.currentTarget.style.opacity = "1"; }
+                    else { e.currentTarget.style.color = "#232323"; e.currentTarget.style.background = "transparent"; }
+                  }}
+                >
+                  {isLeads ? "⚡ Buy Leads" : label}
+                </button>
+              );
+            })}
           </nav>
 
           {/* RIGHT: auth */}

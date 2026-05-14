@@ -150,7 +150,15 @@
 .sl3-whatsapp-btn:hover { opacity: 0.88; }
 
 @media (max-width: 600px) {
-  .sl3-wrapper { padding: 36px 14px 52px; }
-  .sl3-cta-box { padding: 28px 20px; flex-direction: column; align-items: flex-start; }
-  .sl3-faq-a { padding-left: 20px; }
+  .sl3-wrapper { padding: 32px 14px 48px; }
+  .sl3-title { font-size: 19px; }
+  .sl3-sub { font-size: 13px; }
+  .sl3-faq-q { padding: 14px 16px; gap: 10px; }
+  .sl3-faq-q p { font-size: 13px; }
+  .sl3-faq-a { padding: 0 16px 14px 16px; font-size: 12.5px; }
+  .sl3-faq-list { gap: 8px; margin-bottom: 36px; }
+  .sl3-cta-box { padding: 24px 18px; flex-direction: column; align-items: flex-start; gap: 18px; border-radius: 16px; }
+  .sl3-cta-title { font-size: 17px; }
+  .sl3-cta-desc { font-size: 12.5px; }
+  .sl3-whatsapp-btn { font-size: 13px; padding: 12px 22px; width: 100%; justify-content: center; }
 }

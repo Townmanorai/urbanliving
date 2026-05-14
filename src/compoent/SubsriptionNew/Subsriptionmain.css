@@ -1,0 +1,76 @@
+/* ══════════════════════════════
+   Buy Leads — Hero
+══════════════════════════════ */
+
+.bl-hero {
+  width: 100%;
+  padding: 52px 20px 0;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+}
+
+.bl-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(194,119,43,0.1);
+  border: 1px solid rgba(194,119,43,0.25);
+  border-radius: 20px;
+  padding: 5px 18px;
+  font-size: 10px;
+  color: #c2772b;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.bl-hero-title {
+  font-size: clamp(26px, 5vw, 46px);
+  font-weight: 800;
+  color: #1a1209;
+  line-height: 1.18;
+  letter-spacing: -0.5px;
+  margin: 0 0 20px;
+}
+
+.bl-hero-br { display: none; }
+
+.bl-hero-tags {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 4px;
+}
+
+.bl-hero-tag {
+  background: #fff;
+  border: 1px solid #ddd0be;
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 12px;
+  color: #6b5540;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── Mobile ── */
+@media (max-width: 540px) {
+  .bl-hero {
+    padding: 36px 16px 0;
+  }
+  .bl-hero-title {
+    font-size: 26px;
+    letter-spacing: -0.3px;
+    margin-bottom: 16px;
+  }
+  .bl-hero-br { display: block; }
+  .bl-hero-tags {
+    gap: 6px;
+  }
+  .bl-hero-tag {
+    font-size: 11px;
+    padding: 4px 11px;
+  }
+}

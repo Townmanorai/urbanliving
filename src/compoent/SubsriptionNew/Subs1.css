@@ -114,8 +114,21 @@
 .sl1-benefit-text { line-height: 1.4; }
 
 @media (max-width: 700px) {
-  .sl1-benefits-inner { grid-template-columns: 1fr; gap: 28px; }
+  .sl1-benefits-inner { grid-template-columns: 1fr; gap: 24px; }
   .sl1-section-title { text-align: center !important; }
   .sl1-section-tag { display: block; text-align: center; }
   .sl1-benefits-sub { max-width: 100%; }
+}
+
+@media (max-width: 600px) {
+  .sl1-section { padding: 36px 14px 40px; }
+  .sl1-section-title { font-size: 20px; margin-bottom: 24px; }
+  .sl1-steps { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .sl1-step-card { padding: 20px 14px 18px; border-radius: 14px; }
+  .sl1-step-icon { font-size: 26px; margin-bottom: 8px; }
+  .sl1-step-title { font-size: 13.5px; }
+  .sl1-step-desc { font-size: 12px; }
+  .sl1-benefits-section { padding: 36px 14px; }
+  .sl1-benefit-item { padding: 10px 14px; font-size: 12.5px; }
+  .sl1-benefit-icon { font-size: 16px; }
 }

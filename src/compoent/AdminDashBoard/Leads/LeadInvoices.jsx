@@ -147,13 +147,17 @@ export default function LeadInvoices() {
           const res = await fetch(
             `https://townmanor.ai/api/lead-invoices?user_id=${userId}`
           );
-          const data = await res.json();
-          if (data?.success && Array.isArray(data.invoices) && data.invoices.length > 0) {
-            setInvoices(data.invoices.map(normalizeInvoice));
-            setLoading(false);
-            return;
+          if (res.ok) {
+            const data = await res.json();
+            if (data?.success && Array.isArray(data.invoices) && data.invoices.length > 0) {
+              setInvoices(data.invoices.map(normalizeInvoice));
+              setLoading(false);
+              return;
+            }
           }
-        } catch (_) {}
+        } catch (_) {
+          // silently fall through to localStorage
+        }
       }
 
       // Fallback to localStorage
