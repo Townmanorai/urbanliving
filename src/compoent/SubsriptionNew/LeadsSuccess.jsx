@@ -66,8 +66,8 @@ async function downloadReceipt(inv) {
     doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.setTextColor(100,100,100);
     doc.text("OvikaLiving by TownManor", W-16, 20, { align:"right" });
     doc.setFont("helvetica","normal"); doc.setFontSize(8);
-    doc.text("Sector 62, Noida, Uttar Pradesh — 201309", W-16, 26, { align:"right" });
-    doc.text("support@ovikaliving.com  |  ovikaliving.com", W-16, 31, { align:"right" });
+    doc.text("ST-304, Eldeco Studio, Sector 93A, Noida, Uttar Pradesh — 201304", W-16, 26, { align:"right" });
+    doc.text("enquiry@ovikaliving.com  |  ovikaliving.com", W-16, 31, { align:"right" });
     doc.text("GSTIN: 09AAACT1234F1ZA", W-16, 36, { align:"right" });
 
     /* title */
@@ -133,7 +133,7 @@ async function downloadReceipt(inv) {
     doc.setFillColor(194,119,43); doc.rect(0,272,W,1,"F");
     doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(120,120,120);
     doc.text("This is a computer-generated invoice and does not require a physical signature.", W/2, 278, { align:"center" });
-    doc.text("For support: support@ovikaliving.com  |  ovikaliving.com", W/2, 283, { align:"center" });
+    doc.text("For support: enquiry@ovikaliving.com  |  ovikaliving.com", W/2, 283, { align:"center" });
 
     doc.save(`OvikaLiving-Invoice-${inv.invoiceNo}.pdf`);
   } catch (e) {
