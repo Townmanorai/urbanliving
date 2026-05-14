@@ -45,7 +45,7 @@ function Failure() {
           <button
             className="btn btn-primary"
             aria-label="Try again"
-            onClick={() => navigate("/subsription")}
+            onClick={() => navigate("/buy-leads")}
           >
             Try Again
           </button>

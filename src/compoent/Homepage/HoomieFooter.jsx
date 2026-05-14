@@ -686,7 +686,7 @@ const HoomieFooter = () => {
                   <Link to="/terms-and-conditions" style={{ color: '#fff', textDecoration: 'none' }}>Terms and Conditions</Link>,
                   <Link to="/privacy-policy" style={{ color: '#fff', textDecoration: 'none' }}>Privacy Policy</Link>,
                   <Link to="/refund-cancellation-policy" style={{ color: '#fff', textDecoration: 'none' }}>Refund & Cancellation</Link>,
-                  <Link to="/subsription" style={{ color: '#fff', textDecoration: 'none' }}>Subscription Plan</Link>,
+                  <Link to="/buy-leads" style={{ color: '#fff', textDecoration: 'none' }}>Buy Leads</Link>,
                 ]}
               />
             </div>
@@ -733,7 +733,7 @@ const HoomieFooter = () => {
                   <Link to="/terms-and-conditions" style={{ color: '#fff', textDecoration: 'none' }}>Terms</Link>,
                   <Link to="/privacy-policy" style={{ color: '#fff', textDecoration: 'none' }}>Privacy</Link>,
                   <Link to="/refund-cancellation-policy" style={{ color: '#fff', textDecoration: 'none' }}>Refund</Link>,
-                  <Link to="/subsription" style={{ color: '#fff', textDecoration: 'none' }}>Subscription</Link>,
+                  <Link to="/buy-leads" style={{ color: '#fff', textDecoration: 'none' }}>Buy Leads</Link>,
                 ]}
               />
             </div>

@@ -17,10 +17,10 @@ export const Subsriptionmain = () => {
         <meta name="description" content="Buy verified tenant leads for your property in Noida & Greater Noida. Get direct enquiries from genuine tenants looking for PG, flats, villas and more." />
         <meta name="keywords" content="buy tenant leads noida, property owner leads, ovikaliving leads, tenant enquiries noida, rental property leads, pg flat villa leads noida" />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://www.ovikaliving.com/subsription" />
+        <link rel="canonical" href="https://www.ovikaliving.com/buy-leads" />
         <meta property="og:title" content="Buy Leads | OvikaLiving – Tenant Enquiries for Property Owners" />
         <meta property="og:description" content="Get direct tenant leads for your property. Choose a plan and start receiving verified enquiries today." />
-        <meta property="og:url" content="https://www.ovikaliving.com/subsription" />
+        <meta property="og:url" content="https://www.ovikaliving.com/buy-leads" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Buy Leads | OvikaLiving" />
       </Helmet>
@@ -28,7 +28,7 @@ export const Subsriptionmain = () => {
       {/* ── Hero ── */}
       <div style={{
         width: '100%',
-        padding: '72px 20px 40px',
+        padding: 'clamp(32px, 6vw, 56px) 20px 0px',
         textAlign: 'center',
         fontFamily: "'Poppins', sans-serif"
       }}>
@@ -45,54 +45,43 @@ export const Subsriptionmain = () => {
           letterSpacing: '1.4px',
           textTransform: 'uppercase',
           fontWeight: 700,
-          marginBottom: '20px',
+          marginBottom: '14px',
         }}>
           ✦ Verified Tenant Leads
         </div>
 
         <h1 style={{
-          fontSize: 'clamp(28px, 5vw, 48px)',
+          fontSize: 'clamp(24px, 5vw, 44px)',
           fontWeight: 800,
           color: '#1a1209',
           fontFamily: "'Poppins', sans-serif",
           marginBottom: '16px',
-          lineHeight: 1.15,
+          lineHeight: 1.18,
           letterSpacing: '-0.5px',
         }}>
-          Get Leads for Your Property
+          Find Tenants Faster. Pay Only for Leads.
         </h1>
-
-        <p style={{
-          fontSize: '15.5px',
-          color: '#6b5540',
-          lineHeight: 1.75,
-          maxWidth: '560px',
-          margin: '0 auto 28px',
-        }}>
-          Connect with tenants actively searching for rentals in Noida &amp; Greater Noida.
-          Available for PG, flat, villa, and co-living properties.
-        </p>
 
         <div style={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          gap: '10px',
+          gap: '8px',
           flexWrap: 'wrap',
-          marginBottom: '8px',
+          marginBottom: '0px',
         }}>
           {[
             "✅ Verified Tenants",
             "✅ Full Contact Details",
             "✅ All Property Types",
-            "✅ Noida & Greater Noida",
+            "✅ NCR",
           ].map((tag) => (
             <span key={tag} style={{
               background: '#fff',
               border: '1px solid #ddd0be',
               borderRadius: '20px',
-              padding: '6px 16px',
-              fontSize: '12.5px',
+              padding: '5px 13px',
+              fontSize: 'clamp(11px, 1.5vw, 12.5px)',
               color: '#6b5540',
               fontWeight: 600,
             }}>{tag}</span>
@@ -100,8 +89,8 @@ export const Subsriptionmain = () => {
         </div>
       </div>
 
-      <Subs1 />
       <Subs2 />
+      <Subs1 />
       <Subs3 />
     </div>
   )

@@ -3,7 +3,7 @@
 ══════════════════════════════ */
 
 .sl2-wrapper {
-  padding: 56px 24px 48px;
+  padding: 24px 24px 48px;
   font-family: 'Poppins', sans-serif;
 }
 
@@ -284,9 +284,25 @@
 }
 .sl2-table-btn-outline:hover { background: #c2772b; color: #fff; }
 
+/* ── Tablet ── */
+@media (max-width: 900px) {
+  .sl2-cards { grid-template-columns: repeat(2, 1fr); }
+}
+
 /* ── Mobile ── */
-@media (max-width: 640px) {
-  .sl2-wrapper { padding: 36px 14px 36px; }
+@media (max-width: 540px) {
+  .sl2-wrapper { padding: 16px 12px 32px; }
+  .sl2-cards { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .sl2-card { padding: 20px 14px 18px; }
+  .sl2-plan-name { font-size: 15px; }
+  .sl2-price { font-size: 28px; }
+  .sl2-features li { font-size: 12px; }
+  .sl2-buy-btn { font-size: 13px; padding: 11px 0; }
+  .sl2-table th, .sl2-table td { padding: 10px 12px; font-size: 12px; }
+  .sl2-table-heading { font-size: 17px; }
+}
+
+@media (max-width: 380px) {
   .sl2-cards { grid-template-columns: 1fr; }
 }
 

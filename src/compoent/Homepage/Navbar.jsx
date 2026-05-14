@@ -259,7 +259,7 @@ export default function Navbar() {
                   { icon: "📈", label: "ROI Calculator", path: "/roi-calculator", action: (e) => { closeMobileMenu(); navClick(e, "/roi-calculator", navigate); } },
                   { icon: "📊", label: "Profile", path: "/dashboard", action: (e) => { closeMobileMenu(); navClick(e, "/dashboard", navigate); } },
                   { icon: "🛡️", label: "Owner Dashboard", path: "/admindashboard", action: (e) => { closeMobileMenu(); navClick(e, "/admindashboard", navigate); } },
-                  { icon: "💬", label: "Subscription Plan", path: "/subsription", action: (e) => { closeMobileMenu(); navClick(e, "/subsription", navigate); } },
+                  { icon: "💬", label: "Buy Leads", path: "/buy-leads", action: (e) => { closeMobileMenu(); navClick(e, "/buy-leads", navigate); } },
                   { icon: "📞", label: "Contact / Support", path: "/contactus", action: (e) => { closeMobileMenu(); navClick(e, "/contactus", navigate); } },
                   { icon: "💼", label: "Career", path: "/career-support", action: (e) => { closeMobileMenu(); goCareer(e); } },
                   { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: 18, height: "auto" }} />, label: "OvikaLiving Verified", path: "/ovika-verified", action: (e) => { closeMobileMenu(); goOvikaVerified(e); } },
@@ -427,7 +427,7 @@ export default function Navbar() {
                 { icon: "📈", label: "ROI Calculator", path: "/roi-calculator", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/roi-calculator", navigate); } },
                 { icon: "📊", label: "Profile", path: "/dashboard", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/dashboard", navigate); } },
                 { icon: "🛡️", label: "Owner Dashboard", path: "/admindashboard", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/admindashboard", navigate); } },
-                { icon: "💬", label: "Subscription Plan", path: "/subsription", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/subsription", navigate); } },
+                { icon: "💬", label: "Buy Leads", path: "/buy-leads", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/buy-leads", navigate); } },
                 { icon: "📞", label: "Contact / Support", path: "/contactus", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/contactus", navigate); } },
                 { icon: "💼", label: "Career", path: "/career-support", action: goCareer },
                 { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: '20px', height: 'auto' }} />, label: "OvikaLiving Verified", path: "/ovika-verified", action: goOvikaVerified },
@@ -511,11 +511,11 @@ export default function Navbar() {
                   </div>
                 </button>
               ))}
-              <button onClick={(e) => { setSideMenuOpen(false); navClick(e, "/subsription", navigate); }} onAuxClick={(e) => auxNavClick(e, "/subsription")} style={panelButtonStyle}>
+              <button onClick={(e) => { setSideMenuOpen(false); navClick(e, "/buy-leads", navigate); }} onAuxClick={(e) => auxNavClick(e, "/buy-leads")} style={panelButtonStyle}>
                 <span style={iconBoxStyle}><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="3" stroke="#c2772b" strokeWidth="1.8" /><path d="M3 9H21" stroke="#c2772b" strokeWidth="1.8" /><circle cx="8" cy="14" r="1.4" fill="#c2772b" /><circle cx="12" cy="14" r="1.4" fill="#c2772b" /><circle cx="16" cy="14" r="1.4" fill="#c2772b" /></svg></span>
                 <div style={{ textAlign: "left" }}>
-                  <div style={{ fontSize: 14, fontWeight: 500, color: "#232323" }}>Subscription Plan</div>
-                  <div style={{ fontSize: 12, color: "#8a8a8a" }}>Grow Faster With the Right Plan</div>
+                  <div style={{ fontSize: 14, fontWeight: 500, color: "#232323" }}>Buy Leads</div>
+                  <div style={{ fontSize: 12, color: "#8a8a8a" }}>Get Verified Tenant Enquiries</div>
                 </div>
               </button>
               <hr style={{ border: "none", borderTop: "1px solid #eee", margin: "13px 0" }} />

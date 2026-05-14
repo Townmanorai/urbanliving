@@ -152,7 +152,7 @@ function App() {
           <Route path="/ownermain" element={<Ownermain />} />
           <Route path="/renovation" element={<FifthMain />} />
           <Route path="/listed" element={<PropertyListingForm />} />
-          <Route path="/subsription" element={<Subsriptionmain/>}/>
+          <Route path="/buy-leads" element={<Subsriptionmain/>}/>
           <Route path="/notification" element={<Notification/>}/>
           <Route path="/contactus" element={<ContactMain/>}/>
           <Route path="/nightly-stays" element={<PropertyListPage />}/>

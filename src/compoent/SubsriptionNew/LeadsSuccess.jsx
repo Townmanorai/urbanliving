@@ -29,7 +29,7 @@ async function downloadReceipt(inv) {
     /* logo */
     try {
       const img = new Image();
-      img.src = "/ovika.png";
+      img.src = "/ovikaliving_logo_clean.png";
       await new Promise((r, j) => { img.onload = r; img.onerror = j; });
       const lh = 28; const lw = lh * (img.width / img.height);
       doc.addImage(img, "PNG", 16, 12, lw, lh);

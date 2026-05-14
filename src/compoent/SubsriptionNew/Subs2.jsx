@@ -88,7 +88,7 @@ export default function Subs2() {
 
   const openModal = (plan) => {
     if (!user) {
-      navigate("/login", { state: { from: "/subsription" } });
+      navigate("/login", { state: { from: "/buy-leads" } });
       return;
     }
     const p = prefill();
@@ -171,13 +171,9 @@ export default function Subs2() {
   return (
     <section className="sl2-wrapper">
       <div className="sl2-inner">
-        <div style={{ textAlign: "center", marginBottom: 40 }}>
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
           <div className="sl2-tag">Choose Your Plan</div>
           <h2 className="sl2-title">Simple, Transparent Pricing</h2>
-          <p className="sl2-sub">
-            Invest once and start receiving genuine tenant enquiries directly for your property.
-            All plans include 18% GST. No hidden charges.
-          </p>
         </div>
 
         {/* ── Plan Cards ── */}

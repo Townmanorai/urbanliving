@@ -146,6 +146,88 @@
   border-radius: 8px;
 }
 
+/* ── Locked / Blurred Cards ── */
+.ol-locked-wrap {
+  position: relative;
+  margin-top: 6px;
+  margin-bottom: 28px;
+}
+
+.ol-leads-blurred-list {
+  /* fade in from top so blurred section blends with visible cards above */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 30%);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 30%);
+}
+
+.ol-lead-blurred {
+  filter: blur(5px);
+  user-select: none;
+  pointer-events: none;
+}
+
+.ol-lock-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.ol-lock-icon {
+  font-size: 40px;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.18));
+}
+
+.ol-lock-msg {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1e293b;
+  background: rgba(255,255,255,0.94);
+  border: 1.5px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 8px 22px;
+  margin: 0;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+/* ── Get More Leads CTA ── */
+.ol-get-leads-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ol-get-leads-btn {
+  background: linear-gradient(135deg, #c98b3e, #e0a94e);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 16px 48px;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  box-shadow: 0 6px 24px rgba(201,139,62,0.32);
+  transition: opacity 0.2s, transform 0.2s;
+}
+.ol-get-leads-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.ol-cta-note {
+  font-size: 12.5px;
+  color: #94a3b8;
+  margin: 0;
+  font-weight: 500;
+}
+
 /* ── Section Divider ── */
 .ol-section-divider {
   border: none;
