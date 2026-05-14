@@ -334,7 +334,6 @@ export default function Navbar() {
               { label: "Monthly Rental",  path: "/monthly-rentals" },
               { label: "List Property",   action: handleBecomeHostClick },
               { label: "Signature Stays", path: "/properties?category=Signature+Stays", action: handleSignatureStaysClick },
-              { label: "Buy Leads",       path: "/buy-leads" },
             ].map(({ label, path, action }) => {
               const isLeads = label === "Buy Leads";
               return (

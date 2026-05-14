@@ -170,8 +170,9 @@ export default function LeadsSuccess() {
       const inv = {
         ...pending,
         invoiceNo: `INV-OL-${Date.now()}`,
-        date: new Date().toLocaleDateString("en-IN", {
+        date: new Date().toLocaleString("en-IN", {
           day: "2-digit", month: "short", year: "numeric",
+          hour: "2-digit", minute: "2-digit", hour12: true,
         }),
         status: "Paid",
       };

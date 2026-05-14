@@ -2935,7 +2935,16 @@ export default function SuperAdminDashboard() {
                                 <td style={{ padding: '11px 14px', color: '#f59e0b' }}>₹{gst.toLocaleString('en-IN')}</td>
                                 <td style={{ padding: '11px 14px', fontWeight: 800, color: '#16a34a' }}>₹{total.toLocaleString('en-IN')}</td>
                                 <td style={{ padding: '11px 14px', color: '#64748b', whiteSpace: 'nowrap' }}>{lp.validity || '—'}</td>
-                                <td style={{ padding: '11px 14px', color: '#64748b', whiteSpace: 'nowrap' }}>{lp.date || '—'}</td>
+                                <td style={{ padding: '11px 14px', color: '#64748b', whiteSpace: 'nowrap' }}>
+                                  {(() => {
+                                    const raw = lp.created_at || lp.createdAt;
+                                    if (raw) {
+                                      const d = new Date(raw);
+                                      return isNaN(d) ? lp.date || '—' : d.toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
+                                    }
+                                    return lp.date || '—';
+                                  })()}
+                                </td>
                                 <td style={{ padding: '11px 14px' }}>
                                   <span style={{ background: '#dcfce7', color: '#166534', fontWeight: 800, fontSize: 10, padding: '2px 9px', borderRadius: 20, letterSpacing: '0.06em' }}>PAID</span>
                                 </td>
