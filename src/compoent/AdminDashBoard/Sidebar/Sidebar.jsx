@@ -11,6 +11,8 @@ import {
   FaChartLine,
   FaCalendarAlt,
   FaUniversity,
+  FaBolt,
+  FaReceipt,
 } from "react-icons/fa";
 import axios from "axios";
 import { AuthContext } from "../../Login/AuthContext";
@@ -107,6 +109,33 @@ function Sidebar({ isOpen, onClose }) {
           <li>
             <NavLink to="/admindashboard" end>
               <FaHome /> Dashboard
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink to="/admindashboard/leads" style={({ isActive }) => isActive ? {} : {}}>
+              {({ isActive }) => (
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
+                  <FaBolt style={{ color: isActive ? 'inherit' : '#c98b3e' }} />
+                  <span>Leads</span>
+                  <span style={{
+                    marginLeft: 'auto',
+                    background: 'linear-gradient(135deg,#c98b3e,#e0a94e)',
+                    color: '#fff',
+                    fontSize: '9px',
+                    fontWeight: 800,
+                    padding: '2px 7px',
+                    borderRadius: '10px',
+                    letterSpacing: '0.06em',
+                  }}>PREMIUM</span>
+                </span>
+              )}
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink to="/admindashboard/invoices">
+              <FaReceipt /> Invoices
             </NavLink>
           </li>
 

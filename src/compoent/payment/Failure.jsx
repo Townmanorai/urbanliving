@@ -1,21 +1,28 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Helmet } from 'react-helmet'
+import { useNavigate } from 'react-router-dom'
 import './Failure.css'
+
 function Failure() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Clear any pending leads purchase so stale data doesn't affect next attempt
+    localStorage.removeItem("pending_leads_purchase");
+  }, []);
+
   return (
     <>
      <Helmet>
        <title>Payment Failed | OvikaLiving – Try Again</title>
        <meta name="description" content="Your payment could not be processed. Please try again to book your PG, co-living space or rental stay with OvikaLiving in Noida & Greater Noida." />
-       <meta name="keywords" content="payment failed ovikaliving, booking failed noida, retry payment pg noida, ovika payment error, पेमेंट फेल नोएडा, बुकिंग फेल" />
+       <meta name="keywords" content="payment failed ovikaliving, booking failed noida, retry payment pg noida, ovika payment error" />
        <meta name="robots" content="noindex, nofollow" />
      </Helmet>
      <main className="failure-page" role="main" aria-label="Failure notification">
       <section className="failure-card" role="alert" aria-live="assertive">
-        {/* Gradient ring with white inner circle */}
         <div className="icon-ring" aria-hidden="true">
           <div className="icon-circle">
-            {/* Inline SVG for Playground. In your app, replace with FaTimesCircle from react-icons. */}
             <svg
               className="failure-icon"
               width="70"
@@ -29,22 +36,28 @@ function Failure() {
           </div>
         </div>
 
-        <h1 className="title">Something went wrong</h1>
+        <h1 className="title">Payment Declined</h1>
         <p className="message">
-          We couldn't complete your request. Please try again, or return to the home page.
+          Your payment could not be processed. Please try again — your money has not been deducted.
         </p>
 
         <div className="actions">
-          <button className="btn btn-primary" aria-label="Try again">
+          <button
+            className="btn btn-primary"
+            aria-label="Try again"
+            onClick={() => navigate("/subsription")}
+          >
             Try Again
           </button>
-          <button className="btn btn-secondary" aria-label="Go back to home">
+          <button
+            className="btn btn-secondary"
+            aria-label="Go back to home"
+            onClick={() => navigate("/")}
+          >
             Back to Home
           </button>
         </div>
       </section>
-
-     
     </main>
     </>
   )

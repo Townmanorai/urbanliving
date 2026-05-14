@@ -1,71 +1,91 @@
-
-
-import React, { useState } from "react";
+import React from "react";
 import "./Subs1.css";
 
+const HOW_IT_WORKS = [
+  {
+    step: "01",
+    icon: "🎯",
+    title: "Choose a Plan",
+    desc: "Select a lead package that suits your budget — 25, 75, or 200 leads based on your requirement."
+  },
+  {
+    step: "02",
+    icon: "💳",
+    title: "Complete Payment",
+    desc: "Make a secure online payment. 18% GST is applicable on all plans. No hidden charges."
+  },
+  {
+    step: "03",
+    icon: "📋",
+    title: "Receive Your Leads",
+    desc: "Leads are delivered directly to your Owner Dashboard — complete with tenant name, phone number, budget, and property preference."
+  },
+  {
+    step: "04",
+    icon: "📞",
+    title: "Connect Directly",
+    desc: "Call the tenant, schedule a visit, and close the deal — no middlemen, no commission."
+  },
+];
+
+const BENEFITS = [
+  { icon: "📍", text: "Active tenants from Noida & Greater Noida" },
+  { icon: "✅", text: "Covers PG, flat, villa, and co-living properties" },
+  { icon: "🛏", text: "Each lead includes budget, room type & location preference" },
+  { icon: "📞", text: "Full contact details — verified name and phone number" },
+  { icon: "🔄", text: "Fresh leads — recently registered, never recycled" },
+  { icon: "🔒", text: "100% exclusive delivery — leads shared only with you" },
+];
+
 const Subs1 = () => {
-  const [showModal, setShowModal] = useState(false);
-
   return (
-    <>
-      {/* ===== Season Offer Section ===== */}
-      <section className="season-offer-wrapper">
-        <div className="season-offer-container">
-          <h2 className="season-offer-title">🎉 Season Offer 🎉</h2>
+    <div className="sl1-wrapper">
 
-          <p className="season-offer-text">
-            List Unlimited Properties during this season and earn
-            <span> ₹100 </span>
-            for each property listed! Fill out the form to claim your reward
-            today. Offer valid for a limited period only.
-          </p>
+      {/* ── How it Works ── */}
+      <section className="sl1-section">
+        <div className="sl1-section-tag">How It Works</div>
+        <h2 className="sl1-section-title">4 Simple Steps to Connect with Tenants</h2>
 
-          <button
-            className="season-offer-btn"
-            onClick={() => setShowModal(true)}
-          >
-            Claim Your Reward
-          </button>
+        <div className="sl1-steps">
+          {HOW_IT_WORKS.map((item) => (
+            <div className="sl1-step-card" key={item.step}>
+              <div className="sl1-step-num">{item.step}</div>
+              <div className="sl1-step-icon">{item.icon}</div>
+              <h4 className="sl1-step-title">{item.title}</h4>
+              <p className="sl1-step-desc">{item.desc}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* ===== Modal Popup ===== */}
-      {showModal && (
-        <div className="tm-modal-overlay">
-          <div className="tm-modal">
-            <button
-              className="tm-close-btn"
-              onClick={() => setShowModal(false)}
-            >
-              ✕
-            </button>
+      {/* ── Benefits ── */}
+      <section className="sl1-benefits-section">
+        <div className="sl1-benefits-inner">
+          <div className="sl1-benefits-left">
+            <div className="sl1-section-tag">Why Buy Leads</div>
+            <h2 className="sl1-section-title" style={{ textAlign: 'left' }}>
+              Verified Tenants.<br />
+              Zero Middlemen.
+            </h2>
+            <p className="sl1-benefits-sub">
+              Stop waiting for your listing to be discovered. We connect you directly
+              with tenants who are actively looking for a property in Noida &amp;
+              Greater Noida — right now.
+            </p>
+          </div>
 
-            <h3 className="tm-modal-title">Claim Your Offer</h3>
-
-            <form className="tm-form">
-              <label>Name *</label>
-              <input type="text" placeholder="Enter your name" required />
-
-              <label>Phone Number *</label>
-              <input type="tel" placeholder="Enter phone number" required />
-
-              <label>Listed Property ID *</label>
-              <input type="text" placeholder="Property ID" required />
-
-              <label>UPI ID *</label>
-              <input type="text" placeholder="yourname@upi" required />
-
-              <label>Total Listed Properties *</label>
-              <input type="number" placeholder="Total properties" required />
-
-              <button type="submit" className="tm-submit-btn">
-                SUBMIT
-              </button>
-            </form>
+          <div className="sl1-benefits-right">
+            {BENEFITS.map((b, i) => (
+              <div className="sl1-benefit-item" key={i}>
+                <span className="sl1-benefit-icon">{b.icon}</span>
+                <span className="sl1-benefit-text">{b.text}</span>
+              </div>
+            ))}
           </div>
         </div>
-      )}
-    </>
+      </section>
+
+    </div>
   );
 };
 

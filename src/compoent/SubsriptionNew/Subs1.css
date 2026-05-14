@@ -1,189 +1,121 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+/* ══════════════════════════════
+   Subs1 — How it Works + Benefits
+══════════════════════════════ */
 
-.season-offer-wrapper {
+.sl1-wrapper {
   width: 100%;
-  padding: 40px 16px 0;
   font-family: 'Poppins', sans-serif;
 }
 
-.season-offer-container {
-  max-width: 860px;
+.sl1-section {
+  max-width: 1080px;
   margin: 0 auto;
-  background: linear-gradient(135deg, #c2772b 0%, #d4894a 100%);
-  border-radius: 20px;
-  padding: 44px 40px;
+  padding: 48px 24px 52px;
   text-align: center;
-  box-shadow: 0 10px 36px rgba(194,119,43,0.28);
-  position: relative;
-  overflow: hidden;
-  color: #fff;
 }
 
-.season-offer-container::before {
-  content: '';
-  position: absolute;
-  top: -50px; right: -50px;
-  width: 200px; height: 200px;
-  background: rgba(255,255,255,0.07);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.season-offer-title {
-  font-size: clamp(22px, 4vw, 30px);
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #fff;
-  font-family: 'Poppins', sans-serif;
-}
-
-.season-offer-text {
-  font-size: 14px;
-  line-height: 1.75;
-  max-width: 600px;
-  margin: 0 auto 28px;
-  color: rgba(255,255,255,0.92);
-  font-family: 'Poppins', sans-serif;
-}
-
-.season-offer-text span {
-  font-weight: 600;
-  color: #fff;
-  background: rgba(255,255,255,0.18);
-  padding: 1px 8px;
-  border-radius: 6px;
-}
-
-.season-offer-btn {
-  background: #fff;
-  color: #c2772b;
-  font-size: 14px;
-  font-weight: 600;
-  padding: 13px 32px;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  font-family: 'Poppins', sans-serif;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-  transition: all 0.3s ease;
-}
-
-.season-offer-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(0,0,0,0.2);
-}
-
-/* Modal */
-.tm-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 16px;
-  z-index: 99999;
-}
-
-.tm-modal {
-  background: #fff;
-  width: 100%;
-  max-width: 460px;
-  max-height: 90vh;
-  overflow-y: auto;
-  border-radius: 18px;
-  padding: 30px 26px;
-  position: relative;
-  animation: scaleIn 0.25s ease;
-  font-family: 'Poppins', sans-serif;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
-}
-
-@keyframes scaleIn {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-.tm-close-btn {
-  position: absolute;
-  top: 14px; right: 16px;
-  border: none;
+.sl1-section-tag {
+  display: inline-block;
   background: rgba(194,119,43,0.1);
+  border: 1px solid rgba(194,119,43,0.25);
   color: #c2772b;
-  font-size: 18px;
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 4px 16px;
+  border-radius: 20px;
+  margin-bottom: 14px;
 }
 
-.tm-close-btn:hover { background: rgba(194,119,43,0.2); }
-
-.tm-modal-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 20px;
-  text-align: center;
+.sl1-section-title {
+  font-size: clamp(20px, 3vw, 30px);
+  font-weight: 700;
   color: #1a1209;
+  margin: 0 0 36px;
+  text-align: center;
 }
 
-.tm-form {
+/* ── Steps ── */
+.sl1-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 20px;
+}
+
+.sl1-step-card {
+  background: #ffffff;
+  border: 1.5px solid #e8ddd0;
+  border-radius: 18px;
+  padding: 28px 20px 24px;
+  text-align: center;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.sl1-step-card:hover {
+  box-shadow: 0 8px 24px rgba(194,119,43,0.12);
+  transform: translateY(-3px);
+}
+
+.sl1-step-num {
+  font-size: 11px;
+  font-weight: 800;
+  color: #c2772b;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+.sl1-step-icon { font-size: 32px; margin-bottom: 12px; }
+.sl1-step-title { font-size: 15px; font-weight: 700; color: #1a1209; margin: 0 0 8px; }
+.sl1-step-desc  { font-size: 13px; color: #6b5540; line-height: 1.65; margin: 0; }
+
+/* ── Benefits ── */
+.sl1-benefits-section {
+  background: #ffffff;
+  border-top: 1px solid #ede4d0;
+  border-bottom: 1px solid #ede4d0;
+  padding: 52px 24px;
+}
+
+.sl1-benefits-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.sl1-benefits-sub {
+  font-size: 13.5px;
+  color: #6b5540;
+  line-height: 1.7;
+  margin: 8px 0 0;
+  max-width: 380px;
+}
+
+.sl1-benefits-right {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  max-width: 380px;
-  margin: 0 auto;
+  gap: 14px;
 }
 
-.tm-form label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #6b5540;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: -4px;
-}
-
-.tm-form input {
-  padding: 11px 14px;
-  border-radius: 10px;
-  border: 1.5px solid #f0e8da;
-  font-size: 14px;
+.sl1-benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
   background: #fdf7ee;
-  font-family: 'Poppins', sans-serif;
+  border: 1px solid #ede4d0;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-size: 13.5px;
   color: #1a1209;
-  transition: border-color 0.2s;
+  font-weight: 500;
 }
+.sl1-benefit-icon { font-size: 18px; flex-shrink: 0; }
+.sl1-benefit-text { line-height: 1.4; }
 
-.tm-form input:focus {
-  outline: none;
-  border-color: #c2772b;
-  background: #fff;
-}
-
-.tm-submit-btn {
-  margin-top: 8px;
-  background: linear-gradient(135deg, #c2772b 0%, #d4894a 100%);
-  color: #fff;
-  padding: 13px;
-  border-radius: 50px;
-  border: none;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  width: 100%;
-  font-family: 'Poppins', sans-serif;
-  box-shadow: 0 4px 14px rgba(194,119,43,0.35);
-  transition: all 0.3s ease;
-}
-
-.tm-submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(194,119,43,0.45); }
-
-@media (max-width: 768px) {
-  .season-offer-container { padding: 32px 22px; }
-  .season-offer-title { font-size: 20px; }
-  .tm-modal { padding: 24px 18px; }
+@media (max-width: 700px) {
+  .sl1-benefits-inner { grid-template-columns: 1fr; gap: 28px; }
+  .sl1-section-title { text-align: center !important; }
+  .sl1-section-tag { display: block; text-align: center; }
+  .sl1-benefits-sub { max-width: 100%; }
 }

@@ -169,8 +169,17 @@ function Sucess() {
 
   // Initialize EmailJS
   useEffect(() => {
-    emailjs.init("Jv4HT7o1ji_gU5PJ0") // Replace with your actual EmailJS public key
+    emailjs.init("Jv4HT7o1ji_gU5PJ0")
   }, [])
+
+  // ── LEADS PURCHASE INTERCEPT ──
+  // PayU backend always redirects to /success, so we catch leads payments here
+  // and forward to /leads-success where the invoice is generated.
+  useEffect(() => {
+    if (localStorage.getItem("pending_leads_purchase")) {
+      navigate("/leads-success");
+    }
+  }, [navigate]);
 
   // Send booking confirmation email
   const sendBookingConfirmationEmail = async () => {
@@ -236,6 +245,7 @@ function Sucess() {
   }
 
   useEffect(() => {
+    if (localStorage.getItem("pending_leads_purchase")) return;
     const patchBookingStatus = async () => {
       const id = localStorage.getItem('bookingId') || bookingId;
       console.log('Patching status for booking ID:', id);
@@ -274,8 +284,9 @@ function Sucess() {
     }
   }, [bookingId]);
 
-  // Start countdown on mount and navigate after 4 seconds
+  // Start countdown on mount and navigate after 4 seconds (skip for leads purchases)
   useEffect(() => {
+    if (localStorage.getItem("pending_leads_purchase")) return;
     setSecondsLeft(4)
     const intervalId = setInterval(() => {
       setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0))

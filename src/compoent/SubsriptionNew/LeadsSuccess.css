@@ -1,0 +1,148 @@
+/* ══════════════════════════════
+   LeadsSuccess Page
+══════════════════════════════ */
+
+.ls-page {
+  min-height: calc(100vh - 140px);
+  background: linear-gradient(160deg, #fdf7ee 0%, #f5ead6 60%, #ede4cf 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  font-family: 'Poppins', 'Inter', sans-serif;
+}
+
+.ls-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 48px 40px 36px;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+}
+
+/* ── Icon ── */
+.ls-icon-wrap {
+  margin-bottom: 24px;
+}
+
+.ls-check-circle {
+  width: 76px;
+  height: 76px;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #fff;
+  font-size: 36px;
+  font-weight: 800;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  box-shadow: 0 8px 28px rgba(22,163,74,0.3);
+}
+
+.ls-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #1a1209;
+  margin: 0 0 10px;
+  letter-spacing: -0.3px;
+}
+
+.ls-subtitle {
+  font-size: 14px;
+  color: #6b5540;
+  line-height: 1.65;
+  margin: 0 0 28px;
+}
+
+/* ── Summary ── */
+.ls-summary {
+  background: #fdf7ee;
+  border: 1.5px solid #ede4d0;
+  border-radius: 16px;
+  padding: 20px 22px;
+  margin-bottom: 28px;
+  text-align: left;
+}
+
+.ls-summary-generic {
+  text-align: center;
+}
+.ls-summary-generic p {
+  font-size: 14px;
+  color: #6b5540;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.ls-sum-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13.5px;
+  margin-bottom: 10px;
+}
+.ls-sum-row:last-child { margin-bottom: 0; }
+.ls-sum-row span { color: #6b5540; }
+.ls-sum-row strong { color: #1a1209; font-weight: 700; }
+
+.ls-sum-divider {
+  border: none;
+  border-top: 1px solid #ede4d0;
+  margin: 12px 0;
+}
+
+.ls-sum-amount {
+  color: #c2772b !important;
+  font-size: 18px !important;
+}
+
+/* ── Actions ── */
+.ls-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.ls-btn-primary {
+  background: linear-gradient(135deg, #c2772b, #e0a94e);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  transition: opacity 0.2s;
+}
+.ls-btn-primary:hover { opacity: 0.88; }
+
+.ls-btn-outline {
+  background: transparent;
+  color: #1a1209;
+  border: 1.5px solid #d1c5b3;
+  border-radius: 12px;
+  padding: 13px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  transition: border-color 0.2s, background 0.2s;
+}
+.ls-btn-outline:hover { border-color: #c2772b; background: #fdf7ee; }
+.ls-btn-outline:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.ls-note {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.6;
+}
+
+@media (max-width: 480px) {
+  .ls-card { padding: 36px 20px 28px; }
+}

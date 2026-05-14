@@ -55,6 +55,9 @@ import LegalInformation from "./compoent/LegalInformation/LegalInformation";
 import ROICalculator from "./compoent/ROICalculator/ROICalculator";
 import CalendarBlocking from "./compoent/CalendarBlocking/CalendarBlocking";
 import BankDetails from "./compoent/AccountDetails/BankDetails";
+import OwnerLeads from "./compoent/AdminDashBoard/Leads/OwnerLeads";
+import LeadInvoices from "./compoent/AdminDashBoard/Leads/LeadInvoices";
+import LeadsSuccess from "./compoent/SubsriptionNew/LeadsSuccess";
 function RequireAuth({ children }) {
   const { user } = useContext(AuthContext);
   const location = useLocation();
@@ -203,8 +206,11 @@ function App() {
             <Route path="bank-details" element={<BankDetails standalone />} />
             <Route path="support" element={<Support />} />
             <Route path="calendar" element={<CalendarBlocking />} />
+            <Route path="leads" element={<OwnerLeads />} />
+            <Route path="invoices" element={<LeadInvoices />} />
             <Route path="listed" element={<PropertyListingForm />} />    
           </Route>
+          <Route path="/leads-success" element={<LeadsSuccess />} />
           <Route path="/admin-control-panel" element={<RequireAuth><SuperAdminDashboard /></RequireAuth>} />
         </Routes>
         <HoomieFooter />
