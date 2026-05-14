@@ -7,7 +7,26 @@ function Failure() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Clear any pending leads purchase so stale data doesn't affect next attempt
+    // Read pending purchase BEFORE clearing so we can email the customer
+    try {
+      const raw = localStorage.getItem("pending_leads_purchase");
+      if (raw) {
+        const pending = JSON.parse(raw);
+        if (pending?.buyerEmail) {
+          fetch("https://townmanor.ai/api/lead-invoices/send-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type:     "incomplete",
+              to_email: pending.buyerEmail,
+              to_name:  pending.buyerName || "there",
+              plan:     pending.plan,
+              amount:   pending.totalAmount,
+            }),
+          }).catch(() => {});
+        }
+      }
+    } catch (_) {}
     localStorage.removeItem("pending_leads_purchase");
   }, []);
 

@@ -109,7 +109,8 @@ export default function Subs2() {
   /* ── Initiate PayU Payment ── */
   const handlePay = async () => {
     if (!form.name.trim())  return setErr("Please enter your name.");
-    if (!form.email.trim()) return setErr("Please enter your email address.");
+    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()))
+      return setErr("Please enter a valid email address.");
     if (!/^\d{10}$/.test(form.phone.replace(/\s/g, "")))
       return setErr("Please enter a valid 10-digit phone number.");
 
@@ -339,6 +340,9 @@ export default function Subs2() {
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
+              <p style={{ fontSize: 11, color: "#94a3b8", marginTop: -6, marginBottom: 8 }}>
+                📧 Invoice will be sent to this email
+              </p>
 
               <label>Phone Number *</label>
               <input

@@ -2,6 +2,29 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LeadsSuccess.css";
 
+async function sendSuccessEmail(inv) {
+  try {
+    await fetch("https://townmanor.ai/api/lead-invoices/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type:        "success",
+        to_email:    inv.buyerEmail,
+        to_name:     inv.buyerName,
+        invoice_no:  inv.invoiceNo,
+        txn_id:      inv.txnId,
+        plan:        inv.plan,
+        leads:       inv.leads,
+        total_amount: inv.totalAmount,
+        validity:    inv.validity,
+        date:        inv.date,
+      }),
+    });
+  } catch (e) {
+    console.warn("Success email failed:", e);
+  }
+}
+
 /* ── jsPDF loader ── */
 const ensureJsPDF = (() => {
   let p = null;
@@ -187,6 +210,9 @@ export default function LeadsSuccess() {
       // Save to backend (cross-device sync)
       const userId = getUserId();
       if (userId) saveInvoiceToBackend(inv, userId);
+
+      // Send success email
+      if (inv.buyerEmail) sendSuccessEmail(inv);
     } catch (_) {}
   }, []);
 
