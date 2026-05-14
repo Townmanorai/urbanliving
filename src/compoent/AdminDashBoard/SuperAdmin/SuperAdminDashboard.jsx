@@ -78,6 +78,11 @@ export default function SuperAdminDashboard() {
   const [vbCity, setVbCity] = useState('');
   const [vbLoading, setVbLoading] = useState(false);
 
+  // ── Lead Purchases states ──
+  const [lpList, setLpList] = useState([]);
+  const [lpLoading, setLpLoading] = useState(false);
+  const [lpSearch, setLpSearch] = useState('');
+
   // ── Self Verification states ──
   const [svList, setSvList] = useState([]);
   const [svLoading, setSvLoading] = useState(false);
@@ -365,7 +370,22 @@ export default function SuperAdminDashboard() {
 
   useEffect(() => {
     if (view === 'self-verification') fetchSelfVerifications();
+    if (view === 'lead-purchases') fetchLeadPurchases();
   }, [view]);
+
+  const fetchLeadPurchases = async () => {
+    setLpLoading(true);
+    try {
+      const res = await axios.get('https://townmanor.ai/api/lead-invoices', { validateStatus: false });
+      const data = res.data?.invoices || res.data?.data || (Array.isArray(res.data) ? res.data : []);
+      setLpList(data);
+    } catch (e) {
+      console.error('Lead purchases fetch failed', e);
+      setLpList([]);
+    } finally {
+      setLpLoading(false);
+    }
+  };
 
   const fetchReviews = async () => {
     setReviewsLoading(true);
@@ -978,6 +998,9 @@ export default function SuperAdminDashboard() {
                 <button className={view === 'self-verification' ? 'active' : ''} onClick={() => setView('self-verification')}>
                     <span className="sa-nav-icon">✅</span> Self Verification
                 </button>
+                <button className={view === 'lead-purchases' ? 'active' : ''} onClick={() => setView('lead-purchases')}>
+                    <span className="sa-nav-icon">💳</span> Lead Purchases
+                </button>
             </nav>
         </div>
         <div style={{ marginTop: 'auto', color: '#6b7280', fontSize: '12px' }}>
@@ -1000,6 +1023,7 @@ export default function SuperAdminDashboard() {
                 {view === 'reviews' && 'Review Feedback Management'}
                 {view === 'verification' && 'Verification Badge Management'}
                 {view === 'self-verification' && 'Self Verification Submissions'}
+                {view === 'lead-purchases' && 'Lead Purchases'}
             </h2>
             <div className="sa-user-controls">
                 <span className="sa-admin-tag">Super Admin</span>
@@ -2824,6 +2848,106 @@ export default function SuperAdminDashboard() {
                     )}
                 </div>
                 );
+            })()}
+
+            {/* VIEW: LEAD PURCHASES */}
+            {view === 'lead-purchases' && (() => {
+              const filtered = lpList.filter(lp => {
+                const q = lpSearch.toLowerCase();
+                return !q ||
+                  (lp.buyer_name || lp.buyerName || '').toLowerCase().includes(q) ||
+                  (lp.buyer_email || lp.buyerEmail || '').toLowerCase().includes(q) ||
+                  (lp.buyer_phone || lp.buyerPhone || '').toLowerCase().includes(q) ||
+                  (lp.plan || '').toLowerCase().includes(q) ||
+                  (lp.invoice_no || lp.invoiceNo || '').toLowerCase().includes(q);
+              });
+
+              const totalRevenue = lpList.reduce((s, l) => s + Number(l.total_amount || l.totalAmount || 0), 0);
+              const totalLeads = lpList.reduce((s, l) => s + Number(l.leads || 0), 0);
+
+              return (
+                <div style={{ padding: '24px' }}>
+                  {/* Stats row */}
+                  <div style={{ display: 'flex', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
+                    {[
+                      { label: 'Total Orders', value: lpList.length, color: '#3b82f6' },
+                      { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString('en-IN')}`, color: '#16a34a' },
+                      { label: 'Total Leads Sold', value: totalLeads, color: '#c2772b' },
+                    ].map(s => (
+                      <div key={s.label} style={{ background: '#fff', border: '1.5px solid #e2e8f0', borderRadius: 14, padding: '16px 24px', flex: '1 1 160px', minWidth: 160 }}>
+                        <div style={{ fontSize: 12, color: '#64748b', fontWeight: 600, marginBottom: 6 }}>{s.label}</div>
+                        <div style={{ fontSize: 24, fontWeight: 800, color: s.color }}>{s.value}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Search + Refresh */}
+                  <div style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'center', flexWrap: 'wrap' }}>
+                    <input
+                      placeholder="Search by name, email, phone, plan, invoice..."
+                      value={lpSearch}
+                      onChange={e => setLpSearch(e.target.value)}
+                      style={{ flex: 1, minWidth: 220, padding: '9px 14px', borderRadius: 9, border: '1.5px solid #e2e8f0', fontSize: 13, outline: 'none' }}
+                    />
+                    <button onClick={fetchLeadPurchases} disabled={lpLoading}
+                      style={{ padding: '9px 18px', borderRadius: 9, border: 'none', background: '#c2772b', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
+                      {lpLoading ? 'Loading...' : '↻ Refresh'}
+                    </button>
+                  </div>
+
+                  {/* Table */}
+                  {lpLoading ? (
+                    <div style={{ textAlign: 'center', padding: 60, color: '#94a3b8', fontSize: 15 }}>Loading lead purchases...</div>
+                  ) : filtered.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: 60, color: '#94a3b8', fontSize: 15 }}>
+                      {lpSearch ? 'No results found.' : 'No lead purchases yet.'}
+                    </div>
+                  ) : (
+                    <div style={{ overflowX: 'auto', borderRadius: 14, border: '1.5px solid #e2e8f0' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                        <thead>
+                          <tr style={{ background: '#f8fafc' }}>
+                            {['Invoice No.', 'Buyer Name', 'Email', 'Phone', 'Plan', 'Leads', 'Base', 'GST', 'Total Paid', 'Validity', 'Date', 'Status'].map(h => (
+                              <th key={h} style={{ padding: '12px 14px', textAlign: 'left', fontWeight: 700, fontSize: 11, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1.5px solid #e2e8f0', whiteSpace: 'nowrap' }}>{h}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filtered.map((lp, i) => {
+                            const invoiceNo  = lp.invoice_no  || lp.invoiceNo  || '—';
+                            const buyerName  = lp.buyer_name  || lp.buyerName  || '—';
+                            const buyerEmail = lp.buyer_email || lp.buyerEmail || '—';
+                            const buyerPhone = lp.buyer_phone || lp.buyerPhone || '—';
+                            const total      = Number(lp.total_amount || lp.totalAmount || 0);
+                            const base       = Number(lp.base_amount  || lp.baseAmount  || 0);
+                            const gst        = Number(lp.gst_amount   || lp.gstAmount   || 0);
+                            return (
+                              <tr key={invoiceNo + i} style={{ borderBottom: '1px solid #f1f5f9', background: i % 2 === 0 ? '#fff' : '#fafafa' }}>
+                                <td style={{ padding: '11px 14px', fontFamily: 'monospace', fontSize: 12, color: '#334155', whiteSpace: 'nowrap' }}>{invoiceNo}</td>
+                                <td style={{ padding: '11px 14px', fontWeight: 600, color: '#1e293b', whiteSpace: 'nowrap' }}>{buyerName}</td>
+                                <td style={{ padding: '11px 14px', color: '#475569' }}>{buyerEmail}</td>
+                                <td style={{ padding: '11px 14px', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>{buyerPhone}</td>
+                                <td style={{ padding: '11px 14px' }}>
+                                  <span style={{ background: 'rgba(194,119,43,0.1)', color: '#c2772b', fontWeight: 700, fontSize: 11, padding: '2px 10px', borderRadius: 20 }}>{lp.plan || '—'}</span>
+                                </td>
+                                <td style={{ padding: '11px 14px', fontWeight: 700, textAlign: 'center' }}>{lp.leads || '—'}</td>
+                                <td style={{ padding: '11px 14px' }}>₹{base.toLocaleString('en-IN')}</td>
+                                <td style={{ padding: '11px 14px', color: '#f59e0b' }}>₹{gst.toLocaleString('en-IN')}</td>
+                                <td style={{ padding: '11px 14px', fontWeight: 800, color: '#16a34a' }}>₹{total.toLocaleString('en-IN')}</td>
+                                <td style={{ padding: '11px 14px', color: '#64748b', whiteSpace: 'nowrap' }}>{lp.validity || '—'}</td>
+                                <td style={{ padding: '11px 14px', color: '#64748b', whiteSpace: 'nowrap' }}>{lp.date || '—'}</td>
+                                <td style={{ padding: '11px 14px' }}>
+                                  <span style={{ background: '#dcfce7', color: '#166534', fontWeight: 800, fontSize: 10, padding: '2px 9px', borderRadius: 20, letterSpacing: '0.06em' }}>PAID</span>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              );
             })()}
 
             {/* EDIT PROPERTY MODAL */}

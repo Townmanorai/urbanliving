@@ -28,7 +28,7 @@ async function generatePDF(inv) {
     try {
       const img = new Image(); img.src = "/ovikaliving_logo_clean.png";
       await new Promise((r, j) => { img.onload = r; img.onerror = j; });
-      const lh = 28; const lw = lh * (img.width / img.height);
+      const lh = 17; const lw = lh * (img.width / img.height);
       doc.addImage(img, "PNG", 16, 12, lw, lh);
     } catch (_) {}
 
@@ -145,7 +145,7 @@ export default function LeadInvoices() {
       if (userId) {
         try {
           const res = await fetch(
-            `https://www.townmanor.ai/api/lead-invoices?user_id=${userId}`
+            `https://townmanor.ai/api/lead-invoices?user_id=${userId}`
           );
           const data = await res.json();
           if (data?.success && Array.isArray(data.invoices) && data.invoices.length > 0) {

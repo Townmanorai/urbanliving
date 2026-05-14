@@ -31,7 +31,7 @@ async function downloadReceipt(inv) {
       const img = new Image();
       img.src = "/ovikaliving_logo_clean.png";
       await new Promise((r, j) => { img.onload = r; img.onerror = j; });
-      const lh = 28; const lw = lh * (img.width / img.height);
+      const lh = 17; const lw = lh * (img.width / img.height);
       doc.addImage(img, "PNG", 16, 12, lw, lh);
     } catch (_) {}
 
@@ -132,7 +132,7 @@ const getUserId = () => {
 
 const saveInvoiceToBackend = async (inv, userId) => {
   try {
-    await fetch("https://www.townmanor.ai/api/lead-invoices", {
+    await fetch("https://townmanor.ai/api/lead-invoices", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
