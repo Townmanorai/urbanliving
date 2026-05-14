@@ -108,15 +108,63 @@ async function generatePDF(inv) {
 /* ════════════════════════════════════════
    COMPONENT
 ════════════════════════════════════════ */
+const getUserId = () => {
+  try {
+    const raw = localStorage.getItem("user");
+    if (!raw) return null;
+    return JSON.parse(raw)?.id || null;
+  } catch { return null; }
+};
+
+const normalizeInvoice = (inv) => ({
+  invoiceNo:   inv.invoice_no   || inv.invoiceNo   || "",
+  txnId:       inv.txn_id       || inv.txnId       || "",
+  plan:        inv.plan         || "",
+  leads:       inv.leads        || 0,
+  baseAmount:  inv.base_amount  ?? inv.baseAmount  ?? 0,
+  gstAmount:   inv.gst_amount   ?? inv.gstAmount   ?? 0,
+  totalAmount: inv.total_amount ?? inv.totalAmount ?? 0,
+  validity:    inv.validity     || "",
+  buyerName:   inv.buyer_name   || inv.buyerName   || "",
+  buyerEmail:  inv.buyer_email  || inv.buyerEmail  || "",
+  buyerPhone:  inv.buyer_phone  || inv.buyerPhone  || "",
+  date:        inv.date         || "",
+  status:      inv.status       || "paid",
+});
+
 export default function LeadInvoices() {
   const [invoices, setInvoices] = useState([]);
   const [downloading, setDownloading] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("ol_lead_invoices");
-      setInvoices(raw ? JSON.parse(raw) : []);
-    } catch (_) { setInvoices([]); }
+    const fetchInvoices = async () => {
+      const userId = getUserId();
+
+      // Try backend first
+      if (userId) {
+        try {
+          const res = await fetch(
+            `https://www.townmanor.ai/api/lead-invoices?user_id=${userId}`
+          );
+          const data = await res.json();
+          if (data?.success && Array.isArray(data.invoices) && data.invoices.length > 0) {
+            setInvoices(data.invoices.map(normalizeInvoice));
+            setLoading(false);
+            return;
+          }
+        } catch (_) {}
+      }
+
+      // Fallback to localStorage
+      try {
+        const raw = localStorage.getItem("ol_lead_invoices");
+        setInvoices(raw ? JSON.parse(raw).map(normalizeInvoice) : []);
+      } catch (_) { setInvoices([]); }
+      setLoading(false);
+    };
+
+    fetchInvoices();
   }, []);
 
   const handleDownload = async (inv) => {
@@ -136,7 +184,11 @@ export default function LeadInvoices() {
       </div>
 
       {/* ── Empty ── */}
-      {invoices.length === 0 ? (
+      {loading ? (
+        <div className="li-empty">
+          <p className="li-empty-title" style={{ fontSize: 15, color: "#94a3b8" }}>Loading invoices...</p>
+        </div>
+      ) : invoices.length === 0 ? (
         <div className="li-empty">
           <div className="li-empty-icon">🧾</div>
           <p className="li-empty-title">No invoices yet</p>

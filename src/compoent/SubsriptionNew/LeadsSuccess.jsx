@@ -122,6 +122,41 @@ async function downloadReceipt(inv) {
 /* ════════════════════════════════════════
    COMPONENT
 ════════════════════════════════════════ */
+const getUserId = () => {
+  try {
+    const raw = localStorage.getItem("user");
+    if (!raw) return null;
+    return JSON.parse(raw)?.id || null;
+  } catch { return null; }
+};
+
+const saveInvoiceToBackend = async (inv, userId) => {
+  try {
+    await fetch("https://www.townmanor.ai/api/lead-invoices", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id:      userId,
+        invoice_no:   inv.invoiceNo,
+        txn_id:       inv.txnId,
+        plan:         inv.plan,
+        leads:        inv.leads,
+        base_amount:  inv.baseAmount,
+        gst_amount:   inv.gstAmount,
+        total_amount: inv.totalAmount,
+        validity:     inv.validity,
+        buyer_name:   inv.buyerName,
+        buyer_email:  inv.buyerEmail,
+        buyer_phone:  inv.buyerPhone,
+        date:         inv.date,
+        status:       "paid",
+      }),
+    });
+  } catch (e) {
+    console.warn("Backend save failed, invoice kept in localStorage only.", e);
+  }
+};
+
 export default function LeadsSuccess() {
   const navigate = useNavigate();
   const [invoice, setInvoice] = useState(null);
@@ -140,11 +175,17 @@ export default function LeadsSuccess() {
         }),
         status: "Paid",
       };
+
+      // Save to localStorage (fallback)
       const existing = JSON.parse(localStorage.getItem("ol_lead_invoices") || "[]");
       existing.unshift(inv);
       localStorage.setItem("ol_lead_invoices", JSON.stringify(existing));
       localStorage.removeItem("pending_leads_purchase");
       setInvoice(inv);
+
+      // Save to backend (cross-device sync)
+      const userId = getUserId();
+      if (userId) saveInvoiceToBackend(inv, userId);
     } catch (_) {}
   }, []);
 
