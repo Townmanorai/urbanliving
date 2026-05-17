@@ -2771,7 +2771,7 @@ export default function SuperAdminDashboard() {
                                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                                     <thead>
                                         <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
-                                            {['#', 'Owner ID', 'Prop ID', 'Mobile', 'Status', 'Exterior', 'Interior', 'Video', 'Address', 'Location', 'Date', 'Actions'].map(h => (
+                                            {['#', 'Owner ID', 'Prop ID', 'Mobile', 'Status', 'Prop Link', 'Exterior', 'Interior', 'Video', 'Address', 'Location', 'Date', 'Actions'].map(h => (
                                                 <th key={h} style={{ padding: '12px 14px', textAlign: 'left', fontWeight: 700, color: '#374151', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>{h}</th>
                                             ))}
                                         </tr>
@@ -2796,6 +2796,16 @@ export default function SuperAdminDashboard() {
                                                         <span style={{ padding: '3px 10px', borderRadius: 20, background: statusStyle.bg, color: statusStyle.color, fontWeight: 700, fontSize: 11 }}>
                                                             {statusStyle.label}
                                                         </span>
+                                                    </td>
+
+                                                    {/* Property Link */}
+                                                    <td style={{ padding: '12px 14px' }}>
+                                                        {sv.property_link
+                                                            ? <a href={sv.property_link} target="_blank" rel="noreferrer"
+                                                                style={{ color: '#3b82f6', textDecoration: 'none', fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                                                🔗 View
+                                                              </a>
+                                                            : <span style={{ color: '#94a3b8' }}>—</span>}
                                                     </td>
 
                                                     {/* Exterior photo */}
