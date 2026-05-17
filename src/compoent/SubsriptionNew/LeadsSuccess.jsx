@@ -8,16 +8,16 @@ async function sendSuccessEmail(inv) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        type:        "success",
-        to_email:    inv.buyerEmail,
-        to_name:     inv.buyerName,
-        invoice_no:  inv.invoiceNo,
-        txn_id:      inv.txnId,
-        plan:        inv.plan,
-        leads:       inv.leads,
+        type:         "success",
+        to_email:     inv.buyerEmail,
+        to_name:      inv.buyerName,
+        invoice_no:   inv.invoiceNo,
+        txn_id:       inv.txnId,
+        plan:         inv.plan,
+        leads:        inv.leads,
         total_amount: inv.totalAmount,
-        validity:    inv.validity,
-        date:        inv.date,
+        validity:     inv.validity,
+        date:         inv.date,
       }),
     });
   } catch (e) {
@@ -236,6 +236,12 @@ export default function LeadsSuccess() {
         <p className="ls-subtitle">
           Your leads have been activated. You can view them in your Owner Dashboard.
         </p>
+
+        {/* ── WhatsApp delivery notice ── */}
+        <div className="ls-whatsapp-notice">
+          <span className="ls-wa-icon">📲</span>
+          <p>Your verified tenant leads will be delivered to your <strong>WhatsApp number within 24 hours.</strong></p>
+        </div>
 
         {/* ── Invoice summary ── */}
         {invoice ? (

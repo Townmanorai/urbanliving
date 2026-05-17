@@ -57,6 +57,27 @@
   margin: 0 0 28px;
 }
 
+/* ── WhatsApp Notice ── */
+.ls-whatsapp-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 0 0 24px;
+  text-align: left;
+}
+.ls-wa-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+.ls-whatsapp-notice p {
+  font-size: 13.5px;
+  color: #166534;
+  line-height: 1.6;
+  margin: 0;
+}
+.ls-whatsapp-notice strong { color: #15803d; }
+
 /* ── Summary ── */
 .ls-summary {
   background: #fdf7ee;

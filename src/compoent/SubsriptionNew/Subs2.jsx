@@ -352,6 +352,9 @@ export default function Subs2() {
                 maxLength={10}
                 onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "") })}
               />
+              <p style={{ fontSize: 11, color: "#94a3b8", marginTop: -6, marginBottom: 8 }}>
+                📲 We will share your leads on this WhatsApp number
+              </p>
             </div>
 
             {err && <p className="sl2-modal-err">{err}</p>}
