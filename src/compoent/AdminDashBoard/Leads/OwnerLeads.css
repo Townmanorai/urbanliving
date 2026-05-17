@@ -194,6 +194,52 @@
   text-align: center;
 }
 
+/* ── Purchased Banner ── */
+.ol-purchased-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border: 1.5px solid #86efac;
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+.ol-pb-icon { font-size: 28px; flex-shrink: 0; }
+.ol-pb-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+.ol-pb-text strong { font-size: 15px; font-weight: 700; color: #166534; }
+.ol-pb-text span   { font-size: 13px; color: #16a34a; line-height: 1.5; }
+.ol-pb-badge {
+  background: #16a34a;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.ol-pdf-btn {
+  background: #fff;
+  color: #166534;
+  border: 1.5px solid #86efac;
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.ol-pdf-btn:hover { background: #f0fdf4; }
+.ol-pdf-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
 /* ── Get More Leads CTA ── */
 .ol-get-leads-cta {
   display: flex;

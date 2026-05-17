@@ -332,20 +332,39 @@ export default function SuperAdminDashboard() {
   const fetchSelfVerifications = async () => {
     setSvLoading(true);
     setSvDebug('Fetching...');
-    try {
-      const res = await axios.get('https://www.townmanor.ai/api/owner-verification/all', { validateStatus: false });
-      const payload = res.data;
-      const data = payload?.data || payload?.submissions || payload?.verifications || payload?.results || (Array.isArray(payload) ? payload : []);
-      setSvList(Array.isArray(data) ? data : []);
-      const first = Array.isArray(data) && data.length > 0 ? data[0] : null;
-      const testPath = first?.exterior_photo ? `https://www.townmanor.ai/${(first.exterior_photo).replace(/^\//, '')}` : 'no path';
-      setSvDebug(`HTTP ${res.status} | ${Array.isArray(data) ? data.length : 0} items | img URL being tried: "${testPath}"`);
-    } catch (e) {
-      setSvDebug(`ERROR: ${e.message}`);
-      setSvList([]);
-    } finally {
-      setSvLoading(false);
+
+    // Try multiple endpoint variants — backend may not have /all
+    const endpoints = [
+      'https://townmanor.ai/api/owner-verification',
+      'https://www.townmanor.ai/api/owner-verification',
+      'https://townmanor.ai/api/owner-verification/all',
+      'https://www.townmanor.ai/api/owner-verification/submissions',
+    ];
+
+    let found = false;
+    for (const url of endpoints) {
+      try {
+        const res = await axios.get(url, { validateStatus: false });
+        if (res.status === 200) {
+          const payload = res.data;
+          const data = payload?.data || payload?.submissions || payload?.verifications || payload?.results || (Array.isArray(payload) ? payload : []);
+          setSvList(Array.isArray(data) ? data : []);
+          setSvDebug(`OK (${url}) | ${Array.isArray(data) ? data.length : 0} items`);
+          found = true;
+          break;
+        } else {
+          setSvDebug(`HTTP ${res.status} @ ${url} — trying next...`);
+        }
+      } catch (e) {
+        setSvDebug(`ERR @ ${url}: ${e.message}`);
+      }
     }
+
+    if (!found) {
+      setSvDebug('All endpoints returned non-200. Backend team ko GET /api/owner-verification endpoint banana hoga.');
+      setSvList([]);
+    }
+    setSvLoading(false);
   };
 
   const updateSvStatus = async (sv, status) => {
@@ -824,64 +843,83 @@ export default function SuperAdminDashboard() {
   };
 
   // --- Dynamic Charts Data ---
+
+  /* helper: get the single best category label for a property */
+  const getPropCategory = (p) => {
+    let cat = (p.property_type || p.property_category || '').trim();
+    if (!cat && p.meta) {
+      try {
+        const meta = typeof p.meta === 'string' ? JSON.parse(p.meta) : p.meta;
+        cat = (meta.propertyType || meta.propertyCategory || '').trim();
+      } catch (_) {}
+    }
+    return cat || 'Other';
+  };
+
   const getListingGrowthData = () => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const currentMonthIdx = new Date().getMonth();
-    const last6Months = [];
+    const now = new Date();
+    const last6 = [];
     for (let i = 5; i >= 0; i--) {
-        let idx = currentMonthIdx - i;
-        if (idx < 0) idx += 12;
-        last6Months.push(months[idx]);
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      last6.push({ label: months[d.getMonth()], year: d.getFullYear(), month: d.getMonth() });
     }
 
-    const counts = last6Months.map(m => {
-        return properties.filter(p => {
-            const date = p.created_at ? new Date(p.created_at) : null;
-            return date && months[date.getMonth()] === m;
-        }).length;
-    });
+    const counts = last6.map(({ month, year }) =>
+      properties.filter(p => {
+        if (!p.created_at) return false;
+        const d = new Date(p.created_at);
+        return !isNaN(d) && d.getMonth() === month && d.getFullYear() === year;
+      }).length
+    );
 
-    // If all are zero, provide a small trend for visual purposes but label it as synchronized
     const hasData = counts.some(c => c > 0);
-    const displayCounts = hasData ? counts : [2, 5, 8, 12, 15, properties.length];
 
     return {
-      labels: last6Months,
+      labels: last6.map(l => l.label),
       datasets: [{
         label: 'New Listings',
-        data: displayCounts,
+        data: hasData ? counts : [0, 0, 0, 0, 0, properties.length],
         borderColor: '#c2772b',
-        backgroundColor: 'rgba(194, 119, 43, 0.2)',
+        backgroundColor: 'rgba(194, 119, 43, 0.15)',
         fill: true,
-        tension: 0.4
+        tension: 0.4,
+        pointRadius: 4,
+        pointBackgroundColor: '#c2772b',
       }]
     };
   };
-  
+
   const getPropertyDistributionData = () => {
-    const cats = ['Apartment', 'PG', 'Villa', 'House', 'Flat'];
-    const counts = cats.map(cat => {
-        return properties.filter(p => 
-            (p.property_category || '').toLowerCase().includes(cat.toLowerCase()) || 
-            (p.property_type || '').toLowerCase().includes(cat.toLowerCase())
-        ).length;
+    /* count each property exactly once using its primary category */
+    const catMap = {};
+    properties.forEach(p => {
+      const cat = getPropCategory(p);
+      catMap[cat] = (catMap[cat] || 0) + 1;
     });
 
-    // Handle others
-    const otherCount = properties.length - counts.reduce((a, b) => a + b, 0);
-    const finalLabels = [...cats];
-    const finalCounts = [...counts];
-    if (otherCount > 0) {
-        finalLabels.push('Other');
-        finalCounts.push(otherCount);
+    /* sort by count descending, group tail into "Other" if > 8 slices */
+    const sorted = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
+    const TOP_N = 8;
+    let labels, counts;
+    if (sorted.length > TOP_N) {
+      const top = sorted.slice(0, TOP_N - 1);
+      const otherCount = sorted.slice(TOP_N - 1).reduce((s, [, c]) => s + c, 0);
+      labels = [...top.map(([l]) => l), 'Other'];
+      counts = [...top.map(([, c]) => c), otherCount];
+    } else {
+      labels = sorted.map(([l]) => l);
+      counts = sorted.map(([, c]) => c);
     }
 
+    const COLORS = ['#c2772b','#10b981','#3b82f6','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#d97706','#64748b'];
+
     return {
-      labels: finalLabels,
+      labels,
       datasets: [{
-        data: finalCounts,
-        backgroundColor: ['#c2772b', '#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#64748b'],
-        borderWidth: 0
+        data: counts,
+        backgroundColor: COLORS.slice(0, labels.length),
+        borderWidth: 0,
       }]
     };
   };
@@ -1058,13 +1096,13 @@ export default function SuperAdminDashboard() {
                     <div className="sa-chart-box">
                         <h4>Listing Growth Trend</h4>
                         <div style={{ height: '250px' }}>
-                             <Line options={{ maintainAspectRatio: false }} data={lineData} />
+                            <Line options={{ maintainAspectRatio: false }} data={lineData} />
                         </div>
                     </div>
                     <div className="sa-chart-box">
                         <h4>Property Distribution</h4>
-                         <div style={{ height: '250px', display: 'flex', justifyContent: 'center' }}>
-                             <Doughnut options={{ maintainAspectRatio: false }} data={pieData} />
+                        <div style={{ height: '250px', display: 'flex', justifyContent: 'center' }}>
+                            <Doughnut options={{ maintainAspectRatio: false }} data={pieData} />
                         </div>
                     </div>
                 </div>
