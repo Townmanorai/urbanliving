@@ -90,8 +90,10 @@ export default function SuperAdminDashboard() {
   const [svSearch, setSvSearch] = useState('');
   const [svBadgeLoading, setSvBadgeLoading] = useState(false);
   const [svLightbox, setSvLightbox] = useState(null); // { url, title }
-  const [svRejectTarget, setSvRejectTarget] = useState(null); // sv being rejected
+  const [svRejectTarget, setSvRejectTarget] = useState(null);
   const [svRejectReason, setSvRejectReason] = useState('');
+  const [svApproveTarget, setSvApproveTarget] = useState(null);
+  const [svToast, setSvToast] = useState(null); // { msg, type: 'success'|'error' }
   const [properties, setProperties] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [usersList, setUsersList] = useState([]); // Real users from API
@@ -369,6 +371,11 @@ export default function SuperAdminDashboard() {
     setSvLoading(false);
   };
 
+  const showToast = (msg, type = 'success') => {
+    setSvToast({ msg, type });
+    setTimeout(() => setSvToast(null), 3500);
+  };
+
   const updateSvStatus = async (sv, status, reason = '') => {
     setSvBadgeLoading(true);
     try {
@@ -381,13 +388,20 @@ export default function SuperAdminDashboard() {
       );
       if (res.data?.success) {
         setSvList(prev => prev.map(s => s.id === sv.id ? { ...s, verification_status: status } : s));
+        showToast(
+          status === 'approved'
+            ? '✅ Submission approved! Email sent to owner.'
+            : '❌ Submission rejected! Email sent with reason.',
+          status === 'approved' ? 'success' : 'error'
+        );
       } else {
-        alert(res.data?.message || 'Status update failed');
+        showToast(res.data?.message || 'Status update failed', 'error');
       }
     } catch (e) {
-      alert('Network error. Please try again.');
+      showToast('Network error. Please try again.', 'error');
     } finally {
       setSvBadgeLoading(false);
+      setSvApproveTarget(null);
       setSvRejectTarget(null);
       setSvRejectReason('');
     }
@@ -2751,6 +2765,49 @@ export default function SuperAdminDashboard() {
                         </div>
                     )}
 
+                    {/* Toast Notification */}
+                    {svToast && (
+                        <div style={{
+                            position: 'fixed', bottom: 32, right: 32, zIndex: 99999,
+                            background: svToast.type === 'success' ? '#16a34a' : '#dc2626',
+                            color: '#fff', padding: '14px 22px', borderRadius: 12,
+                            fontWeight: 600, fontSize: 14, boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+                            display: 'flex', alignItems: 'center', gap: 10,
+                            animation: 'slideInRight 0.3s ease',
+                        }}>
+                            {svToast.msg}
+                        </div>
+                    )}
+
+                    {/* Approve Confirmation Modal */}
+                    {svApproveTarget && (
+                        <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center' }}
+                            onClick={() => setSvApproveTarget(null)}>
+                            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:14, padding:'28px 28px 22px', width:380, boxShadow:'0 20px 60px rgba(0,0,0,0.2)', textAlign:'center' }}>
+                                <div style={{ fontSize: 44, marginBottom: 12 }}>✅</div>
+                                <h3 style={{ margin:'0 0 8px', fontSize:17, color:'#1e293b', fontWeight:700 }}>Approve Submission?</h3>
+                                <p style={{ margin:'0 0 6px', fontSize:13, color:'#64748b' }}>
+                                    Owner ID: <strong>{svApproveTarget.owner_id || '—'}</strong>
+                                </p>
+                                <p style={{ margin:'0 0 20px', fontSize:13, color:'#64748b' }}>
+                                    An approval email will be sent to the owner automatically.
+                                </p>
+                                <div style={{ display:'flex', gap:10, justifyContent:'center' }}>
+                                    <button onClick={() => setSvApproveTarget(null)}
+                                        style={{ padding:'9px 20px', borderRadius:8, border:'1px solid #e2e8f0', background:'#f8fafc', color:'#64748b', fontWeight:600, fontSize:13, cursor:'pointer' }}>
+                                        Cancel
+                                    </button>
+                                    <button
+                                        disabled={svBadgeLoading}
+                                        onClick={() => updateSvStatus(svApproveTarget, 'approved')}
+                                        style={{ padding:'9px 22px', borderRadius:8, border:'none', background:'#16a34a', color:'#fff', fontWeight:700, fontSize:13, cursor:'pointer' }}>
+                                        {svBadgeLoading ? 'Approving...' : '✓ Yes, Approve'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Lightbox */}
                     {svLightbox && (
                         <div onClick={() => setSvLightbox(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -2810,7 +2867,7 @@ export default function SuperAdminDashboard() {
                                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                                     <thead>
                                         <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
-                                            {['#', 'Owner ID', 'Prop ID', 'Mobile', 'Email', 'Status', 'Prop Link', 'Exterior', 'Interior', 'Video', 'Address', 'Location', 'Date', 'Actions'].map(h => (
+                                            {['#', 'Owner ID', 'Prop ID', 'Mobile', 'Email', 'Status', 'Prop Link', 'Exterior', 'Interior', 'Video', 'Address', 'Location', 'Date', 'Approve / Reject', 'Badge Control'].map(h => (
                                                 <th key={h} style={{ padding: '12px 14px', textAlign: 'left', fontWeight: 700, color: '#374151', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>{h}</th>
                                             ))}
                                         </tr>
@@ -2901,39 +2958,39 @@ export default function SuperAdminDashboard() {
                                                             : '—'}
                                                     </td>
 
-                                                    {/* Actions */}
+                                                    {/* Approve / Reject column */}
                                                     <td style={{ padding: '8px 10px', whiteSpace: 'nowrap' }}>
-                                                        <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 5 }}>
-                                                            {/* Approve / Reject */}
-                                                            <div style={{ display: 'flex', border: '1px solid #e2e8f0', borderRadius: 7, overflow: 'hidden' }}>
-                                                                <button
-                                                                    disabled={svBadgeLoading || sv.verification_status === 'approved'}
-                                                                    onClick={() => updateSvStatus(sv, 'approved')}
-                                                                    style={{ padding: '5px 11px', border: 'none', borderRight: '1px solid #e2e8f0', background: sv.verification_status === 'approved' ? '#bbf7d0' : '#f0fdf4', color: '#16a34a', fontWeight: 700, fontSize: 11, cursor: sv.verification_status === 'approved' ? 'default' : 'pointer', opacity: sv.verification_status === 'approved' ? 0.7 : 1 }}>
-                                                                    ✓ Approve
-                                                                </button>
-                                                                <button
-                                                                    disabled={svBadgeLoading || sv.verification_status === 'rejected'}
-                                                                    onClick={() => { setSvRejectTarget(sv); setSvRejectReason(''); }}
-                                                                    style={{ padding: '5px 11px', border: 'none', background: sv.verification_status === 'rejected' ? '#fecaca' : '#fef2f2', color: '#dc2626', fontWeight: 700, fontSize: 11, cursor: sv.verification_status === 'rejected' ? 'default' : 'pointer', opacity: sv.verification_status === 'rejected' ? 0.7 : 1 }}>
-                                                                    ✕ Reject
-                                                                </button>
-                                                            </div>
-                                                            {/* Add Badge / Remove */}
-                                                            <div style={{ display: 'flex', border: '1px solid #e2e8f0', borderRadius: 7, overflow: 'hidden' }}>
-                                                                <button
-                                                                    disabled={svBadgeLoading || !sv.property_id}
-                                                                    onClick={() => addBadge(sv, true)}
-                                                                    style={{ padding: '5px 11px', border: 'none', borderRight: '1px solid #e2e8f0', background: '#fff8f0', color: '#C98B3E', fontWeight: 700, fontSize: 11, cursor: sv.property_id ? 'pointer' : 'not-allowed', opacity: sv.property_id ? 1 : 0.45 }}>
-                                                                    🏅 Add Badge
-                                                                </button>
-                                                                <button
-                                                                    disabled={svBadgeLoading || !sv.property_id}
-                                                                    onClick={() => addBadge(sv, false)}
-                                                                    style={{ padding: '5px 11px', border: 'none', background: '#f8fafc', color: '#64748b', fontWeight: 600, fontSize: 11, cursor: sv.property_id ? 'pointer' : 'not-allowed', opacity: sv.property_id ? 1 : 0.45 }}>
-                                                                    Remove
-                                                                </button>
-                                                            </div>
+                                                        <div style={{ display: 'flex', border: '1px solid #e2e8f0', borderRadius: 7, overflow: 'hidden' }}>
+                                                            <button
+                                                                disabled={svBadgeLoading || sv.verification_status === 'approved'}
+                                                                onClick={() => setSvApproveTarget(sv)}
+                                                                style={{ padding: '6px 12px', border: 'none', borderRight: '1px solid #e2e8f0', background: sv.verification_status === 'approved' ? '#bbf7d0' : '#f0fdf4', color: '#16a34a', fontWeight: 700, fontSize: 11, cursor: sv.verification_status === 'approved' ? 'default' : 'pointer', opacity: sv.verification_status === 'approved' ? 0.7 : 1 }}>
+                                                                ✓ Approve
+                                                            </button>
+                                                            <button
+                                                                disabled={svBadgeLoading || sv.verification_status === 'rejected'}
+                                                                onClick={() => { setSvRejectTarget(sv); setSvRejectReason(''); }}
+                                                                style={{ padding: '6px 12px', border: 'none', background: sv.verification_status === 'rejected' ? '#fecaca' : '#fef2f2', color: '#dc2626', fontWeight: 700, fontSize: 11, cursor: sv.verification_status === 'rejected' ? 'default' : 'pointer', opacity: sv.verification_status === 'rejected' ? 0.7 : 1 }}>
+                                                                ✕ Reject
+                                                            </button>
+                                                        </div>
+                                                    </td>
+
+                                                    {/* Badge Control column */}
+                                                    <td style={{ padding: '8px 10px', whiteSpace: 'nowrap' }}>
+                                                        <div style={{ display: 'flex', border: `1px solid ${sv.verification_status === 'approved' ? '#C98B3E' : '#e2e8f0'}`, borderRadius: 7, overflow: 'hidden' }}>
+                                                            <button
+                                                                disabled={svBadgeLoading || !sv.property_id}
+                                                                onClick={() => addBadge(sv, true)}
+                                                                style={{ padding: '6px 12px', border: 'none', borderRight: `1px solid ${sv.verification_status === 'approved' ? '#C98B3E' : '#e2e8f0'}`, background: sv.verification_status === 'approved' ? '#fff3e0' : '#f8fafc', color: sv.verification_status === 'approved' ? '#C98B3E' : '#94a3b8', fontWeight: 700, fontSize: 11, cursor: sv.property_id ? 'pointer' : 'not-allowed', opacity: sv.property_id ? 1 : 0.45 }}>
+                                                                🏅 Add Badge
+                                                            </button>
+                                                            <button
+                                                                disabled={svBadgeLoading || !sv.property_id}
+                                                                onClick={() => addBadge(sv, false)}
+                                                                style={{ padding: '6px 12px', border: 'none', background: '#f8fafc', color: '#64748b', fontWeight: 600, fontSize: 11, cursor: sv.property_id ? 'pointer' : 'not-allowed', opacity: sv.property_id ? 1 : 0.45 }}>
+                                                                Remove
+                                                            </button>
                                                         </div>
                                                     </td>
                                                 </tr>
