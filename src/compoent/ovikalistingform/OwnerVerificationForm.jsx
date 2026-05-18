@@ -113,15 +113,16 @@ export default function OwnerVerificationForm() {
   const rawUser = (() => {
     try { return JSON.parse(localStorage.getItem('user')) || {}; } catch { return {}; }
   })();
-  const ownerId    = user?.id || user?._id || user?.owner_id ||
-                    rawUser?.id || rawUser?._id || rawUser?.owner_id || '';
-  const ownerEmail = user?.email || rawUser?.email || '';
+  const ownerId = user?.id || user?._id || user?.owner_id ||
+                  rawUser?.id || rawUser?._id || rawUser?.owner_id || '';
+  const prefillEmail = user?.email || rawUser?.email || '';
 
   // Step: 0 = mobile+OTP, 1 = media upload, 2 = location+submit
   const [step, setStep] = useState(0);
 
   // Step 0 state
   const [mobile, setMobile] = useState('');
+  const [ownerEmail, setOwnerEmail] = useState(prefillEmail);
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [mobileVerified, setMobileVerified] = useState(false);
@@ -235,7 +236,7 @@ export default function OwnerVerificationForm() {
 
     const formData = new FormData();
     formData.append('owner_id', ownerId);
-    if (ownerEmail) formData.append('owner_email', ownerEmail);
+    if (ownerEmail.trim()) formData.append('owner_email', ownerEmail.trim());
     formData.append('mobile_number', mobile);
     formData.append('lat', lat);
     formData.append('lng', lng);
@@ -325,6 +326,17 @@ export default function OwnerVerificationForm() {
                 You are not logged in. Please <span style={{ textDecoration: 'underline', cursor: 'pointer', fontWeight: 700 }} onClick={() => navigate('/login')}>login first</span> to submit verification.
               </div>
             )}
+
+            <div className="ovf-field">
+              <label>Email Address <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 400 }}>(for approval/rejection notification)</span></label>
+              <input
+                type="email"
+                placeholder="Enter your email address"
+                value={ownerEmail}
+                onChange={(e) => setOwnerEmail(e.target.value)}
+                style={{ width: '100%', boxSizing: 'border-box' }}
+              />
+            </div>
 
             <div className="ovf-field">
               <label>Mobile Number <span className="ovf-req">*</span></label>
