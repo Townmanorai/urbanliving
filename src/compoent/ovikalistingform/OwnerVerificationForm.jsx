@@ -334,7 +334,6 @@ export default function OwnerVerificationForm() {
                 placeholder="Enter your email address"
                 value={ownerEmail}
                 onChange={(e) => setOwnerEmail(e.target.value)}
-                style={{ width: '100%', boxSizing: 'border-box' }}
               />
             </div>
 

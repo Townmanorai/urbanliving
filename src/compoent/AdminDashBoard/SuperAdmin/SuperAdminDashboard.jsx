@@ -2810,7 +2810,7 @@ export default function SuperAdminDashboard() {
                                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                                     <thead>
                                         <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
-                                            {['#', 'Owner ID', 'Prop ID', 'Mobile', 'Status', 'Prop Link', 'Exterior', 'Interior', 'Video', 'Address', 'Location', 'Date', 'Actions'].map(h => (
+                                            {['#', 'Owner ID', 'Prop ID', 'Mobile', 'Email', 'Status', 'Prop Link', 'Exterior', 'Interior', 'Video', 'Address', 'Location', 'Date', 'Actions'].map(h => (
                                                 <th key={h} style={{ padding: '12px 14px', textAlign: 'left', fontWeight: 700, color: '#374151', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>{h}</th>
                                             ))}
                                         </tr>
@@ -2829,6 +2829,11 @@ export default function SuperAdminDashboard() {
                                                     <td style={{ padding: '12px 14px', fontWeight: 600 }}>{sv.owner_id || '—'}</td>
                                                     <td style={{ padding: '12px 14px', fontWeight: 700, color: '#6366f1' }}>{sv.property_id || '—'}</td>
                                                     <td style={{ padding: '12px 14px', fontFamily: 'monospace' }}>{sv.mobile_number || '—'}</td>
+                                                    <td style={{ padding: '12px 14px', fontSize: 12, color: '#374151' }}>
+                                                        {sv.owner_email
+                                                            ? <a href={`mailto:${sv.owner_email}`} style={{ color: '#3b82f6', textDecoration: 'none' }}>{sv.owner_email}</a>
+                                                            : <span style={{ color: '#94a3b8' }}>—</span>}
+                                                    </td>
 
                                                     {/* Status badge */}
                                                     <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
