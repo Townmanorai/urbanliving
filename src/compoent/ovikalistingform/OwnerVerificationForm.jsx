@@ -138,6 +138,7 @@ export default function OwnerVerificationForm() {
   const [lng, setLng] = useState('');
   const [mapAddress, setMapAddress] = useState('');
   const [propertyLink, setPropertyLink] = useState('');
+  const [propertyId, setPropertyId] = useState('');
 
   // UI state
   const [loading, setLoading] = useState(false);
@@ -232,6 +233,7 @@ export default function OwnerVerificationForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    if (!propertyId.trim()) { setError('Please enter your Property ID.'); return; }
     if (!lat || !lng) { setError('Please provide property latitude and longitude.'); return; }
 
     const formData = new FormData();
@@ -242,6 +244,7 @@ export default function OwnerVerificationForm() {
     formData.append('lng', lng);
     if (mapAddress) formData.append('map_address', mapAddress);
     if (propertyLink) formData.append('property_link', propertyLink);
+    if (propertyId.trim()) formData.append('property_id', propertyId.trim());
     formData.append('exterior_photo', exteriorPhoto[0]);
     interiorPhotos.forEach((f) => formData.append('interior_photos', f));
     formData.append('walkthrough_video', walkthroughVideo[0]);
@@ -496,6 +499,17 @@ export default function OwnerVerificationForm() {
                 placeholder="e.g. Sector 18, Noida, Uttar Pradesh"
                 value={mapAddress}
                 onChange={(e) => setMapAddress(e.target.value)}
+              />
+            </div>
+
+            <div className="ovf-field">
+              <label>Property ID <span className="ovf-req">*</span></label>
+              <input
+                type="text"
+                placeholder="Enter your Property ID (e.g. 718)"
+                value={propertyId}
+                onChange={(e) => setPropertyId(e.target.value)}
+                required
               />
             </div>
 
