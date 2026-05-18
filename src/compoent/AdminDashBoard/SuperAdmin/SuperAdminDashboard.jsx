@@ -2703,7 +2703,7 @@ export default function SuperAdminDashboard() {
                         const res = await fetch(`https://www.townmanor.ai/api/ovika/properties/${propId}/badge`, {
                             method: 'PATCH',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ self_verified_badge: add }),
+                            body: JSON.stringify({ verified_badge: add }),
                         });
                         if (res.ok) {
                             showToast(add ? `🏅 Self-verified badge added to Property #${propId}!` : `Badge removed from Property #${propId}.`, add ? 'success' : 'error');
