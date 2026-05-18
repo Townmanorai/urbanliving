@@ -552,13 +552,17 @@ const PropertyCard = ({ property, rentalType }) => {
         <div className="plp-hcard-toprow">
           <h3 className="plp-hcard-name" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             {property.property_name || 'Untitled Property'}
-            {(Number(property.verified_badge) === 1 || (() => { try { const m = typeof property.meta === 'object' ? property.meta : JSON.parse(property.meta || '{}'); return !!m.verified_badge; } catch { return false; } })()) && (
-              <img
-                src="/ovikaver.png"
-                alt="Ovika Verified"
-                style={{ height: 44, width: 'auto', flexShrink: 0, filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.25))', pointerEvents: 'none' }}
-              />
-            )}
+{(() => {
+              const m = (() => { try { return typeof property.meta === 'object' ? property.meta : JSON.parse(property.meta || '{}'); } catch { return {}; } })();
+              const isGreenVerified = Number(property.verified_badge) === 1 || !!m.verified_badge;
+              const isGoldVerified  = Number(property.self_verified_badge) === 1 || !!m.self_verified_badge;
+              return (
+                <>
+                  {isGreenVerified && <img src="/ovikaver.png" alt="Ovika Verified" style={{ height: 44, width: 'auto', flexShrink: 0, filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.25))', pointerEvents: 'none' }} />}
+                  {isGoldVerified  && <img src="/SelfVerified.jpeg" alt="Self Verified" style={{ height: 44, width: 'auto', flexShrink: 0, filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.25))', pointerEvents: 'none', borderRadius: 4 }} />}
+                </>
+              );
+            })()}
           </h3>
           <div className="plp-hcard-rating">
             <FiStar style={{ fontSize: 11, fill: '#fff', color: '#fff' }} />

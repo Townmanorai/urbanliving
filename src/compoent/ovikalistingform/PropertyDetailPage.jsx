@@ -2717,11 +2717,15 @@ const PropertyDetailPage = () => {
         <h1 style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           {property.property_name}
           {(() => {
-            const topLevel = Number(property.verified_badge) === 1;
             const m = property.meta && typeof property.meta === 'object' ? property.meta : (() => { try { return JSON.parse(property.meta || '{}'); } catch { return {}; } })();
-            return (topLevel || !!m.verified_badge)
-              ? <img src="/ovikaver.png" alt="Verified" style={{ height: 44, width: 'auto', filter: 'drop-shadow(0 1px 4px rgba(0,0,0,0.2))' }} />
-              : null;
+            const isGreenVerified = Number(property.verified_badge) === 1 || !!m.verified_badge;
+            const isGoldVerified  = Number(property.self_verified_badge) === 1 || !!m.self_verified_badge;
+            return (
+              <>
+                {isGreenVerified && <img src="/ovikaver.png" alt="Ovika Verified" style={{ height: 44, width: 'auto', filter: 'drop-shadow(0 1px 4px rgba(0,0,0,0.2))', pointerEvents: 'none' }} />}
+                {isGoldVerified  && <img src="/SelfVerified.jpeg" alt="Self Verified" style={{ height: 44, width: 'auto', filter: 'drop-shadow(0 1px 4px rgba(0,0,0,0.2))', pointerEvents: 'none', borderRadius: 4 }} />}
+              </>
+            );
           })()}
         </h1>
         <div className="location-row">
