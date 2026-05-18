@@ -2902,29 +2902,35 @@ export default function SuperAdminDashboard() {
                                                     </td>
 
                                                     {/* Actions */}
-                                                    <td style={{ padding: '10px 14px', minWidth: 200 }}>
-                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                                                            {/* Status buttons */}
-                                                            <div style={{ display: 'flex', gap: 4 }}>
-                                                                <button disabled={svBadgeLoading || sv.verification_status === 'approved'}
+                                                    <td style={{ padding: '8px 10px', whiteSpace: 'nowrap' }}>
+                                                        <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 5 }}>
+                                                            {/* Approve / Reject */}
+                                                            <div style={{ display: 'flex', border: '1px solid #e2e8f0', borderRadius: 7, overflow: 'hidden' }}>
+                                                                <button
+                                                                    disabled={svBadgeLoading || sv.verification_status === 'approved'}
                                                                     onClick={() => updateSvStatus(sv, 'approved')}
-                                                                    style={{ padding: '4px 9px', borderRadius: 5, border: 'none', background: sv.verification_status === 'approved' ? '#bbf7d0' : '#dcfce7', color: '#16a34a', fontWeight: 700, fontSize: 11, cursor: sv.verification_status === 'approved' ? 'default' : 'pointer', whiteSpace: 'nowrap', opacity: sv.verification_status === 'approved' ? 0.7 : 1 }}>
+                                                                    style={{ padding: '5px 11px', border: 'none', borderRight: '1px solid #e2e8f0', background: sv.verification_status === 'approved' ? '#bbf7d0' : '#f0fdf4', color: '#16a34a', fontWeight: 700, fontSize: 11, cursor: sv.verification_status === 'approved' ? 'default' : 'pointer', opacity: sv.verification_status === 'approved' ? 0.7 : 1 }}>
                                                                     ✓ Approve
                                                                 </button>
-                                                                <button disabled={svBadgeLoading || sv.verification_status === 'rejected'}
+                                                                <button
+                                                                    disabled={svBadgeLoading || sv.verification_status === 'rejected'}
                                                                     onClick={() => { setSvRejectTarget(sv); setSvRejectReason(''); }}
-                                                                    style={{ padding: '4px 9px', borderRadius: 5, border: 'none', background: sv.verification_status === 'rejected' ? '#fecaca' : '#fee2e2', color: '#dc2626', fontWeight: 700, fontSize: 11, cursor: sv.verification_status === 'rejected' ? 'default' : 'pointer', whiteSpace: 'nowrap', opacity: sv.verification_status === 'rejected' ? 0.7 : 1 }}>
+                                                                    style={{ padding: '5px 11px', border: 'none', background: sv.verification_status === 'rejected' ? '#fecaca' : '#fef2f2', color: '#dc2626', fontWeight: 700, fontSize: 11, cursor: sv.verification_status === 'rejected' ? 'default' : 'pointer', opacity: sv.verification_status === 'rejected' ? 0.7 : 1 }}>
                                                                     ✕ Reject
                                                                 </button>
                                                             </div>
-                                                            {/* Badge buttons */}
-                                                            <div style={{ display: 'flex', gap: 4 }}>
-                                                                <button disabled={svBadgeLoading || !sv.property_id} onClick={() => addBadge(sv, true)}
-                                                                    style={{ padding: '4px 9px', borderRadius: 5, border: 'none', background: '#C98B3E', color: '#fff', fontWeight: 600, fontSize: 11, cursor: sv.property_id ? 'pointer' : 'not-allowed', whiteSpace: 'nowrap', opacity: sv.property_id ? 1 : 0.5 }}>
+                                                            {/* Add Badge / Remove */}
+                                                            <div style={{ display: 'flex', border: '1px solid #e2e8f0', borderRadius: 7, overflow: 'hidden' }}>
+                                                                <button
+                                                                    disabled={svBadgeLoading || !sv.property_id}
+                                                                    onClick={() => addBadge(sv, true)}
+                                                                    style={{ padding: '5px 11px', border: 'none', borderRight: '1px solid #e2e8f0', background: '#fff8f0', color: '#C98B3E', fontWeight: 700, fontSize: 11, cursor: sv.property_id ? 'pointer' : 'not-allowed', opacity: sv.property_id ? 1 : 0.45 }}>
                                                                     🏅 Add Badge
                                                                 </button>
-                                                                <button disabled={svBadgeLoading || !sv.property_id} onClick={() => addBadge(sv, false)}
-                                                                    style={{ padding: '4px 9px', borderRadius: 5, border: '1px solid #e2e8f0', background: '#f8fafc', color: '#64748b', fontWeight: 600, fontSize: 11, cursor: sv.property_id ? 'pointer' : 'not-allowed', whiteSpace: 'nowrap', opacity: sv.property_id ? 1 : 0.5 }}>
+                                                                <button
+                                                                    disabled={svBadgeLoading || !sv.property_id}
+                                                                    onClick={() => addBadge(sv, false)}
+                                                                    style={{ padding: '5px 11px', border: 'none', background: '#f8fafc', color: '#64748b', fontWeight: 600, fontSize: 11, cursor: sv.property_id ? 'pointer' : 'not-allowed', opacity: sv.property_id ? 1 : 0.45 }}>
                                                                     Remove
                                                                 </button>
                                                             </div>
