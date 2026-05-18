@@ -90,6 +90,8 @@ export default function SuperAdminDashboard() {
   const [svSearch, setSvSearch] = useState('');
   const [svBadgeLoading, setSvBadgeLoading] = useState(false);
   const [svLightbox, setSvLightbox] = useState(null); // { url, title }
+  const [svRejectTarget, setSvRejectTarget] = useState(null); // sv being rejected
+  const [svRejectReason, setSvRejectReason] = useState('');
   const [properties, setProperties] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [usersList, setUsersList] = useState([]); // Real users from API
@@ -367,12 +369,14 @@ export default function SuperAdminDashboard() {
     setSvLoading(false);
   };
 
-  const updateSvStatus = async (sv, status) => {
+  const updateSvStatus = async (sv, status, reason = '') => {
     setSvBadgeLoading(true);
     try {
+      const body = { status };
+      if (reason.trim()) body.reason = reason.trim();
       const res = await axios.patch(
         `https://www.townmanor.ai/api/owner-verification/${sv.id}/status`,
-        { status },
+        body,
         { validateStatus: false }
       );
       if (res.data?.success) {
@@ -384,6 +388,8 @@ export default function SuperAdminDashboard() {
       alert('Network error. Please try again.');
     } finally {
       setSvBadgeLoading(false);
+      setSvRejectTarget(null);
+      setSvRejectReason('');
     }
   };
 
@@ -2712,6 +2718,39 @@ export default function SuperAdminDashboard() {
 
                 return (
                 <div>
+                    {/* Reject Remark Modal */}
+                    {svRejectTarget && (
+                        <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.55)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center' }}
+                            onClick={() => { setSvRejectTarget(null); setSvRejectReason(''); }}>
+                            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:14, padding:'28px 28px 22px', width:420, boxShadow:'0 20px 60px rgba(0,0,0,0.2)' }}>
+                                <h3 style={{ margin:'0 0 6px', fontSize:17, color:'#1e293b', fontWeight:700 }}>Reject Submission</h3>
+                                <p style={{ margin:'0 0 16px', fontSize:13, color:'#64748b' }}>
+                                    Owner ID: <strong>{svRejectTarget.owner_id || '—'}</strong> &nbsp;|&nbsp; Prop ID: <strong>{svRejectTarget.property_id || '—'}</strong>
+                                </p>
+                                <label style={{ fontSize:13, fontWeight:600, color:'#374151', display:'block', marginBottom:6 }}>Rejection Reason / Remark *</label>
+                                <textarea
+                                    rows={4}
+                                    placeholder="e.g. Photos blurry hain, please retake with better lighting..."
+                                    value={svRejectReason}
+                                    onChange={e => setSvRejectReason(e.target.value)}
+                                    style={{ width:'100%', boxSizing:'border-box', padding:'10px 12px', border:'1.5px solid #e2e8f0', borderRadius:8, fontSize:13, fontFamily:'inherit', resize:'vertical', outline:'none' }}
+                                />
+                                <div style={{ display:'flex', gap:10, marginTop:16, justifyContent:'flex-end' }}>
+                                    <button onClick={() => { setSvRejectTarget(null); setSvRejectReason(''); }}
+                                        style={{ padding:'8px 18px', borderRadius:8, border:'1px solid #e2e8f0', background:'#f8fafc', color:'#64748b', fontWeight:600, fontSize:13, cursor:'pointer' }}>
+                                        Cancel
+                                    </button>
+                                    <button
+                                        disabled={!svRejectReason.trim() || svBadgeLoading}
+                                        onClick={() => updateSvStatus(svRejectTarget, 'rejected', svRejectReason)}
+                                        style={{ padding:'8px 20px', borderRadius:8, border:'none', background: svRejectReason.trim() ? '#dc2626' : '#fca5a5', color:'#fff', fontWeight:700, fontSize:13, cursor: svRejectReason.trim() ? 'pointer' : 'not-allowed' }}>
+                                        {svBadgeLoading ? 'Rejecting...' : '✕ Reject & Send Email'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Lightbox */}
                     {svLightbox && (
                         <div onClick={() => setSvLightbox(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -2868,7 +2907,7 @@ export default function SuperAdminDashboard() {
                                                                     ✓ Approve
                                                                 </button>
                                                                 <button disabled={svBadgeLoading || sv.verification_status === 'rejected'}
-                                                                    onClick={() => updateSvStatus(sv, 'rejected')}
+                                                                    onClick={() => { setSvRejectTarget(sv); setSvRejectReason(''); }}
                                                                     style={{ padding: '4px 9px', borderRadius: 5, border: 'none', background: sv.verification_status === 'rejected' ? '#fecaca' : '#fee2e2', color: '#dc2626', fontWeight: 700, fontSize: 11, cursor: sv.verification_status === 'rejected' ? 'default' : 'pointer', whiteSpace: 'nowrap', opacity: sv.verification_status === 'rejected' ? 0.7 : 1 }}>
                                                                     ✕ Reject
                                                                 </button>

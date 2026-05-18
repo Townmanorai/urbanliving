@@ -113,8 +113,9 @@ export default function OwnerVerificationForm() {
   const rawUser = (() => {
     try { return JSON.parse(localStorage.getItem('user')) || {}; } catch { return {}; }
   })();
-  const ownerId = user?.id || user?._id || user?.owner_id ||
-                  rawUser?.id || rawUser?._id || rawUser?.owner_id || '';
+  const ownerId    = user?.id || user?._id || user?.owner_id ||
+                    rawUser?.id || rawUser?._id || rawUser?.owner_id || '';
+  const ownerEmail = user?.email || rawUser?.email || '';
 
   // Step: 0 = mobile+OTP, 1 = media upload, 2 = location+submit
   const [step, setStep] = useState(0);
@@ -234,6 +235,7 @@ export default function OwnerVerificationForm() {
 
     const formData = new FormData();
     formData.append('owner_id', ownerId);
+    if (ownerEmail) formData.append('owner_email', ownerEmail);
     formData.append('mobile_number', mobile);
     formData.append('lat', lat);
     formData.append('lng', lng);
