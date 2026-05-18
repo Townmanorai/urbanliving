@@ -2703,15 +2703,15 @@ export default function SuperAdminDashboard() {
                         const res = await fetch(`https://www.townmanor.ai/api/ovika/properties/${propId}/badge`, {
                             method: 'PATCH',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ verified_badge: add }),
+                            body: JSON.stringify({ self_verified_badge: add }),
                         });
                         if (res.ok) {
-                            alert(`Badge ${add ? 'added to' : 'removed from'} Property #${propId} successfully!`);
+                            showToast(add ? `🏅 Self-verified badge added to Property #${propId}!` : `Badge removed from Property #${propId}.`, add ? 'success' : 'error');
                         } else {
                             const err = await res.json().catch(() => ({}));
-                            alert(`Failed: ${err.message || res.status}`);
+                            showToast(`Failed: ${err.message || res.status}`, 'error');
                         }
-                    } catch { alert('Network error. Please try again.'); }
+                    } catch { showToast('Network error. Please try again.', 'error'); }
                     finally { setSvBadgeLoading(false); }
                 };
 
