@@ -558,8 +558,8 @@ const PropertyCard = ({ property, rentalType }) => {
               const isGoldVerified  = Number(property.self_verified_badge) === 1 || !!m.self_verified_badge;
               return (
                 <>
-                  {isGreenVerified && <img src="/ovikaver.png" alt="Ovika Verified" style={{ height: 44, width: 'auto', flexShrink: 0, filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.25))', pointerEvents: 'none' }} />}
-                  {isGoldVerified  && <img src="/SelfVerified.jpeg" alt="Self Verified" style={{ height: 44, width: 'auto', flexShrink: 0, filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.25))', pointerEvents: 'none', borderRadius: 4 }} />}
+                  {isGreenVerified && <img src="/ovikaver.png" alt="Ovika Verified" style={{ height: 44, width: 'auto', flexShrink: 0, pointerEvents: 'none' }} />}
+                  {isGoldVerified  && <img src="/SelfVerified.jpeg" alt="Self Verified" style={{ height: 44, width: 'auto', flexShrink: 0, pointerEvents: 'none', borderRadius: 4 }} />}
                 </>
               );
             })()}

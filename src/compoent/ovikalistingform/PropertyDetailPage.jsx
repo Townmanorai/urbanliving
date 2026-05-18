@@ -2722,8 +2722,8 @@ const PropertyDetailPage = () => {
             const isGoldVerified  = Number(property.self_verified_badge) === 1 || !!m.self_verified_badge;
             return (
               <>
-                {isGreenVerified && <img src="/ovikaver.png" alt="Ovika Verified" style={{ height: 44, width: 'auto', filter: 'drop-shadow(0 1px 4px rgba(0,0,0,0.2))', pointerEvents: 'none' }} />}
-                {isGoldVerified  && <img src="/SelfVerified.jpeg" alt="Self Verified" style={{ height: 44, width: 'auto', filter: 'drop-shadow(0 1px 4px rgba(0,0,0,0.2))', pointerEvents: 'none', borderRadius: 4 }} />}
+                {isGreenVerified && <img src="/ovikaver.png" alt="Ovika Verified" style={{ height: 44, width: 'auto', pointerEvents: 'none' }} />}
+                {isGoldVerified  && <img src="/SelfVerified.jpeg" alt="Self Verified" style={{ height: 44, width: 'auto', pointerEvents: 'none', borderRadius: 4 }} />}
               </>
             );
           })()}
