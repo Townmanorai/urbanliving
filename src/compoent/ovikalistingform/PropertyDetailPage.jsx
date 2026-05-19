@@ -3171,7 +3171,6 @@ const PropertyDetailPage = () => {
                     <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.7)', marginTop: '2px' }}>Starting price</span>
                   </div>
                 </div>
-                <div className="review-badge"><FiStar /> <span>New</span></div>
               </div>
               <div style={{ padding: '1rem 0.5rem', textAlign: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: '#64748b', fontSize: '0.82rem', marginBottom: '0.5rem' }}>
@@ -3207,9 +3206,7 @@ const PropertyDetailPage = () => {
                     <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.6)', textDecoration: 'line-through' }}>₹{formatCurrency(nightlyOriginalPrice)}</span>
                     <div style={{ background: '#16a34a', color: '#fff', fontSize: '0.68rem', fontWeight: 600, padding: '2px 7px', borderRadius: '4px' }}>40% OFF</div>
                   </div>
-                ) : (
-                  <div className="review-badge"><FiStar /> <span>New</span></div>
-                )}
+                ) : null}
               </div>
 
               <div className="booking-details">
