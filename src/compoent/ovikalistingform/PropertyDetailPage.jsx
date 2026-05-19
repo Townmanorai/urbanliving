@@ -439,9 +439,6 @@ const RoomTableSingleMobile = ({ rooms, price, priceUnit, availableFrom, onBookN
       <div className="rm-mob-card">
         <div className="rm-mob-card-head">
           <div style={{ flex:1 }}>
-            <div style={{ fontSize:'0.65rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'0.5px', color:'#94a3b8', marginBottom:8 }}>
-              Entire property · {rooms.length} bedroom{rooms.length !== 1 ? 's' : ''}
-            </div>
             {rooms.map((room, i) => (
               <div key={i} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:8, marginBottom: i < rooms.length - 1 ? 10 : 0, paddingBottom: i < rooms.length - 1 ? 10 : 0, borderBottom: i < rooms.length - 1 ? '1px dashed #f1f5f9' : 'none' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:8, flex:1, minWidth:0 }}>
@@ -2849,11 +2846,6 @@ const PropertyDetailPage = () => {
                   <div className="rm-section-left">
                     <span className="rm-pill">Layout</span>
                     <h3 className="rm-section-title">Room Arrangements</h3>
-                    <p style={{ fontSize:'0.82rem', color:'#64748b', margin:'2px 0 0' }}>
-                      {showSingleBookRow
-                        ? `${property.parsedBedrooms.length} bedroom${property.parsedBedrooms.length > 1 ? 's' : ''} — entire property rented together`
-                        : `${property.parsedBedrooms.length} rooms — individually priced, each room bookable separately`}
-                    </p>
                   </div>
                   <div className="rm-section-stats">
                     <div className="rm-stat-box">
