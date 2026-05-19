@@ -395,25 +395,41 @@ const PropertyForm = () => {
               <div className="col-md-4">
                 <div className="form-group">
                   <label>Check-in Time</label>
-                  <input
-                    type="time"
+                  <select
                     name="check_in_time"
                     value={formData.check_in_time}
                     onChange={handleChange}
                     className="form-control"
-                  />
+                  >
+                    {Array.from({ length: 48 }, (_, i) => {
+                      const h = Math.floor(i / 2);
+                      const m = i % 2 === 0 ? '00' : '30';
+                      const ampm = h < 12 ? 'AM' : 'PM';
+                      const h12 = h % 12 === 0 ? 12 : h % 12;
+                      const val = `${String(h).padStart(2,'0')}:${m}:00`;
+                      return <option key={val} value={val}>{`${h12}:${m} ${ampm}`}</option>;
+                    })}
+                  </select>
                 </div>
               </div>
               <div className="col-md-4">
                 <div className="form-group">
                   <label>Check-out Time</label>
-                  <input
-                    type="time"
+                  <select
                     name="check_out_time"
                     value={formData.check_out_time}
                     onChange={handleChange}
                     className="form-control"
-                  />
+                  >
+                    {Array.from({ length: 48 }, (_, i) => {
+                      const h = Math.floor(i / 2);
+                      const m = i % 2 === 0 ? '00' : '30';
+                      const ampm = h < 12 ? 'AM' : 'PM';
+                      const h12 = h % 12 === 0 ? 12 : h % 12;
+                      const val = `${String(h).padStart(2,'0')}:${m}:00`;
+                      return <option key={val} value={val}>{`${h12}:${m} ${ampm}`}</option>;
+                    })}
+                  </select>
                 </div>
               </div>
               <div className="col-md-4">
