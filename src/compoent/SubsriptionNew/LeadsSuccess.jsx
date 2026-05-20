@@ -200,15 +200,18 @@ export default function LeadsSuccess() {
         status: "Paid",
       };
 
-      // Save to localStorage (fallback)
-      const existing = JSON.parse(localStorage.getItem("ol_lead_invoices") || "[]");
-      existing.unshift(inv);
-      localStorage.setItem("ol_lead_invoices", JSON.stringify(existing));
+      // Save to localStorage (fallback, user-specific key)
+      const userId = getUserId();
+      const lsKey = userId ? `ol_lead_invoices_${userId}` : null;
+      if (lsKey) {
+        const existing = JSON.parse(localStorage.getItem(lsKey) || "[]");
+        existing.unshift(inv);
+        localStorage.setItem(lsKey, JSON.stringify(existing));
+      }
       localStorage.removeItem("pending_leads_purchase");
       setInvoice(inv);
 
       // Save to backend (cross-device sync)
-      const userId = getUserId();
       if (userId) saveInvoiceToBackend(inv, userId);
 
       // Send success email

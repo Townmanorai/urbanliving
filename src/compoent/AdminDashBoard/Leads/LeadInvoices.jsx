@@ -160,9 +160,10 @@ export default function LeadInvoices() {
         }
       }
 
-      // Fallback to localStorage
+      // Fallback to localStorage (user-specific key)
       try {
-        const raw = localStorage.getItem("ol_lead_invoices");
+        const lsKey = userId ? `ol_lead_invoices_${userId}` : null;
+        const raw = lsKey ? localStorage.getItem(lsKey) : null;
         setInvoices(raw ? JSON.parse(raw).map(normalizeInvoice) : []);
       } catch (_) { setInvoices([]); }
       setLoading(false);

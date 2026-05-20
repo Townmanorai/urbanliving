@@ -102,13 +102,15 @@ async function getLatestPurchase(userId) {
       }
     } catch (_) {}
   }
-  try {
-    const raw = localStorage.getItem("ol_lead_invoices");
-    if (raw) {
-      const list = JSON.parse(raw);
-      if (list.length > 0) return { plan: list[0].plan, leads: Number(list[0].leads) || 0 };
-    }
-  } catch (_) {}
+  if (userId) {
+    try {
+      const raw = localStorage.getItem(`ol_lead_invoices_${userId}`);
+      if (raw) {
+        const list = JSON.parse(raw);
+        if (list.length > 0) return { plan: list[0].plan, leads: Number(list[0].leads) || 0 };
+      }
+    } catch (_) {}
+  }
   return null;
 }
 
