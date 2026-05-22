@@ -682,31 +682,29 @@ const SidebarContent = ({
         <button onClick={resetSidebar} style={{ fontSize: 12, color: '#C98B3E', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: 0 }}>Reset All</button>
       </div>
 
-      {/* Stay Type: Nightly / Monthly — hidden on locked routes */}
-      {!lockedRental && (
-        <div style={{ marginBottom: 18 }}>
-          {sectionTitle('Stay Type')}
-          <div style={{ display: 'flex', gap: 8 }}>
-            {[{ id: 'short', label: 'Nightly', icon: <FiMoon style={{ fontSize: 12 }} /> },
-              { id: 'long',  label: 'Monthly', icon: <FiCalendar style={{ fontSize: 12 }} /> }].map(({ id, label, icon }) => {
-              const active = rentalType === id;
-              return (
-                <button key={id} onClick={() => { const val = rentalType === id ? null : id; setRentalType(val); sessionStorage.setItem('ovika_rental_type', val || id); }} style={{
-                  flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5,
-                  padding: '8px 0', borderRadius: 9,
-                  border: `1.5px solid ${active ? '#C98B3E' : '#e8e8e8'}`,
-                  background: active ? '#FFF6EE' : '#fafafa',
-                  color: active ? '#C98B3E' : '#555',
-                  fontWeight: active ? 700 : 500, fontSize: 13,
-                  cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.18s ease',
-                }}>
-                  {icon}{label}
-                </button>
-              );
-            })}
-          </div>
+      {/* Stay Type: Nightly / Monthly */}
+      <div style={{ marginBottom: 18 }}>
+        {sectionTitle('Stay Type')}
+        <div style={{ display: 'flex', gap: 8 }}>
+          {[{ id: 'short', label: 'Nightly', icon: <FiMoon style={{ fontSize: 12 }} /> },
+            { id: 'long',  label: 'Monthly', icon: <FiCalendar style={{ fontSize: 12 }} /> }].map(({ id, label, icon }) => {
+            const active = rentalType === id;
+            return (
+              <button key={id} onClick={() => { const val = rentalType === id ? null : id; setRentalType(val); sessionStorage.setItem('ovika_rental_type', val || id); }} style={{
+                flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                padding: '8px 0', borderRadius: 9,
+                border: `1.5px solid ${active ? '#C98B3E' : '#e8e8e8'}`,
+                background: active ? '#FFF6EE' : '#fafafa',
+                color: active ? '#C98B3E' : '#555',
+                fontWeight: active ? 700 : 500, fontSize: 13,
+                cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.18s ease',
+              }}>
+                {icon}{label}
+              </button>
+            );
+          })}
         </div>
-      )}
+      </div>
 
       {/* Category */}
       <div style={{ marginBottom: 18 }}>
@@ -734,27 +732,42 @@ const SidebarContent = ({
 
       {divider}
 
-      {/* Price Range */}
+      {/* Price Range — dual slider */}
       <div style={{ marginBottom: 18 }}>
         {sectionTitle('Price Range')}
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <div style={{ flex: 1 }}>
-            <label style={{ fontSize: 11, color: '#999', display: 'block', marginBottom: 4 }}>Min (₹)</label>
-            <input type="number" value={priceMin} onChange={e => setPriceMin(Number(e.target.value))} style={{
-              width: '100%', padding: '7px 8px', borderRadius: 8,
-              border: '1.5px solid #e8e8e8', fontSize: 13, color: '#222',
-              fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box',
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+          <span style={{ fontSize: 12, color: '#C98B3E', fontWeight: 600 }}>₹{priceMin.toLocaleString('en-IN')}</span>
+          <span style={{ fontSize: 12, color: '#C98B3E', fontWeight: 600 }}>₹{priceMax.toLocaleString('en-IN')}</span>
+        </div>
+        <div style={{ position: 'relative', height: 28 }}>
+          <style>{`
+            .price-range-slider { position:absolute; width:100%; height:4px; background:transparent; appearance:none; -webkit-appearance:none; pointer-events:none; top:50%; transform:translateY(-50%); outline:none; }
+            .price-range-slider::-webkit-slider-thumb { appearance:none; -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:#C98B3E; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.2); pointer-events:all; cursor:pointer; }
+            .price-range-slider::-moz-range-thumb { width:18px; height:18px; border-radius:50%; background:#C98B3E; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.2); pointer-events:all; cursor:pointer; }
+          `}</style>
+          {/* Track background */}
+          <div style={{
+            position: 'absolute', top: '50%', transform: 'translateY(-50%)',
+            width: '100%', height: 4, borderRadius: 2, background: '#e8e8e8',
+          }}>
+            <div style={{
+              position: 'absolute', height: '100%', borderRadius: 2, background: '#C98B3E',
+              left: `${(priceMin / 100000) * 100}%`,
+              width: `${((priceMax - priceMin) / 100000) * 100}%`,
             }} />
           </div>
-          <span style={{ color: '#ccc', marginTop: 18 }}>—</span>
-          <div style={{ flex: 1 }}>
-            <label style={{ fontSize: 11, color: '#999', display: 'block', marginBottom: 4 }}>Max (₹)</label>
-            <input type="number" value={priceMax} onChange={e => setPriceMax(Number(e.target.value))} style={{
-              width: '100%', padding: '7px 8px', borderRadius: 8,
-              border: '1.5px solid #e8e8e8', fontSize: 13, color: '#222',
-              fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box',
-            }} />
-          </div>
+          <input type="range" className="price-range-slider" min={0} max={100000} step={500}
+            value={priceMin}
+            onChange={e => { const v = Number(e.target.value); if (v < priceMax) setPriceMin(v); }}
+          />
+          <input type="range" className="price-range-slider" min={0} max={100000} step={500}
+            value={priceMax}
+            onChange={e => { const v = Number(e.target.value); if (v > priceMin) setPriceMax(v); }}
+          />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+          <span style={{ fontSize: 10, color: '#bbb' }}>₹0</span>
+          <span style={{ fontSize: 10, color: '#bbb' }}>₹1,00,000</span>
         </div>
       </div>
 
@@ -777,19 +790,6 @@ const SidebarContent = ({
       </div>
 
 
-      {/* Property Type */}
-      <div style={{ marginBottom: 18 }}>
-        {sectionTitle('Property Type')}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {['PG','Hotel','Apartment','Villa'].map(t => (
-            <label key={t} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-              <input type="checkbox" checked={propTypeFilter.includes(t)} onChange={() => togglePropType(t)}
-                style={{ accentColor: '#C98B3E', width: 15, height: 15, cursor: 'pointer' }} />
-              <span style={{ fontSize: 13, color: '#444', fontWeight: propTypeFilter.includes(t) ? 600 : 400 }}>{t}</span>
-            </label>
-          ))}
-        </div>
-      </div>
 
       {/* Amenities */}
       <div style={{ marginBottom: 18 }}>
@@ -810,27 +810,6 @@ const SidebarContent = ({
         </div>
       </div>
 
-      {divider}
-
-      {/* Furnishing */}
-      <div style={{ marginBottom: 18 }}>
-        {sectionTitle('Furnishing')}
-        <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap' }}>
-          {['Fully Furnished','Semi-Furnished','Unfurnished'].map(f => {
-            const active = furnishingFilter === f;
-            return (
-              <button key={f} onClick={() => setFurnishingFilter(active ? null : f)} style={{
-                padding: '6px 11px', borderRadius: 9, fontSize: 12,
-                border: `1.5px solid ${active ? '#C98B3E' : '#e8e8e8'}`,
-                background: active ? '#FFF6EE' : '#fafafa',
-                color: active ? '#C98B3E' : '#555',
-                fontWeight: active ? 700 : 400,
-                cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s ease',
-              }}>{f}</button>
-            );
-          })}
-        </div>
-      </div>
 
       {/* Tenant Preference */}
       <div style={{ marginBottom: 18 }}>
@@ -916,8 +895,8 @@ const PropertyListPage = () => {
   const [checkIn, setCheckIn] = useState(_ss.checkIn ?? '');
   const [checkOut, setCheckOut] = useState(_ss.checkOut ?? '');
   // Sidebar filter state
-  const [priceMin, setPriceMin] = useState(_ss.priceMin ?? 1000);
-  const [priceMax, setPriceMax] = useState(_ss.priceMax ?? 500000);
+  const [priceMin, setPriceMin] = useState(_ss.priceMin ?? 0);
+  const [priceMax, setPriceMax] = useState(_ss.priceMax ?? 100000);
   const [roomsFilter, setRoomsFilter] = useState(_ss.roomsFilter ?? null);
   const [propTypeFilter, setPropTypeFilter] = useState(_ss.propTypeFilter ?? []);
   const [amenitiesFilter, setAmenitiesFilter] = useState(_ss.amenitiesFilter ?? []);
@@ -1008,7 +987,7 @@ const PropertyListPage = () => {
     setAmenitiesFilter(prev => prev.includes(a) ? prev.filter(x => x !== a) : [...prev, a]);
   };
   const resetSidebar = () => {
-    setPriceMin(1000); setPriceMax(500000);
+    setPriceMin(0); setPriceMax(100000);
     setRoomsFilter(null);
     setPropTypeFilter([]); setAmenitiesFilter([]);
     setFurnishingFilter(null); setTenantFilter(null);
@@ -1549,7 +1528,7 @@ const PropertyListPage = () => {
 
     const cout = params.get('checkOut');
     if (cout) setCheckOut(cout);
-  }, [location.search, properties]);
+  }, [location.search, location.pathname, properties]);
 
   // Geocode filtered properties that lack lat/lng when map view is active
   useEffect(() => {
