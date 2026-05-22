@@ -284,118 +284,113 @@ function Sucess() {
     }
   }, [bookingId]);
 
-  // Start countdown on mount and navigate after 4 seconds (skip for leads purchases)
-  useEffect(() => {
-    if (localStorage.getItem("pending_leads_purchase")) return;
-    setSecondsLeft(4)
-    const intervalId = setInterval(() => {
-      setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0))
-    }, 1000)
-
-    const timeoutId = setTimeout(() => {
-      navigate('/dashboard')
-    }, 4000)
-
-    return () => {
-      clearInterval(intervalId)
-      clearTimeout(timeoutId)
-    }
-  }, [navigate])
+  // Auto-redirect removed — user chooses via popup buttons
 
   return (
     <>
       <Helmet>
-        <title>Booking Confirmed! | OvikaLiving – Your Stay is Booked</title>
-        <meta name="description" content="Your booking with OvikaLiving is confirmed! Get ready for your stay in Noida or Greater Noida. Check your email for booking details." />
-        <meta name="keywords" content="booking confirmed ovikaliving, ovika booking success, pg booking confirmed noida, stay booked noida, बुकिंग कन्फर्म नोएडा, ओविका बुकिंग सफल, पीजी बुकिंग कन्फर्म" />
+        <title>Booking Confirmed! | OvikaLiving</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
-      <main className="success-page" role="main" aria-label="Success confirmation">
-        <section className="success-card" role="status" aria-live="polite">
-          {/* Gradient ring with white inner circle */}
-          <div className="icon-ring" aria-hidden="true">
-            <div className="icon-circle">
-              <svg
-                className="success-icon"
-                width="70"
-                height="70"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2Zm-1.003 14.2a1 1 0 0 1-1.414 0l-3.2-3.2a1 1 0 1 1 1.414-1.414l2.493 2.493 5.4-5.4a1 1 0 1 1 1.414 1.414l-6.1 6.107Z" />
-              </svg>
-            </div>
+
+      {/* Full-screen overlay */}
+      <div style={{
+        position: 'fixed', inset: 0,
+        background: 'rgba(0,0,0,0.55)',
+        backdropFilter: 'blur(4px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        zIndex: 9999,
+        padding: '16px'
+      }}>
+        {/* Popup card */}
+        <div style={{
+          background: '#fff',
+          borderRadius: '20px',
+          padding: '40px 36px',
+          maxWidth: '420px',
+          width: '100%',
+          textAlign: 'center',
+          boxShadow: '0 24px 60px rgba(0,0,0,0.25)',
+          animation: 'fadeInUp 0.35s ease'
+        }}>
+          {/* Success icon */}
+          <div style={{
+            width: '72px', height: '72px',
+            background: 'linear-gradient(135deg, #16a34a, #22c55e)',
+            borderRadius: '50%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 20px'
+          }}>
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="#fff">
+              <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2Zm-1.003 14.2a1 1 0 0 1-1.414 0l-3.2-3.2a1 1 0 1 1 1.414-1.414l2.493 2.493 5.4-5.4a1 1 0 1 1 1.414 1.414l-6.1 6.107Z"/>
+            </svg>
           </div>
 
-          <h1 className="title">Payment Completed!</h1>
-          <p className="message">
-            Your booking has been successfully confirmed. Thank you for choosing Ovika!
+          <h2 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#111', marginBottom: '8px' }}>
+            Payment Successful!
+          </h2>
+          <p style={{ color: '#666', fontSize: '0.95rem', marginBottom: '8px' }}>
+            Your booking is confirmed. Thank you for choosing Ovika Living!
           </p>
-          <div style={{ margin: '1rem 0', padding: '10px', background: '#f0fdf4', borderRadius: '8px', border: '1px solid #bbf7d0', color: '#166534', fontWeight: 'bold' }}>
-            ✅ Booking Confirmed & Payment Verified
-          </div>
-          <p style={{ fontSize: '0.9rem', color: '#666' }}>
-            Redirecting to your dashboard in {secondsLeft} seconds...
-          </p>
-          
+
           {emailSent && (
-            <p className="email-confirmation" style={{ color: '#0ea5e9', fontSize: '0.9rem', fontWeight: '500' }}>
-              📧 A confirmation email has been sent to your registered email address.
+            <p style={{ fontSize: '0.82rem', color: '#0ea5e9', marginBottom: '16px' }}>
+              📧 Confirmation email sent to your registered address.
             </p>
           )}
 
-          <div className="actions" style={{ display: 'flex', gap: '15px', justifyContent: 'center', marginTop: '30px' }}>
-            <button 
-              className="btn btn-primary" 
+          <div style={{ height: '1px', background: '#f0f0f0', margin: '20px 0' }} />
+
+          {/* Two action buttons */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <button
               onClick={downloadInvoice}
-              style={{ 
-                background: 'linear-gradient(135deg, #b62305 0%, #8b0000 100%)', 
-                color: '#fff', 
-                border: 'none', 
-                padding: '14px 28px', 
-                borderRadius: '12px', 
-                cursor: 'pointer', 
+              style={{
+                width: '100%',
+                padding: '14px',
+                background: 'linear-gradient(135deg, #b62305, #8b0000)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '12px',
+                fontSize: '1rem',
                 fontWeight: '600',
-                boxShadow: '0 4px 15px rgba(182, 35, 5, 0.3)',
-                transition: 'transform 0.2s, box-shadow 0.2s',
+                cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(182, 35, 5, 0.4)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 15px rgba(182, 35, 5, 0.3)';
+                justifyContent: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 14px rgba(139,0,0,0.3)'
               }}
             >
-              📥 Download Invoice
+              📥 Download Receipt
             </button>
-            <button 
-                className="btn btn-secondary" 
-                aria-label="Go back to home" 
-                onClick={()=>navigate('/')}
-                style={{
-                    background: '#fff',
-                    color: '#333',
-                    border: '1px solid #e5e7eb',
-                    padding: '14px 28px',
-                    borderRadius: '12px',
-                    cursor: 'pointer',
-                    fontWeight: '600',
-                    transition: 'background 0.2s'
-                }}
-                onMouseOver={(e) => e.currentTarget.style.background = '#f9fafb'}
-                onMouseOut={(e) => e.currentTarget.style.background = '#fff'}
+
+            <button
+              onClick={() => navigate('/')}
+              style={{
+                width: '100%',
+                padding: '14px',
+                background: '#f8fafc',
+                color: '#333',
+                border: '1.5px solid #e5e7eb',
+                borderRadius: '12px',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
             >
-              Back to Home
+              🏠 Go to Home
             </button>
           </div>
-        </section>
-      </main>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </>
   )
 }

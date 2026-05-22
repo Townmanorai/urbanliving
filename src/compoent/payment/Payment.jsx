@@ -250,6 +250,7 @@ function Payment() {
 
   const [pricing, setPricing] = useState({
     subtotal: 0,
+    discount: 0,
     gst: 0,
     securityDeposit: 0,
     total: 0,
@@ -268,6 +269,11 @@ function Payment() {
 
   const [disabledDateSet, setDisabledDateSet] = useState(new Set());
   const [bookingsLoading, setBookingsLoading] = useState(false);
+
+  const [couponCode, setCouponCode] = useState('');
+  const [couponApplied, setCouponApplied] = useState(false);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponError, setCouponError] = useState('');
 
   const STORAGE_KEYS = {
     step: 'payment_step',
@@ -362,18 +368,20 @@ function Payment() {
       const checkOut = new Date(formData.checkOutDate);
       const diffTime = Math.abs(checkOut - checkIn);
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
+
       const pricePerNight = property?.per_night_price ? Number(property.per_night_price) : 0;
       const subtotal = diffDays * pricePerNight;
-      const gst = subtotal * 0.05;
+      const totalCouponDiscount = couponDiscount * diffDays;
+      const discountedSubtotal = Math.max(0, subtotal - totalCouponDiscount);
+      const gst = discountedSubtotal * 0.05;
       const securityDeposit = pricePerNight; // 1 night's rent — refundable
-      const total = subtotal + gst + securityDeposit;
+      const total = discountedSubtotal + gst + securityDeposit;
 
-      setPricing({ subtotal, gst, securityDeposit, total });
+      setPricing({ subtotal, discount: totalCouponDiscount, gst, securityDeposit, total });
     } else {
-      setPricing({ subtotal: 0, gst: 0, securityDeposit: 0, total: 0 });
+      setPricing({ subtotal: 0, discount: 0, gst: 0, securityDeposit: 0, total: 0 });
     }
-  }, [formData.checkInDate, formData.checkOutDate, property]);
+  }, [formData.checkInDate, formData.checkOutDate, property, couponDiscount]);
 
   useEffect(() => {
     const allStepsComplete =
@@ -770,6 +778,27 @@ function Payment() {
     setAlertMessage(null);
   };
 
+  const handleApplyCoupon = () => {
+    const code = couponCode.trim().toUpperCase();
+    const numId = Number(propertyId);
+    if (code === 'OVIKA500' && numId === 77) {
+      setCouponDiscount(500);
+      setCouponApplied(true);
+      setCouponError('');
+    } else {
+      setCouponDiscount(0);
+      setCouponApplied(false);
+      setCouponError('Invalid coupon code.');
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setCouponCode('');
+    setCouponApplied(false);
+    setCouponDiscount(0);
+    setCouponError('');
+  };
+
   const handlePayNow = async () => {
     if (!isPayNowEnabled || isSubmitting) return;
     setIsSubmitting(true);
@@ -1058,6 +1087,12 @@ function Payment() {
                         <span>Subtotal</span>
                         <span><MdCurrencyRupee/>{pricing.subtotal.toFixed(2)}</span>
                       </div>
+                      {couponApplied && pricing.discount > 0 && (
+                        <div className="pricing-item" style={{ color: '#16a34a' }}>
+                          <span>Coupon Discount (OVIKA500 · ₹500/night)</span>
+                          <span>- <MdCurrencyRupee/>{pricing.discount.toFixed(2)}</span>
+                        </div>
+                      )}
                       <div className="pricing-item">
                         <span>Taxes & GST (5%)</span>
                         <span><MdCurrencyRupee/>{pricing.gst.toFixed(2)}</span>
@@ -1072,6 +1107,40 @@ function Payment() {
                         <span>Total Price</span>
                         <span><MdCurrencyRupee/>{pricing.total.toFixed(2)}</span>
                       </div>
+                    </div>
+
+                    <div style={{ marginTop: '16px', borderTop: '1px solid #e5e7eb', paddingTop: '14px' }}>
+                      <p style={{ fontSize: '0.85rem', fontWeight: '600', marginBottom: '8px', color: '#374151' }}>Have a coupon code?</p>
+                      {!couponApplied ? (
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <input
+                            type="text"
+                            value={couponCode}
+                            onChange={(e) => { setCouponCode(e.target.value); setCouponError(''); }}
+                            placeholder="Enter coupon code"
+                            style={{ flex: 1, padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '0.85rem' }}
+                          />
+                          <button
+                            onClick={handleApplyCoupon}
+                            style={{ padding: '8px 14px', background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '0.85rem', cursor: 'pointer', fontWeight: '600' }}
+                          >
+                            Apply
+                          </button>
+                        </div>
+                      ) : (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '6px', padding: '8px 12px' }}>
+                          <span style={{ fontSize: '0.85rem', color: '#15803d', fontWeight: '600' }}>✓ OVIKA500 applied — ₹500/night off!</span>
+                          <button
+                            onClick={handleRemoveCoupon}
+                            style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '0.8rem', fontWeight: '600' }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      )}
+                      {couponError && (
+                        <p style={{ color: '#dc2626', fontSize: '0.8rem', marginTop: '6px' }}>{couponError}</p>
+                      )}
                     </div>
                   </div>
                 </div>
