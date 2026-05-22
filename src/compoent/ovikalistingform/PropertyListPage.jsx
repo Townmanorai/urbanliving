@@ -149,18 +149,26 @@ function formatMapPrice(price) {
 
 function MiniCalPLP({ value, onChange, onClose, title, minDate, hideHeader }) {
   const today = new Date();
+  today.setHours(0,0,0,0);
   const initDate = value ? new Date(value) : today;
   const [viewYear, setViewYear] = useState(initDate.getFullYear());
   const [viewMonth, setViewMonth] = useState(initDate.getMonth());
-  const DAYS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
-  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+  const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  // Monday-first: getDay() returns 0=Sun,1=Mon...6=Sat → shift so Mon=0
+  const firstDayRaw = new Date(viewYear, viewMonth, 1).getDay(); // 0=Sun
+  const firstDay = (firstDayRaw + 6) % 7; // Mon-first
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
   const cells = [];
   for (let i = 0; i < firstDay; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+  // pad to complete last row
+  while (cells.length % 7 !== 0) cells.push(null);
+
   const sel = value ? new Date(value) : null;
-  const isSelected = d => sel && d === sel.getDate() && viewMonth === sel.getMonth() && viewYear === sel.getFullYear();
+  if (sel) sel.setHours(0,0,0,0);
+  const isSelected = d => d && sel && d === sel.getDate() && viewMonth === sel.getMonth() && viewYear === sel.getFullYear();
+  const isToday = d => d && new Date(viewYear, viewMonth, d).getTime() === today.getTime();
   const isPast = d => {
     if (!d || !minDate) return false;
     const cell = new Date(viewYear, viewMonth, d);
@@ -171,29 +179,46 @@ function MiniCalPLP({ value, onChange, onClose, title, minDate, hideHeader }) {
     if (!d || isPast(d)) return;
     onChange(`${viewYear}-${String(viewMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`);
   };
+  const prevMonth = () => viewMonth === 0 ? (setViewMonth(11), setViewYear(y=>y-1)) : setViewMonth(m=>m-1);
+  const nextMonth = () => viewMonth === 11 ? (setViewMonth(0), setViewYear(y=>y+1)) : setViewMonth(m=>m+1);
+
   return (
-    <div onMouseDown={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:12, padding: hideHeader ? '0' : 14, boxShadow: hideHeader ? 'none' : '0 8px 28px rgba(0,0,0,0.14)', minWidth:240, zIndex:1000 }}>
+    <div onMouseDown={e => e.stopPropagation()} style={{ background:'#fff', borderRadius: hideHeader ? 0 : 14, padding: hideHeader ? '0' : '16px', boxShadow: hideHeader ? 'none' : '0 8px 28px rgba(0,0,0,0.14)', width: '100%', boxSizing:'border-box', zIndex:1000 }}>
       {!hideHeader && (
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
-          <span style={{ fontSize:13, fontWeight:700, color:'#1a1a1a' }}>{title}</span>
-          <button onMouseDown={onClose} style={{ background:'none', border:'none', cursor:'pointer', color:'#999', fontSize:16, lineHeight:1 }}>×</button>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
+          <span style={{ fontSize:14, fontWeight:700, color:'#1a1a1a' }}>{title}</span>
+          <button onMouseDown={onClose} style={{ background:'#f3f4f6', border:'none', borderRadius:'50%', width:28, height:28, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', color:'#555', fontSize:15, lineHeight:1 }}>×</button>
         </div>
       )}
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
-        <button onMouseDown={() => viewMonth === 0 ? (setViewMonth(11), setViewYear(y=>y-1)) : setViewMonth(m=>m-1)} style={{ background:'none', border:'1px solid #e8d9c0', borderRadius:6, padding:'2px 8px', cursor:'pointer', fontSize:14 }}>‹</button>
-        <span style={{ fontSize:13, fontWeight:600, color:'#1a1a1a' }}>{MONTHS[viewMonth]} {viewYear}</span>
-        <button onMouseDown={() => viewMonth === 11 ? (setViewMonth(0), setViewYear(y=>y+1)) : setViewMonth(m=>m+1)} style={{ background:'none', border:'1px solid #e8d9c0', borderRadius:6, padding:'2px 8px', cursor:'pointer', fontSize:14 }}>›</button>
+      {/* Month navigation */}
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
+        <button onMouseDown={prevMonth} style={{ background:'none', border:'none', cursor:'pointer', color:'#555', fontSize:20, lineHeight:1, padding:'4px 8px', borderRadius:8 }}>←</button>
+        <span style={{ fontSize:15, fontWeight:700, color:'#1a1a1a' }}>{MONTHS[viewMonth]} {viewYear}</span>
+        <button onMouseDown={nextMonth} style={{ background:'none', border:'none', cursor:'pointer', color:'#555', fontSize:20, lineHeight:1, padding:'4px 8px', borderRadius:8 }}>→</button>
       </div>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:2 }}>
-        {DAYS.map(d => <div key={d} style={{ textAlign:'center', fontSize:10, fontWeight:600, color:'#b89a70', padding:'2px 0' }}>{d}</div>)}
-        {cells.map((d,i) => (
-          <div key={i} onMouseDown={() => handleDay(d)} style={{
-            textAlign:'center', fontSize:12, padding:'5px 2px', borderRadius:6, cursor: d && !isPast(d) ? 'pointer' : 'default',
-            background: isSelected(d) ? '#C98B3E' : 'transparent',
-            color: isSelected(d) ? '#fff' : isPast(d) ? '#ddd' : d ? '#1a1a1a' : 'transparent',
-            fontWeight: isSelected(d) ? 700 : 400,
-          }}>{d||''}</div>
+      {/* Grid */}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:'4px 2px', width:'100%' }}>
+        {DAYS.map(d => (
+          <div key={d} style={{ textAlign:'center', fontSize:11, fontWeight:600, color:'#b89a70', paddingBottom:6 }}>{d}</div>
         ))}
+        {cells.map((d, i) => {
+          const selected = isSelected(d);
+          const past = isPast(d);
+          const todayCell = isToday(d);
+          return (
+            <div key={i} onMouseDown={() => handleDay(d)} style={{
+              textAlign:'center', fontSize:13, fontWeight: selected ? 700 : 400,
+              padding:'7px 0', borderRadius:'50%', cursor: d && !past ? 'pointer' : 'default',
+              background: selected ? '#1a1a1a' : 'transparent',
+              color: selected ? '#fff' : past ? '#ccc' : d ? '#1a1a1a' : 'transparent',
+              border: todayCell && !selected ? '1.5px solid #C98B3E' : '1.5px solid transparent',
+              boxSizing: 'border-box',
+              margin: '1px auto',
+              width: 34, height: 34,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>{d || ''}</div>
+          );
+        })}
       </div>
     </div>
   );
@@ -2747,7 +2772,7 @@ const PropertyListPage = () => {
                 ))}
               </div>
               {/* Calendar */}
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <div style={{ width: '100%' }}>
                 {showCheckInCal && <MiniCalPLP hideHeader value={checkIn} onChange={v => { setCheckIn(v); setShowCheckInCal(false); setShowCheckOutCal(true); }} onClose={() => { setShowCheckInCal(false); setShowCheckOutCal(false); }} title="" minDate={new Date().toISOString().split('T')[0]} />}
                 {showCheckOutCal && <MiniCalPLP hideHeader value={checkOut} onChange={v => { setCheckOut(v); setShowCheckInCal(false); setShowCheckOutCal(false); }} onClose={() => { setShowCheckInCal(false); setShowCheckOutCal(false); }} title="" minDate={checkIn || new Date().toISOString().split('T')[0]} />}
               </div>
