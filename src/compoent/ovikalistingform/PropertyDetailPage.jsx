@@ -1575,7 +1575,7 @@ const PropertyDetailPage = () => {
     const isSignatureProperty = Number(property?.id) === 77;
     const baseReady = formData.checkInDate && formData.checkOutDate && pricing.total > 0;
     const verificationReady = isNightlyOffer
-      ? ((formData.aadhaarVerified || formData.passportVerified) && govIdStatus === 'valid')
+      ? ((formData.aadhaarVerified || formData.passportVerified) && formData.mobileVerified && govIdStatus === 'valid')
       : true;
     setIsPayNowEnabled(!!(baseReady && verificationReady));
   }, [formData, pricing, govIdStatus, property]);
@@ -1748,7 +1748,7 @@ const PropertyDetailPage = () => {
     if (!isNightlyOffer && step === 3) { setStep(6); return; }
     if (isNightlyOffer && step === 4) {
       if (!(formData.aadhaarVerified || formData.passportVerified)) { showAlert('Please verify your ID first.'); return; }
-      if (!isSignatureProperty && !formData.mobileVerified) { showAlert('Please verify your mobile number.'); return; }
+      if (!formData.mobileVerified) { showAlert('Please verify your mobile number.'); return; }
     }
     if (isNightlyOffer && step === 5 && govIdStatus !== 'valid') { showAlert('Please upload a valid government ID to continue.'); return; }
     if (step < steps.length) setStep(step + 1);
@@ -2627,31 +2627,27 @@ const PropertyDetailPage = () => {
                     </div>
                   )}
 
-                  {Number(property?.id) !== 77 && (
-                    <>
-                      <div style={{ margin: '2rem 0', height: '1px', background: '#eee' }}></div>
+                  <div style={{ margin: '2rem 0', height: '1px', background: '#eee' }}></div>
 
-                      <div style={{ padding: '2rem', background: '#f8fafc', borderRadius: '8px' }}>
-                        <h3 style={{ marginBottom: '1rem' }}>Mobile Verification</h3>
-                        {!otpSent ? (
-                          <div style={{ display: 'flex', gap: '10px' }}>
-                            <input type="text" inputMode="numeric" maxLength={10} value={mobileNumber} onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ''))} placeholder="10-digit mobile" disabled={formData.mobileVerified || isOtpLoading} style={{ flex: 1, padding: '14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '1rem' }} />
-                            <button onClick={handleGenerateOTP} disabled={formData.mobileVerified || !mobileNumber || mobileNumber.length !== 10 || isOtpLoading} style={{ padding: '0 20px', background: '#8b0000', color: 'white', border: 'none', borderRadius: '6px', fontWeight: '600' }}>
-                              {isOtpLoading ? 'Sending...' : 'Send OTP'}
-                            </button>
-                          </div>
-                        ) : (
-                          <div style={{ display: 'flex', gap: '10px' }}>
-                            <input type="text" inputMode="numeric" maxLength={6} value={otpInput} onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))} placeholder="Enter OTP" disabled={formData.mobileVerified || isMobileVerifying} style={{ flex: 1, padding: '14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '1rem' }} />
-                            <button onClick={handleVerifyOTP} disabled={formData.mobileVerified || !otpInput || isMobileVerifying} style={{ padding: '0 20px', background: '#22c55e', color: 'white', border: 'none', borderRadius: '6px', fontWeight: '600' }}>
-                              {isMobileVerifying ? 'Verifying...' : 'Verify OTP'}
-                            </button>
-                          </div>
-                        )}
-                        {formData.mobileVerified && <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#22c55e', fontWeight: '600', marginTop: '10px' }}><CheckCircle size={20} /> Mobile Verified</div>}
+                  <div style={{ padding: '2rem', background: '#f8fafc', borderRadius: '8px' }}>
+                    <h3 style={{ marginBottom: '1rem' }}>Mobile Verification</h3>
+                    {!otpSent ? (
+                      <div style={{ display: 'flex', gap: '10px' }}>
+                        <input type="text" inputMode="numeric" maxLength={10} value={mobileNumber} onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ''))} placeholder="10-digit mobile" disabled={formData.mobileVerified || isOtpLoading} style={{ flex: 1, padding: '14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '1rem' }} />
+                        <button onClick={handleGenerateOTP} disabled={formData.mobileVerified || !mobileNumber || mobileNumber.length !== 10 || isOtpLoading} style={{ padding: '0 20px', background: '#8b0000', color: 'white', border: 'none', borderRadius: '6px', fontWeight: '600' }}>
+                          {isOtpLoading ? 'Sending...' : 'Send OTP'}
+                        </button>
                       </div>
-                    </>
-                  )}
+                    ) : (
+                      <div style={{ display: 'flex', gap: '10px' }}>
+                        <input type="text" inputMode="numeric" maxLength={6} value={otpInput} onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))} placeholder="Enter OTP" disabled={formData.mobileVerified || isMobileVerifying} style={{ flex: 1, padding: '14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '1rem' }} />
+                        <button onClick={handleVerifyOTP} disabled={formData.mobileVerified || !otpInput || isMobileVerifying} style={{ padding: '0 20px', background: '#22c55e', color: 'white', border: 'none', borderRadius: '6px', fontWeight: '600' }}>
+                          {isMobileVerifying ? 'Verifying...' : 'Verify OTP'}
+                        </button>
+                      </div>
+                    )}
+                    {formData.mobileVerified && <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#22c55e', fontWeight: '600', marginTop: '10px' }}><CheckCircle size={20} /> Mobile Verified</div>}
+                  </div>
                 </div>
               )}
 
