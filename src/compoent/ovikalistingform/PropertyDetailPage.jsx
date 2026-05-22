@@ -1552,18 +1552,18 @@ const PropertyDetailPage = () => {
       const isMonthlyBooking = pricingMode === 'monthly';
       const isOvikaProperty = isOvikaOwnProperty;
       const perNightPrice = selectedPrice || Number(property?.meta?.perNightPrice) || Number(property?.price) || 0;
-      const gst = isMonthlyBooking ? 0 : afterDiscount * 0.05;
       const isMonthlyOvika = [315, 316, 317, 323].includes(Number(property?.id));
       const oneMonthRent = isMonthlyBooking && isMonthlyOvika
         ? (selectedPrice || Number(property?.meta?.perMonthPrice) || Number(property?.meta?.monthlyPrice) || Number(property?.monthly_price) || Number(property?.price) || 0)
         : 0;
       const isNightlyOffer = [77, 78, 79, 80, 81].includes(Number(property?.id));
+      const couponDiscount = (isNightlyOffer && couponApplied) ? 500 * Math.max(1, currentDays) : 0;
+      const afterCoupon = Math.max(0, afterDiscount - couponDiscount);
+      const gst = isMonthlyBooking ? 0 : afterCoupon * 0.05;
       const securityDeposit = isMonthlyBooking
         ? (oneMonthRent > 0 ? oneMonthRent : Number(property?.securityDeposit) || 0)
         : (!isMonthlyBooking && isOvikaProperty && !isNightlyOffer ? perNightPrice : 0);
-      computedTotal = afterDiscount + gst + securityDeposit;
-      const couponDiscount = (isNightlyOffer && couponApplied) ? 500 * Math.max(1, currentDays) : 0;
-      computedTotal = Math.max(0, computedTotal - couponDiscount);
+      computedTotal = afterCoupon + gst + securityDeposit;
       setPricing({ subtotal, discount: discountAmount, discountPercentage, gst, securityDeposit, total: computedTotal, daysNeededForNextTier, nextTierPercentage, couponDiscount });
     } else {
       setPricing({ subtotal: 0, discount: 0, discountPercentage: 0, gst: 0, securityDeposit: 0, total: 0, daysNeededForNextTier: 0, nextTierPercentage: 0, couponDiscount: 0 });
