@@ -101,6 +101,13 @@ useEffect(() => {
   }, [key]);
   return null;
 }
+const NO_FOOTER_PATHS = ['/properties', '/nightly-stays', '/monthly-rentals'];
+function ConditionalFooter() {
+  const location = useLocation();
+  const hide = NO_FOOTER_PATHS.includes(location.pathname) || location.pathname.startsWith('/property/');
+  if (hide) return null;
+  return <HoomieFooter />;
+}
 function WhatsAppButton() {
   const location = useLocation();
   if (location.pathname !== '/') return null;
@@ -213,7 +220,7 @@ function App() {
           <Route path="/leads-success" element={<LeadsSuccess />} />
           <Route path="/admin-control-panel" element={<RequireAuth><SuperAdminDashboard /></RequireAuth>} />
         </Routes>
-        <HoomieFooter />
+        <ConditionalFooter />
         <CookieConsent />
         <WhatsAppButton />
       </Router>

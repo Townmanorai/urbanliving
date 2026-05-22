@@ -147,7 +147,7 @@ function formatMapPrice(price) {
 }
 
 
-function MiniCalPLP({ value, onChange, onClose, title, minDate }) {
+function MiniCalPLP({ value, onChange, onClose, title, minDate, hideHeader }) {
   const today = new Date();
   const initDate = value ? new Date(value) : today;
   const [viewYear, setViewYear] = useState(initDate.getFullYear());
@@ -172,11 +172,13 @@ function MiniCalPLP({ value, onChange, onClose, title, minDate }) {
     onChange(`${viewYear}-${String(viewMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`);
   };
   return (
-    <div onMouseDown={e => e.stopPropagation()} style={{ background:'#fff', border:'1.5px solid #e8d9c0', borderRadius:12, padding:14, boxShadow:'0 8px 28px rgba(0,0,0,0.14)', minWidth:240, zIndex:1000 }}>
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
-        <span style={{ fontSize:13, fontWeight:700, color:'#1a1a1a' }}>{title}</span>
-        <button onMouseDown={onClose} style={{ background:'none', border:'none', cursor:'pointer', color:'#999', fontSize:16, lineHeight:1 }}>×</button>
-      </div>
+    <div onMouseDown={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:12, padding: hideHeader ? '0' : 14, boxShadow: hideHeader ? 'none' : '0 8px 28px rgba(0,0,0,0.14)', minWidth:240, zIndex:1000 }}>
+      {!hideHeader && (
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
+          <span style={{ fontSize:13, fontWeight:700, color:'#1a1a1a' }}>{title}</span>
+          <button onMouseDown={onClose} style={{ background:'none', border:'none', cursor:'pointer', color:'#999', fontSize:16, lineHeight:1 }}>×</button>
+        </div>
+      )}
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
         <button onMouseDown={() => viewMonth === 0 ? (setViewMonth(11), setViewYear(y=>y-1)) : setViewMonth(m=>m-1)} style={{ background:'none', border:'1px solid #e8d9c0', borderRadius:6, padding:'2px 8px', cursor:'pointer', fontSize:14 }}>‹</button>
         <span style={{ fontSize:13, fontWeight:600, color:'#1a1a1a' }}>{MONTHS[viewMonth]} {viewYear}</span>
@@ -917,6 +919,7 @@ const PropertyListPage = () => {
   const [currentPage, setCurrentPage] = useState(_ss.currentPage ?? 1);
   const [mapView, setMapView] = useState(false);
   const [selectedMapProp, setSelectedMapProp] = useState(null);
+  const [sortSheetOpen, setSortSheetOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 768);
@@ -1468,6 +1471,8 @@ const PropertyListPage = () => {
           ? [...filteredResults].sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0))
           : sortBy === 'price_desc'
           ? [...filteredResults].sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0))
+          : sortBy === 'rating'
+          ? [...filteredResults].sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0))
           : filteredResults) // recommended + search active → keep keyword score order
       : [...filteredResults].sort((a, b) => {
           const aIsVerified = a.property_name?.toLowerCase().includes('ovika') || a.property_name?.toLowerCase().includes('signature');
@@ -1486,6 +1491,8 @@ const PropertyListPage = () => {
             return (Number(a.price) || 0) - (Number(b.price) || 0);
           } else if (sortBy === 'price_desc') {
             return (Number(b.price) || 0) - (Number(a.price) || 0);
+          } else if (sortBy === 'rating') {
+            return (Number(b.rating) || 0) - (Number(a.rating) || 0);
           }
           return 0;
         });
@@ -1694,9 +1701,9 @@ const PropertyListPage = () => {
           min-width: 0;
         }
         .plp-topbar-search {
-          flex: 1 1 380px;
+          flex: 2 1 480px;
           min-width: 200px;
-          max-width: 620px;
+          max-width: 820px;
         }
         .plp-topbar-right {
           display: flex;
@@ -1915,23 +1922,20 @@ const PropertyListPage = () => {
           display: none;
           position: fixed; inset: 0;
           background: rgba(0,0,0,0.5);
-          z-index: 300;
+          z-index: 1399;
         }
         .plp-mobile-sidebar {
           display: none;
           position: fixed;
-          left: 0; top: 0; bottom: 0;
-          width: min(300px, 88vw);
+          left: 0; right: 0; bottom: 0; top: 0;
           background: #fff;
-          z-index: 301;
+          z-index: 1400;
           overflow-y: auto;
           padding: 0;
-          box-shadow: 4px 0 28px rgba(0,0,0,0.18);
-          animation: slideInLeft 0.22s ease;
+          border-radius: 0;
+          box-shadow: 0 -4px 32px rgba(0,0,0,0.18);
+          animation: plpSlideUp 0.28s ease;
         }
-        @keyframes slideInLeft {
-          from { transform: translateX(-100%); }
-          to   { transform: translateX(0); }
         }
         @keyframes slideUp {
           from { transform: translate(-50%, -50%) scale(0.92); opacity: 0; }
@@ -1942,6 +1946,7 @@ const PropertyListPage = () => {
           to   { opacity: 1; }
         }
         .plp-mobile-filter-btn { display: none; }
+        @keyframes plpSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         /* Map popup styling */
         .plp-map-popup .leaflet-popup-content-wrapper { padding: 0; border-radius: 10px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
         .plp-map-popup .leaflet-popup-content { margin: 0; width: 240px !important; }
@@ -1949,9 +1954,10 @@ const PropertyListPage = () => {
         /* ── Responsive ── */
         @media (max-width: 860px) {
           .plp-sidebar { display: none; }
-          .plp-mobile-filter-btn { display: inline-flex !important; }
+          .plp-mobile-filter-btn { display: none !important; }
           .plp-mapview-btn { display: none !important; }
-          .plp-mobile-map-fab { display: flex !important; }
+          .plp-mobile-map-fab { display: none !important; }
+          .plp-mobile-bottom-bar { display: flex !important; }
           .plp-right { padding-left: 0; }
           .plp-body { padding: 0 10px; }
           .plp-grid { grid-template-columns: 1fr; gap: 12px; }
@@ -1959,20 +1965,20 @@ const PropertyListPage = () => {
           .plp-topbar-search { flex: 1 1 100%; order: 4; min-width: 0; }
           .plp-topbar-right .plp-list-btn-text { display: none; }
           .plp-sort-label { display: none; }
-          .plp-sort-wrap { padding: 0 6px !important; }
-          .plp-sort-wrap select { max-width: 72px; font-size: 12px !important; }
+          .plp-sort-wrap { display: none !important; }
+          .plp-topbar-right { gap: 5px; }
         }
         @media (max-width: 768px) {
           .plp-page { height: auto !important; overflow: visible !important; }
           .plp-body { height: auto !important; overflow: visible !important; }
-          .plp-right { height: auto !important; overflow: visible !important; padding: 10px 0 60px; }
+          .plp-right { height: auto !important; overflow: visible !important; padding: 10px 0 80px; }
         }
         @media (max-width: 480px) {
           .plp-grid { grid-template-columns: 1fr; gap: 10px; }
           .plp-topbar { padding: 7px 8px; gap: 5px; margin-bottom: 8px; }
           .plp-topbar-right { gap: 5px; }
           .plp-body { padding: 0 8px; }
-          .plp-right { padding: 8px 0 60px !important; }
+          .plp-right { padding: 8px 0 80px !important; }
           /* Card — single column, comfortable size */
           .plp-card-body { padding: 12px 14px 14px !important; gap: 7px !important; }
           .plp-card-title { font-size: 14px !important; -webkit-line-clamp: 2 !important; }
@@ -2094,31 +2100,33 @@ const PropertyListPage = () => {
       {sidebarOpen && (
         <div className="plp-filter-overlay" style={{ display: 'block' }} onClick={() => setSidebarOpen(false)} />
       )}
-      {/* ── MOBILE FILTER DRAWER ── */}
+      {/* ── MOBILE FILTER SHEET (full screen, slides up from bottom) ── */}
       {sidebarOpen && (
-        <div className="plp-mobile-sidebar" style={{ display: 'block' }}>
-          <div style={{ padding: '16px 18px 24px', background: '#fdf8f2', borderBottom: '1px solid #e8d9c0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 1 }}>
-            <span style={{ fontSize: 16, fontWeight: 700, color: '#1a1a1a' }}>Filters</span>
-            <button onClick={() => setSidebarOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8B5E2A', fontSize: 22, padding: 0, display: 'flex', lineHeight: 1 }}><FiX /></button>
+        <div className="plp-mobile-sidebar" style={{ display: 'flex', flexDirection: 'column' }}>
+          {/* Sticky header */}
+          <div style={{ padding: '14px 18px 14px', background: '#fdf8f2', borderBottom: '1px solid #e8d9c0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 2, flexShrink: 0 }}>
+            <span style={{ fontSize: 17, fontWeight: 700, color: '#1a1a1a' }}>Filters</span>
+            <button onClick={() => setSidebarOpen(false)} style={{ background: '#f3f4f6', border: 'none', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer', color: '#374151', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><FiX style={{ fontSize: 16 }} /></button>
           </div>
-          <div style={{ padding: '18px 18px 32px' }}>
-          <SidebarContent
-            activeCat={activeCat} setActiveCat={setActiveCat}
-            rentalType={rentalType} setRentalType={setRentalType}
-            lockedRental={lockedRental}
-            priceMin={priceMin} setPriceMin={setPriceMin}
-            priceMax={priceMax} setPriceMax={setPriceMax}
-            roomsFilter={roomsFilter} setRoomsFilter={setRoomsFilter}
-            propTypeFilter={propTypeFilter} togglePropType={togglePropType}
-            amenitiesFilter={amenitiesFilter} toggleAmenity={toggleAmenity}
-            furnishingFilter={furnishingFilter} setFurnishingFilter={setFurnishingFilter}
-            tenantFilter={tenantFilter} setTenantFilter={setTenantFilter}
-            foodFilter={foodFilter} setFoodFilter={setFoodFilter}
-            petsFilter={petsFilter} setPetsFilter={setPetsFilter}
-            coupleFilter={coupleFilter} setCoupleFilter={setCoupleFilter}
-            resetSidebar={resetSidebar}
-            onDone={() => setSidebarOpen(false)}
-          />
+          {/* Scrollable content */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '18px 18px 32px' }}>
+            <SidebarContent
+              activeCat={activeCat} setActiveCat={setActiveCat}
+              rentalType={rentalType} setRentalType={setRentalType}
+              lockedRental={lockedRental}
+              priceMin={priceMin} setPriceMin={setPriceMin}
+              priceMax={priceMax} setPriceMax={setPriceMax}
+              roomsFilter={roomsFilter} setRoomsFilter={setRoomsFilter}
+              propTypeFilter={propTypeFilter} togglePropType={togglePropType}
+              amenitiesFilter={amenitiesFilter} toggleAmenity={toggleAmenity}
+              furnishingFilter={furnishingFilter} setFurnishingFilter={setFurnishingFilter}
+              tenantFilter={tenantFilter} setTenantFilter={setTenantFilter}
+              foodFilter={foodFilter} setFoodFilter={setFoodFilter}
+              petsFilter={petsFilter} setPetsFilter={setPetsFilter}
+              coupleFilter={coupleFilter} setCoupleFilter={setCoupleFilter}
+              resetSidebar={resetSidebar}
+              onDone={() => setSidebarOpen(false)}
+            />
           </div>
         </div>
       )}
@@ -2365,33 +2373,40 @@ const PropertyListPage = () => {
                   )}
                 </div>
 
-                {/* Check-in (nightly only) */}
+                {/* Combined Dates field (nightly only) */}
                 {!isMonthly && (
                   <div
                     onMouseDown={() => { setShowCheckInCal(v => !v); setShowCheckOutCal(false); setShowCitySug(false); setShowGuestsBox(false); }}
                     style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 10px', cursor: 'pointer', borderRight: '1px solid #e8d9c0', flexShrink: 0, position: 'relative' }}
                   >
                     <FiCalendar style={{ fontSize: 12, color: '#b89a70' }} />
-                    <span style={{ fontSize: 12, color: checkIn ? '#1a1a1a' : '#b89a70', whiteSpace: 'nowrap' }}>{checkIn ? fmtDate(checkIn) : 'Check-in'}</span>
-                    {showCheckInCal && (
-                      <div style={{ position: 'absolute', top: '110%', left: 0, zIndex: 999 }}>
-                        <MiniCalPLP value={checkIn} onChange={v => { setCheckIn(v); setShowCheckInCal(false); if (!checkOut) setShowCheckOutCal(true); }} onClose={() => setShowCheckInCal(false)} title="Check-in" minDate={new Date().toISOString().split('T')[0]} />
-                      </div>
+                    <span style={{ fontSize: 12, whiteSpace: 'nowrap', color: (checkIn || checkOut) ? '#1a1a1a' : '#b89a70' }}>
+                      {checkIn ? fmtDate(checkIn) : 'Check-in'} – {checkOut ? fmtDate(checkOut) : 'Check-out'}
+                    </span>
+                    {(checkIn || checkOut) && (
+                      <button onMouseDown={e => { e.stopPropagation(); setCheckIn(''); setCheckOut(''); }} style={{ width: 14, height: 14, borderRadius: '50%', border: 'none', background: '#e8d9c0', color: '#8B5E2A', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, padding: 0 }}><FiX style={{ fontSize: 7 }} /></button>
                     )}
-                  </div>
-                )}
-
-                {/* Check-out (nightly only) */}
-                {!isMonthly && (
-                  <div
-                    onMouseDown={() => { setShowCheckOutCal(v => !v); setShowCheckInCal(false); setShowCitySug(false); setShowGuestsBox(false); }}
-                    style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 10px', cursor: 'pointer', borderRight: '1px solid #e8d9c0', flexShrink: 0, position: 'relative' }}
-                  >
-                    <FiCalendar style={{ fontSize: 12, color: '#b89a70' }} />
-                    <span style={{ fontSize: 12, color: checkOut ? '#1a1a1a' : '#b89a70', whiteSpace: 'nowrap' }}>{checkOut ? fmtDate(checkOut) : 'Check-out'}</span>
-                    {showCheckOutCal && (
-                      <div style={{ position: 'absolute', top: '110%', left: 0, zIndex: 999 }}>
-                        <MiniCalPLP value={checkOut} onChange={v => { setCheckOut(v); setShowCheckOutCal(false); }} onClose={() => setShowCheckOutCal(false)} title="Check-out" minDate={checkIn || new Date().toISOString().split('T')[0]} />
+                    {/* Desktop dropdown */}
+                    {!isMobile && (showCheckInCal || showCheckOutCal) && (
+                      <div onMouseDown={e => e.stopPropagation()} style={{ position: 'absolute', top: '110%', left: 0, zIndex: 1000, background: '#fff', border: '1.5px solid #e8d9c0', borderRadius: 14, padding: 16, boxShadow: '0 8px 32px rgba(0,0,0,0.16)', minWidth: 300 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a' }}>{showCheckInCal ? 'Select Check-in' : 'Select Check-out'}</span>
+                          <button onMouseDown={() => { setShowCheckInCal(false); setShowCheckOutCal(false); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#999', fontSize: 18, lineHeight: 1 }}>×</button>
+                        </div>
+                        <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+                          {['Check-in', 'Check-out'].map((tab, i) => {
+                            const active = i === 0 ? showCheckInCal : showCheckOutCal;
+                            const val = i === 0 ? checkIn : checkOut;
+                            return (
+                              <button key={tab} onMouseDown={() => { if (i === 0) { setShowCheckInCal(true); setShowCheckOutCal(false); } else { setShowCheckOutCal(true); setShowCheckInCal(false); } }}
+                                style={{ flex: 1, padding: '8px', border: `1.5px solid ${active ? '#C98B3E' : '#e8d9c0'}`, borderRadius: 8, background: active ? '#fdf8f2' : '#fff', color: active ? '#C98B3E' : '#999', fontWeight: active ? 700 : 400, fontSize: 12, cursor: 'pointer', fontFamily: 'inherit' }}>
+                                {val ? fmtDate(val) : tab}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        {showCheckInCal && <MiniCalPLP hideHeader value={checkIn} onChange={v => { setCheckIn(v); setShowCheckInCal(false); setShowCheckOutCal(true); }} onClose={() => { setShowCheckInCal(false); setShowCheckOutCal(false); }} title="" minDate={new Date().toISOString().split('T')[0]} />}
+                        {showCheckOutCal && <MiniCalPLP hideHeader value={checkOut} onChange={v => { setCheckOut(v); setShowCheckInCal(false); setShowCheckOutCal(false); }} onClose={() => { setShowCheckInCal(false); setShowCheckOutCal(false); }} title="" minDate={checkIn || new Date().toISOString().split('T')[0]} />}
                       </div>
                     )}
                   </div>
@@ -2479,41 +2494,56 @@ const PropertyListPage = () => {
                   })
                 }
               </div>
-              <button
-                className="plp-list-btn"
-                onClick={() => setListPopupOpen(true)}
-                onMouseEnter={e => e.currentTarget.style.background = '#AF7834'}
-                onMouseLeave={e => e.currentTarget.style.background = '#C98B3E'}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 5,
-                  padding: '7px 14px', background: '#C98B3E', color: '#fff',
-                  border: 'none', borderRadius: 9, fontWeight: 600, fontSize: 13,
-                  cursor: 'pointer', fontFamily: 'inherit',
-                  boxShadow: '0 2px 8px rgba(201,139,62,0.25)',
-                  transition: 'background 0.2s ease', whiteSpace: 'nowrap',
-                }}
-              >
-                <FiPlus style={{ fontSize: 13 }} /> <span className="plp-list-btn-text">List Property</span>
-              </button>
             </div>
           </div>
 
         {/* ── Properties Grid + optional Map split ── */}
         {mapView ? (
           isMobile ? (
-            /* ── MOBILE MAP VIEW: fullscreen map + bottom sheet ── */
-            <div style={{ position: 'relative', height: 'calc(100vh - 120px)', overflow: 'hidden' }}>
-              <PropertyMapView
-                properties={filteredWithCoords}
-                isMonthly={isMonthly}
-                isMobile={true}
-                onPinSelect={p => setSelectedMapProp(p)}
-                onCardClick={p => {
-                  const rt = isMonthly ? 'long' : 'short';
-                  sessionStorage.setItem('ovika_rental_type', rt);
-                  navigate(`/property/${p.id}?rentalType=${rt}`);
-                }}
-              />
+            /* ── MOBILE MAP VIEW: true fullscreen, no navbar, only search bar ── */
+            <div style={{ position: 'fixed', inset: 0, zIndex: 2000, background: '#fff' }}>
+              {/* Search bar overlay */}
+              <div style={{
+                position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10,
+                padding: '12px 12px 8px',
+                background: 'rgba(255,255,255,0.96)',
+                backdropFilter: 'blur(6px)',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.10)',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <button
+                    onClick={() => { setMapView(false); setSelectedMapProp(null); }}
+                    style={{ background: '#f3f4f6', border: 'none', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
+                  >
+                    <FiChevronLeft style={{ fontSize: 18, color: '#374151' }} />
+                  </button>
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, background: '#f3f4f6', borderRadius: 50, padding: '10px 16px', border: '1.5px solid #e5e7eb' }}>
+                    <FiSearch style={{ fontSize: 15, color: '#9ca3af', flexShrink: 0 }} />
+                    <input
+                      value={search}
+                      onChange={e => setSearch(e.target.value)}
+                      placeholder="Search city, locality, property..."
+                      style={{ flex: 1, border: 'none', background: 'transparent', fontSize: 14, color: '#1a1a1a', outline: 'none', fontFamily: 'inherit' }}
+                    />
+                    {search && <button onClick={() => setSearch('')} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#9ca3af', display: 'flex', alignItems: 'center', padding: 0 }}><FiX style={{ fontSize: 14 }} /></button>}
+                  </div>
+                </div>
+              </div>
+
+              {/* Map fills full screen */}
+              <div style={{ position: 'absolute', inset: 0, paddingTop: 68 }}>
+                <PropertyMapView
+                  properties={filteredWithCoords}
+                  isMonthly={isMonthly}
+                  isMobile={true}
+                  onPinSelect={p => setSelectedMapProp(p)}
+                  onCardClick={p => {
+                    const rt = isMonthly ? 'long' : 'short';
+                    sessionStorage.setItem('ovika_rental_type', rt);
+                    navigate(`/property/${p.id}?rentalType=${rt}`);
+                  }}
+                />
+              </div>
 
               {/* Bottom sheet — slides up when property tapped */}
               {selectedMapProp && (() => {
@@ -2528,15 +2558,12 @@ const PropertyListPage = () => {
                     position: 'absolute', bottom: 0, left: 0, right: 0,
                     background: '#fff', borderRadius: '18px 18px 0 0',
                     boxShadow: '0 -4px 24px rgba(0,0,0,0.18)',
-                    padding: '16px', zIndex: 999,
-                    animation: 'slideUp 0.25s ease'
+                    padding: '16px', zIndex: 20,
+                    animation: 'plpSlideUp 0.25s ease'
                   }}>
-                    <style>{`@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }`}</style>
-                    {/* Drag handle */}
+                    <style>{`@keyframes plpSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }`}</style>
                     <div style={{ width: 36, height: 4, background: '#e0e0e0', borderRadius: 2, margin: '0 auto 14px' }} />
-                    {/* Close */}
                     <button onClick={() => setSelectedMapProp(null)} style={{ position: 'absolute', top: 14, right: 14, background: '#f3f4f6', border: 'none', borderRadius: '50%', width: 28, height: 28, fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
-
                     <div style={{ display: 'flex', gap: 12 }}>
                       {imgSrc && (
                         <div style={{ width: 90, height: 90, borderRadius: 10, overflow: 'hidden', flexShrink: 0 }}>
@@ -2556,13 +2583,11 @@ const PropertyListPage = () => {
                         )}
                       </div>
                     </div>
-
                     {p.description && (
                       <p style={{ fontSize: 12, color: '#555', margin: '12px 0 0', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                         {p.description}
                       </p>
                     )}
-
                     <button
                       onClick={() => { sessionStorage.setItem('ovika_rental_type', rt); navigate(`/property/${p.id}?rentalType=${rt}`); }}
                       style={{ width: '100%', marginTop: 14, padding: '12px', background: '#C98B3E', color: '#fff', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
@@ -2702,33 +2727,115 @@ const PropertyListPage = () => {
             );
           })()
         )}
-        {/* ── Mobile floating Map/List FAB ── */}
+        {/* ── Mobile Date picker bottom sheet ── */}
+        {isMobile && (showCheckInCal || showCheckOutCal) && (
+          <>
+            <div onClick={() => { setShowCheckInCal(false); setShowCheckOutCal(false); }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1500 }} />
+            <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1600, background: '#fff', borderRadius: '18px 18px 0 0', boxShadow: '0 -4px 32px rgba(0,0,0,0.18)', padding: '20px 16px 40px', animation: 'plpSlideUp 0.25s ease' }}>
+              <div style={{ width: 36, height: 4, background: '#e0e0e0', borderRadius: 2, margin: '0 auto 16px' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                <span style={{ fontSize: 16, fontWeight: 700, color: '#1a1a1a' }}>{showCheckInCal ? 'Select Check-in' : 'Select Check-out'}</span>
+                <button onClick={() => { setShowCheckInCal(false); setShowCheckOutCal(false); }} style={{ background: '#f3f4f6', border: 'none', borderRadius: '50%', width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}><FiX style={{ fontSize: 15, color: '#374151' }} /></button>
+              </div>
+              {/* Tabs */}
+              <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                {[{ label: 'Check-in', val: checkIn, active: showCheckInCal }, { label: 'Check-out', val: checkOut, active: showCheckOutCal }].map((tab, i) => (
+                  <button key={tab.label} onClick={() => { if (i === 0) { setShowCheckInCal(true); setShowCheckOutCal(false); } else { setShowCheckOutCal(true); setShowCheckInCal(false); } }}
+                    style={{ flex: 1, padding: '10px', border: `1.5px solid ${tab.active ? '#C98B3E' : '#e8d9c0'}`, borderRadius: 10, background: tab.active ? '#fdf8f2' : '#fff', color: tab.active ? '#C98B3E' : '#999', fontWeight: tab.active ? 700 : 400, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+                    {tab.val ? fmtDate(tab.val) : tab.label}
+                  </button>
+                ))}
+              </div>
+              {/* Calendar */}
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                {showCheckInCal && <MiniCalPLP hideHeader value={checkIn} onChange={v => { setCheckIn(v); setShowCheckInCal(false); setShowCheckOutCal(true); }} onClose={() => { setShowCheckInCal(false); setShowCheckOutCal(false); }} title="" minDate={new Date().toISOString().split('T')[0]} />}
+                {showCheckOutCal && <MiniCalPLP hideHeader value={checkOut} onChange={v => { setCheckOut(v); setShowCheckInCal(false); setShowCheckOutCal(false); }} onClose={() => { setShowCheckInCal(false); setShowCheckOutCal(false); }} title="" minDate={checkIn || new Date().toISOString().split('T')[0]} />}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ── Mobile OYO-style bottom bar: Filter | Sort | Map ── */}
         <div
-          className="plp-mobile-map-fab"
-          style={{ display: 'none' }}
+          className="plp-mobile-bottom-bar"
+          style={{
+            display: 'none',
+            position: 'fixed', bottom: 0, left: 0, right: 0,
+            zIndex: 1100,
+            background: '#fff',
+            borderTop: '1px solid #e5e7eb',
+            boxShadow: '0 -2px 16px rgba(0,0,0,0.10)',
+          }}
         >
-          <button
-            onClick={() => { setMapView(v => !v); setSelectedMapProp(null); }}
-            style={{
-              position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-              zIndex: 1200,
-              display: 'flex', alignItems: 'center', gap: 8,
-              padding: '13px 28px',
-              background: mapView ? '#1a1a1a' : '#C98B3E',
-              color: '#fff',
-              border: 'none', borderRadius: 50,
-              fontSize: 14.5, fontWeight: 700,
-              cursor: 'pointer', fontFamily: 'inherit',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.28)',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {mapView
-              ? <><FiList style={{ fontSize: 15 }} /> Show List</>
-              : <><FiMap  style={{ fontSize: 15 }} /> Show Map</>
-            }
-          </button>
+          {[
+            { label: 'Filter', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>, onClick: () => setSidebarOpen(true) },
+            { label: 'Sort',   icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M3 6h18M7 12h10M11 18h2"/></svg>, onClick: () => setSortSheetOpen(true) },
+            { label: mapView ? 'List' : 'Map', icon: mapView ? <FiList style={{ fontSize: 16 }} /> : <FiMap style={{ fontSize: 16 }} />, onClick: () => { setMapView(v => !v); setSelectedMapProp(null); } },
+          ].map(({ label, icon, onClick }) => (
+            <button
+              key={label}
+              onClick={onClick}
+              style={{
+                flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                gap: 4, padding: '10px 0 12px',
+                background: 'none', border: 'none', cursor: 'pointer',
+                fontSize: 11.5, fontWeight: 600, color: '#374151', fontFamily: 'inherit',
+                borderRight: label !== (mapView ? 'List' : 'Map') ? '1px solid #f0f0f0' : 'none',
+              }}
+            >
+              {icon}
+              {label}
+            </button>
+          ))}
         </div>
+
+        {/* ── Sort bottom sheet ── */}
+        {sortSheetOpen && (
+          <>
+            <div
+              onClick={() => setSortSheetOpen(false)}
+              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1200 }}
+            />
+            <div style={{
+              position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1300,
+              background: '#fff', borderRadius: '18px 18px 0 0',
+              boxShadow: '0 -4px 32px rgba(0,0,0,0.18)',
+              padding: '20px 0 32px',
+              animation: 'plpSlideUp 0.25s ease',
+            }}>
+              <style>{`@keyframes plpSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }`}</style>
+              <div style={{ width: 36, height: 4, background: '#e0e0e0', borderRadius: 2, margin: '0 auto 16px' }} />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px 12px' }}>
+                <span style={{ fontSize: 17, fontWeight: 700, color: '#111' }}>Sort by</span>
+                <button onClick={() => setSortSheetOpen(false)} style={{ background: '#f3f4f6', border: 'none', borderRadius: '50%', width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                  <FiX style={{ fontSize: 16, color: '#374151' }} />
+                </button>
+              </div>
+              {[
+                { val: 'recommended', label: 'Popularity' },
+                { val: 'price_asc',   label: 'Price Low to High' },
+                { val: 'price_desc',  label: 'Price High to Low' },
+              ].map(opt => (
+                <button
+                  key={opt.val}
+                  onClick={() => { setSortBy(opt.val); setSortSheetOpen(false); }}
+                  style={{
+                    width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '15px 20px', background: 'none', border: 'none', cursor: 'pointer',
+                    fontSize: 15, fontWeight: sortBy === opt.val ? 700 : 400,
+                    color: sortBy === opt.val ? '#C98B3E' : '#1a1a1a',
+                    fontFamily: 'inherit', borderBottom: '1px solid #f5f5f5',
+                  }}
+                >
+                  {opt.label}
+                  {sortBy === opt.val && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#C98B3E"><path d="M20 6L9 17l-5-5"/></svg>
+                  )}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
 
         </div>{/* end right content */}
       </div>{/* end plp-body */}
