@@ -205,7 +205,7 @@ const GM_MAP_OPTIONS = {
   styles: [{ featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }],
 };
 
-function PropertyMapView({ properties, isMonthly, onCardClick }) {
+function PropertyMapView({ properties, isMonthly, onCardClick, onPinSelect, isMobile }) {
   const { isLoaded } = useMapThrustLoader();
   const [activePin, setActivePin] = useState(null);
   const mapRef = useRef(null);
@@ -279,12 +279,16 @@ function PropertyMapView({ properties, isMonthly, onCardClick }) {
               <MarkerF
                 position={{ lat: p._mapLat, lng: p._mapLng }}
                 icon={{ url: svgIcon, scaledSize: new window.google.maps.Size(90, 36), anchor: new window.google.maps.Point(45, 36) }}
-                onClick={() => setActivePin(activePin === p.id ? null : p.id)}
+                onClick={() => {
+                  const next = activePin === p.id ? null : p.id;
+                  setActivePin(next);
+                  if (onPinSelect) onPinSelect(next ? p : null);
+                }}
               />
-              {activePin === p.id && (
+              {activePin === p.id && !isMobile && (
                 <InfoWindowF
                   position={{ lat: p._mapLat, lng: p._mapLng }}
-                  onCloseClick={() => setActivePin(null)}
+                  onCloseClick={() => { setActivePin(null); if (onPinSelect) onPinSelect(null); }}
                   options={{ pixelOffset: new window.google.maps.Size(0, -38) }}
                 >
                   <div style={{ fontFamily: "'Inter', sans-serif", width: 230, padding: 0 }}>
@@ -912,6 +916,13 @@ const PropertyListPage = () => {
   const [sortBy, setSortBy] = useState(_ss.sortBy ?? 'recommended');
   const [currentPage, setCurrentPage] = useState(_ss.currentPage ?? 1);
   const [mapView, setMapView] = useState(false);
+  const [selectedMapProp, setSelectedMapProp] = useState(null);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
   const [geocodedCoords, setGeocodedCoords] = useState({});
   const geocodeQueueRef = useRef(null);
   const [showCitySug, setShowCitySug] = useState(false);
@@ -1940,6 +1951,7 @@ const PropertyListPage = () => {
           .plp-sidebar { display: none; }
           .plp-mobile-filter-btn { display: inline-flex !important; }
           .plp-mapview-btn { display: none !important; }
+          .plp-mobile-map-fab { display: flex !important; }
           .plp-right { padding-left: 0; }
           .plp-body { padding: 0 10px; }
           .plp-grid { grid-template-columns: 1fr; gap: 12px; }
@@ -2488,7 +2500,81 @@ const PropertyListPage = () => {
 
         {/* ── Properties Grid + optional Map split ── */}
         {mapView ? (
-          /* ── MAP VIEW: compact list left + map right ── */
+          isMobile ? (
+            /* ── MOBILE MAP VIEW: fullscreen map + bottom sheet ── */
+            <div style={{ position: 'relative', height: 'calc(100vh - 120px)', overflow: 'hidden' }}>
+              <PropertyMapView
+                properties={filteredWithCoords}
+                isMonthly={isMonthly}
+                isMobile={true}
+                onPinSelect={p => setSelectedMapProp(p)}
+                onCardClick={p => {
+                  const rt = isMonthly ? 'long' : 'short';
+                  sessionStorage.setItem('ovika_rental_type', rt);
+                  navigate(`/property/${p.id}?rentalType=${rt}`);
+                }}
+              />
+
+              {/* Bottom sheet — slides up when property tapped */}
+              {selectedMapProp && (() => {
+                const p = selectedMapProp;
+                const rt = isMonthly ? 'long' : 'short';
+                const price = p._mapPrice || 0;
+                const photos = Array.isArray(p.photos) ? p.photos : [];
+                const cover = photos[Number(p.cover_photo_index) || 0] || photos[0];
+                const imgSrc = cover ? (cover.startsWith('http') ? cover : `https://www.townmanor.ai${cover}`) : null;
+                return (
+                  <div style={{
+                    position: 'absolute', bottom: 0, left: 0, right: 0,
+                    background: '#fff', borderRadius: '18px 18px 0 0',
+                    boxShadow: '0 -4px 24px rgba(0,0,0,0.18)',
+                    padding: '16px', zIndex: 999,
+                    animation: 'slideUp 0.25s ease'
+                  }}>
+                    <style>{`@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }`}</style>
+                    {/* Drag handle */}
+                    <div style={{ width: 36, height: 4, background: '#e0e0e0', borderRadius: 2, margin: '0 auto 14px' }} />
+                    {/* Close */}
+                    <button onClick={() => setSelectedMapProp(null)} style={{ position: 'absolute', top: 14, right: 14, background: '#f3f4f6', border: 'none', borderRadius: '50%', width: 28, height: 28, fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      {imgSrc && (
+                        <div style={{ width: 90, height: 90, borderRadius: 10, overflow: 'hidden', flexShrink: 0 }}>
+                          <img src={imgSrc} alt={p.property_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.style.display = 'none'} />
+                        </div>
+                      )}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a', marginBottom: 4, lineHeight: 1.3 }}>{p.property_name}</div>
+                        <div style={{ fontSize: 12, color: '#888', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 3 }}>
+                          <FiMapPin style={{ fontSize: 11, flexShrink: 0 }} />
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{[p.address, p.city].filter(Boolean).join(', ')}</span>
+                        </div>
+                        {price > 0 && (
+                          <div style={{ fontSize: 15, fontWeight: 700, color: '#C98B3E' }}>
+                            ₹{price.toLocaleString('en-IN')}<span style={{ fontSize: 11, fontWeight: 400, color: '#999' }}>/{isMonthly ? 'month' : 'night'}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {p.description && (
+                      <p style={{ fontSize: 12, color: '#555', margin: '12px 0 0', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        {p.description}
+                      </p>
+                    )}
+
+                    <button
+                      onClick={() => { sessionStorage.setItem('ovika_rental_type', rt); navigate(`/property/${p.id}?rentalType=${rt}`); }}
+                      style={{ width: '100%', marginTop: 14, padding: '12px', background: '#C98B3E', color: '#fff', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+                    >
+                      View Property Details →
+                    </button>
+                  </div>
+                );
+              })()}
+            </div>
+          ) : (
+          /* ── DESKTOP MAP VIEW: compact list left + map right ── */
           <div style={{ display: 'flex', gap: 12, height: 'calc(100% - 70px)', overflow: 'hidden' }}>
             {/* Compact mini-card list */}
             <div style={{ flex: '0 0 300px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8, paddingRight: 4, scrollbarWidth: 'thin' }}>
@@ -2516,21 +2602,13 @@ const PropertyListPage = () => {
                       {imgSrc && <img src={imgSrc} alt={p.property_name} onError={e => { e.target.style.display = 'none'; }} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 12.5, fontWeight: 700, color: '#1a1a1a', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.3 }}>
-                        {p.property_name}
-                      </div>
+                      <div style={{ fontSize: 12.5, fontWeight: 700, color: '#1a1a1a', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', lineHeight: 1.3 }}>{p.property_name}</div>
                       <div style={{ fontSize: 11, color: '#888', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         <FiMapPin style={{ fontSize: 10, marginRight: 2 }} />{[p.address, p.city].filter(Boolean).join(', ')}
                       </div>
                       {price > 0 && (
                         <div style={{ fontSize: 13, fontWeight: 700, color: '#C98B3E' }}>
                           ₹{price.toLocaleString('en-IN')}<span style={{ fontSize: 10, fontWeight: 400, color: '#999' }}>/{isMonthly ? 'mo' : 'night'}</span>
-                        </div>
-                      )}
-                      {p._mapLat && p._mapLng && (
-                        <div style={{ fontSize: 10, color: p._coordsApprox ? '#f59e0b' : '#22c55e', marginTop: 3, display: 'flex', alignItems: 'center', gap: 3 }}>
-                          <span style={{ width: 6, height: 6, borderRadius: '50%', background: p._coordsApprox ? '#f59e0b' : '#22c55e', display: 'inline-block' }} />
-                          {p._coordsApprox ? 'Area pin' : 'Exact pin'}
                         </div>
                       )}
                     </div>
@@ -2543,6 +2621,7 @@ const PropertyListPage = () => {
               <PropertyMapView
                 properties={filteredWithCoords}
                 isMonthly={isMonthly}
+                isMobile={false}
                 onCardClick={p => {
                   const rt = isMonthly ? 'long' : 'short';
                   sessionStorage.setItem('ovika_rental_type', rt);
@@ -2551,6 +2630,7 @@ const PropertyListPage = () => {
               />
             </div>
           </div>
+          )
         ) : (
           /* ── LIST VIEW (original) ── */
           (() => {
@@ -2622,6 +2702,34 @@ const PropertyListPage = () => {
             );
           })()
         )}
+        {/* ── Mobile floating Map/List FAB ── */}
+        <div
+          className="plp-mobile-map-fab"
+          style={{ display: 'none' }}
+        >
+          <button
+            onClick={() => { setMapView(v => !v); setSelectedMapProp(null); }}
+            style={{
+              position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+              zIndex: 1200,
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '13px 28px',
+              background: mapView ? '#1a1a1a' : '#C98B3E',
+              color: '#fff',
+              border: 'none', borderRadius: 50,
+              fontSize: 14.5, fontWeight: 700,
+              cursor: 'pointer', fontFamily: 'inherit',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.28)',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {mapView
+              ? <><FiList style={{ fontSize: 15 }} /> Show List</>
+              : <><FiMap  style={{ fontSize: 15 }} /> Show Map</>
+            }
+          </button>
+        </div>
+
         </div>{/* end right content */}
       </div>{/* end plp-body */}
     </div>
