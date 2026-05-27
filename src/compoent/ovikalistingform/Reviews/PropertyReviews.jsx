@@ -77,7 +77,7 @@ const seededNum = (seed) => {
 };
 
 const getGlobalCount = (propertyId) =>
-  48 + Math.floor(seededNum(propertyId) * 265);
+  5 + Math.floor(seededNum(propertyId) * 26);
 
 const getStarDist = (rating) => {
   const r = Number(rating);
