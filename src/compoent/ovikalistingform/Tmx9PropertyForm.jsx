@@ -6,6 +6,41 @@ import CityDropdown, { addressContainsCityOrState } from "./CityDropdown";
 const API_BASE = "https://www.townmanor.ai/api";
 const STORAGE_KEY = "user";
 
+const TimePickerAMPM = ({ value, onChange, className }) => {
+  const parse = (t) => {
+    if (!t) return { h: 12, m: '00', period: 'AM' };
+    const [hStr, mStr = '00'] = t.split(':');
+    const h24 = parseInt(hStr, 10);
+    return {
+      h: h24 === 0 ? 12 : h24 > 12 ? h24 - 12 : h24,
+      m: mStr.padStart(2, '0'),
+      period: h24 < 12 ? 'AM' : 'PM',
+    };
+  };
+  const emit = (h, m, period) => {
+    let hour = parseInt(h, 10);
+    if (period === 'AM' && hour === 12) hour = 0;
+    if (period === 'PM' && hour !== 12) hour += 12;
+    onChange(`${String(hour).padStart(2, '0')}:${m}:00`);
+  };
+  const { h, m, period } = parse(value);
+  const selStyle = { flex: 1, minWidth: 0 };
+  return (
+    <div style={{ display: 'flex', gap: 6 }}>
+      <select value={h} onChange={e => emit(e.target.value, m, period)} className={className} style={selStyle}>
+        {[12,1,2,3,4,5,6,7,8,9,10,11].map(n => <option key={n} value={n}>{n}</option>)}
+      </select>
+      <select value={m} onChange={e => emit(h, e.target.value, period)} className={className} style={selStyle}>
+        {['00','15','30','45'].map(min => <option key={min} value={min}>{min}</option>)}
+      </select>
+      <select value={period} onChange={e => emit(h, m, e.target.value)} className={className} style={selStyle}>
+        <option value="AM">AM</option>
+        <option value="PM">PM</option>
+      </select>
+    </div>
+  );
+};
+
 const AMENITIES = {
   Basic: ["Wi-Fi", "Heating", "Air conditioning", "Hot water"],
   Kitchen: ["Refrigerator", "Stovetop/oven", "Microwave", "Cooking utensils", "Electric Kettle", "Hob", "Chimney", "RO", "Toaster", "Rice Cooker", "Coffee Maker", "Induction Cooktop", "Dining Counter"],
@@ -946,13 +981,21 @@ console.log("Property saved as:", data?.data);
             <div className="tmx9pf-grid">
               <div className="tmx9pf-field">
                 <label className="tmx9pf-label">Check-in Time *</label>
-                <input name="checkInTime" type="time" value={form.checkInTime} onChange={handleChange} className={`tmx9pf-input ${errors.checkInTime ? "tmx9pf-input--error" : ""}`} />
+                <TimePickerAMPM
+                  value={form.checkInTime}
+                  onChange={(val) => setForm(f => ({ ...f, checkInTime: val }))}
+                  className={`tmx9pf-input ${errors.checkInTime ? "tmx9pf-input--error" : ""}`}
+                />
                 {renderError("checkInTime")}
               </div>
 
               <div className="tmx9pf-field">
                 <label className="tmx9pf-label">Check-out Time *</label>
-                <input name="checkOutTime" type="time" value={form.checkOutTime} onChange={handleChange} className={`tmx9pf-input ${errors.checkOutTime ? "tmx9pf-input--error" : ""}`} />
+                <TimePickerAMPM
+                  value={form.checkOutTime}
+                  onChange={(val) => setForm(f => ({ ...f, checkOutTime: val }))}
+                  className={`tmx9pf-input ${errors.checkOutTime ? "tmx9pf-input--error" : ""}`}
+                />
                 {renderError("checkOutTime")}
               </div>
 

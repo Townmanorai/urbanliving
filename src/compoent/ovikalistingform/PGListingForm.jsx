@@ -24,6 +24,41 @@ import {
 
 const API_BASE = "https://www.townmanor.ai/api";
 
+const TimePickerAMPM = ({ value, onChange }) => {
+  const parse = (t) => {
+    if (!t) return { h: 10, m: '00', period: 'PM' };
+    const [hStr, mStr = '00'] = t.split(':');
+    const h24 = parseInt(hStr, 10);
+    return {
+      h: h24 === 0 ? 12 : h24 > 12 ? h24 - 12 : h24,
+      m: mStr.padStart(2, '0'),
+      period: h24 < 12 ? 'AM' : 'PM',
+    };
+  };
+  const emit = (h, m, period) => {
+    let hour = parseInt(h, 10);
+    if (period === 'AM' && hour === 12) hour = 0;
+    if (period === 'PM' && hour !== 12) hour += 12;
+    onChange(`${String(hour).padStart(2, '0')}:${m}:00`);
+  };
+  const { h, m, period } = parse(value);
+  const selStyle = { flex: 1, minWidth: 0, padding: '8px 6px', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 14, background: '#fff', color: '#1e293b' };
+  return (
+    <div style={{ display: 'flex', gap: 8 }}>
+      <select value={h} onChange={e => emit(e.target.value, m, period)} style={selStyle}>
+        {[12,1,2,3,4,5,6,7,8,9,10,11].map(n => <option key={n} value={n}>{n}</option>)}
+      </select>
+      <select value={m} onChange={e => emit(h, e.target.value, period)} style={selStyle}>
+        {['00','15','30','45'].map(min => <option key={min} value={min}>{min}</option>)}
+      </select>
+      <select value={period} onChange={e => emit(h, m, e.target.value)} style={selStyle}>
+        <option value="AM">AM</option>
+        <option value="PM">PM</option>
+      </select>
+    </div>
+  );
+};
+
 const PROPERTY_CATEGORIES = [
   { id: "Flat", label: "Flat / Apartment", sub: "Apartments, Penthouses, Studio", icon: <Building size={20} /> },
   { id: "House", label: "House / Villa / Farmhouse", sub: "Independent Home, Bungalow, Luxury Villa & Farmhouse", icon: <Home size={20} /> },
@@ -183,7 +218,7 @@ const PGListingForm = () => {
     foodDetails: { breakfast: true, lunch: false, dinner: true, type: "Both" },
     noticePeriod: "",
     lockInPeriod: "",
-    gateClosingTime: "",
+    gateClosingTime: "22:00:00",
     
     baseRate: "",         // property-level price (used when usePerRoomPricing=false for non-PG)
     securityDeposit: "",
@@ -1127,7 +1162,10 @@ const PGListingForm = () => {
 
                 <div className="field-group">
                   <label>Gate Closing Time</label>
-                  <input name="gateClosingTime" value={form.gateClosingTime} onChange={handleChange} />
+                  <TimePickerAMPM
+                    value={form.gateClosingTime}
+                    onChange={(val) => setForm(f => ({ ...f, gateClosingTime: val }))}
+                  />
                 </div>
                 <div className="field-group">
                   <label>Notice Period (Days)</label>
