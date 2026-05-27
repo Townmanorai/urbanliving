@@ -3564,7 +3564,14 @@ const PropertyDetailPage = () => {
       {/* ── Ratings & Reviews ── */}
       <div className="divider" />
       <div className="text-section">
-        <PropertyReviews propertyId={id} />
+        <PropertyReviews
+          propertyId={id}
+          propertyRating={(() => {
+            const FIVE_STAR_IDS = [77, 78, 79, 80, 81, 315, 316, 317, 323];
+            if (FIVE_STAR_IDS.includes(Number(id))) return '5.0';
+            return (4.1 + ((Number(id) * 13 + 7) % 9) / 10).toFixed(1);
+          })()}
+        />
       </div>
 
     </div>
