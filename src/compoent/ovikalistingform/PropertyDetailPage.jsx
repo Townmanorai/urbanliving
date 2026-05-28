@@ -1608,7 +1608,9 @@ const PropertyDetailPage = () => {
     const failedPropId = sessionStorage.getItem('ovika_from_failure');
     if (failedPropId && String(failedPropId) === String(id)) {
       sessionStorage.removeItem('ovika_from_failure');
-      window.history.pushState(null, '', window.location.href);
+      // Push 2 buffer entries — Back button stays here instead of going to PayU
+      window.history.pushState({ failureBuffer: 1 }, '', window.location.href);
+      window.history.pushState({ failureBuffer: 2 }, '', window.location.href);
     }
   }, [id]);
 
@@ -1625,6 +1627,9 @@ const PropertyDetailPage = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ booking_status: 'cancelled', cancel_reason: 'Payment not completed by customer' }),
         }).catch(() => {});
+        // Push 2 buffer entries so Back button stays on this page, not PayU
+        window.history.pushState({ cancelBuffer: 1 }, '', window.location.href);
+        window.history.pushState({ cancelBuffer: 2 }, '', window.location.href);
         setShowCancelledNotice(true);
         // Reset booking form
         setShowPaymentModal(false);
@@ -2122,6 +2127,11 @@ const PropertyDetailPage = () => {
         bookingId: String(bookingIdParam),
         propertyId: String(localStorage.getItem('property_id') || id),
       }));
+      // Push 2 buffer history entries BEFORE leaving — so if user presses Back
+      // from PayU, they land back here (same URL) instead of going to PayU gateway.
+      const currentUrl = window.location.href;
+      window.history.pushState({ paymentBuffer: 1 }, '', currentUrl);
+      window.history.pushState({ paymentBuffer: 2 }, '', currentUrl);
       document.body.appendChild(form); form.submit(); document.body.removeChild(form);
     } catch (error) {
       showAlert(error.response?.data?.message || error.message || 'Failed to initiate payment.');
