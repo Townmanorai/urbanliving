@@ -243,32 +243,53 @@ function buildDisabledDates(blockedRanges = []) {
 }
 
 async function getCalendar(propertyKey, propertyId) {
-  // 1. Try backend API — if it responds (even with empty array), trust it completely
+  const blocked = [];
+
+  // 1. Manually blocked dates from admin API
   try {
     const res = await fetch(`${BLOCKED_DATES_API}?property_id=${propertyId}`);
     if (res.ok) {
       const data = await res.json();
       const dates = data.dates || data.blocked_dates || data.data || [];
       if (Array.isArray(dates)) {
-        // Update localStorage cache to stay in sync
         localStorage.setItem(`ovika_blocked_${propertyId}`, JSON.stringify(dates));
-        return { blocked: dates.map((d) => ({ start: d, end: d })) };
+        dates.forEach(d => blocked.push({ start: d, end: d }));
       }
     }
   } catch {}
 
-  // 2. Fallback: localStorage cache (only if API is unreachable)
+  // 2. Confirmed/paid bookings — block their date ranges on the calendar
   try {
-    const raw = localStorage.getItem(`ovika_blocked_${propertyId}`);
-    if (raw) {
-      const dates = JSON.parse(raw);
-      if (Array.isArray(dates)) {
-        return { blocked: dates.map((d) => ({ start: d, end: d })) };
-      }
+    const res = await fetch(`${BOOKING_REQUEST_API}?property_id=${propertyId}`);
+    if (res.ok) {
+      const data = await res.json();
+      const bookings = Array.isArray(data) ? data : (data.data || data.bookings || []);
+      bookings.forEach(b => {
+        const confirmed =
+          b.payment_status === 'paid' ||
+          b.booking_status === 'confirmed' ||
+          b.status === 'confirmed' ||
+          b.status === 'paid';
+        if (confirmed && b.start_date && b.end_date &&
+            String(b.property_id) === String(propertyId)) {
+          blocked.push({ start: b.start_date.split('T')[0], end: b.end_date.split('T')[0] });
+        }
+      });
     }
   } catch {}
 
-  return { blocked: [] };
+  // 3. Fallback: localStorage cache (only when both APIs are unreachable)
+  if (blocked.length === 0) {
+    try {
+      const raw = localStorage.getItem(`ovika_blocked_${propertyId}`);
+      if (raw) {
+        const dates = JSON.parse(raw);
+        if (Array.isArray(dates)) dates.forEach(d => blocked.push({ start: d, end: d }));
+      }
+    } catch {}
+  }
+
+  return { blocked };
 }
 
 // ─── KEY HELPER: Determine if rooms have distinct prices ─────────────────────
@@ -1339,6 +1360,7 @@ const PropertyDetailPage = () => {
   const [showImageViewer, setShowImageViewer] = useState(false);
   const [viewerImageIndex, setViewerImageIndex] = useState(0);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showCancelledNotice, setShowCancelledNotice] = useState(false);
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     checkInDate: '', checkOutDate: '',
@@ -1579,6 +1601,38 @@ const PropertyDetailPage = () => {
       : true;
     setIsPayNowEnabled(!!(baseReady && verificationReady));
   }, [formData, pricing, govIdStatus, property]);
+
+  // If user arrived here after a payment failure (came via Failure.jsx "Try Again"),
+  // push a duplicate history entry so pressing Back stays on this page instead of going to PayU gateway.
+  useEffect(() => {
+    const failedPropId = sessionStorage.getItem('ovika_from_failure');
+    if (failedPropId && String(failedPropId) === String(id)) {
+      sessionStorage.removeItem('ovika_from_failure');
+      window.history.pushState(null, '', window.location.href);
+    }
+  }, [id]);
+
+  // If user pressed Back from PayU without paying, cancel the pending booking
+  useEffect(() => {
+    const raw = sessionStorage.getItem('ovika_pending_booking');
+    if (!raw) return;
+    try {
+      const { bookingId: pendingId, propertyId: pendingPropId } = JSON.parse(raw);
+      if (String(pendingPropId) === String(id)) {
+        sessionStorage.removeItem('ovika_pending_booking');
+        fetch(`${BOOKING_REQUEST_API}/${pendingId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ booking_status: 'cancelled', cancel_reason: 'Payment not completed by customer' }),
+        }).catch(() => {});
+        setShowCancelledNotice(true);
+        // Reset booking form
+        setShowPaymentModal(false);
+        setStep(1);
+        setFormData({ checkInDate: '', checkOutDate: '', aadhaarVerified: false, passportVerified: false, mobileVerified: false, uploadedPhoto: '', termsAgreed: false });
+      }
+    } catch {}
+  }, [id]);
 
   useEffect(() => {
     if (showPaymentModal && step === 3) {
@@ -2063,6 +2117,11 @@ const PropertyDetailPage = () => {
           form.appendChild(input);
         }
       });
+      // Save pending booking so if user presses Back from PayU, we can cancel it
+      sessionStorage.setItem('ovika_pending_booking', JSON.stringify({
+        bookingId: String(bookingIdParam),
+        propertyId: String(localStorage.getItem('property_id') || id),
+      }));
       document.body.appendChild(form); form.submit(); document.body.removeChild(form);
     } catch (error) {
       showAlert(error.response?.data?.message || error.message || 'Failed to initiate payment.');
@@ -2196,7 +2255,24 @@ const PropertyDetailPage = () => {
         })}</script>
       </Helmet>
       {alertMessage && <CustomAlert message={alertMessage} onClose={closeAlert} />}
-      
+
+      {showCancelledNotice && (
+        <div style={{
+          position: 'fixed', top: 16, left: '50%', transform: 'translateX(-50%)',
+          zIndex: 10002, background: '#1a1a1a', color: '#fff',
+          padding: '12px 20px 12px 16px', borderRadius: 12,
+          boxShadow: '0 8px 28px rgba(0,0,0,0.35)',
+          display: 'flex', alignItems: 'center', gap: 12,
+          fontSize: 14, fontWeight: 500, maxWidth: 'calc(100vw - 32px)',
+          animation: 'fadeInDown 0.3s ease',
+        }}>
+          <span style={{ fontSize: 18 }}>⚠️</span>
+          <span>Previous transaction was cancelled. Please start a new booking.</span>
+          <button onClick={() => setShowCancelledNotice(false)}
+            style={{ marginLeft: 8, background: 'none', border: 'none', color: '#aaa', cursor: 'pointer', fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>
+        </div>
+      )}
+
       {showRequestSentPopup && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10001 }}>
           <div style={{ background: 'white', padding: '2rem', borderRadius: '10px', maxWidth: '400px', width: '90%', textAlign: 'center' }}>

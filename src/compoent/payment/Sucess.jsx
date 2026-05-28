@@ -279,6 +279,7 @@ function Sucess() {
         localStorage.removeItem('paymentSubtotal');
         localStorage.removeItem('paymentGst');
         localStorage.removeItem('paymentDiscount');
+        sessionStorage.removeItem('ovika_pending_booking');
 
         if (!response.ok) {
           console.error('Failed to update booking status:', response.status);
