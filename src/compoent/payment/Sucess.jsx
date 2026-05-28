@@ -249,29 +249,44 @@ function Sucess() {
     const patchBookingStatus = async () => {
       const id = localStorage.getItem('bookingId') || bookingId;
       console.log('Patching status for booking ID:', id);
-      
+
       if (!id || id === '6') {
         console.warn('Booking ID is missing or default (6). This might be incorrect.');
       }
+
+      const savedAmount   = localStorage.getItem('paymentAmount');
+      const savedSubtotal = localStorage.getItem('paymentSubtotal');
+      const savedGst      = localStorage.getItem('paymentGst');
+      const savedDiscount = localStorage.getItem('paymentDiscount');
+
+      const patchBody = {
+        booking_status: 'confirmed',
+        payment_status: 'paid',
+        ...(savedAmount   && Number(savedAmount)   > 0 ? { total_price:      Number(savedAmount)   } : {}),
+        ...(savedSubtotal && Number(savedSubtotal) > 0 ? { subtotal:         Number(savedSubtotal) } : {}),
+        ...(savedGst      && Number(savedGst)      > 0 ? { gst_amount:       Number(savedGst)      } : {}),
+        ...(savedDiscount && Number(savedDiscount) > 0 ? { discount_amount:  Number(savedDiscount) } : {}),
+      };
 
       try {
         const response = await fetch(`https://www.townmanor.ai/api/booking-request/${id}/status`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            booking_status: 'confirmed',
-            payment_status: 'paid'
-          }),
+          body: JSON.stringify(patchBody),
         })
+
+        localStorage.removeItem('paymentAmount');
+        localStorage.removeItem('paymentSubtotal');
+        localStorage.removeItem('paymentGst');
+        localStorage.removeItem('paymentDiscount');
 
         if (!response.ok) {
           console.error('Failed to update booking status:', response.status);
-          // throw new Error('Failed to update booking status')
         } else {
           console.log('Booking status updated successfully to confirmed');
           setConfirmation({ booking_status: 'confirmed' });
         }
-        
+
         // Send confirmation email after booking is confirmed
         await sendBookingConfirmationEmail();
       } catch (error) {

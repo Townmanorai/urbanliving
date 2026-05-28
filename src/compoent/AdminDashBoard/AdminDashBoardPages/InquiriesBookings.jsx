@@ -27,6 +27,32 @@ const formatDate = (d) =>
       })
     : "-";
 
+const getBookingTotal = (req) => {
+  if (req.total_price  && Number(req.total_price)  > 0) return Number(req.total_price);
+  if (req.total_amount && Number(req.total_amount) > 0) return Number(req.total_amount);
+  if (req.amount       && Number(req.amount)       > 0) return Number(req.amount);
+  if (req.subtotal     && Number(req.subtotal)     > 0) {
+    const gst      = Number(req.gst_amount)      || 0;
+    const discount = Number(req.discount_amount) || 0;
+    return Number(req.subtotal) + gst - discount;
+  }
+  const price = Number(req.property?.price) || 0;
+  if (!price || !req.start_date || !req.end_date) return null;
+  const days = Math.ceil(Math.abs(new Date(req.end_date) - new Date(req.start_date)) / (1000 * 60 * 60 * 24)) || 1;
+  if (days >= 25) return Math.max(1, Math.round(days / 30)) * price;
+  return days * price;
+};
+
+const getBookingDuration = (req) => {
+  if (!req.start_date || !req.end_date) return null;
+  const days = Math.ceil(Math.abs(new Date(req.end_date) - new Date(req.start_date)) / (1000 * 60 * 60 * 24)) || 1;
+  if (days >= 25) {
+    const months = Math.max(1, Math.round(days / 30));
+    return `${months} month${months > 1 ? 's' : ''}`;
+  }
+  return `${days} night${days !== 1 ? 's' : ''}`;
+};
+
 /* ================= COMPONENT ================= */
 const InquiriesBookings = () => {
   const { user } = useContext(AuthContext);
@@ -168,8 +194,30 @@ const InquiriesBookings = () => {
                   <MapPin size={16} />
                   <span>{req.property?.city}</span>
                 </div>
-                <div style={{ fontSize: "18px", fontWeight: 700, color: "#16a34a", marginBottom: "16px" }}>
-                  ₹{req.property?.price} / night
+                <div style={{ marginBottom: "16px" }}>
+                  {(() => {
+                    const total    = getBookingTotal(req);
+                    const duration = getBookingDuration(req);
+                    return total ? (
+                      <>
+                        <span style={{ fontSize: "20px", fontWeight: 700, color: "#16a34a" }}>
+                          ₹{total.toLocaleString("en-IN")}
+                        </span>
+                        {duration && (
+                          <span style={{ fontSize: "13px", fontWeight: 500, color: "#6b7280", marginLeft: "8px" }}>
+                            Total ({duration})
+                          </span>
+                        )}
+                        {!req.total_price && !req.total_amount && !req.amount && (
+                          <span style={{ fontSize: "11px", color: "#d97706", marginLeft: "6px" }}>est.</span>
+                        )}
+                      </>
+                    ) : (
+                      <span style={{ fontSize: "16px", fontWeight: 600, color: "#9ca3af" }}>
+                        ₹{Number(req.property?.price || 0).toLocaleString("en-IN")} / night
+                      </span>
+                    );
+                  })()}
                 </div>
 
                 <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px", background: "#f9fafb", borderRadius: "10px", marginBottom: "12px" }}>

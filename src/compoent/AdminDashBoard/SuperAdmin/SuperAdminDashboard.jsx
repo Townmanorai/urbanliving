@@ -474,22 +474,41 @@ export default function SuperAdminDashboard() {
   };
 
   const calculateBookingAmount = (b) => {
-    // 1. If amount is already stored in the booking object (Common in modern systems)
-    if (b.total_amount) return Number(b.total_amount);
-    if (b.total_price) return Number(b.total_price);
-    if (b.amount) return Number(b.amount);
+    // 1. Most accurate: reconstruct from breakdown (subtotal + GST - discount)
+    //    This catches cases where total_price was stored as base (without GST)
+    if (b.subtotal && Number(b.subtotal) > 0) {
+      const gst      = Number(b.gst_amount)      || 0;
+      const discount = Number(b.discount_amount) || 0;
+      const total    = Number(b.subtotal) + gst - discount;
+      if (total > 0) return total;
+    }
 
-    // 2. Fallback to calculation if no amount field exists
+    // 2. Stored total fields
+    if (b.total_amount && Number(b.total_amount) > 0) return Number(b.total_amount);
+    if (b.total_price  && Number(b.total_price)  > 0) {
+      // If gst_amount is also stored and NOT already in total_price, add it
+      const gst = Number(b.gst_amount) || 0;
+      const base = Number(b.total_price);
+      // If gst is stored separately and base+gst makes sense, use that
+      if (gst > 0 && Math.abs(base * 0.05 - gst) < 10) return Math.round(base + gst);
+      return base;
+    }
+    if (b.amount && Number(b.amount) > 0) return Number(b.amount);
+
+    // 3. Fallback: property price × duration + 5% GST
     let price = 0;
     if (b.property && b.property.price) {
-        price = Number(b.property.price);
-    } 
-    else {
-        const p = properties.find(p => p.id === b.property_id || p._id === b.property_id);
-        price = p ? (Number(p.price) || 0) : 0;
+      price = Number(b.property.price);
+    } else {
+      const p = properties.find(p => String(p.id) === String(b.property_id) || String(p._id) === String(b.property_id));
+      price = p ? (Number(p.price) || 0) : 0;
     }
+    if (!price) return 0;
     const days = calculateDays(b.start_date, b.end_date);
-    return days * price;
+    const base = days >= 25
+      ? Math.max(1, Math.round(days / 30)) * price
+      : days * price;
+    return Math.round(base * 1.05); // +5% GST (same as PropertyDetailPage)
   };
 
   const calculateStats = (propsData, bookingsData, usersData = []) => {
@@ -1651,6 +1670,7 @@ export default function SuperAdminDashboard() {
                                     }
 
                                     const amount = calculateBookingAmount(b);
+                                    const isActuallyPaid = b.payment_status === 'paid' || (b.status || '').toLowerCase() === 'confirmed';
 
                                     return (
                                         <tr key={b.id || b._id}>
@@ -1680,7 +1700,9 @@ export default function SuperAdminDashboard() {
                                                     </div>
                                                 )}
                                             </td>
-                                            <td style={{ fontFamily: 'Inter', fontWeight: 'bold' }}>₹{amount.toLocaleString()}</td>
+                                            <td style={{ fontFamily: 'Inter', fontWeight: 'bold', color: isActuallyPaid ? '#16a34a' : '#1e293b' }}>
+                                                {amount > 0 ? `₹${amount.toLocaleString('en-IN')}` : '—'}
+                                            </td>
                                             <td>
                                                 <div className="sa-actions">
                                                     {(b.status||'').toLowerCase() === 'pending' && (

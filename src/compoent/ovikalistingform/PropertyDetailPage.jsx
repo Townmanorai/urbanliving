@@ -2000,15 +2000,29 @@ const PropertyDetailPage = () => {
         console.log('Booking Creation API Response:', data);
         newBookingId = data?.booking?.id || data?.booking_id || data?.id || data?.bookingId || data?.request_id || data?.requestId || data?.data?.id || data?.data?.booking_id;
       } else {
+        // Owner-approval flow: existing booking has no pricing saved yet
+        // Update it with the exact Final Amount shown to the customer on step 4
         console.log('Using existing accepted booking ID:', newBookingId);
+        try {
+          await axios.patch(`${BOOKING_REQUEST_API}/${newBookingId}`, {
+            total_price:     pricing.total,
+            subtotal:        pricing.subtotal,
+            gst_amount:      pricing.gst,
+            discount_amount: pricing.discount || 0,
+            nights,
+          });
+          console.log('Booking pricing updated:', pricing.total);
+        } catch (e) {
+          console.warn('Could not pre-update booking pricing:', e);
+        }
       }
-      
+
       if (!newBookingId) {
         console.error('CRITICAL: Booking ID could not be determined.', { isInstantBooking, acceptedBookingId });
         throw new Error('Booking ID missing. Please refresh and try again.');
       }
 
-      localStorage.setItem('bookingId', String(newBookingId)); 
+      localStorage.setItem('bookingId', String(newBookingId));
       localStorage.setItem('property_id', String(validPropertyId));
       await handleProceedToPayment(newBookingId);
     } catch (error) {
@@ -2021,7 +2035,12 @@ const PropertyDetailPage = () => {
   const handleProceedToPayment = async (bookingIdParam) => {
     if (!bookingIdParam) { showAlert('Booking ID missing.'); setIsSubmitting(false); return; }
     try {
-      localStorage.setItem('paymentType', 'coliving'); localStorage.setItem('bookingId', String(bookingIdParam));
+      localStorage.setItem('paymentType', 'coliving');
+      localStorage.setItem('bookingId', String(bookingIdParam));
+      localStorage.setItem('paymentAmount', pricing.total.toFixed(2));
+      localStorage.setItem('paymentSubtotal', (pricing.subtotal || 0).toFixed(2));
+      localStorage.setItem('paymentGst', (pricing.gst || 0).toFixed(2));
+      localStorage.setItem('paymentDiscount', (pricing.discount || 0).toFixed(2));
       const userResponse = await fetch(`https://www.townmanor.ai/api/user/${username}`);
       if (!userResponse.ok) throw new Error('Failed to fetch user data');
       const userData = await userResponse.json();
