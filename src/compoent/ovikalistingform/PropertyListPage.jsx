@@ -938,6 +938,7 @@ const PropertyListPage = () => {
   const [coupleFilter, setCoupleFilter] = useState(_ss.coupleFilter ?? null);
   const [userLat, setUserLat] = useState(null);
   const [userLng, setUserLng] = useState(null);
+  const [nearMeLoading, setNearMeLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [listPopupOpen, setListPopupOpen] = useState(false);
   const [sortBy, setSortBy] = useState(_ss.sortBy ?? 'recommended');
@@ -1051,6 +1052,25 @@ const PropertyListPage = () => {
     document.addEventListener('mousedown', onOutside);
     return () => document.removeEventListener('mousedown', onOutside);
   }, []);
+
+  const handleNearMePLP = () => {
+    if (!navigator.geolocation) { alert('Geolocation not supported by your browser'); return; }
+    if (nearMeLoading) return;
+    setNearMeLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        setUserLat(coords.latitude);
+        setUserLng(coords.longitude);
+        setSortBy('distance');
+        setCurrentPage(1);
+        setNearMeLoading(false);
+      },
+      () => {
+        setNearMeLoading(false);
+        alert('Location access denied. Please enable location permissions.');
+      }
+    );
+  };
 
   const handleSearchSubmit = () => {
     const term = search.trim().toLowerCase();
@@ -1556,6 +1576,7 @@ const PropertyListPage = () => {
     const lng = params.get('lng');
     if (lat) setUserLat(Number(lat));
     if (lng) setUserLng(Number(lng));
+    if (params.get('nearme') === '1' && lat && lng) setSortBy('distance');
 
     const q = params.get('search') || params.get('city');
     if (q) setSearch(q);
@@ -1648,6 +1669,22 @@ const PropertyListPage = () => {
       _coordsApprox: coordsApprox,
     };
   }), [filtered, geocodedCoords, isMonthly]); // eslint-disable-line
+
+  // Re-sort using enriched coords (_mapLat/_mapLng) when distance sort is active
+  const displayProps = useMemo(() => {
+    if (sortBy === 'distance' && userLat && userLng) {
+      return [...filteredWithCoords].sort((a, b) => {
+        const aHas = a._mapLat && a._mapLng;
+        const bHas = b._mapLat && b._mapLng;
+        if (!aHas && !bHas) return 0;
+        if (!aHas) return 1;
+        if (!bHas) return -1;
+        return calculateDistance(userLat, userLng, a._mapLat, a._mapLng)
+             - calculateDistance(userLat, userLng, b._mapLat, b._mapLng);
+      });
+    }
+    return filteredWithCoords;
+  }, [filteredWithCoords, sortBy, userLat, userLng]);
 
   if (loading) return (
     <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -2463,8 +2500,33 @@ const PropertyListPage = () => {
               </div>
             </div>
 
-            {/* Right: Sort + List Property */}
+            {/* Right: Near me + Sort + List Property */}
             <div className="plp-topbar-right">
+              {/* Near me button */}
+              <button
+                onClick={handleNearMePLP}
+                disabled={nearMeLoading}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 4,
+                  padding: '5px 10px',
+                  background: 'transparent',
+                  color: (userLat && userLng && sortBy === 'distance') ? '#C98B3E' : '#9c7a4a',
+                  border: `1px solid ${(userLat && userLng && sortBy === 'distance') ? '#C98B3E' : '#ddd'}`,
+                  borderRadius: 20,
+                  fontWeight: 500, fontSize: 11.5,
+                  cursor: nearMeLoading ? 'not-allowed' : 'pointer',
+                  fontFamily: 'inherit',
+                  whiteSpace: 'nowrap',
+                  opacity: nearMeLoading ? 0.6 : 1,
+                  transition: 'all 0.18s',
+                  flexShrink: 0,
+                  letterSpacing: '0.01em',
+                }}
+              >
+                <FiMapPin size={11} />
+                {nearMeLoading ? 'Locating…' : 'Near me'}
+              </button>
+
               <div className="plp-sort-wrap" style={{
                 display: 'flex', alignItems: 'center', gap: 5,
                 background: '#faf7f3', borderRadius: 8,
@@ -2684,10 +2746,10 @@ const PropertyListPage = () => {
         ) : (
           /* ── LIST VIEW (original) ── */
           (() => {
-            const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
-            const pageItems = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+            const totalPages = Math.ceil(displayProps.length / ITEMS_PER_PAGE);
+            const pageItems = displayProps.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
-            if (filtered.length === 0) return (
+            if (displayProps.length === 0) return (
               <div style={{ textAlign: 'center', padding: '80px 24px', background: '#fff', borderRadius: 16, border: '2px dashed #e5e7eb' }}>
                 <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
                   <FiSearch style={{ fontSize: 32, color: '#ccc' }} />

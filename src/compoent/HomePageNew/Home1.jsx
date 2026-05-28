@@ -78,8 +78,12 @@ export default function Home1() {
   const [showCheckInCal, setShowCheckInCal] = useState(false);
   const [showCheckOutCal, setShowCheckOutCal] = useState(false);
   const [citySearch, setCitySearch] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [isLoadingSugs, setIsLoadingSugs] = useState(false);
+  const [nearMeLoading, setNearMeLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const guestRef = useRef(null);
+  const debounceRef = useRef(null);
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
@@ -147,9 +151,97 @@ export default function Home1() {
     navigate(`/properties?${p}`);
   };
 
+  const fetchSuggestions = (query) => {
+    if (!query.trim()) { setSuggestions([]); return; }
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      setIsLoadingSugs(true);
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query + ' India')}&format=json&countrycodes=in&limit=6&addressdetails=1`,
+          { headers: { 'Accept-Language': 'en' } }
+        );
+        const data = await res.json();
+        const mapped = data.map(item => ({
+          city: item.address?.city || item.address?.town || item.address?.suburb || item.address?.village || item.address?.county || item.name,
+          short: [item.address?.city || item.address?.town || item.address?.village || item.address?.suburb, item.address?.state].filter(Boolean).join(', '),
+        })).filter(s => s.city);
+        setSuggestions(mapped);
+      } catch {
+        setSuggestions([]);
+      } finally {
+        setIsLoadingSugs(false);
+      }
+    }, 350);
+  };
+
+  const handleNearMe = () => {
+    if (!navigator.geolocation) { alert('Geolocation not supported by your browser'); return; }
+    setNearMeLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        // Navigate immediately with GPS coordinates — properties page will sort by distance
+        const p = new URLSearchParams();
+        p.set('lat', coords.latitude.toFixed(6));
+        p.set('lng', coords.longitude.toFixed(6));
+        p.set('nearme', '1');
+        if (rentalType) p.set('rentalType', rentalType);
+        setShowCity(false);
+        setSuggestions([]);
+        setCitySearch('');
+        setNearMeLoading(false);
+        navigate(`/properties?${p}`);
+      },
+      () => { setNearMeLoading(false); alert('Location access denied. Please enable location permissions and try again.'); }
+    );
+  };
+
+  const renderCityDropdown = (posStyle) => (
+    <div style={{ position: 'absolute', background: 'white', borderRadius: '16px', boxShadow: '0 12px 36px rgba(0,0,0,0.18)', zIndex: 500, overflow: 'hidden', ...posStyle }}
+      onClick={e => e.stopPropagation()}>
+      <div style={{ padding: '10px 12px', borderBottom: '1px solid #f0e8d8' }}>
+        <button onClick={handleNearMe} disabled={nearMeLoading}
+          style={{ width: '100%', padding: '8px 10px', background: '#fffbf5', border: '1.5px solid #f0d890', borderRadius: 10, color: '#c2772b', fontWeight: 600, fontSize: '0.82rem', cursor: nearMeLoading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, opacity: nearMeLoading ? 0.7 : 1, transition: 'background 0.15s' }}>
+          <span style={{ fontSize: '1rem' }}>{nearMeLoading ? '⏳' : '📍'}</span>
+          {nearMeLoading ? 'Detecting location...' : 'Near me'}
+        </button>
+      </div>
+      <div style={{ padding: '8px 12px', borderBottom: '1px solid #f0e8d8' }}>
+        <input autoFocus placeholder="Search city or area..." value={citySearch}
+          onChange={e => { setCitySearch(e.target.value); fetchSuggestions(e.target.value); }}
+          style={{ width: '100%', border: '1px solid #e0d0b8', borderRadius: 10, padding: '7px 10px', fontSize: '0.82rem', outline: 'none', color: '#333', boxSizing: 'border-box', fontFamily: 'inherit' }}/>
+      </div>
+      <div style={{ maxHeight: '230px', overflowY: 'auto' }}>
+        {isLoadingSugs ? (
+          <div style={{ padding: '16px', textAlign: 'center', color: '#aaa', fontSize: '0.8rem' }}>Searching...</div>
+        ) : suggestions.length > 0 ? suggestions.map((s, i) => (
+          <div key={i}
+            style={{ padding: '10px 14px', fontSize: '0.82rem', color: '#333', cursor: 'pointer', display: 'flex', alignItems: 'flex-start', gap: 8, borderBottom: '1px solid #faf5ee' }}
+            onMouseEnter={e => e.currentTarget.style.background='#fef9f2'}
+            onMouseLeave={e => e.currentTarget.style.background='transparent'}
+            onClick={() => { setCity(s.city); setShowCity(false); setCitySearch(''); setSuggestions([]); }}>
+            <MapPin size={13} style={{ color: '#c2772b', flexShrink: 0, marginTop: 3 }}/>
+            <div>
+              <div style={{ fontWeight: 500, color: '#222' }}>{s.city}</div>
+              {s.short && s.short !== s.city && <div style={{ fontSize: '0.72rem', color: '#888', marginTop: 2 }}>{s.short}</div>}
+            </div>
+          </div>
+        )) : filteredCities.map(c => (
+          <div key={c}
+            style={{ padding: '9px 14px', fontSize: '0.82rem', color: c===city?'#c2772b':'#444', fontWeight: c===city?600:400, cursor: 'pointer', background: c===city?'#fef9f2':'transparent', display: 'flex', alignItems: 'center', gap: 6 }}
+            onMouseEnter={e => { if(c!==city) e.currentTarget.style.background='#fef9f2'; }}
+            onMouseLeave={e => { if(c!==city) e.currentTarget.style.background='transparent'; }}
+            onClick={() => { setCity(c); setShowCity(false); setCitySearch(''); setSuggestions([]); }}>
+            <MapPin size={11} style={{ color: '#c2772b', flexShrink: 0 }}/>{c}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   const fmtDate = v => v ? new Date(v).toLocaleDateString('en-IN', { day:'numeric', month:'short' }) : null;
   const todayStr = new Date().toISOString().split('T')[0];
-  const closeAll = () => { setShowCity(false); setShowCheckInCal(false); setShowCheckOutCal(false); setShowGuests(false); setCitySearch(''); };
+  const closeAll = () => { setShowCity(false); setShowCheckInCal(false); setShowCheckOutCal(false); setShowGuests(false); setCitySearch(''); setSuggestions([]); };
 
   return (
     <div className="home1-root" style={{ marginTop: isMobile ? '-2px' : '-80px' }}>
@@ -209,25 +301,7 @@ export default function Home1() {
                   onClick={() => { const v = !showCity; closeAll(); setShowCity(v); }}>
                   <MapPin size={13} style={{ color: '#f5a623', flexShrink: 0 }}/>
                   <span style={{ fontSize: '0.76rem', color: '#333', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{city}</span>
-                  {showCity && (
-                    <div style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, width: '200px', background: 'white', borderRadius: '14px', boxShadow: '0 10px 30px rgba(0,0,0,0.16)', zIndex: 200, overflow: 'hidden' }}
-                      onClick={e => e.stopPropagation()}>
-                      <div style={{ padding: '8px 10px', borderBottom: '1px solid #f0e8d8' }}>
-                        <input autoFocus placeholder="Search city..." value={citySearch} onChange={e => setCitySearch(e.target.value)}
-                          style={{ width: '100%', border: '1px solid #e0d0b8', borderRadius: 8, padding: '5px 8px', fontSize: '0.78rem', outline: 'none', color: '#333', boxSizing: 'border-box' }}/>
-                      </div>
-                      <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                        {filteredCities.length > 0 ? filteredCities.map(c => (
-                          <div key={c} style={{ padding: '9px 14px', fontSize: '0.82rem', color: c===city?'#c2772b':'#444', fontWeight: c===city?600:400, cursor: 'pointer', background: c===city?'#fef9f2':'transparent', display: 'flex', alignItems: 'center', gap: 6 }}
-                            onMouseEnter={e => { if(c!==city) e.currentTarget.style.background='#fef9f2'; }}
-                            onMouseLeave={e => { if(c!==city) e.currentTarget.style.background='transparent'; }}
-                            onClick={() => { setCity(c); setShowCity(false); setCitySearch(''); }}>
-                            <MapPin size={11} style={{ color: '#c2772b', flexShrink: 0 }}/>{c}
-                          </div>
-                        )) : <div style={{ padding: '12px 14px', fontSize: '0.78rem', color: '#aaa', textAlign: 'center' }}>No cities found</div>}
-                      </div>
-                    </div>
-                  )}
+                  {showCity && renderCityDropdown({ top: 'calc(100% + 6px)', left: 0, width: '260px' })}
                 </div>
                 {/* Check-in */}
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '4px', padding: '0 6px', height: '100%', borderRight: '1px solid rgba(0,0,0,0.08)', position: 'relative', cursor: 'pointer', minWidth: 0 }}
@@ -312,26 +386,7 @@ export default function Home1() {
                     <span className="field-label">Location</span>
                     <span className="field-value">{city}</span>
                   </div>
-                  {showCity && (
-                    <div style={{ position: 'absolute', top: 'calc(100% + 8px)', left: 0, width: '220px', background: 'white', borderRadius: '16px', boxShadow: '0 12px 36px rgba(0,0,0,0.16)', zIndex: 500, overflow: 'hidden' }}
-                      onClick={e => e.stopPropagation()}>
-                      <div style={{ padding: '10px 12px', borderBottom: '1px solid #f0e8d8' }}>
-                        <input autoFocus placeholder="Search city..." value={citySearch} onChange={e => setCitySearch(e.target.value)}
-                          style={{ width: '100%', border: '1px solid #e0d0b8', borderRadius: 10, padding: '6px 10px', fontSize: '0.82rem', outline: 'none', color: '#333', boxSizing: 'border-box', fontFamily: 'Poppins, sans-serif' }}/>
-                      </div>
-                      <div style={{ maxHeight: '240px', overflowY: 'auto' }}>
-                        {filteredCities.length > 0 ? filteredCities.map(c => (
-                          <div key={c} className="city-option"
-                            style={{ color: c===city?'#c2772b':'#444', fontWeight: c===city?600:400, background: c===city?'#fef9f2':'transparent', display: 'flex', alignItems: 'center', gap: 7 }}
-                            onMouseEnter={e => { if(c!==city) e.currentTarget.style.background='#fef9f2'; }}
-                            onMouseLeave={e => { if(c!==city) e.currentTarget.style.background='transparent'; }}
-                            onClick={() => { setCity(c); setShowCity(false); setCitySearch(''); }}>
-                            <MapPin size={12} style={{ color: '#c2772b', flexShrink: 0 }}/>{c}
-                          </div>
-                        )) : <div style={{ padding: '14px', fontSize: '0.8rem', color: '#aaa', textAlign: 'center' }}>No cities found</div>}
-                      </div>
-                    </div>
-                  )}
+                  {showCity && renderCityDropdown({ top: 'calc(100% + 8px)', left: 0, width: '260px' })}
                 </div>
                 <div className="field-divider"/>
                 <div className="ovika-search-field">
