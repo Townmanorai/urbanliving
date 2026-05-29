@@ -1361,6 +1361,7 @@ const PropertyDetailPage = () => {
   const [viewerImageIndex, setViewerImageIndex] = useState(0);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showCancelledNotice, setShowCancelledNotice] = useState(false);
+  const [showTaxInfo, setShowTaxInfo] = useState(false);
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     checkInDate: '', checkOutDate: '',
@@ -1796,10 +1797,10 @@ const PropertyDetailPage = () => {
     }
     if (step === 3 && pricingMode === 'monthly' && monthlyDuration >= 12) { showAlert('Stays longer than 11 months require a rental agreement. Please contact us at +91 9310292309 to proceed.'); return; }
     if (step === 3 && (!formData.checkInDate || !formData.checkOutDate)) return;
-    // if (step === 3 && isNightlyOffer && pricingMode !== 'monthly') {
-    //   const nights = Math.ceil(Math.abs(new Date(formData.checkOutDate) - new Date(formData.checkInDate)) / (1000 * 60 * 60 * 24));
-    //   if (nights < 2) { showAlert('Minimum 2 nights booking required for this property.'); return; }
-    // }
+    if (step === 3 && isNightlyOffer && pricingMode !== 'monthly') {
+      const nights = Math.ceil(Math.abs(new Date(formData.checkOutDate) - new Date(formData.checkInDate)) / (1000 * 60 * 60 * 24));
+      if (nights < 2) { showAlert('Minimum 2 nights booking required for this property.'); return; }
+    }
     if (step === 3 && bookingType === 1 && pricingMode !== 'monthly' && ownerApprovalStatus !== 'accepted') { showAlert('Please wait for owner approval.'); return; }
     if (step === 2 && !formData.termsAgreed) return;
     if (step === 3 && pricing.total <= 0) return;
@@ -2172,6 +2173,12 @@ const PropertyDetailPage = () => {
   const nightlyEffectivePrice = isNightlyOfferProperty
     ? (couponApplied ? displayBasePrice - 500 : displayBasePrice)
     : displayBasePrice;
+
+  // Seeded discount for all other nightly properties (OYO-style strikethrough)
+  const pdpDiscountPct = (() => { const n = ((Number(property?.id) || 1) * 2654435761) >>> 0; return 40 + (n % 38); })();
+  const pdpOriginalPrice = (!isNightlyOfferProperty && pricingMode !== 'monthly' && displayBasePrice > 0)
+    ? Math.round(displayBasePrice / (1 - pdpDiscountPct / 100) / 100) * 100
+    : 0;
 
   // ── OvikaLiving monthly rental properties with 1-month deposit ───────────
   const isOvikaMonthlyProperty = [315, 316, 317, 323].includes(Number(property.id));
@@ -2642,8 +2649,28 @@ const PropertyDetailPage = () => {
                           </div>
                         )}
                         {pricingMode !== 'monthly' && (
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid #e5e5e5' }}>
-                            <span>GST (5%)</span><span><MdCurrencyRupee style={{ display: 'inline' }} />{pricing.gst.toFixed(2)}</span>
+                          <div style={{ marginBottom: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid #e5e5e5' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                Taxes &amp; fees
+                                <span
+                                  onClick={() => setShowTaxInfo(v => !v)}
+                                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, borderRadius: '50%', border: '1.5px solid #888', color: '#888', fontSize: 10, fontWeight: 700, cursor: 'pointer', userSelect: 'none', flexShrink: 0 }}
+                                >i</span>
+                              </span>
+                              <span><MdCurrencyRupee style={{ display: 'inline' }} />{pricing.gst.toFixed(2)}</span>
+                            </div>
+                            {showTaxInfo && (
+                              <div style={{ marginTop: 8, background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 8, padding: '10px 12px', fontSize: '0.82rem', color: '#444' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600, marginBottom: 6, color: '#111' }}>
+                                  <span>Total taxes &amp; fees</span>
+                                  <span>₹{pricing.gst.toFixed(2)}</span>
+                                </div>
+                                <p style={{ margin: 0, fontSize: '0.78rem', color: '#777', lineHeight: 1.5 }}>
+                                  This includes transaction taxes payable as per applicable laws.
+                                </p>
+                              </div>
+                            )}
                           </div>
                         )}
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '600', fontSize: '1.2rem', color: '#8b0000' }}>
@@ -3383,6 +3410,11 @@ const PropertyDetailPage = () => {
                     {couponApplied && (
                       <div style={{ background: '#7c3aed', color: '#fff', fontSize: '0.68rem', fontWeight: 600, padding: '2px 7px', borderRadius: '4px' }}>-₹500 COUPON</div>
                     )}
+                  </div>
+                ) : pdpOriginalPrice > 0 ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+                    <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.6)', textDecoration: 'line-through' }}>₹{formatCurrency(pdpOriginalPrice)}</span>
+                    <div style={{ background: '#15803d', color: '#fff', fontSize: '0.68rem', fontWeight: 600, padding: '2px 7px', borderRadius: '4px' }}>{pdpDiscountPct}% OFF</div>
                   </div>
                 ) : null}
               </div>

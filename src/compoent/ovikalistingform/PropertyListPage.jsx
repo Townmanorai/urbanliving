@@ -431,6 +431,7 @@ const PropertyCard = ({ property, rentalType }) => {
   const navigate = useNavigate();
   const [fav, setFav] = useState(false);
   const [imgHovered, setImgHovered] = useState(false);
+  const [showTaxTooltip, setShowTaxTooltip] = useState(false);
 
   const randomRating = useMemo(() => {
     const FIVE_STAR_IDS = [77, 78, 79, 80, 81, 315, 316, 317, 323];
@@ -464,6 +465,11 @@ const PropertyCard = ({ property, rentalType }) => {
       if (prices.length > 0) return Math.min(...prices);
     } catch { }
     return 0;
+  };
+
+  const getSeedDiscount = (id) => {
+    const n = ((Number(id) || 1) * 2654435761) >>> 0;
+    return 40 + (n % 38); // 40–77% range, deterministic per property
   };
 
   const getDisplayPrice = () => {
@@ -635,11 +641,45 @@ const PropertyCard = ({ property, rentalType }) => {
             {forceRequest ? (
               <span style={{ fontSize: 13, color: '#94a3b8', fontStyle: 'italic' }}>Price on Request</span>
             ) : (
-              <>
-                {pricePrefix && <span className="plp-hcard-price-prefix">{pricePrefix}</span>}
-                <span className="plp-hcard-price">{formatPrice(displayPrice)}</span>
-                {displayPrice > 0 && <span className="plp-hcard-price-unit">{priceLabel}</span>}
-              </>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                {!isMonthly && displayPrice > 0 && (() => {
+                  const pct = getSeedDiscount(property.id);
+                  const original = Math.round(displayPrice / (1 - pct / 100) / 100) * 100;
+                  return (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <span style={{ fontSize: 12, color: '#999', textDecoration: 'line-through' }}>₹{original.toLocaleString('en-IN')}</span>
+                      <span style={{ background: '#15803d', color: '#fff', fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 3 }}>{pct}% off</span>
+                    </div>
+                  );
+                })()}
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                  {pricePrefix && <span className="plp-hcard-price-prefix">{pricePrefix}</span>}
+                  <span className="plp-hcard-price">{formatPrice(displayPrice)}</span>
+                  {displayPrice > 0 && <span className="plp-hcard-price-unit">{priceLabel}</span>}
+                </div>
+                {!isMonthly && displayPrice > 0 && (
+                  <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                    <span style={{ fontSize: 10, color: '#888' }}>+ ₹{Math.round(displayPrice * 0.05)} taxes &amp; fees · per night</span>
+                    <span
+                      onMouseEnter={() => setShowTaxTooltip(true)}
+                      onMouseLeave={() => setShowTaxTooltip(false)}
+                      onClick={e => { e.stopPropagation(); setShowTaxTooltip(v => !v); }}
+                      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 13, height: 13, borderRadius: '50%', border: '1px solid #aaa', color: '#aaa', fontSize: 8, fontWeight: 700, cursor: 'pointer', flexShrink: 0, userSelect: 'none' }}
+                    >i</span>
+                    {showTaxTooltip && (
+                      <div style={{ position: 'absolute', bottom: '100%', left: 0, marginBottom: 6, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, padding: '10px 12px', fontSize: 11, color: '#444', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', zIndex: 999, width: 210, whiteSpace: 'normal' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600, marginBottom: 5, color: '#111' }}>
+                          <span>Total taxes &amp; fees</span>
+                          <span>₹{Math.round(displayPrice * 0.05)}</span>
+                        </div>
+                        <p style={{ margin: 0, fontSize: 10, color: '#777', lineHeight: 1.5 }}>
+                          This includes transaction taxes payable as per applicable laws.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             )}
           </div>
           <div className="plp-hcard-btns">

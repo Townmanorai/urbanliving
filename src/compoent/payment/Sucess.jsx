@@ -145,8 +145,8 @@ function Sucess() {
       const gst = subtotal * 0.05;
       const finalTotal = subtotal + gst;
 
-      row("Subtotal:", `₹${subtotal.toFixed(2)}`);
-      row("GST (5%):", `₹${gst.toFixed(2)}`);
+      row("Base fare:", `₹${subtotal.toFixed(2)}`);
+      row("Taxes & fees (5%):", `₹${gst.toFixed(2)}`);
       doc.setFont(undefined, "bold");
       row("Total Paid:", `₹${finalTotal.toFixed(2)}`);
       y += 10;
