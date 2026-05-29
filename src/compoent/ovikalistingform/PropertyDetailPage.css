@@ -3048,3 +3048,217 @@ table {
 }
 
 @keyframes fadeInDown { from { opacity:0; transform:translateX(-50%) translateY(-12px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+
+/* ══════════════════════════════════════════════════════
+   GLOBAL FONT-WEIGHT THINNING — reduce heavy bolds
+══════════════════════════════════════════════════════ */
+.title-section h1 { font-weight: 600; }
+.text-section h3  { font-weight: 600; }
+.gbCardTitle      { font-weight: 600; }
+.gbRowLabel       { font-weight: 400; }
+.gbRowValue       { font-weight: 500; }
+.feature-box strong { font-weight: 600; }
+.rm-mob-card-title  { font-weight: 600; }
+.amenity-item       { font-weight: 400; }
+.section-label      { font-weight: 500; }
+
+/* ══════════════════════════════════════════════════════
+   MOBILE — full layout overhaul (≤ 640px)
+══════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+
+  /* ── Wrapper ── */
+  .detail-page-wrapper {
+    padding: 0.5rem 0.75rem 4rem;
+    overflow-x: hidden;
+  }
+
+  /* ── Title ── */
+  .title-section h1 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  /* ── Features bar: flex-wrap, smaller pills ── */
+  .features-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.6rem 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .feature-box {
+    flex: 0 0 auto;
+    padding: 4px 10px;
+    font-size: 0.78rem;
+  }
+  .feature-box strong { font-size: 0.78rem; }
+  .feature-box span   { font-size: 0.7rem; }
+
+  /* ── Section headings ── */
+  .text-section h3 {
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+  .text-section p {
+    font-size: 0.83rem;
+    line-height: 1.6;
+  }
+
+  /* ── Local Guide (gbGrid) → single column on small screens ── */
+  .gbGrid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .gbCardWide {
+    grid-column: span 1;
+  }
+  .gbCard {
+    border-radius: 8px;
+  }
+  .gbCardHeader {
+    padding: 0.45rem 0.65rem;
+  }
+  .gbCardTitle {
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .gbCardMeta {
+    font-size: 0.65rem;
+  }
+  .gbRows {
+    padding: 0.35rem 0.65rem;
+    gap: 0.2rem;
+  }
+  .gbRow {
+    min-width: 0;
+    width: 100%;
+    padding: 0.25rem 0.4rem;
+  }
+  .gbRowLabel {
+    font-size: 0.72rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 45%;
+  }
+  .gbRowValue {
+    font-size: 0.72rem;
+    max-width: 52%;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .gbTableWrap {
+    padding: 0.3rem 0.55rem;
+    overflow-x: auto;
+  }
+  .gbTableWrap table {
+    font-size: 0.72rem;
+    width: 100%;
+  }
+  .gbTableWrap th,
+  .gbTableWrap td {
+    padding: 4px 6px;
+    white-space: nowrap;
+  }
+
+  /* ── Amenities ── */
+  .amenities-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  .amenity-item {
+    font-size: 0.78rem;
+    padding: 0.55rem 0.65rem;
+  }
+
+  /* ── Rule cards ── */
+  .amenity-card {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  .rule-card {
+    padding: 0.65rem 0.75rem;
+  }
+  .rule-info strong {
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+  .rule-label {
+    font-size: 0.62rem;
+  }
+
+  /* ── Booking card ── */
+  .booking-card {
+    padding: 0.85rem;
+    margin-top: 1rem;
+    border-radius: 12px;
+  }
+  .amount {
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+  .unit {
+    font-size: 0.78rem;
+  }
+  .card-header {
+    padding: 0.75rem 0.85rem;
+  }
+
+  /* ── Room mobile cards ── */
+  .rm-mob-card-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .rm-mob-tag {
+    font-size: 0.65rem;
+  }
+
+  /* ── Host card ── */
+  .hostInfoPro h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .hostInfoPro p {
+    font-size: 0.78rem;
+  }
+
+  /* ── Reviews ── */
+  .pr-overall-score {
+    font-size: 2rem;
+  }
+  .pr-rating-count {
+    font-size: 0.78rem;
+  }
+
+  /* ── Content grid: clean single column ── */
+  .content-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  .booking-sidebar {
+    position: static;
+    order: 0;
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   MOBILE SMALL — extra compact (≤ 380px)
+══════════════════════════════════════════════════════ */
+@media (max-width: 380px) {
+  .detail-page-wrapper { padding: 0.4rem 0.5rem 4rem; }
+  .title-section h1    { font-size: 1rem; }
+  .features-bar        { gap: 0.3rem; }
+  .feature-box         { padding: 3px 8px; font-size: 0.72rem; }
+  .feature-box strong  { font-size: 0.72rem; }
+  .gbCardTitle         { font-size: 0.75rem; }
+  .gbRowLabel,
+  .gbRowValue          { font-size: 0.68rem; }
+  .amenities-grid      { grid-template-columns: 1fr; }
+  .amenity-card        { grid-template-columns: 1fr; }
+  .amount              { font-size: 1.2rem; }
+}

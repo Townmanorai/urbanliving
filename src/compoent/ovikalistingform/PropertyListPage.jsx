@@ -1787,25 +1787,25 @@ const PropertyListPage = () => {
         .plp-topbar {
           display: flex;
           align-items: center;
-          gap: 10px;
-          margin-bottom: 16px;
+          gap: 8px;
+          margin-bottom: 14px;
           background: #fff;
-          border-radius: 12px;
-          padding: 10px 16px;
+          border-radius: 10px;
+          padding: 7px 12px;
           border: 1px solid #e8d9c0;
           box-shadow: 0 1px 4px rgba(0,0,0,0.04);
         }
         .plp-topbar-left {
           display: flex;
           align-items: center;
-          gap: 8px;
-          flex: 1;
+          gap: 6px;
+          flex: 0 1 auto;
           min-width: 0;
         }
         .plp-topbar-search {
-          flex: 2 1 480px;
-          min-width: 200px;
-          max-width: 820px;
+          flex: 1 1 280px;
+          min-width: 180px;
+          max-width: 520px;
         }
         .plp-topbar-right {
           display: flex;
@@ -2441,8 +2441,8 @@ const PropertyListPage = () => {
                 boxShadow: '0 1px 4px rgba(201,139,62,0.08)',
               }}>
                 {/* City / keyword search */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px', flex: 1, minWidth: 0, borderRight: '1px solid #e8d9c0', position: 'relative' }}>
-                  <FiSearch style={{ fontSize: 13, color: '#b89a70', flexShrink: 0 }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 8px', flex: 1, minWidth: 0, borderRight: '1px solid #e8d9c0', position: 'relative' }}>
+                  <FiSearch style={{ fontSize: 12, color: '#b89a70', flexShrink: 0 }} />
                   <input
                     type="text"
                     placeholder="City, area, property..."
@@ -2450,7 +2450,7 @@ const PropertyListPage = () => {
                     onChange={e => { setSearch(e.target.value); setShowCitySug(true); setCurrentPage(1); }}
                     onFocus={() => setShowCitySug(true)}
                     onKeyDown={e => { if (e.key === 'Enter') handleSearchSubmit(); }}
-                    style={{ flex: 1, border: 'none', outline: 'none', fontSize: 13, color: '#1a1a1a', background: 'transparent', fontFamily: 'inherit', minWidth: 0 }}
+                    style={{ flex: 1, border: 'none', outline: 'none', fontSize: 12, color: '#1a1a1a', background: 'transparent', fontFamily: 'inherit', minWidth: 0 }}
                   />
                   {search && <button onClick={() => { setSearch(''); setShowCitySug(false); }} style={{ width: 16, height: 16, borderRadius: '50%', border: 'none', background: '#e8d9c0', color: '#8B5E2A', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><FiX style={{ fontSize: 8 }} /></button>}
                   {/* City suggestions dropdown */}
@@ -2479,7 +2479,7 @@ const PropertyListPage = () => {
                 {!isMonthly && (
                   <div
                     onMouseDown={() => { setShowCheckInCal(v => !v); setShowCheckOutCal(false); setShowCitySug(false); setShowGuestsBox(false); }}
-                    style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 10px', cursor: 'pointer', borderRight: '1px solid #e8d9c0', flexShrink: 0, position: 'relative' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 8px', cursor: 'pointer', borderRight: '1px solid #e8d9c0', flexShrink: 0, position: 'relative' }}
                   >
                     <FiCalendar style={{ fontSize: 12, color: '#b89a70' }} />
                     <span style={{ fontSize: 12, whiteSpace: 'nowrap', color: (checkIn || checkOut) ? '#1a1a1a' : '#b89a70' }}>
@@ -2517,7 +2517,7 @@ const PropertyListPage = () => {
                 {/* Guests */}
                 <div
                   onMouseDown={() => { setShowGuestsBox(v => !v); setShowCitySug(false); setShowCheckInCal(false); setShowCheckOutCal(false); }}
-                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 10px', cursor: 'pointer', flexShrink: 0, position: 'relative', borderRight: '1px solid #e8d9c0' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 8px', cursor: 'pointer', flexShrink: 0, position: 'relative', borderRight: '1px solid #e8d9c0' }}
                 >
                   <FiHeart style={{ fontSize: 12, color: '#b89a70' }} />
                   <span style={{ fontSize: 12, color: '#1a1a1a', whiteSpace: 'nowrap' }}>{guests} Guest{guests !== 1 ? 's' : ''}</span>
@@ -2533,7 +2533,7 @@ const PropertyListPage = () => {
                 {/* Search button */}
                 <button
                   onMouseDown={handleSearchSubmit}
-                  style={{ padding: '6px 14px', background: '#C98B3E', color: '#fff', border: 'none', borderRadius: '0 9px 9px 0', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 5 }}
+                  style={{ padding: '5px 12px', background: '#C98B3E', color: '#fff', border: 'none', borderRadius: '0 9px 9px 0', fontWeight: 700, fontSize: 12, cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 5 }}
                 >
                   <FiSearch style={{ fontSize: 13 }} />
                 </button>
