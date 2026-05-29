@@ -1796,10 +1796,10 @@ const PropertyDetailPage = () => {
     }
     if (step === 3 && pricingMode === 'monthly' && monthlyDuration >= 12) { showAlert('Stays longer than 11 months require a rental agreement. Please contact us at +91 9310292309 to proceed.'); return; }
     if (step === 3 && (!formData.checkInDate || !formData.checkOutDate)) return;
-    if (step === 3 && isNightlyOffer && pricingMode !== 'monthly') {
-      const nights = Math.ceil(Math.abs(new Date(formData.checkOutDate) - new Date(formData.checkInDate)) / (1000 * 60 * 60 * 24));
-      if (nights < 2) { showAlert('Minimum 2 nights booking required for this property.'); return; }
-    }
+    // if (step === 3 && isNightlyOffer && pricingMode !== 'monthly') {
+    //   const nights = Math.ceil(Math.abs(new Date(formData.checkOutDate) - new Date(formData.checkInDate)) / (1000 * 60 * 60 * 24));
+    //   if (nights < 2) { showAlert('Minimum 2 nights booking required for this property.'); return; }
+    // }
     if (step === 3 && bookingType === 1 && pricingMode !== 'monthly' && ownerApprovalStatus !== 'accepted') { showAlert('Please wait for owner approval.'); return; }
     if (step === 2 && !formData.termsAgreed) return;
     if (step === 3 && pricing.total <= 0) return;
