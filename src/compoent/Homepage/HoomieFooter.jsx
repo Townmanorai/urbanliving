@@ -972,19 +972,19 @@ const HoomieFooter = () => {
                 © 2025 OvikaLiving
               </a>
               <span>|</span>
-              <a
-                href="#terms"
+              <Link
+                to="/terms-and-conditions"
                 style={{ color: "#fff", textDecoration: "none" }}
               >
                 TERMS
-              </a>
+              </Link>
               <span>|</span>
-              <a
-                href="#privacy"
+              <Link
+                to="/privacy-policy"
                 style={{ color: "#fff", textDecoration: "none" }}
               >
                 PRIVACY
-              </a>
+              </Link>
               <span>|</span>
               <Link
                 to="/contactus"
