@@ -26,7 +26,9 @@ export default function AuthPage() {
   const [confirmPassword, setConfirmPassword] = useState(""); // NEW: Confirm password field
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // NEW: Toggle for confirm password
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
 
   // Forgot password states (not modified)
   const [forgotOpen, setForgotOpen] = useState(false);
@@ -89,53 +91,48 @@ export default function AuthPage() {
     return null;
   }
 
-  // ---------- SIGNUP (modified with confirm password validation) ----------
+  // ---------- SIGNUP ----------
   const handleSignup = async () => {
-    // NEW: Check if passwords match before submitting
+    setErrorMsg("");
+    setSuccessMsg("");
     if (password !== confirmPassword) {
-      alert("Passwords do not match. Please enter the same password in both fields.");
+      setErrorMsg("Passwords do not match. Please enter the same password in both fields.");
       return;
     }
-
+    if (password.length < 6) {
+      setErrorMsg("Password must be at least 6 characters.");
+      return;
+    }
     setSubmitting(true);
     try {
       const response = await fetch(`${API_BASE}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username,
-          email,
-          password,
-          phone_number: phone || null,
-        }),
+        body: JSON.stringify({ username, email, password, phone_number: phone || null }),
         credentials: "include",
       });
-
       const data = await response.json().catch(() => ({}));
-      console.log("Signup raw response:", response.status, data);
-
       if (!response.ok) {
-        // backend provided an error message
-        alert(data?.message || "Signup failed. Check console.");
+        const msg = data?.message || data?.error || data?.errors?.[0]?.msg || "Account creation failed. Please try again.";
+        setErrorMsg(msg);
         setSubmitting(false);
         return;
       }
-
-      // Signup succeeded — *do not* attempt automatic login.
-      // Instead redirect user to the login page so they can sign in immediately.
-      alert("Signup successful. Please log in to continue.");
-      // Navigate to login and pass email so login form can prefill (if you handle it)
-      navigate("/login", { state: { prefillEmail: email } });
+      setSuccessMsg("Account created successfully! Please sign in to continue.");
+      setIsLogin(true);
+      setPassword("");
+      setConfirmPassword("");
     } catch (error) {
-      console.error("Signup Error:", error);
-      alert("Server error during signup. Check console.");
+      setErrorMsg("Unable to connect to server. Please check your internet and try again.");
     } finally {
       setSubmitting(false);
     }
   };
 
-  // ---------- LOGIN (unchanged) ----------
+  // ---------- LOGIN ----------
   const handleLogin = async () => {
+    setErrorMsg("");
+    setSuccessMsg("");
     setSubmitting(true);
     try {
       const response = await fetch(`${API_BASE}/auth/login`, {
@@ -144,41 +141,32 @@ export default function AuthPage() {
         body: JSON.stringify({ email, password }),
         credentials: "include",
       });
-
       const data = await response.json().catch(() => ({}));
-      console.log("Login raw response:", response.status, data);
-
       if (!response.ok) {
-        alert(data?.message || "Invalid credentials");
+        const msg = data?.message || data?.error || data?.errors?.[0]?.msg || "Invalid email or password. Please try again.";
+        setErrorMsg(msg);
         setSubmitting(false);
         return;
       }
-
       const userObj = extractUserFromResponse(data) || data;
-
       try {
         await login(userObj);
       } catch (err) {
-        console.warn("AuthContext.login threw, writing to localStorage instead.", err);
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(userObj)); } catch (e) {}
       }
-
-      // ensure synced
       let synced = null;
-      try {
-        synced = await waitForLocalUser(5000, 200);
-      } catch (e) {
-        console.warn("waitForLocalUser error:", e);
-      }
+      try { synced = await waitForLocalUser(5000, 200); } catch (e) {}
       if (!synced) {
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(userObj)); synced = userObj; } catch (e) {}
       }
-
-      console.log("Login final user (synced):", synced);
+      if (!synced) {
+        setErrorMsg("Login succeeded but session could not be saved. Please try again.");
+        setSubmitting(false);
+        return;
+      }
       navigate(redirectTo, { replace: true });
     } catch (error) {
-      console.error("Login Error:", error);
-      alert("Server error. See console.");
+      setErrorMsg("Unable to connect to server. Please check your internet and try again.");
     } finally {
       setSubmitting(false);
     }
@@ -205,25 +193,28 @@ export default function AuthPage() {
     if (forgotSubmitting) return;
     setForgotOpen(false);
   };
+  const [forgotError, setForgotError] = useState("");
   const proceedForgotStep1 = () => {
     const emailTrim = (forgotEmail || "").trim();
     if (!emailTrim || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrim)) {
-      alert("Please enter a valid email address");
+      setForgotError("Please enter a valid email address.");
       return;
     }
+    setForgotError("");
     setForgotStep(2);
   };
   const submitForgot = async () => {
     const pwd = (newPwd || "").trim();
     const pwd2 = (newPwd2 || "").trim();
     if (pwd.length < 6) {
-      alert("New password must be at least 6 characters");
+      setForgotError("New password must be at least 6 characters.");
       return;
     }
     if (pwd !== pwd2) {
-      alert("Passwords do not match");
+      setForgotError("Passwords do not match.");
       return;
     }
+    setForgotError("");
     setForgotSubmitting(true);
     try {
       const res = await fetch(`${API_BASE}/auth/forgot-password`, {
@@ -234,19 +225,18 @@ export default function AuthPage() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const msg = data?.message || (data?.errors && data.errors[0]?.msg) || "Password reset failed";
-        alert(msg);
+        const msg = data?.message || data?.errors?.[0]?.msg || "Password reset failed. Please try again.";
+        setForgotError(msg);
         setForgotSubmitting(false);
         return;
       }
-      alert(data?.message || "Password has been reset successfully");
       setForgotOpen(false);
       setEmail(forgotEmail.trim());
       setPassword("");
       setIsLogin(true);
+      setSuccessMsg(data?.message || "Password reset successfully! Please sign in with your new password.");
     } catch (err) {
-      console.error("Forgot password error", err);
-      alert("Server error during password reset");
+      setForgotError("Unable to connect to server. Please try again.");
     } finally {
       setForgotSubmitting(false);
     }
@@ -267,8 +257,8 @@ export default function AuthPage() {
 
       <div className="auth-form-container">
         <div className="auth-toggle">
-          <button className={isLogin ? "auth-toggle-btn active" : "auth-toggle-btn"} onClick={() => setIsLogin(true)}>Sign In</button>
-          <button className={!isLogin ? "auth-toggle-btn active" : "auth-toggle-btn"} onClick={() => setIsLogin(false)}>Sign Up</button>
+          <button className={isLogin ? "auth-toggle-btn active" : "auth-toggle-btn"} onClick={() => { setIsLogin(true); setErrorMsg(""); setSuccessMsg(""); }}>Sign In</button>
+          <button className={!isLogin ? "auth-toggle-btn active" : "auth-toggle-btn"} onClick={() => { setIsLogin(false); setErrorMsg(""); setSuccessMsg(""); }}>Sign Up</button>
         </div>
 
         <h2 className="auth-title">{isLogin ? "Welcome back" : "Create an account"}</h2>
@@ -318,6 +308,28 @@ export default function AuthPage() {
             </div>
           )}
 
+          {errorMsg && (
+            <div style={{
+              background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8,
+              padding: '10px 14px', marginBottom: 12,
+              display: 'flex', alignItems: 'flex-start', gap: 8,
+              fontSize: '0.85rem', color: '#b91c1c', lineHeight: 1.5,
+            }}>
+              <span style={{ fontSize: 16, flexShrink: 0 }}>⚠️</span>
+              <span>{errorMsg}</span>
+            </div>
+          )}
+          {successMsg && (
+            <div style={{
+              background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 8,
+              padding: '10px 14px', marginBottom: 12,
+              display: 'flex', alignItems: 'flex-start', gap: 8,
+              fontSize: '0.85rem', color: '#15803d', lineHeight: 1.5,
+            }}>
+              <span style={{ fontSize: 16, flexShrink: 0 }}>✅</span>
+              <span>{successMsg}</span>
+            </div>
+          )}
           <button type="submit" className="auth-submit" disabled={submitting}>
             {submitting ? (isLogin ? "Signing In..." : "Signing Up...") : isLogin ? "Sign In" : "Sign Up"}
           </button>
@@ -331,10 +343,16 @@ export default function AuthPage() {
                 <button type="button" onClick={closeForgot} className="modal-close" aria-label="Close">×</button>
               </div>
 
+              {forgotError && (
+                <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8, padding: '8px 12px', marginBottom: 10, fontSize: '0.82rem', color: '#b91c1c', display: 'flex', gap: 6 }}>
+                  <span>⚠️</span><span>{forgotError}</span>
+                </div>
+              )}
+
               {forgotStep === 1 && (
                 <div>
                   <label>Email</label>
-                  <input type="email" placeholder="Enter your account email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} style={{ width: "100%", marginTop: 6, marginBottom: 14 }} className="auth-password-input" />
+                  <input type="email" placeholder="Enter your account email" value={forgotEmail} onChange={(e) => { setForgotEmail(e.target.value); setForgotError(""); }} style={{ width: "100%", marginTop: 6, marginBottom: 14 }} className="auth-password-input" />
                   <button type="button" onClick={proceedForgotStep1} disabled={forgotSubmitting} className="auth-submit" style={{ width: "100%" }}>Continue</button>
                 </div>
               )}
@@ -342,9 +360,9 @@ export default function AuthPage() {
               {forgotStep === 2 && (
                 <div>
                   <label>New Password</label>
-                  <input type="password" placeholder="Enter new password" value={newPwd} onChange={(e) => setNewPwd(e.target.value)} style={{ width: "100%", marginTop: 6, marginBottom: 12 }} className="auth-password-input" />
+                  <input type="password" placeholder="Enter new password" value={newPwd} onChange={(e) => { setNewPwd(e.target.value); setForgotError(""); }} style={{ width: "100%", marginTop: 6, marginBottom: 12 }} className="auth-password-input" />
                   <label>Confirm New Password</label>
-                  <input type="password" placeholder="Re-enter new password" value={newPwd2} onChange={(e) => setNewPwd2(e.target.value)} style={{ width: "100%", marginTop: 6, marginBottom: 14 }} className="auth-password-input" />
+                  <input type="password" placeholder="Re-enter new password" value={newPwd2} onChange={(e) => { setNewPwd2(e.target.value); setForgotError(""); }} style={{ width: "100%", marginTop: 6, marginBottom: 14 }} className="auth-password-input" />
                   <button type="button" onClick={submitForgot} disabled={forgotSubmitting} className="auth-submit" style={{ width: "100%" }}>{forgotSubmitting ? "Submitting..." : "Reset Password"}</button>
                 </div>
               )}
