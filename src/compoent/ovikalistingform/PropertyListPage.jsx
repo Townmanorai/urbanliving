@@ -357,17 +357,17 @@ function PropertyMapView({ properties, isMonthly, onCardClick, onPinSelect, isMo
 }
 
 const CATEGORIES = [
-  { id: 'PG', title: 'PG', minPrice: 0, maxPrice: 1499 },
-  { id: 'Economy Stay', title: 'Economy Stay', minPrice: 1500, maxPrice: 2499 },
-  { id: 'Premium Stay', title: 'Premium Stay', minPrice: 2500, maxPrice: Infinity },
-  { id: 'Signature Stays', title: 'Signature Stays', minPrice: 0, maxPrice: Infinity },
+  { id: 'Signature Stays',       title: 'Signature Stays'       },
+  { id: 'Hotel Stays',           title: 'Hotel Stays'           },
+  { id: 'Homestays & Apartments',title: 'Homestays & Apartments'},
+  { id: 'PG & Co-Living',        title: 'PG & Co-Living'        },
 ];
 
 const CategoryIcon = ({ id, size = 14, color = 'currentColor' }) => {
-  if (id === 'PG') return <FiHome style={{ fontSize: size, color }} />;
-  if (id === 'Economy Stay') return <FiTrendingUp style={{ fontSize: size, color }} />;
-  if (id === 'Premium Stay') return <FiAward style={{ fontSize: size, color }} />;
-  if (id === 'Signature Stays') return <span style={{ fontSize: size, color }}>✨</span>;
+  if (id === 'Signature Stays') return <span style={{ fontSize: size }}>✨</span>;
+  if (id === 'Hotel Stays')     return <span style={{ fontSize: size }}>🏨</span>;
+  if (id === 'Homestays & Apartments') return <span style={{ fontSize: size }}>🏡</span>;
+  if (id === 'PG & Co-Living')         return <FiHome style={{ fontSize: size, color }} />;
   return null;
 };
 
@@ -1202,28 +1202,38 @@ const PropertyListPage = () => {
         if (cat) {
           result = result.filter(p => {
             const id = Number(p.id || p.property_id);
-            // Signature Stays category: sahi IDs dikhao based on monthly/nightly
+            const pCat  = (p.property_category || '').toLowerCase().trim();
+            const pType = (p.property_type     || '').toLowerCase().trim();
+            const pName = (p.property_name     || '').toLowerCase();
+
             if (cat.id === 'Signature Stays') {
               if (isMonthly) return SIGNATURE_MONTHLY_IDS.includes(id);
               return SIGNATURE_NIGHTLY_IDS.includes(id);
             }
 
-            // Signature properties sirf Signature Stays category mein dikhni chahiye
-            if (isSignatureProperty(p) || isSignatureOrOvika(p)) {
-              return false;
+            // Signature properties never appear in other categories
+            if (isSignatureProperty(p) || isSignatureOrOvika(p)) return false;
+
+            if (cat.id === 'PG & Co-Living') {
+              return pCat === 'pg' || pType === 'pg'
+                || pCat.includes('co-living') || pCat.includes('coliving')
+                || pType.includes('co-living') || pType.includes('coliving');
             }
 
-            if (cat.id === 'PG') return p.property_category === 'PG';
-            if (p.property_category === 'PG') return false;
+            // After PG check, exclude PG from remaining categories
+            if (pCat === 'pg' || pType === 'pg') return false;
 
-            if (isMonthly) {
-              const price = Number(p.price) || 0;
-              if (cat.id === 'Economy Stay') return price >= 8000 && price <= 25000;
-              if (cat.id === 'Premium Stay') return price > 25000;
-            } else {
-              const price = Number(p.price) || 0;
-              return price >= cat.minPrice && price <= cat.maxPrice;
+            if (cat.id === 'Hotel Stays') {
+              return pCat === 'hotel' || pType === 'hotel' || pType === 'hotel room'
+                || pCat.includes('hotel') || pType.includes('hotel');
             }
+
+            if (cat.id === 'Homestays & Apartments') {
+              const types = ['apartment','villa','homestay','serviced residence','serviced apartment','studio','builder floor','independent house','bungalow'];
+              return types.some(t => pCat.includes(t) || pType.includes(t))
+                || (!isMonthly && !['hotel'].some(t => pCat.includes(t) || pType.includes(t)));
+            }
+
             return false;
           });
         }

@@ -554,10 +554,9 @@ export default function HomePageNew1() {
   // Quick-nav chips: each maps to a specific /properties URL
   const QUICK_CHIPS = [
     { label: 'Signature Stays', rentalType: 'short', path: () => { const p = new URLSearchParams(); p.set('category', 'Signature Stays'); p.set('rentalType', 'short'); return `/properties?${p}`; } },
-    { label: 'Premium',         rentalType: 'short', path: () => { const p = new URLSearchParams(); p.set('category', 'Premium Stay');    p.set('rentalType', 'short'); return `/properties?${p}`; } },
-    { label: 'Economy',         rentalType: 'short', path: () => { const p = new URLSearchParams(); p.set('category', 'Economy Stay');    p.set('rentalType', 'short'); return `/properties?${p}`; } },
-    { label: 'PG',              rentalType: 'long',  path: () => { const p = new URLSearchParams(); p.set('category', 'PG');              p.set('rentalType', 'long');  return `/properties?${p}`; } },
-    { label: 'Co-living',       rentalType: 'long',  path: () => { const p = new URLSearchParams(); p.set('category', 'PG'); p.set('rentalType', 'long'); p.set('search', 'co-living'); return `/properties?${p}`; } },
+    { label: 'Hotel Stays',     rentalType: 'short', path: () => { const p = new URLSearchParams(); p.set('category', 'Hotel Stays');     p.set('rentalType', 'short'); return `/properties?${p}`; } },
+    { label: 'Homestays & Apartments', rentalType: 'short', path: () => { const p = new URLSearchParams(); p.set('category', 'Homestays & Apartments'); p.set('rentalType', 'short'); return `/properties?${p}`; } },
+    { label: 'PG & Co-Living',         rentalType: 'long',  path: () => { const p = new URLSearchParams(); p.set('category', 'PG & Co-Living');         p.set('rentalType', 'long');  return `/properties?${p}`; } },
   ];
 
   const shortDisplay = ratesLoading ? '—' : (shortRate ? `${fmt(shortRate)}/night` : '₹2,499/night');

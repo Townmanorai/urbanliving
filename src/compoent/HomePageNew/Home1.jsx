@@ -115,9 +115,10 @@ export default function Home1() {
 
   const pricingLabel = rentalType === 'short' ? ' — Per Night' : rentalType === 'long' ? ' — Per Month' : '';
   const cards = [
-    { icon: '🏠', title: 'PG', subtitle: `Affordable stays${pricingLabel}`, desc: 'Ideal for students & professionals.', category: 'PG' },
-    { icon: '🏢', title: 'Economy Stay', subtitle: `Comfort at great value${pricingLabel}`, desc: 'Well-furnished homes with modern amenities.', category: 'Economy Stay' },
-    { icon: '✨', title: 'Premium Stay', subtitle: `Refined living experience${pricingLabel}`, desc: 'Enhanced comfort with premium facilities.', category: 'Premium Stay' },
+    { icon: '✨', title: 'Signature Stays',  subtitle: 'Fully managed premium stays', desc: 'Curated luxury for professionals, families & business travelers.', category: 'Signature Stays' },
+    { icon: '🏨', title: 'Hotel Stays',      subtitle: 'Premium & Economy Hotels',   desc: '4-Star, 5-Star, boutique and budget hotels across India.',         category: 'Hotel Stays'     },
+    { icon: '🏡', title: 'Homestays & Apartments', subtitle: 'Villas, Flats & Serviced Homes', desc: 'Serviced residences, luxury villas, apartments and studios.', category: 'Homestays & Apartments' },
+    { icon: '🏠', title: 'PG & Co-Living',        subtitle: 'Boys, Girls & Co-Living',        desc: 'Premium and standard PG with community living options.',     category: 'PG & Co-Living'         },
   ];
 
   const buildHref = cat => {
@@ -423,6 +424,61 @@ export default function Home1() {
             </div>
           </>
         )}
+      </div>
+
+      {/* ── Browse by Category Section ── */}
+      <div style={{
+        maxWidth: 1200, margin: '0 auto', padding: isMobile ? '28px 16px 12px' : '48px 24px 16px',
+      }}>
+        <div style={{ marginBottom: isMobile ? 16 : 24 }}>
+          <h2 style={{ margin: 0, fontSize: isMobile ? '1.15rem' : '1.45rem', fontWeight: 700, color: '#0f172a' }}>
+            Browse by Category
+          </h2>
+          <p style={{ margin: '6px 0 0', fontSize: isMobile ? '0.82rem' : '0.9rem', color: '#64748b' }}>
+            One platform for all your stay &amp; rental needs
+          </p>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)',
+          gap: isMobile ? 10 : 14,
+        }}>
+          {cards.map((card, i) => (
+            <a key={i} href={buildHref(card.category)} style={{ textDecoration: 'none' }}>
+              <div
+                style={{
+                  background: '#fff', border: '1.5px solid #f1ede6',
+                  borderRadius: isMobile ? 12 : 14,
+                  padding: isMobile ? '14px 12px' : '18px 16px',
+                  cursor: 'pointer', height: '100%',
+                  display: 'flex', flexDirection: 'column', gap: 8,
+                  transition: 'box-shadow 0.18s, border-color 0.18s, transform 0.18s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 24px rgba(201,139,62,0.15)'; e.currentTarget.style.borderColor = '#C98B3E'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = '#f1ede6'; e.currentTarget.style.transform = ''; }}
+              >
+                <div style={{ fontSize: isMobile ? '1.6rem' : '2rem', lineHeight: 1 }}>{card.icon}</div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: isMobile ? '0.82rem' : '0.92rem', color: '#0f172a', marginBottom: 3 }}>
+                    {card.title}
+                  </div>
+                  <div style={{ fontSize: isMobile ? '0.7rem' : '0.75rem', color: '#C98B3E', fontWeight: 600, marginBottom: isMobile ? 0 : 4 }}>
+                    {card.subtitle}
+                  </div>
+                  {!isMobile && (
+                    <div style={{ fontSize: '0.72rem', color: '#94a3b8', lineHeight: 1.45 }}>
+                      {card.desc}
+                    </div>
+                  )}
+                </div>
+                <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.72rem', color: '#C98B3E', fontWeight: 600 }}>
+                  Explore <span>→</span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
       </div>
     </div>
   );
