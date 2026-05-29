@@ -2176,7 +2176,7 @@ const PropertyDetailPage = () => {
 
   // Seeded discount for all other nightly properties (OYO-style strikethrough)
   const pdpDiscountPct = (() => { const n = ((Number(property?.id) || 1) * 2654435761) >>> 0; return 40 + (n % 38); })();
-  const pdpOriginalPrice = (!isNightlyOfferProperty && pricingMode !== 'monthly' && displayBasePrice > 0)
+  const pdpOriginalPrice = (pricingMode !== 'monthly' && displayBasePrice > 0)
     ? Math.round(displayBasePrice / (1 - pdpDiscountPct / 100) / 100) * 100
     : 0;
 
@@ -2400,9 +2400,9 @@ const PropertyDetailPage = () => {
                       <p style={{ color: '#666', marginBottom: '0.5rem' }}>{property.city}, {property.address}</p>
                       <p style={{ color: '#555', fontSize: '0.95rem', marginBottom: '1rem' }}>{cleanDescription(property.description)}</p>
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
-                        {isNightlyOfferProperty && (
+                        {pdpOriginalPrice > 0 && pricingMode !== 'monthly' && (
                           <span style={{ fontSize: '1rem', color: '#999', textDecoration: 'line-through' }}>
-                            ₹{formatCurrency(nightlyOriginalPrice)}
+                            ₹{formatCurrency(pdpOriginalPrice)}
                           </span>
                         )}
                         <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: '600', color: '#8b0000' }}>
@@ -2410,8 +2410,8 @@ const PropertyDetailPage = () => {
                           {formatCurrency(isNightlyOfferProperty ? nightlyEffectivePrice : displayBasePrice)}
                           <span style={{ fontSize: '1rem', color: '#666' }}>/{pricingMode === 'monthly' ? 'month' : (property.billing_cycle || 'night')}</span>
                         </p>
-                        {isNightlyOfferProperty && (
-                          <span style={{ fontSize: '0.75rem', background: '#16a34a', color: '#fff', padding: '2px 7px', borderRadius: '4px', fontWeight: 600 }}>40% OFF</span>
+                        {pdpOriginalPrice > 0 && pricingMode !== 'monthly' && (
+                          <span style={{ fontSize: '0.75rem', background: '#15803d', color: '#fff', padding: '2px 7px', borderRadius: '4px', fontWeight: 600 }}>{pdpDiscountPct}% OFF</span>
                         )}
                       </div>
                     </div>
@@ -3403,18 +3403,13 @@ const PropertyDetailPage = () => {
                     )}
                   </div>
                 </div>
-                {isNightlyOfferProperty ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
-                    <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.6)', textDecoration: 'line-through' }}>₹{formatCurrency(nightlyOriginalPrice)}</span>
-                    <div style={{ background: '#16a34a', color: '#fff', fontSize: '0.68rem', fontWeight: 600, padding: '2px 7px', borderRadius: '4px' }}>40% OFF</div>
-                    {couponApplied && (
-                      <div style={{ background: '#7c3aed', color: '#fff', fontSize: '0.68rem', fontWeight: 600, padding: '2px 7px', borderRadius: '4px' }}>-₹500 COUPON</div>
-                    )}
-                  </div>
-                ) : pdpOriginalPrice > 0 ? (
+                {pdpOriginalPrice > 0 ? (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
                     <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.6)', textDecoration: 'line-through' }}>₹{formatCurrency(pdpOriginalPrice)}</span>
                     <div style={{ background: '#15803d', color: '#fff', fontSize: '0.68rem', fontWeight: 600, padding: '2px 7px', borderRadius: '4px' }}>{pdpDiscountPct}% OFF</div>
+                    {couponApplied && isNightlyOfferProperty && (
+                      <div style={{ background: '#7c3aed', color: '#fff', fontSize: '0.68rem', fontWeight: 600, padding: '2px 7px', borderRadius: '4px' }}>-₹500 COUPON</div>
+                    )}
                   </div>
                 ) : null}
               </div>

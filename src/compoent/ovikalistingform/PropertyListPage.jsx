@@ -642,7 +642,7 @@ const PropertyCard = ({ property, rentalType }) => {
               <span style={{ fontSize: 13, color: '#94a3b8', fontStyle: 'italic' }}>Price on Request</span>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {!isMonthly && displayPrice > 0 && (() => {
+                {displayPrice > 0 && (() => {
                   const pct = getSeedDiscount(property.id);
                   const original = Math.round(displayPrice / (1 - pct / 100) / 100) * 100;
                   return (
@@ -2703,11 +2703,21 @@ const PropertyListPage = () => {
                           <FiMapPin style={{ fontSize: 11, flexShrink: 0 }} />
                           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{[p.address, p.city].filter(Boolean).join(', ')}</span>
                         </div>
-                        {price > 0 && (
-                          <div style={{ fontSize: 15, fontWeight: 700, color: '#C98B3E' }}>
-                            ₹{price.toLocaleString('en-IN')}<span style={{ fontSize: 11, fontWeight: 400, color: '#999' }}>/{isMonthly ? 'month' : 'night'}</span>
-                          </div>
-                        )}
+                        {price > 0 && (() => {
+                          const disc = 40 + (((Number(p.id) || 1) * 2654435761) >>> 0) % 38;
+                          const orig = Math.round(price / (1 - disc / 100) / 100) * 100;
+                          return (
+                            <div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 2 }}>
+                                <span style={{ fontSize: 11, color: '#aaa', textDecoration: 'line-through' }}>₹{orig.toLocaleString('en-IN')}</span>
+                                <span style={{ background: '#15803d', color: '#fff', fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 3 }}>{disc}% off</span>
+                              </div>
+                              <div style={{ fontSize: 15, fontWeight: 700, color: '#C98B3E' }}>
+                                ₹{price.toLocaleString('en-IN')}<span style={{ fontSize: 11, fontWeight: 400, color: '#999' }}>/{isMonthly ? 'month' : 'night'}</span>
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </div>
                     </div>
                     {p.description && (
@@ -2758,11 +2768,21 @@ const PropertyListPage = () => {
                       <div style={{ fontSize: 11, color: '#888', marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         <FiMapPin style={{ fontSize: 10, marginRight: 2 }} />{[p.address, p.city].filter(Boolean).join(', ')}
                       </div>
-                      {price > 0 && (
-                        <div style={{ fontSize: 13, fontWeight: 700, color: '#C98B3E' }}>
-                          ₹{price.toLocaleString('en-IN')}<span style={{ fontSize: 10, fontWeight: 400, color: '#999' }}>/{isMonthly ? 'mo' : 'night'}</span>
-                        </div>
-                      )}
+                      {price > 0 && (() => {
+                        const disc = 40 + (((Number(p.id) || 1) * 2654435761) >>> 0) % 38;
+                        const orig = Math.round(price / (1 - disc / 100) / 100) * 100;
+                        return (
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 1 }}>
+                              <span style={{ fontSize: 10, color: '#aaa', textDecoration: 'line-through' }}>₹{orig.toLocaleString('en-IN')}</span>
+                              <span style={{ background: '#15803d', color: '#fff', fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 3 }}>{disc}% off</span>
+                            </div>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: '#C98B3E' }}>
+                              ₹{price.toLocaleString('en-IN')}<span style={{ fontSize: 10, fontWeight: 400, color: '#999' }}>/{isMonthly ? 'mo' : 'night'}</span>
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 );
