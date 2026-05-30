@@ -357,17 +357,19 @@ function PropertyMapView({ properties, isMonthly, onCardClick, onPinSelect, isMo
 }
 
 const CATEGORIES = [
-  { id: 'Signature Stays',       title: 'Signature Stays'       },
-  { id: 'Hotel Stays',           title: 'Hotel Stays'           },
-  { id: 'Homestays & Apartments',title: 'Homestays & Apartments'},
-  { id: 'PG & Co-Living',        title: 'PG & Co-Living'        },
+  { id: 'Signature Stays',   title: 'Signature Stays'   },
+  { id: 'Hotel Stays',       title: 'Hotel Stays'       },
+  { id: 'Homestays & BnBs',  title: 'Homestays & BnBs'  },
+  { id: 'Apartments & Villas', title: 'Apartments & Villas' },
+  { id: 'PG & Co-Living',    title: 'PG & Co-Living'    },
 ];
 
 const CategoryIcon = ({ id, size = 14, color = 'currentColor' }) => {
   if (id === 'Signature Stays') return <span style={{ fontSize: size }}>✨</span>;
   if (id === 'Hotel Stays')     return <span style={{ fontSize: size }}>🏨</span>;
-  if (id === 'Homestays & Apartments') return <span style={{ fontSize: size }}>🏡</span>;
-  if (id === 'PG & Co-Living')         return <FiHome style={{ fontSize: size, color }} />;
+  if (id === 'Homestays & BnBs')    return <span style={{ fontSize: size }}>🏡</span>;
+  if (id === 'Apartments & Villas') return <span style={{ fontSize: size }}>🏢</span>;
+  if (id === 'PG & Co-Living')      return <FiHome style={{ fontSize: size, color }} />;
   return null;
 };
 
@@ -1228,10 +1230,15 @@ const PropertyListPage = () => {
                 || pCat.includes('hotel') || pType.includes('hotel');
             }
 
-            if (cat.id === 'Homestays & Apartments') {
-              const types = ['apartment','villa','homestay','serviced residence','serviced apartment','studio','builder floor','independent house','bungalow'];
+            if (cat.id === 'Homestays & BnBs') {
+              const types = ['homestay','bnb','bed and breakfast','vacation rental','farm stay','resort','cottage'];
+              return types.some(t => pCat.includes(t) || pType.includes(t) || pName.includes(t));
+            }
+
+            if (cat.id === 'Apartments & Villas') {
+              const types = ['apartment','villa','studio','serviced apartment','serviced residence','builder floor','independent house','bungalow','flat','penthouse'];
               return types.some(t => pCat.includes(t) || pType.includes(t))
-                || (!isMonthly && !['hotel'].some(t => pCat.includes(t) || pType.includes(t)));
+                || (!isMonthly && !['hotel','pg','homestay','bnb'].some(t => pCat.includes(t) || pType.includes(t)));
             }
 
             return false;

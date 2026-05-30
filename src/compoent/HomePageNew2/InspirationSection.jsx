@@ -9,7 +9,7 @@ function getBreakpoint() {
   return 'desktop';
 }
 
-const TABS = ['Popular', 'Signature Stays', 'Hotel Stays', 'Homestays & Apartments', 'PG & Co-Living'];
+const TABS = ['Popular', 'Signature Stays', 'Hotel Stays', 'Homestays & BnBs', 'Apartments & Villas', 'PG & Co-Living'];
 
 // All data based on REAL API data — only sectors with 3+ actual properties
 const DATA = {
@@ -105,8 +105,10 @@ function getSearchPath(tab, city, navTab) {
 
   if (resolvedTab === 'Hotel Stays') {
     p.set('category', 'Hotel Stays');
-  } else if (resolvedTab === 'Homestays & Apartments') {
-    p.set('category', 'Homestays & Apartments');
+  } else if (resolvedTab === 'Homestays & BnBs') {
+    p.set('category', 'Homestays & BnBs');
+  } else if (resolvedTab === 'Apartments & Villas') {
+    p.set('category', 'Apartments & Villas');
   } else if (resolvedTab === 'PG & Co-Living') {
     p.set('category', 'PG & Co-Living');
   }

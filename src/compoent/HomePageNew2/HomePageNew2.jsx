@@ -37,7 +37,7 @@ const NIGHTLY = [
   },
   {
     id: 'homestay',
-    title: 'Homestays & Apartments',
+    title: 'Homestays & BnBs',
     sub: 'Villas, Flats & Serviced Homes',
     badge: 'Nightly Rental',
     price: '₹2,499/night',
@@ -45,7 +45,19 @@ const NIGHTLY = [
     img: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80&auto=format&fit=crop',
     imgFallback: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80',
     rentalType: 'short',
-    category: 'Homestays & Apartments',
+    category: 'Homestays & BnBs',
+  },
+  {
+    id: 'apartments',
+    title: 'Apartments & Villas',
+    sub: 'Furnished Flats, Studios & Villas',
+    badge: 'Nightly Rental',
+    price: '₹2,499/night',
+    btnText: 'View Apartments',
+    img: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80&auto=format&fit=crop',
+    imgFallback: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&q=80',
+    rentalType: 'short',
+    category: 'Apartments & Villas',
   },
   {
     id: 'pg',
@@ -88,7 +100,7 @@ const MONTHLY = [
   },
   {
     id: 'homestay',
-    title: 'Homestays & Apartments',
+    title: 'Homestays & BnBs',
     sub: 'Villas, Flats & Serviced Homes',
     badge: 'Monthly Rental',
     price: '₹15,999/month',
@@ -96,7 +108,19 @@ const MONTHLY = [
     img: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80&auto=format&fit=crop',
     imgFallback: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80',
     rentalType: 'long',
-    category: 'Homestays & Apartments',
+    category: 'Homestays & BnBs',
+  },
+  {
+    id: 'apartments',
+    title: 'Apartments & Villas',
+    sub: 'Furnished Flats, Studios & Villas',
+    badge: 'Monthly Rental',
+    price: '₹12,999/month',
+    btnText: 'View Apartments',
+    img: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80&auto=format&fit=crop',
+    imgFallback: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&q=80',
+    rentalType: 'long',
+    category: 'Apartments & Villas',
   },
   {
     id: 'pg',
@@ -291,7 +315,7 @@ export default function HomePageNew2() {
 
       <TabSwitcher activeTab={activeTab} setActiveTab={setActiveTab} size="lg" />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 22, maxWidth: 1280, margin: '0 auto', paddingBottom: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 18, maxWidth: 1400, margin: '0 auto', paddingBottom: 12 }}>
         {cats.map((cat) => (
           <div key={cat.id}
             onMouseEnter={() => setHovered(cat.id)}
