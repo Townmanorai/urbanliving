@@ -647,10 +647,11 @@ const PropertyCard = ({ property, rentalType }) => {
                 {displayPrice > 0 && (() => {
                   const pct = getSeedDiscount(property.id);
                   const original = Math.round(displayPrice / (1 - pct / 100) / 100) * 100;
+                  const actualPct = Math.round((original - displayPrice) / original * 100);
                   return (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                       <span style={{ fontSize: 12, color: '#999', textDecoration: 'line-through' }}>₹{original.toLocaleString('en-IN')}</span>
-                      <span style={{ background: '#15803d', color: '#fff', fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 3 }}>{pct}% off</span>
+                      <span style={{ background: '#15803d', color: '#fff', fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 3 }}>{actualPct}% off</span>
                     </div>
                   );
                 })()}
@@ -2723,11 +2724,12 @@ const PropertyListPage = () => {
                         {price > 0 && (() => {
                           const disc = 40 + (((Number(p.id) || 1) * 2654435761) >>> 0) % 38;
                           const orig = Math.round(price / (1 - disc / 100) / 100) * 100;
+                          const actualDisc = Math.round((orig - price) / orig * 100);
                           return (
                             <div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 2 }}>
                                 <span style={{ fontSize: 11, color: '#aaa', textDecoration: 'line-through' }}>₹{orig.toLocaleString('en-IN')}</span>
-                                <span style={{ background: '#15803d', color: '#fff', fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 3 }}>{disc}% off</span>
+                                <span style={{ background: '#15803d', color: '#fff', fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 3 }}>{actualDisc}% off</span>
                               </div>
                               <div style={{ fontSize: 15, fontWeight: 700, color: '#C98B3E' }}>
                                 ₹{price.toLocaleString('en-IN')}<span style={{ fontSize: 11, fontWeight: 400, color: '#999' }}>/{isMonthly ? 'month' : 'night'}</span>
@@ -2788,11 +2790,12 @@ const PropertyListPage = () => {
                       {price > 0 && (() => {
                         const disc = 40 + (((Number(p.id) || 1) * 2654435761) >>> 0) % 38;
                         const orig = Math.round(price / (1 - disc / 100) / 100) * 100;
+                        const actualDisc = Math.round((orig - price) / orig * 100);
                         return (
                           <div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 1 }}>
                               <span style={{ fontSize: 10, color: '#aaa', textDecoration: 'line-through' }}>₹{orig.toLocaleString('en-IN')}</span>
-                              <span style={{ background: '#15803d', color: '#fff', fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 3 }}>{disc}% off</span>
+                              <span style={{ background: '#15803d', color: '#fff', fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 3 }}>{actualDisc}% off</span>
                             </div>
                             <div style={{ fontSize: 13, fontWeight: 700, color: '#C98B3E' }}>
                               ₹{price.toLocaleString('en-IN')}<span style={{ fontSize: 10, fontWeight: 400, color: '#999' }}>/{isMonthly ? 'mo' : 'night'}</span>

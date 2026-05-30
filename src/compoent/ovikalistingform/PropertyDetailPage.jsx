@@ -2178,6 +2178,7 @@ const PropertyDetailPage = () => {
   const pdpOriginalPrice = (pricingMode !== 'monthly' && displayBasePrice > 0)
     ? Math.round(displayBasePrice / (1 - pdpDiscountPct / 100) / 100) * 100
     : 0;
+  const pdpActualPct = pdpOriginalPrice > 0 ? Math.round((pdpOriginalPrice - displayBasePrice) / pdpOriginalPrice * 100) : 0;
 
   // ── OvikaLiving monthly rental properties with 1-month deposit ───────────
   const isOvikaMonthlyProperty = [315, 316, 317, 323].includes(Number(property.id));
@@ -2410,7 +2411,7 @@ const PropertyDetailPage = () => {
                           <span style={{ fontSize: '1rem', color: '#666' }}>/{pricingMode === 'monthly' ? 'month' : (property.billing_cycle || 'night')}</span>
                         </p>
                         {pdpOriginalPrice > 0 && pricingMode !== 'monthly' && (
-                          <span style={{ fontSize: '0.75rem', background: '#15803d', color: '#fff', padding: '2px 7px', borderRadius: '4px', fontWeight: 600 }}>{pdpDiscountPct}% OFF</span>
+                          <span style={{ fontSize: '0.75rem', background: '#15803d', color: '#fff', padding: '2px 7px', borderRadius: '4px', fontWeight: 600 }}>{pdpActualPct}% OFF</span>
                         )}
                       </div>
                     </div>
@@ -3384,7 +3385,7 @@ const PropertyDetailPage = () => {
                 {pdpOriginalPrice > 0 ? (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
                     <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.6)', textDecoration: 'line-through' }}>₹{formatCurrency(pdpOriginalPrice)}</span>
-                    <div style={{ background: '#15803d', color: '#fff', fontSize: '0.68rem', fontWeight: 600, padding: '2px 7px', borderRadius: '4px' }}>{pdpDiscountPct}% OFF</div>
+                    <div style={{ background: '#15803d', color: '#fff', fontSize: '0.68rem', fontWeight: 600, padding: '2px 7px', borderRadius: '4px' }}>{pdpActualPct}% OFF</div>
                     {couponApplied && isNightlyOfferProperty && (
                       <div style={{ background: '#7c3aed', color: '#fff', fontSize: '0.68rem', fontWeight: 600, padding: '2px 7px', borderRadius: '4px' }}>-₹500 COUPON</div>
                     )}
