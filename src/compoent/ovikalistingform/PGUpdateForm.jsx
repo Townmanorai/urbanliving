@@ -52,7 +52,7 @@ const BATHROOM_TYPES = ["Attached", "Common", "En-suite", "Jack & Jill", "Separa
 const AMENITIES_MASTER = {
   "Safety & Security": ["CCTV", "Security Guard", "Fire Extinguisher", "Intercom", "Biometric Entry", "Gated Community", "Fire Alarm", "Sprinklers", "Smoke Detectors", "Emergency Exit", "Electronic Entry Lock", "Electronic Bedroom Lock", "Sprinkler"],
   "Modern Living": ["Lift", "Power Backup", "Wi-Fi", "Swimming Pool", "Gym", "Clubhouse", "Modular Kitchen", "Chimney", "Central AC", "Smart Home Tech", "EV Charging Point"],
-  "Basic Utilities": ["Water Supply 24/7", "Borewell", "Corporation Water", "Gas Pipeline", "Solar Water", "Reserved Parking", "Visitor Parking", "STP Plant", "Waste Management"],
+  "Basic Utilities": ["Water Supply 24/7", "Borewell", "Corporation Water", "Gas Pipeline", "Solar Water", "Reserved Parking", "Visitor Parking", "Basement Free Parking", "STP Plant", "Waste Management"],
   "Indoor Features": ["Air Conditioner", "Geyser", "RO Water", "Washing Machine", "Refrigerator", "Inverter", "Wardrobe", "Study Table", "Smart TV", "Google TV", "Gas Stove", "Dishwasher", "Microwave", "Iron & Board"],
   "Bathroom": ["Bath Towels", "Soap & Shampoo"],
   "Kitchen Appliances": ["Electric Kettle", "Hob", "Toaster", "Rice Cooker", "Coffee Maker", "Induction Cooktop", "Dining Counter", "Cooking utensils"],

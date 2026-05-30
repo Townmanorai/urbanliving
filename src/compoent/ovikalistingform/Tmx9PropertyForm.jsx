@@ -48,8 +48,8 @@ const AMENITIES = {
   Appliances: ["Washing Machine", "Iron & Board"],
   Entertainment: ["TV", "Google TV", "Streaming services"],
   Safety: ["Smoke detector", "Carbon monoxide detector", "Fire extinguisher", "First aid kit", "Electronic Entry Lock", "Electronic Bedroom Lock", "Sprinkler"],
-  Outdoor: ["Balcony/terrace", "Garden", "Parking space", "BBQ grill", "Tennis Court", "Golf Course"],
-  Wellness: ["Pool", "Hot tub", "Sauna", "Gym"],
+  Outdoor: ["Balcony/terrace", "Garden", "Parking space", "Basement Free Parking", "BBQ grill", "Tennis Court", "Golf Course"],
+  Wellness: ["Swimming Pool", "Hot tub", "Sauna", "Gym"],
   Accessibility: ["Wheelchair accessible", "Elevator", "Ramp access"],
   Services: ["Breakfast Included", "Lunch Included", "Dinner Included", "All Meals Included", "Airport pick-up", "Luggage storage", "Cleaning on request"],
 };
