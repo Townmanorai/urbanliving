@@ -23,7 +23,13 @@ function useMapThrustLoader() {
     s.id = 'mapthrust-script';
     s.src = `https://maps.mapthrust.io/maps/api/js?key=${MAPTHRUST_API_KEY}`;
     s.async = true;
-    s.onload = () => setIsLoaded(true);
+    s.onload = () => {
+      if (window.google && window.google.maps) { setIsLoaded(true); return; }
+      const t = setInterval(() => {
+        if (window.google && window.google.maps) { setIsLoaded(true); clearInterval(t); }
+      }, 150);
+      setTimeout(() => clearInterval(t), 10000);
+    };
     document.head.appendChild(s);
   }, []);
   return { isLoaded };
@@ -259,7 +265,6 @@ function PropertyMapView({ properties, isMonthly, onCardClick, onPinSelect, isMo
     fitBounds(map, validProps);
   }, []);
 
-  // Re-fit bounds whenever filtered properties change
   useEffect(() => {
     if (mapRef.current && isLoaded) {
       setActivePin(null);
