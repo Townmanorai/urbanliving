@@ -859,6 +859,11 @@ function Payment() {
         user_photo: formData.uploadedPhoto || '',
         terms_verified: true,
         email: userEmail || 'guest@townmanor.ai',
+        subtotal: pricing.subtotal || 0,
+        discount_amount: pricing.discount || 0,
+        gst_amount: pricing.gst || 0,
+        security_deposit: pricing.securityDeposit || 0,
+        total_price: pricing.total || 0,
       };
       
       console.log('Booking details being sent:', bookingDetails);
@@ -911,6 +916,10 @@ function Payment() {
     try {
       localStorage.setItem('paymentType', 'coliving');
       localStorage.setItem('bookingId', String(bookingIdParam));
+      localStorage.setItem('paymentAmount',   String(pricing.total));
+      localStorage.setItem('paymentSubtotal', String(pricing.subtotal));
+      localStorage.setItem('paymentGst',      String(pricing.gst));
+      localStorage.setItem('paymentDiscount', String(pricing.discount));
       
       const userResponse = await fetch(`https://www.townmanor.ai/api/user/${username}`);
       if (!userResponse.ok) {

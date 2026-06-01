@@ -66,7 +66,7 @@ function BookingDetail() {
               booking_status: b.status || "completed",
               property_name: matchedProp?.name || b.property_name || b.property?.name || "Unknown Property",
               property_address: matchedProp?.address || b.property_address || b.property?.address || "Address not available",
-              display_price: b.total_price || b.price || matchedProp?.price || 0,
+              display_price: Number(b.total_price) || Number(b.total_amount) || Number(b.amount) || 0,
               cover_image: getCoverImage(matchedProp),
             };
           })

@@ -36,11 +36,7 @@ const getBookingTotal = (req) => {
     const discount = Number(req.discount_amount) || 0;
     return Number(req.subtotal) + gst - discount;
   }
-  const price = Number(req.property?.price) || 0;
-  if (!price || !req.start_date || !req.end_date) return null;
-  const days = Math.ceil(Math.abs(new Date(req.end_date) - new Date(req.start_date)) / (1000 * 60 * 60 * 24)) || 1;
-  if (days >= 25) return Math.max(1, Math.round(days / 30)) * price;
-  return days * price;
+  return null;
 };
 
 const getBookingDuration = (req) => {
@@ -208,13 +204,10 @@ const InquiriesBookings = () => {
                             Total ({duration})
                           </span>
                         )}
-                        {!req.total_price && !req.total_amount && !req.amount && (
-                          <span style={{ fontSize: "11px", color: "#d97706", marginLeft: "6px" }}>est.</span>
-                        )}
                       </>
                     ) : (
-                      <span style={{ fontSize: "16px", fontWeight: 600, color: "#9ca3af" }}>
-                        ₹{Number(req.property?.price || 0).toLocaleString("en-IN")} / night
+                      <span style={{ fontSize: "14px", fontWeight: 500, color: "#9ca3af" }}>
+                        Amount not recorded
                       </span>
                     );
                   })()}

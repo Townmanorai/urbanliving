@@ -75,7 +75,7 @@ const Financials = () => {
 
       const cancelled = [];
       const transactions = ownerBookings.map(b => {
-        const amount = Number(b.total_price || b.price || b.property?.price || 0);
+        const amount = Number(b.total_price || b.total_amount || b.amount || 0);
         const commission = amount * 0.15;
         const net = amount - commission;
         const bDate = new Date(b.created_at || b.start_date);
