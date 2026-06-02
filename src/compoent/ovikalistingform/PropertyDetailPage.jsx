@@ -2021,12 +2021,12 @@ const PropertyDetailPage = () => {
       let userLocal = {};
       try { userLocal = JSON.parse(localStorage.getItem('user')) || {}; } catch {}
       let userEmail = userLocal.email || 'guest@townmanor.ai';
-      let userPhone = '9999999999';
+      let userPhone = mobileNumber || '9999999999';
       let finalUsername = userLocal.username || username || 'guest';
       if (username) {
         try {
           const userRes = await fetch(`https://www.townmanor.ai/api/user/${username}`);
-          if (userRes.ok) { const ud = await userRes.json(); userEmail = ud.email || userEmail; userPhone = ud.phone || userPhone; }
+          if (userRes.ok) { const ud = await userRes.json(); userEmail = ud.email || userEmail; userPhone = ud.phone || mobileNumber || userPhone; }
         } catch {}
       }
 
