@@ -1807,7 +1807,8 @@ const PropertyDetailPage = () => {
     const isSignatureProperty = Number(property?.id) === 77;
     if (!isNightlyOffer && step === 3) { setStep(6); return; }
     if (isNightlyOffer && step === 4) {
-      if (!(formData.aadhaarVerified || formData.passportVerified)) { showAlert('Please verify your ID first.'); return; }
+      if (!(formData.aadhaarVerified || formData.passportVerified)) { showAlert('Please verify your Aadhaar or Passport first.'); return; }
+      if (!formData.mobileVerified) { showAlert('Please verify your mobile number with OTP to continue.'); return; }
     }
     if (isNightlyOffer && step === 5 && govIdStatus !== 'valid') { showAlert('Please upload a valid government ID to continue.'); return; }
     if (step < steps.length) setStep(step + 1);
@@ -2756,6 +2757,61 @@ const PropertyDetailPage = () => {
                         {formData.passportVerified ? 'Verified ✓' : isPassportLoading ? 'Verifying...' : 'Verify Passport'}
                       </button>
                       {passportError && <p style={{ color: 'red', marginTop: '1rem' }}>{passportError}</p>}
+                    </div>
+                  )}
+
+                  {/* Mobile OTP — shown after ID is verified */}
+                  {(formData.aadhaarVerified || formData.passportVerified) && (
+                    <div style={{ marginTop: '1.5rem', padding: '1.5rem', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                      <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>
+                        Mobile Verification (Mandatory)
+                        {formData.mobileVerified && <span style={{ marginLeft: 10, color: '#22c55e', fontSize: '0.9rem' }}>✓ Verified</span>}
+                      </h3>
+                      <div style={{ marginBottom: '1rem' }}>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Mobile Number</label>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={10}
+                          value={mobileNumber}
+                          onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ''))}
+                          placeholder="10-digit mobile number"
+                          disabled={formData.mobileVerified || otpSent}
+                          style={{ width: '100%', padding: '14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '1rem' }}
+                        />
+                      </div>
+                      {!otpSent ? (
+                        <button
+                          onClick={handleGenerateOTP}
+                          disabled={!mobileNumber || mobileNumber.length !== 10 || isOtpLoading || formData.mobileVerified}
+                          style={{ width: '100%', padding: '14px', background: formData.mobileVerified ? '#22c55e' : '#8b0000', color: 'white', border: 'none', borderRadius: '6px', fontWeight: '600', fontSize: '1rem', cursor: 'pointer' }}
+                        >
+                          {formData.mobileVerified ? '✓ Verified' : isOtpLoading ? 'Sending OTP...' : 'Send OTP'}
+                        </button>
+                      ) : (
+                        <>
+                          <div style={{ marginBottom: '1rem' }}>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Enter OTP</label>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              maxLength={6}
+                              value={otpInput}
+                              onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
+                              placeholder="6-digit OTP"
+                              disabled={formData.mobileVerified}
+                              style={{ width: '100%', padding: '14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '1rem' }}
+                            />
+                          </div>
+                          <button
+                            onClick={handleVerifyOTP}
+                            disabled={!otpInput || formData.mobileVerified || isMobileVerifying}
+                            style={{ width: '100%', padding: '14px', background: formData.mobileVerified ? '#22c55e' : '#8b0000', color: 'white', border: 'none', borderRadius: '6px', fontWeight: '600', fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                          >
+                            {formData.mobileVerified ? <><CheckCircle size={20} /> Verified</> : isMobileVerifying ? <><Loader size={20} className="animate-spin" /> Verifying...</> : 'Verify OTP'}
+                          </button>
+                        </>
+                      )}
                     </div>
                   )}
 
