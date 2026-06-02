@@ -3194,7 +3194,7 @@ export default function SuperAdminDashboard() {
                       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                         <thead>
                           <tr style={{ background: '#f8fafc' }}>
-                            {['#ID','Photo ID','Customer','Contact','Property','Dates','Aadhaar / Passport','Amount','Status','Submitted'].map(h => (
+                            {['#ID','Photo ID','Customer','Phone','Property','Dates','Aadhaar / Passport','Amount','Status','Submitted'].map(h => (
                               <th key={h} style={{ padding: '12px 14px', textAlign: 'left', fontWeight: 700, fontSize: 11, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1.5px solid #e2e8f0', whiteSpace: 'nowrap' }}>{h}</th>
                             ))}
                           </tr>
@@ -3218,8 +3218,9 @@ export default function SuperAdminDashboard() {
                             const nights   = b.start_date && b.end_date
                               ? Math.ceil(Math.abs(new Date(b.end_date) - new Date(b.start_date)) / 86400000)
                               : null;
-                            const photoUrl = b.user_photo
-                              ? (b.user_photo.startsWith('http') ? b.user_photo : `https://www.townmanor.ai${b.user_photo}`)
+                            const rawPhoto = b.user_photo || b.photo || b.profile_photo || b.image || b.id_photo || b.document_photo || '';
+                            const photoUrl = rawPhoto
+                              ? (rawPhoto.startsWith('http') ? rawPhoto : `https://www.townmanor.ai${rawPhoto}`)
                               : null;
 
                             return (
@@ -3238,8 +3239,13 @@ export default function SuperAdminDashboard() {
                                         src={photoUrl}
                                         alt="ID Photo"
                                         onClick={() => setBiPhotoModal(photoUrl)}
+                                        onError={e => { e.target.style.display='none'; e.target.nextSibling && (e.target.nextSibling.style.display='flex'); }}
                                         style={{ width: 64, height: 44, borderRadius: 6, objectFit: 'cover', cursor: 'zoom-in', border: '1.5px solid #e2e8f0', display: 'block' }}
                                       />
+                                      <div style={{ display:'none', width: 64, height: 44, borderRadius: 6, background: '#f1f5f9', border: '1.5px dashed #cbd5e1', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+                                        <span style={{ fontSize: 18, color: '#94a3b8' }}>🪪</span>
+                                        <span style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600 }}>LOAD ERR</span>
+                                      </div>
                                       <div style={{ fontSize: 9, color: '#94a3b8', textAlign: 'center', marginTop: 3, fontWeight: 600, letterSpacing: '0.04em' }}>CLICK TO VIEW</div>
                                     </div>
                                   ) : (
@@ -3252,19 +3258,19 @@ export default function SuperAdminDashboard() {
 
                                 {/* Customer */}
                                 <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
-                                  <div style={{ fontWeight: 700, color: '#1e293b', marginBottom: 2 }}>{b.username || '—'}</div>
-                                  <div style={{ fontSize: 11, color: '#64748b' }}>{b.email || '—'}</div>
+                                  <div style={{ fontWeight: 700, color: '#1e293b' }}>{b.username || '—'}</div>
                                 </td>
 
-                                {/* Contact */}
+                                {/* Phone */}
                                 <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
-                                  <div style={{ fontFamily: 'monospace', color: '#0f172a' }}>{b.phone_number || '—'}</div>
+                                  <div style={{ fontFamily: 'monospace', fontSize: 13, color: '#0f172a' }}>{b.phone_number || '—'}</div>
                                 </td>
 
                                 {/* Property */}
-                                <td style={{ padding: '12px 14px', maxWidth: 180 }}>
-                                  <div style={{ fontWeight: 600, color: '#1e293b', fontSize: 12 }}>{b.property_name || `Property #${b.property_id}`}</div>
-                                  <div style={{ fontSize: 11, color: '#94a3b8' }}>ID: {b.property_id}</div>
+                                <td style={{ padding: '12px 14px', maxWidth: 200 }}>
+                                  <div style={{ fontWeight: 600, color: '#1e293b', fontSize: 12 }}>{b.property?.name || b.property_name || `Property #${b.property_id}`}</div>
+                                  {b.property?.city && <div style={{ fontSize: 11, color: '#64748b', marginTop: 1 }}>{b.property.city}</div>}
+                                  <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>ID: {b.property_id}</div>
                                 </td>
 
                                 {/* Dates */}
