@@ -2051,7 +2051,7 @@ const PropertyDetailPage = () => {
           end_date: format(new Date(formData.checkOutDate), 'yyyy-MM-dd'),
           username: finalUsername, phone_number: userPhone,
           id_type: verificationMethod || 'aadhaar',
-          aadhar_number: verificationMethod === 'passport' ? '' : (aadhaarNumber || ''),
+          aadhar_number: verificationMethod === 'aadhaar' ? (aadhaarNumber || 'NOT_PROVIDED') : 'NOT_PROVIDED',
           passport_number: verificationMethod === 'passport' ? (passportInput || '') : '',
           passport_dob: verificationMethod === 'passport' ? (passportDob || '') : '',
           passport_name: verificationMethod === 'passport' ? (formData.fullName || '') : '',
