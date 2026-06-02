@@ -2026,7 +2026,7 @@ const PropertyDetailPage = () => {
       if (username) {
         try {
           const userRes = await fetch(`https://www.townmanor.ai/api/user/${username}`);
-          if (userRes.ok) { const ud = await userRes.json(); userEmail = ud.email || userEmail; userPhone = ud.phone || mobileNumber || userPhone; }
+          if (userRes.ok) { const ud = await userRes.json(); userEmail = ud.email || userEmail; userPhone = mobileNumber || ud.phone || userPhone; }
         } catch {}
       }
 
