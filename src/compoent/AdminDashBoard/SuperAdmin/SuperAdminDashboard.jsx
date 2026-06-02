@@ -3194,7 +3194,7 @@ export default function SuperAdminDashboard() {
                       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                         <thead>
                           <tr style={{ background: '#f8fafc' }}>
-                            {['#ID','Photo','Customer','Contact','Property','Dates','Aadhaar / Passport','Amount','Status','Submitted'].map(h => (
+                            {['#ID','Photo ID','Customer','Contact','Property','Dates','Aadhaar / Passport','Amount','Status','Submitted'].map(h => (
                               <th key={h} style={{ padding: '12px 14px', textAlign: 'left', fontWeight: 700, fontSize: 11, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1.5px solid #e2e8f0', whiteSpace: 'nowrap' }}>{h}</th>
                             ))}
                           </tr>
@@ -3230,17 +3230,23 @@ export default function SuperAdminDashboard() {
                                   #{b.id || '—'}
                                 </td>
 
-                                {/* Photo */}
-                                <td style={{ padding: '12px 14px' }}>
+                                {/* Photo ID */}
+                                <td style={{ padding: '10px 14px' }}>
                                   {photoUrl ? (
-                                    <img
-                                      src={photoUrl}
-                                      alt="user"
-                                      onClick={() => setBiPhotoModal(photoUrl)}
-                                      style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', cursor: 'pointer', border: '2px solid #e2e8f0' }}
-                                    />
+                                    <div style={{ position: 'relative', display: 'inline-block' }}>
+                                      <img
+                                        src={photoUrl}
+                                        alt="ID Photo"
+                                        onClick={() => setBiPhotoModal(photoUrl)}
+                                        style={{ width: 64, height: 44, borderRadius: 6, objectFit: 'cover', cursor: 'zoom-in', border: '1.5px solid #e2e8f0', display: 'block' }}
+                                      />
+                                      <div style={{ fontSize: 9, color: '#94a3b8', textAlign: 'center', marginTop: 3, fontWeight: 600, letterSpacing: '0.04em' }}>CLICK TO VIEW</div>
+                                    </div>
                                   ) : (
-                                    <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: '#94a3b8' }}>👤</div>
+                                    <div style={{ width: 64, height: 44, borderRadius: 6, background: '#f1f5f9', border: '1.5px dashed #cbd5e1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+                                      <span style={{ fontSize: 18, color: '#94a3b8' }}>🪪</span>
+                                      <span style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600 }}>NO PHOTO</span>
+                                    </div>
                                   )}
                                 </td>
 
