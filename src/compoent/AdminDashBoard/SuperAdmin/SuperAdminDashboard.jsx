@@ -83,6 +83,12 @@ export default function SuperAdminDashboard() {
   const [lpLoading, setLpLoading] = useState(false);
   const [lpSearch, setLpSearch] = useState('');
 
+  // ── Booking Inquiries states ──
+  const [biList, setBiList] = useState([]);
+  const [biLoading, setBiLoading] = useState(false);
+  const [biSearch, setBiSearch] = useState('');
+  const [biPhotoModal, setBiPhotoModal] = useState(null);
+
   // ── Self Verification states ──
   const [svList, setSvList] = useState([]);
   const [svLoading, setSvLoading] = useState(false);
@@ -410,7 +416,22 @@ export default function SuperAdminDashboard() {
   useEffect(() => {
     if (view === 'self-verification') fetchSelfVerifications();
     if (view === 'lead-purchases') fetchLeadPurchases();
+    if (view === 'booking-inquiries') fetchBookingInquiries();
   }, [view]);
+
+  const fetchBookingInquiries = async () => {
+    setBiLoading(true);
+    try {
+      const res = await axios.get('https://www.townmanor.ai/api/booking-request');
+      const list = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+      setBiList(list.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)));
+    } catch (e) {
+      console.error('Booking inquiries fetch failed', e);
+      setBiList([]);
+    } finally {
+      setBiLoading(false);
+    }
+  };
 
   const fetchLeadPurchases = async () => {
     setLpLoading(true);
@@ -1052,6 +1073,9 @@ export default function SuperAdminDashboard() {
                 <button className={view === 'lead-purchases' ? 'active' : ''} onClick={() => setView('lead-purchases')}>
                     <span className="sa-nav-icon">💳</span> Lead Purchases
                 </button>
+                <button className={view === 'booking-inquiries' ? 'active' : ''} onClick={() => setView('booking-inquiries')}>
+                    <span className="sa-nav-icon">🏨</span> Booking Inquiries
+                </button>
             </nav>
         </div>
         <div style={{ marginTop: 'auto', color: '#6b7280', fontSize: '12px' }}>
@@ -1075,6 +1099,7 @@ export default function SuperAdminDashboard() {
                 {view === 'verification' && 'Verification Badge Management'}
                 {view === 'self-verification' && 'Self Verification Submissions'}
                 {view === 'lead-purchases' && 'Lead Purchases'}
+                {view === 'booking-inquiries' && 'Booking Inquiries'}
             </h2>
             <div className="sa-user-controls">
                 <span className="sa-admin-tag">Super Admin</span>
@@ -3104,6 +3129,207 @@ export default function SuperAdminDashboard() {
                           })}
                         </tbody>
                       </table>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
+            {/* VIEW: BOOKING INQUIRIES */}
+            {view === 'booking-inquiries' && (() => {
+              const fmtD = (d) => d ? new Date(d).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—';
+              const q = biSearch.toLowerCase();
+              const filtered = biList.filter(b =>
+                !q ||
+                (b.username || '').toLowerCase().includes(q) ||
+                (b.email || '').toLowerCase().includes(q) ||
+                (b.phone_number || '').toLowerCase().includes(q) ||
+                (b.property_name || '').toLowerCase().includes(q) ||
+                String(b.property_id || '').includes(q) ||
+                String(b.id || '').includes(q) ||
+                (b.aadhar_number || '').toLowerCase().includes(q)
+              );
+              const totalAmount = biList.reduce((s, b) => s + Number(b.total_price || b.total_amount || b.amount || 0), 0);
+              const confirmed = biList.filter(b => (b.booking_status || b.status || '').toLowerCase() === 'confirmed').length;
+
+              return (
+                <div style={{ padding: '24px' }}>
+                  {/* Stats */}
+                  <div style={{ display: 'flex', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
+                    {[
+                      { label: 'Total Bookings', value: biList.length, color: '#3b82f6' },
+                      { label: 'Confirmed', value: confirmed, color: '#16a34a' },
+                      { label: 'Total Revenue', value: `₹${totalAmount.toLocaleString('en-IN')}`, color: '#c2772b' },
+                    ].map(s => (
+                      <div key={s.label} style={{ background: '#fff', border: '1.5px solid #e2e8f0', borderRadius: 14, padding: '16px 24px', flex: '1 1 160px', minWidth: 160 }}>
+                        <div style={{ fontSize: 12, color: '#64748b', fontWeight: 600, marginBottom: 6 }}>{s.label}</div>
+                        <div style={{ fontSize: 24, fontWeight: 800, color: s.color }}>{s.value}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Search + Refresh */}
+                  <div style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'center', flexWrap: 'wrap' }}>
+                    <input
+                      placeholder="Search by name, email, phone, property, Aadhaar, booking ID..."
+                      value={biSearch}
+                      onChange={e => setBiSearch(e.target.value)}
+                      style={{ flex: 1, minWidth: 260, padding: '9px 14px', borderRadius: 9, border: '1.5px solid #e2e8f0', fontSize: 13, outline: 'none' }}
+                    />
+                    <button onClick={fetchBookingInquiries} disabled={biLoading}
+                      style={{ padding: '9px 18px', borderRadius: 9, border: 'none', background: '#c2772b', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
+                      {biLoading ? 'Loading...' : '↻ Refresh'}
+                    </button>
+                  </div>
+
+                  {/* Table */}
+                  {biLoading ? (
+                    <div style={{ textAlign: 'center', padding: 60, color: '#94a3b8', fontSize: 15 }}>Loading booking inquiries...</div>
+                  ) : filtered.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: 60, color: '#94a3b8', fontSize: 15 }}>
+                      {biSearch ? 'No results found.' : 'No booking inquiries yet.'}
+                    </div>
+                  ) : (
+                    <div style={{ overflowX: 'auto', borderRadius: 14, border: '1.5px solid #e2e8f0' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                        <thead>
+                          <tr style={{ background: '#f8fafc' }}>
+                            {['#ID','Photo','Customer','Contact','Property','Dates','Aadhaar / Passport','Amount','Status','Submitted'].map(h => (
+                              <th key={h} style={{ padding: '12px 14px', textAlign: 'left', fontWeight: 700, fontSize: 11, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1.5px solid #e2e8f0', whiteSpace: 'nowrap' }}>{h}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filtered.map((b, i) => {
+                            const status = (b.booking_status || b.status || 'pending').toLowerCase();
+                            const statusStyle = {
+                              confirmed: { bg: '#dcfce7', color: '#166534' },
+                              paid:      { bg: '#dcfce7', color: '#166534' },
+                              pending:   { bg: '#fef9c3', color: '#854d0e' },
+                              accepted:  { bg: '#dbeafe', color: '#1e40af' },
+                              cancelled: { bg: '#fee2e2', color: '#991b1b' },
+                              rejected:  { bg: '#fee2e2', color: '#991b1b' },
+                            }[status] || { bg: '#f3f4f6', color: '#374151' };
+
+                            const amount   = Number(b.total_price || b.total_amount || b.amount || 0);
+                            const subtotal = Number(b.subtotal || 0);
+                            const disc     = Number(b.discount_amount || 0);
+                            const gst      = Number(b.gst_amount || 0);
+                            const nights   = b.start_date && b.end_date
+                              ? Math.ceil(Math.abs(new Date(b.end_date) - new Date(b.start_date)) / 86400000)
+                              : null;
+                            const photoUrl = b.user_photo
+                              ? (b.user_photo.startsWith('http') ? b.user_photo : `https://www.townmanor.ai${b.user_photo}`)
+                              : null;
+
+                            return (
+                              <tr key={b.id || i} style={{ borderBottom: '1px solid #f1f5f9', background: i % 2 === 0 ? '#fff' : '#fafafa' }}>
+
+                                {/* ID */}
+                                <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontSize: 12, color: '#64748b', whiteSpace: 'nowrap' }}>
+                                  #{b.id || '—'}
+                                </td>
+
+                                {/* Photo */}
+                                <td style={{ padding: '12px 14px' }}>
+                                  {photoUrl ? (
+                                    <img
+                                      src={photoUrl}
+                                      alt="user"
+                                      onClick={() => setBiPhotoModal(photoUrl)}
+                                      style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', cursor: 'pointer', border: '2px solid #e2e8f0' }}
+                                    />
+                                  ) : (
+                                    <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: '#94a3b8' }}>👤</div>
+                                  )}
+                                </td>
+
+                                {/* Customer */}
+                                <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                                  <div style={{ fontWeight: 700, color: '#1e293b', marginBottom: 2 }}>{b.username || '—'}</div>
+                                  <div style={{ fontSize: 11, color: '#64748b' }}>{b.email || '—'}</div>
+                                </td>
+
+                                {/* Contact */}
+                                <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                                  <div style={{ fontFamily: 'monospace', color: '#0f172a' }}>{b.phone_number || '—'}</div>
+                                </td>
+
+                                {/* Property */}
+                                <td style={{ padding: '12px 14px', maxWidth: 180 }}>
+                                  <div style={{ fontWeight: 600, color: '#1e293b', fontSize: 12 }}>{b.property_name || `Property #${b.property_id}`}</div>
+                                  <div style={{ fontSize: 11, color: '#94a3b8' }}>ID: {b.property_id}</div>
+                                </td>
+
+                                {/* Dates */}
+                                <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                                  <div style={{ fontSize: 12, color: '#334155' }}>{fmtD(b.start_date)} →</div>
+                                  <div style={{ fontSize: 12, color: '#334155' }}>{fmtD(b.end_date)}</div>
+                                  {nights && <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>{nights} night{nights !== 1 ? 's' : ''}</div>}
+                                </td>
+
+                                {/* Aadhaar / Passport */}
+                                <td style={{ padding: '12px 14px', fontSize: 12, minWidth: 160 }}>
+                                  {b.id_type === 'passport' || b.passport_number ? (
+                                    <>
+                                      <div style={{ marginBottom: 2 }}>
+                                        <span style={{ background: '#dbeafe', color: '#1e40af', fontWeight: 700, fontSize: 10, padding: '1px 7px', borderRadius: 10 }}>PASSPORT</span>
+                                      </div>
+                                      <div style={{ fontFamily: 'monospace', color: '#0f172a' }}>{b.passport_number || '—'}</div>
+                                      {b.passport_name && <div style={{ color: '#475569', marginTop: 1 }}>{b.passport_name}</div>}
+                                      {b.passport_dob && <div style={{ color: '#94a3b8', fontSize: 11 }}>DOB: {b.passport_dob}</div>}
+                                    </>
+                                  ) : b.aadhar_number && b.aadhar_number !== 'NOT_PROVIDED' ? (
+                                    <>
+                                      <div style={{ marginBottom: 2 }}>
+                                        <span style={{ background: '#dcfce7', color: '#166534', fontWeight: 700, fontSize: 10, padding: '1px 7px', borderRadius: 10 }}>AADHAAR</span>
+                                      </div>
+                                      <div style={{ fontFamily: 'monospace', color: '#0f172a' }}>{b.aadhar_number}</div>
+                                    </>
+                                  ) : (
+                                    <span style={{ color: '#cbd5e1' }}>—</span>
+                                  )}
+                                </td>
+
+                                {/* Amount */}
+                                <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                                  {amount > 0 ? (
+                                    <>
+                                      <div style={{ fontWeight: 800, color: '#16a34a', fontSize: 14 }}>₹{amount.toLocaleString('en-IN')}</div>
+                                      {subtotal > 0 && <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 1 }}>Sub: ₹{subtotal.toLocaleString('en-IN')}{disc > 0 ? ` · −₹${disc.toLocaleString('en-IN')}` : ''}{gst > 0 ? ` · GST ₹${gst.toLocaleString('en-IN')}` : ''}</div>}
+                                    </>
+                                  ) : <span style={{ color: '#cbd5e1' }}>—</span>}
+                                </td>
+
+                                {/* Status */}
+                                <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                                  <span style={{ background: statusStyle.bg, color: statusStyle.color, fontWeight: 700, fontSize: 11, padding: '3px 10px', borderRadius: 20, textTransform: 'capitalize' }}>
+                                    {status}
+                                  </span>
+                                  {b.payment_status === 'paid' && (
+                                    <div style={{ marginTop: 4 }}>
+                                      <span style={{ background: '#dcfce7', color: '#166534', fontWeight: 700, fontSize: 10, padding: '2px 8px', borderRadius: 20 }}>💳 Paid</span>
+                                    </div>
+                                  )}
+                                </td>
+
+                                {/* Submitted */}
+                                <td style={{ padding: '12px 14px', color: '#64748b', fontSize: 12, whiteSpace: 'nowrap' }}>
+                                  {b.created_at ? new Date(b.created_at).toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12: true }) : '—'}
+                                </td>
+
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
+                  {/* Photo lightbox */}
+                  {biPhotoModal && (
+                    <div onClick={() => setBiPhotoModal(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, cursor: 'zoom-out' }}>
+                      <img src={biPhotoModal} alt="Customer" style={{ maxWidth: '90vw', maxHeight: '85vh', borderRadius: 12, objectFit: 'contain', boxShadow: '0 8px 40px rgba(0,0,0,0.4)' }} />
                     </div>
                   )}
                 </div>
