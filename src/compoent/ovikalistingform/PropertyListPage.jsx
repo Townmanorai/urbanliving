@@ -546,7 +546,7 @@ const PropertyCard = ({ property, rentalType }) => {
   return (
     <div
       className="plp-hcard"
-      onClick={(e) => { if (!e.target.closest('[data-action]')) { const rt = isMonthly ? 'long' : 'short'; sessionStorage.setItem('ovika_rental_type', rt); sessionStorage.setItem('plp_back_expected', 'true'); navClick(e, `/property/${property.id}?rentalType=${rt}`, navigate); } }}
+      onClick={(e) => { if (!e.target.closest('[data-action]')) { const rt = isMonthly ? 'long' : 'short'; sessionStorage.setItem('ovika_rental_type', rt); sessionStorage.setItem('plp_back_expected', 'true'); try { const rv = JSON.parse(localStorage.getItem('plp_recently_viewed') || '[]'); const updated = [{ id: property.id, name: property.property_name || property.name, city: property.city }, ...rv.filter(x => x.id !== property.id)].slice(0, 5); localStorage.setItem('plp_recently_viewed', JSON.stringify(updated)); } catch {} navClick(e, `/property/${property.id}?rentalType=${rt}`, navigate); } }}
       onAuxClick={(e) => { if (!e.target.closest('[data-action]')) { const rt = isMonthly ? 'long' : 'short'; sessionStorage.setItem('ovika_rental_type', rt); sessionStorage.setItem('plp_back_expected', 'true'); auxNavClick(e, `/property/${property.id}?rentalType=${rt}`); } }}
     >
       {/* ── LEFT: Image block ── */}
@@ -987,6 +987,18 @@ const PropertyListPage = () => {
   const [userLat, setUserLat] = useState(null);
   const [userLng, setUserLng] = useState(null);
   const [nearMeLoading, setNearMeLoading] = useState(false);
+
+  // Personal suggestions: recent searches + recently viewed properties
+  const getRecentSearches = () => { try { return JSON.parse(localStorage.getItem('plp_recent_searches') || '[]'); } catch { return []; } };
+  const saveRecentSearch = (term) => {
+    if (!term.trim()) return;
+    const prev = getRecentSearches().filter(s => s.toLowerCase() !== term.toLowerCase());
+    localStorage.setItem('plp_recent_searches', JSON.stringify([term, ...prev].slice(0, 6)));
+  };
+  const removeRecentSearch = (term) => {
+    localStorage.setItem('plp_recent_searches', JSON.stringify(getRecentSearches().filter(s => s !== term)));
+  };
+  const getRecentlyViewed = () => { try { return JSON.parse(localStorage.getItem('plp_recently_viewed') || '[]'); } catch { return []; } };
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [listPopupOpen, setListPopupOpen] = useState(false);
   const [sortBy, setSortBy] = useState(_ss.sortBy ?? 'recommended');
@@ -1133,6 +1145,7 @@ const PropertyListPage = () => {
       setActiveCat(CATEGORIES.find(c => c.id === 'PG') || null);
       sessionStorage.setItem('ovika_rental_type', 'long');
     }
+    if (search.trim()) saveRecentSearch(search.trim());
     setShowCitySug(false);
     setCurrentPage(1);
   };
@@ -2483,26 +2496,104 @@ const PropertyListPage = () => {
                     style={{ flex: 1, border: 'none', outline: 'none', fontSize: 12, color: '#1a1a1a', background: 'transparent', fontFamily: 'inherit', minWidth: 0 }}
                   />
                   {search && <button onClick={() => { setSearch(''); setShowCitySug(false); }} style={{ width: 16, height: 16, borderRadius: '50%', border: 'none', background: '#e8d9c0', color: '#8B5E2A', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><FiX style={{ fontSize: 8 }} /></button>}
-                  {/* City suggestions dropdown */}
-                  {showCitySug && (
-                    <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 6, background: '#fff', border: '1.5px solid #e8d9c0', borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', zIndex: 999, maxHeight: 220, overflowY: 'auto' }}>
-                      {(search.trim()
-                        ? CITIES.filter(c => c.toLowerCase().includes(search.toLowerCase()))
-                        : CITIES
-                      ).map(city => (
-                        <div key={city} onMouseDown={() => { setSearch(city); setShowCitySug(false); setCurrentPage(1); }}
-                          style={{ padding: '8px 14px', fontSize: 13, color: '#1a1a1a', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}
-                          onMouseEnter={e => e.currentTarget.style.background = '#fdf5ec'}
-                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                        >
-                          <FiMapPin style={{ fontSize: 12, color: '#C98B3E' }} /> {city}
+                  {/* Smart suggestions dropdown */}
+                  {showCitySug && (() => {
+                    const q = search.trim().toLowerCase();
+                    const recentSearches = getRecentSearches();
+                    const recentlyViewed = getRecentlyViewed();
+                    const POPULAR_KEYWORDS = [
+                      { label: 'PG', icon: '🏠', type: 'keyword' },
+                      { label: 'Boys PG', icon: '🧑', type: 'keyword' },
+                      { label: 'Girls PG', icon: '👩', type: 'keyword' },
+                      { label: 'Co-Living', icon: '🤝', type: 'keyword' },
+                      { label: 'Noida', icon: '📍', type: 'city' },
+                      { label: 'Greater Noida', icon: '📍', type: 'city' },
+                      { label: 'Gurugram', icon: '📍', type: 'city' },
+                      { label: 'Delhi', icon: '📍', type: 'city' },
+                      { label: 'Ghaziabad', icon: '📍', type: 'city' },
+                    ];
+                    const ACTIVE_CITIES = ['Noida', 'Greater Noida', 'Gurugram', 'Delhi', 'Ghaziabad'];
+
+                    if (!q) {
+                      const hasPersonal = recentSearches.length > 0 || recentlyViewed.length > 0;
+                      return (
+                        <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 6, background: '#fff', border: '1.5px solid #e8d9c0', borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', zIndex: 999, maxHeight: 320, overflowY: 'auto' }}>
+                          {/* Recent Searches */}
+                          {recentSearches.length > 0 && (
+                            <>
+                              <div style={{ padding: '8px 14px 4px', fontSize: 10, fontWeight: 700, color: '#b89a70', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span>Recent Searches</span>
+                                <span onMouseDown={() => { localStorage.removeItem('plp_recent_searches'); setShowCitySug(false); setTimeout(() => setShowCitySug(true), 50); }} style={{ cursor: 'pointer', color: '#C98B3E', fontSize: 10 }}>Clear</span>
+                              </div>
+                              {recentSearches.map((s, i) => (
+                                <div key={i} onMouseDown={() => { setSearch(s); saveRecentSearch(s); setShowCitySug(false); setCurrentPage(1); }}
+                                  style={{ padding: '8px 14px', fontSize: 13, color: '#1a1a1a', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid #faf5ee' }}
+                                  onMouseEnter={e => e.currentTarget.style.background = '#fdf5ec'}
+                                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                >
+                                  <FiSearch style={{ fontSize: 11, color: '#b89a70', flexShrink: 0 }} />
+                                  <span style={{ flex: 1 }}>{s}</span>
+                                  <span onMouseDown={e => { e.stopPropagation(); removeRecentSearch(s); setShowCitySug(false); setTimeout(() => setShowCitySug(true), 50); }} style={{ color: '#ccc', fontSize: 14, lineHeight: 1, cursor: 'pointer' }}>×</span>
+                                </div>
+                              ))}
+                            </>
+                          )}
+                          {/* Recently Viewed */}
+                          {recentlyViewed.length > 0 && (
+                            <>
+                              <div style={{ padding: '8px 14px 4px', fontSize: 10, fontWeight: 700, color: '#b89a70', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Recently Viewed</div>
+                              {recentlyViewed.map((p, i) => (
+                                <div key={i} onMouseDown={() => { setSearch(p.name); setShowCitySug(false); setCurrentPage(1); }}
+                                  style={{ padding: '8px 14px', fontSize: 13, color: '#1a1a1a', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid #faf5ee' }}
+                                  onMouseEnter={e => e.currentTarget.style.background = '#fdf5ec'}
+                                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                                >
+                                  <span style={{ fontSize: 13 }}>🏨</span>
+                                  <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
+                                    {p.city && <div style={{ fontSize: 11, color: '#b89a70' }}>{p.city}</div>}
+                                  </div>
+                                </div>
+                              ))}
+                            </>
+                          )}
+                          {/* Popular — always show at bottom */}
+                          <div style={{ padding: '8px 14px 4px', fontSize: 10, fontWeight: 700, color: '#b89a70', letterSpacing: '0.08em', textTransform: 'uppercase', borderTop: hasPersonal ? '1px solid #f0e8d8' : 'none' }}>Popular</div>
+                          {POPULAR_KEYWORDS.map((item, i) => (
+                            <div key={i} onMouseDown={() => { setSearch(item.label); saveRecentSearch(item.label); setShowCitySug(false); setCurrentPage(1); }}
+                              style={{ padding: '8px 14px', fontSize: 13, color: '#1a1a1a', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, borderBottom: i < POPULAR_KEYWORDS.length - 1 ? '1px solid #faf5ee' : 'none' }}
+                              onMouseEnter={e => e.currentTarget.style.background = '#fdf5ec'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                            >
+                              <span>{item.icon}</span><span>{item.label}</span>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                      {search.trim() && CITIES.filter(c => c.toLowerCase().includes(search.toLowerCase())).length === 0 && (
-                        <div style={{ padding: '10px 14px', fontSize: 12, color: '#999' }}>No matching city — searching "{search}"</div>
-                      )}
-                    </div>
-                  )}
+                      );
+                    }
+
+                    // Typing state — show matching results
+                    const matchCities = ACTIVE_CITIES.filter(c => c.toLowerCase().includes(q)).map(c => ({ label: c, icon: '📍', type: 'city' }));
+                    const matchProps = properties.filter(p => (p.property_name || p.name || '').toLowerCase().includes(q)).slice(0, 4).map(p => ({ label: p.property_name || p.name, icon: '🏨', type: 'property' }));
+                    const matchKw = POPULAR_KEYWORDS.filter(k => k.label.toLowerCase().includes(q));
+                    const items = [...matchCities, ...matchKw, ...matchProps];
+                    if (items.length === 0) return null;
+                    return (
+                      <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 6, background: '#fff', border: '1.5px solid #e8d9c0', borderRadius: 10, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', zIndex: 999, maxHeight: 260, overflowY: 'auto' }}>
+                        {items.map((item, i) => (
+                          <div key={i} onMouseDown={() => { setSearch(item.label); saveRecentSearch(item.label); setShowCitySug(false); setCurrentPage(1); }}
+                            style={{ padding: '8px 14px', fontSize: 13, color: '#1a1a1a', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, borderBottom: i < items.length - 1 ? '1px solid #faf5ee' : 'none' }}
+                            onMouseEnter={e => e.currentTarget.style.background = '#fdf5ec'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                          >
+                            <span>{item.icon}</span>
+                            <span style={{ flex: 1 }}>{item.label}</span>
+                            {item.type === 'property' && <span style={{ fontSize: 10, color: '#b89a70' }}>Property</span>}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Combined Dates field (nightly only) */}
