@@ -1032,7 +1032,12 @@ const PropertyListPage = () => {
     try { return JSON.parse(p.meta); } catch { return {}; }
   };
 
+  const MONTHLY_ONLY_IDS = [1105];
+
   const isLongTermProperty = (p) => {
+    // 0. Manual overrides — force specific property IDs to monthly
+    if (MONTHLY_ONLY_IDS.includes(Number(p.id))) return true;
+
     // 1. Explicit rental_type field (set by forms after fix)
     if (p.rental_type === 'short') return false;
     if (p.rental_type === 'long') return true;
@@ -1193,12 +1198,14 @@ const PropertyListPage = () => {
       });
     } else {
       result = result.filter(p => {
+        if (MONTHLY_ONLY_IDS.includes(Number(p.id || p.property_id))) return false; // force exclude from nightly
         if (SIGNATURE_NIGHTLY_IDS.includes(Number(p.id || p.property_id))) return true;
         if (p.rental_type === 'long') return false; // explicitly monthly → exclude from nightly
         return p.property_category === 'PG' || !isLongTermProperty(p);
       });
 
       result = result.filter(p => {
+        if (MONTHLY_ONLY_IDS.includes(Number(p.id || p.property_id))) return false;
         if (p.property_category !== 'PG') return true;
         // Monthly PG properties (no nightly price) should NOT appear in nightly
         const nightlyPrice = getPgNightlyPrice(p);
