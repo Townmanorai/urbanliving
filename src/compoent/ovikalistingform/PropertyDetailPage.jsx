@@ -414,11 +414,9 @@ const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookN
                 <td className="rm-td rm-col--bath">
                   <BathBadge attached={room.attachedBathroom} />
                 </td>
-                {isFirst && (
-                  <td className="rm-td rm-col--area" rowSpan={rowCount} style={{ verticalAlign:'middle' }}>
-                    <span className="rm-area-val">{area || '—'}</span>
-                  </td>
-                )}
+                <td className="rm-td rm-col--area">
+                  <span className="rm-area-val">{room.areaSqFt ? `${room.areaSqFt} sqft` : (area || '—')}</span>
+                </td>
                 {isFirst && (
                   <td className="rm-td rm-td--price" rowSpan={rowCount} style={{ verticalAlign:'middle' }}>
                     <PriceCell price={price} unit={priceUnit} />
