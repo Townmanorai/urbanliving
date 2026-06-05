@@ -319,7 +319,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
         // furnishing: normalize value to match dropdown options exactly
         const rawFurnishing = meta.furnishing || guestPolicy.furnishing || data.furnishing || '';
         const furnishingNormalized = rawFurnishing.toLowerCase().replace(/[\s-]/g, '');
-        const furnishingValue = FURNISHING_STATUS.find(s => s.toLowerCase().replace(/[\s-]/g, '') === furnishingNormalized) || FURNISHING_STATUS[0];
+        const furnishingValue = FURNISHING_STATUS.find(s => s.toLowerCase().replace(/[\s-]/g, '') === furnishingNormalized) || FURNISHING_STATUS[1];
 
         const updatedForm = {
           ...prevForm,
@@ -1083,7 +1083,17 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
                 </div>
                 <div className="field-group">
                   <label>Overall Furnishing</label>
-                  <select name="furnishing" value={form.furnishing} onChange={handleChange}>
+                  <select name="furnishing" value={form.furnishing} onChange={e => {
+                    const val = e.target.value;
+                    setForm(f => ({
+                      ...f,
+                      furnishing: val,
+                      bedroomDetails: (f.bedroomDetails || []).map(room => ({
+                        ...room,
+                        furnished: val === 'Fully Furnished' ? true : val === 'Unfurnished' ? false : room.furnished,
+                      })),
+                    }));
+                  }}>
                     {FURNISHING_STATUS.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>

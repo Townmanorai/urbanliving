@@ -490,6 +490,7 @@ const PGListingForm = () => {
         unmarried_couple_allowed: form.houseRules.includes("Couple Friendly"),
         bachelors_allowed: form.preferredTenants.some(t => t.includes("Bachelors")),
         preferredTenants: form.preferredTenants || [],
+        furnishing: form.furnishing || "",
       }));
       fd.append("cover_photo_index", String(coverIndex));
 
@@ -958,7 +959,17 @@ const PGListingForm = () => {
                 </div>
                 <div className="field-group">
                   <label>Overall Furnishing</label>
-                  <select name="furnishing" value={form.furnishing} onChange={handleChange}>
+                  <select name="furnishing" value={form.furnishing} onChange={e => {
+                    const val = e.target.value;
+                    setForm(f => ({
+                      ...f,
+                      furnishing: val,
+                      bedroomDetails: f.bedroomDetails.map(room => ({
+                        ...room,
+                        furnished: val === 'Fully Furnished' ? true : val === 'Unfurnished' ? false : room.furnished,
+                      })),
+                    }));
+                  }}>
                     {FURNISHING_STATUS.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
