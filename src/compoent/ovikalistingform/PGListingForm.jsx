@@ -689,6 +689,11 @@ const PGListingForm = () => {
                             <input type="number" value={room.bedCount} onChange={(e) => updateRoom(idx, 'bedCount', Number(e.target.value))} />
                           </div>
 
+                          <div className="field-group">
+                            <label>Room Area (sq.ft)</label>
+                            <input type="number" placeholder="e.g. 120" value={room.areaSqFt || ''} onChange={(e) => updateRoom(idx, 'areaSqFt', e.target.value)} />
+                          </div>
+
                           {/* ── Price fields: show for PG always; for non-PG only when usePerRoomPricing=true ── */}
                           {(isPG || usePerRoomPricing) && (
                             <>

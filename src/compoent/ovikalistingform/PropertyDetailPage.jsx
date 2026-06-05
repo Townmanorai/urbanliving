@@ -171,7 +171,14 @@ const transformPropertyData = (data) => {
 
   let parsedBedrooms;
   if (detailedBedrooms.length > 0) {
-    parsedBedrooms = detailedBedrooms;
+    // Merge areaSqFt from rawBedrooms into detailedBedrooms (rawBedrooms has latest data)
+    parsedBedrooms = detailedBedrooms.map((room, idx) => {
+      const raw = rawBedrooms[idx];
+      return {
+        ...room,
+        areaSqFt: room.areaSqFt || raw?.areaSqFt || '',
+      };
+    });
   } else if (rawBedrooms.length > 0) {
     const parsedBathsArr = parseJsonField(data.bathrooms || parsedMeta.bathrooms);
 

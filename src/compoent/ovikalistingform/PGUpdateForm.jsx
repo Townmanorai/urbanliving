@@ -272,13 +272,17 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
         });
       }
 
-      const rawBedrooms = meta.bedroomDetails || data.bedrooms;
-      const sanitizedBedrooms = (Array.isArray(rawBedrooms) ? rawBedrooms : []).map(room => ({
+      const rawBedroomsRaw = meta.bedroomDetails || data.bedrooms;
+      const rawBedrooms = Array.isArray(rawBedroomsRaw)
+        ? rawBedroomsRaw
+        : (() => { try { return JSON.parse(rawBedroomsRaw) || []; } catch { return []; } })();
+      const sanitizedBedrooms = rawBedrooms.map(room => ({
         ...room,
         type: room.type || (data.property_category === 'PG' ? SHARING_TYPES[0] : ROOM_CATEGORIES[0]),
         roomNumber: room.roomNumber || "",
         bedType: room.bedType || BED_TYPES[0],
         bedCount: room.bedCount || 1,
+        areaSqFt: room.areaSqFt || "",
         price: room.price || "",
         securityDeposit: room.securityDeposit || "",
         maintenanceCharge: room.maintenanceCharge || "",
@@ -819,6 +823,15 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
                             <input type="number" value={room.bedCount} onChange={(e) => {
                               const newList = [...form.bedroomDetails];
                               newList[idx].bedCount = Number(e.target.value);
+                              setForm(f => ({ ...f, bedroomDetails: newList }));
+                            }} />
+                          </div>
+
+                          <div className="field-group">
+                            <label>Room Area (sq.ft)</label>
+                            <input type="number" placeholder="e.g. 120" value={room.areaSqFt || ''} onChange={(e) => {
+                              const newList = [...form.bedroomDetails];
+                              newList[idx].areaSqFt = e.target.value;
                               setForm(f => ({ ...f, bedroomDetails: newList }));
                             }} />
                           </div>
