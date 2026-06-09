@@ -1,6 +1,6 @@
 
 
-import { UserCircle2 } from "lucide-react";
+import { UserCircle2, LogOut } from "lucide-react";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { AuthContext } from "../Login/AuthContext";
@@ -46,6 +46,8 @@ export default function Navbar() {
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [hamburgerMenuOpen, setHamburgerMenuOpen] = useState(false);
   const [rentalCategoryPopup, setRentalCategoryPopup] = useState(false);
+  const [logoutConfirm, setLogoutConfirm] = useState(false);
+  const [logoutToast, setLogoutToast] = useState(false);
   const navigate = useNavigate();
   const { user, logout, login } = useContext(AuthContext);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -124,15 +126,21 @@ export default function Navbar() {
     return () => { document.body.style.overflow = ''; };
   }, [hamburgerMenuOpen, sideMenuOpen, rentalCategoryPopup]);
 
-  const handleLogout = () => {
+  const openLogoutConfirm = () => {
     setSideMenuOpen(false);
     setHamburgerMenuOpen(false);
+    setLogoutConfirm(true);
+  };
+
+  const handleLogout = () => {
+    setLogoutConfirm(false);
+    setLogoutToast(true);
     try {
       STORAGE_KEYS.forEach((k) => localStorage.removeItem(k));
       try { sessionStorage.removeItem("user"); sessionStorage.removeItem("tm_user"); } catch (_) { }
     } catch (_) { }
     try { logout(); } catch (_) { }
-    window.location.href = "/";
+    setTimeout(() => { window.location.href = "/"; }, 1800);
   };
 
   const navBtnStyle = {
@@ -226,6 +234,38 @@ export default function Navbar() {
           </>
         )}
 
+        {/* ── LOGOUT CONFIRMATION POPUP (Mobile) ── */}
+        {logoutConfirm && (
+          <>
+            <div onClick={() => setLogoutConfirm(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 2000000 }} />
+            <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(300px, 86vw)", background: "#fff", borderRadius: 16, boxShadow: "0 16px 48px rgba(58,36,16,0.18)", zIndex: 2000001, overflow: "hidden", animation: "scaleIn .22s ease-out" }}>
+              <div style={{ padding: "28px 24px 20px", textAlign: "center", borderBottom: "1px solid #f5ede0" }}>
+                <div style={{ width: 48, height: 48, borderRadius: "50%", background: "#fdf3e7", border: "1.5px solid #e8d5b7", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
+                  <LogOut size={20} color="#c2772b" strokeWidth={1.8} />
+                </div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "#1a1a1a", fontFamily: "Poppins, sans-serif", marginBottom: 6 }}>Log Out</div>
+                <div style={{ fontSize: 12.5, color: "#888", fontWeight: 400, fontFamily: "Poppins, sans-serif", lineHeight: 1.5 }}>Are you sure you want to log out?</div>
+              </div>
+              <div style={{ padding: "16px 18px 20px", display: "flex", flexDirection: "column", gap: 9 }}>
+                <button onClick={handleLogout} style={{ border: "none", background: "linear-gradient(135deg, #c2772b, #a85e1f)", color: "#fff", fontWeight: 500, fontSize: 13.5, borderRadius: 10, padding: "11px 0", cursor: "pointer", width: "100%", fontFamily: "Poppins, sans-serif", letterSpacing: "0.2px" }}>
+                  Yes, Log Out
+                </button>
+                <button onClick={() => setLogoutConfirm(false)} style={{ border: "1.5px solid #e8d5b7", background: "#fdf8f2", color: "#7a5c35", fontWeight: 400, fontSize: 13.5, borderRadius: 10, padding: "11px 0", cursor: "pointer", width: "100%", fontFamily: "Poppins, sans-serif" }}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ── LOGOUT SUCCESS TOAST (Mobile) ── */}
+        {logoutToast && (
+          <div style={{ position: "fixed", bottom: 28, left: "50%", transform: "translateX(-50%)", background: "#2d1f0e", color: "#fff", padding: "11px 22px", borderRadius: 30, fontSize: 13, fontWeight: 400, fontFamily: "Poppins, sans-serif", zIndex: 2000002, display: "flex", alignItems: "center", gap: 9, boxShadow: "0 4px 20px rgba(58,36,16,0.3)", whiteSpace: "nowrap", animation: "fadeIn 0.3s ease-out" }}>
+            <LogOut size={14} color="#c2772b" strokeWidth={2} />
+            Logged out successfully
+          </div>
+        )}
+
         {/* ── SINGLE RIGHT PANEL — all items ── */}
         {sideMenuOpen && (
           <>
@@ -243,58 +283,95 @@ export default function Navbar() {
                     </div>
                   </div>
                 ) : (
-                  <div style={{ fontSize: 15, fontWeight: 700, color: "#1a1a1a" }}>Menu</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1a1a1a" }}>Welcome</div>
                 )}
                 <button onClick={closeMobileMenu} style={{ border: "none", background: "#f3f3f3", width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, cursor: "pointer", flexShrink: 0 }}>✕</button>
               </div>
 
-              {/* All nav items */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 2, padding: "12px 12px 8px", flex: 1 }}>
-                {[
-                  { icon: "🏠", label: "Home", path: "/", action: (e) => { closeMobileMenu(); navClick(e, "/", navigate); } },
-                  { icon: "🌙", label: "Nightly Stays", path: "/nightly-stays", action: (e) => { closeMobileMenu(); navClick(e, "/nightly-stays", navigate); } },
-                  { icon: "📅", label: "Monthly Rental", path: "/monthly-rentals", action: (e) => { closeMobileMenu(); navClick(e, "/monthly-rentals", navigate); } },
-                  { icon: "✨", label: "Signature Stays", path: "/properties?category=Signature+Stays", action: (e) => { closeMobileMenu(); handleSignatureStaysClick(e); } },
-                  { icon: "🏘️", label: "List Property", action: () => { closeMobileMenu(); setRentalCategoryPopup(true); } },
-                  { icon: "📈", label: "ROI Calculator", path: "/roi-calculator", action: (e) => { closeMobileMenu(); navClick(e, "/roi-calculator", navigate); } },
-                  { icon: "📊", label: "Profile", path: "/dashboard", action: (e) => { closeMobileMenu(); navClick(e, "/dashboard", navigate); } },
-                  { icon: "🛡️", label: "Owner Dashboard", path: "/admindashboard", action: (e) => { closeMobileMenu(); navClick(e, "/admindashboard", navigate); } },
-                  { icon: "💬", label: "Buy Leads", path: "/buy-leads", action: (e) => { closeMobileMenu(); navClick(e, "/buy-leads", navigate); } },
-                  { icon: "📞", label: "Contact / Support", path: "/contactus", action: (e) => { closeMobileMenu(); navClick(e, "/contactus", navigate); } },
-                  { icon: "💼", label: "Career", path: "/career-support", action: (e) => { closeMobileMenu(); goCareer(e); } },
-                  { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: 18, height: "auto" }} />, label: "OvikaLiving Verified", path: "/ovika-verified", action: (e) => { closeMobileMenu(); goOvikaVerified(e); } },
-                  { icon: "✅", label: "Self Verification", path: "/ovika-self-verified", action: (e) => { closeMobileMenu(); goSelfVerified(e); } },
-                  { icon: "🗺️", label: "Explore Townmanor", action: () => { closeMobileMenu(); window.open("https://www.townmanor.ai/", "_blank"); } },
-                ].map((item) => (
-                  <button key={item.label} onClick={(e) => item.action(e)}
-                    onAuxClick={(e) => item.path ? auxNavClick(e, item.path) : null}
-                    style={{ border: "none", background: "transparent", padding: "9px 8px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", width: "100%", borderRadius: 10, transition: "background 0.15s", textAlign: "left" }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = "#fef9f2"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
-                  >
-                    <span style={{ width: 30, height: 30, borderRadius: 10, background: "#f4f4f4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>{item.icon}</span>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 500, color: "#232323" }}>{item.label}</div>
-                      <div style={{ fontSize: 10, color: "#8a8a8a" }}>{item.sub}</div>
-                    </div>
-                  </button>
-                ))}
-              </div>
+              {user ? (
+                <>
+                  {/* Nav items — only when logged in */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 2, padding: "12px 12px 8px", flex: 1 }}>
+                    {[
+                      { icon: "🏠", label: "Home", path: "/", action: (e) => { closeMobileMenu(); navClick(e, "/", navigate); } },
+                      { icon: "🌙", label: "Nightly Stays", path: "/nightly-stays", action: (e) => { closeMobileMenu(); navClick(e, "/nightly-stays", navigate); } },
+                      { icon: "📅", label: "Monthly Rental", path: "/monthly-rentals", action: (e) => { closeMobileMenu(); navClick(e, "/monthly-rentals", navigate); } },
+                      { icon: "✨", label: "Signature Stays", path: "/properties?category=Signature+Stays", action: (e) => { closeMobileMenu(); handleSignatureStaysClick(e); } },
+                      { icon: "🏘️", label: "List Property", action: () => { closeMobileMenu(); setRentalCategoryPopup(true); } },
+                      { icon: "📈", label: "ROI Calculator", path: "/roi-calculator", action: (e) => { closeMobileMenu(); navClick(e, "/roi-calculator", navigate); } },
+                      { icon: "📊", label: "Profile", path: "/dashboard", action: (e) => { closeMobileMenu(); navClick(e, "/dashboard", navigate); } },
+                      { icon: "🛡️", label: "Owner Dashboard", path: "/admindashboard", action: (e) => { closeMobileMenu(); navClick(e, "/admindashboard", navigate); } },
+                      { icon: "💬", label: "Buy Leads", path: "/buy-leads", action: (e) => { closeMobileMenu(); navClick(e, "/buy-leads", navigate); } },
+                      { icon: "📞", label: "Contact / Support", path: "/contactus", action: (e) => { closeMobileMenu(); navClick(e, "/contactus", navigate); } },
+                      { icon: "💼", label: "Career", path: "/career-support", action: (e) => { closeMobileMenu(); goCareer(e); } },
+                      { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: 18, height: "auto" }} />, label: "OvikaLiving Verified", path: "/ovika-verified", action: (e) => { closeMobileMenu(); goOvikaVerified(e); } },
+                      { icon: "✅", label: "Self Verification", path: "/ovika-self-verified", action: (e) => { closeMobileMenu(); goSelfVerified(e); } },
+                      { icon: "🗺️", label: "Explore Townmanor", action: () => { closeMobileMenu(); window.open("https://www.townmanor.ai/", "_blank"); } },
+                    ].map((item) => (
+                      <button key={item.label} onClick={(e) => item.action(e)}
+                        onAuxClick={(e) => item.path ? auxNavClick(e, item.path) : null}
+                        style={{ border: "none", background: "transparent", padding: "9px 8px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", width: "100%", borderRadius: 10, transition: "background 0.15s", textAlign: "left" }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = "#fef9f2"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                      >
+                        <span style={{ width: 30, height: 30, borderRadius: 10, background: "#f4f4f4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>{item.icon}</span>
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 500, color: "#232323" }}>{item.label}</div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
 
-              {/* Footer: login / logout */}
-              <div style={{ padding: "12px 12px 24px", borderTop: "1px solid #f0e8d8" }}>
-                {user ? (
-                  <button onClick={() => { closeMobileMenu(); handleLogout(); }} style={{ border: "none", background: "#fdeceb", padding: "10px 14px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", width: "100%", borderRadius: 10 }}>
-                    <span style={{ width: 28, height: 28, borderRadius: "50%", background: "#f8d7d7", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "#c23e3e" }}>⬅</span>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: "#c23e3e" }}>Log out</span>
+                  {/* Footer: logout */}
+                  <div style={{ padding: "12px 12px 24px", borderTop: "1px solid #f0e8d8" }}>
+                    <button onClick={openLogoutConfirm} style={{ border: "1.5px solid #f0ddd0", background: "#fff8f5", padding: "10px 14px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", width: "100%", borderRadius: 10 }}>
+                      <span style={{ width: 28, height: 28, borderRadius: "50%", background: "#fdf3e7", display: "flex", alignItems: "center", justifyContent: "center", color: "#c2772b" }}>
+                        <LogOut size={14} strokeWidth={2} color="#c2772b" />
+                      </span>
+                      <span style={{ fontSize: 13, fontWeight: 500, color: "#c2772b" }}>Log Out</span>
+                    </button>
+                  </div>
+                </>
+              ) : (
+                /* ── NOT LOGGED IN: Sign In screen ── */
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "32px 24px 40px" }}>
+                  {/* SVG illustration */}
+                  <svg width="110" height="110" viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginBottom: 24 }}>
+                    <circle cx="55" cy="55" r="54" fill="#fdf3e7" stroke="#e8d5b7" strokeWidth="1.5" />
+                    {/* House */}
+                    <path d="M30 62 L55 38 L80 62" stroke="#c2772b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                    <rect x="36" y="62" width="38" height="26" rx="2" fill="#fff" stroke="#c2772b" strokeWidth="2" />
+                    {/* Door */}
+                    <rect x="49" y="72" width="12" height="16" rx="2" fill="#fdf3e7" stroke="#c2772b" strokeWidth="1.5" />
+                    {/* Window left */}
+                    <rect x="39" y="67" width="8" height="7" rx="1.5" fill="#fdf3e7" stroke="#c2772b" strokeWidth="1.5" />
+                    {/* Window right */}
+                    <rect x="63" y="67" width="8" height="7" rx="1.5" fill="#fdf3e7" stroke="#c2772b" strokeWidth="1.5" />
+                    {/* Person */}
+                    <circle cx="55" cy="30" r="6" fill="#c2772b" opacity="0.15" stroke="#c2772b" strokeWidth="1.5" />
+                    <path d="M49 53 Q55 48 61 53" stroke="#c2772b" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                  </svg>
+
+                  <div style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", fontFamily: "Poppins, sans-serif", marginBottom: 8, textAlign: "center" }}>
+                    Sign in to OvikaLiving
+                  </div>
+                  <div style={{ fontSize: 12.5, color: "#888", fontWeight: 400, fontFamily: "Poppins, sans-serif", textAlign: "center", lineHeight: 1.6, marginBottom: 28 }}>
+                    Access your bookings, listings,<br />and account settings
+                  </div>
+
+                  <button
+                    onClick={(e) => { closeMobileMenu(); handleLogin(e); }}
+                    style={{ border: "none", background: "linear-gradient(135deg, #c2772b, #a85e1f)", color: "#fff", fontWeight: 500, fontSize: 14, borderRadius: 12, padding: "13px 0", cursor: "pointer", width: "100%", fontFamily: "Poppins, sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 9, letterSpacing: "0.2px", boxShadow: "0 4px 16px rgba(194,119,43,0.3)" }}
+                  >
+                    <UserCircle2 size={18} strokeWidth={1.8} color="#fff" />
+                    Sign In
                   </button>
-                ) : (
-                  <button onClick={() => { closeMobileMenu(); handleLogin(); }} style={{ border: "none", background: "linear-gradient(135deg, #c2772b, #a85e1f)", padding: "11px 14px", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer", width: "100%", borderRadius: 10 }}>
-                    <UserCircle2 size={18} strokeWidth={2} color="#fff" />
-                    <span style={{ fontSize: 13, fontWeight: 600, color: "#fff", fontFamily: "Poppins, sans-serif" }}>Sign In</span>
-                  </button>
-                )}
-              </div>
+
+                  <div style={{ marginTop: 14, fontSize: 11.5, color: "#aaa", fontFamily: "Poppins, sans-serif", textAlign: "center" }}>
+                    New here? Sign in to get started
+                  </div>
+                </div>
+              )}
             </div>
           </>
         )}
@@ -483,6 +560,46 @@ export default function Navbar() {
         </>
       )}
 
+      {/* ── LOGOUT CONFIRMATION POPUP ── */}
+      {logoutConfirm && (
+        <>
+          <div onClick={() => setLogoutConfirm(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 2000000 }} />
+          <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(300px, 88vw)", background: "#fff", borderRadius: 16, boxShadow: "0 16px 48px rgba(58,36,16,0.18)", zIndex: 2000001, overflow: "hidden", animation: "scaleIn .22s ease-out" }}>
+            <div style={{ padding: "28px 24px 20px", textAlign: "center", borderBottom: "1px solid #f5ede0" }}>
+              <div style={{ width: 48, height: 48, borderRadius: "50%", background: "#fdf3e7", border: "1.5px solid #e8d5b7", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
+                <LogOut size={20} color="#c2772b" strokeWidth={1.8} />
+              </div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: "#1a1a1a", fontFamily: "Poppins, sans-serif", marginBottom: 6 }}>Log Out</div>
+              <div style={{ fontSize: 12.5, color: "#888", fontWeight: 400, fontFamily: "Poppins, sans-serif", lineHeight: 1.5 }}>Are you sure you want to log out?</div>
+            </div>
+            <div style={{ padding: "16px 18px 20px", display: "flex", flexDirection: "column", gap: 9 }}>
+              <button
+                onClick={handleLogout}
+                style={{ border: "none", background: "linear-gradient(135deg, #c2772b, #a85e1f)", color: "#fff", fontWeight: 500, fontSize: 13.5, borderRadius: 10, padding: "11px 0", cursor: "pointer", width: "100%", fontFamily: "Poppins, sans-serif", letterSpacing: "0.2px", transition: "opacity 0.2s" }}
+                onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.88"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
+              >
+                Yes, Log Out
+              </button>
+              <button
+                onClick={() => setLogoutConfirm(false)}
+                style={{ border: "1.5px solid #e8d5b7", background: "#fdf8f2", color: "#7a5c35", fontWeight: 400, fontSize: 13.5, borderRadius: 10, padding: "11px 0", cursor: "pointer", width: "100%", fontFamily: "Poppins, sans-serif" }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── LOGOUT SUCCESS TOAST ── */}
+      {logoutToast && (
+        <div style={{ position: "fixed", bottom: 28, left: "50%", transform: "translateX(-50%)", background: "#2d1f0e", color: "#fff", padding: "11px 24px", borderRadius: 30, fontSize: 13, fontWeight: 400, fontFamily: "Poppins, sans-serif", zIndex: 2000002, display: "flex", alignItems: "center", gap: 9, boxShadow: "0 4px 20px rgba(58,36,16,0.3)", whiteSpace: "nowrap", animation: "fadeIn 0.3s ease-out" }}>
+          <LogOut size={14} color="#c2772b" strokeWidth={2} />
+          Logged out successfully
+        </div>
+      )}
+
       {/* ── RIGHT USER PANEL (Desktop) ── */}
       {user && sideMenuOpen && (
         <>
@@ -540,7 +657,7 @@ export default function Navbar() {
                 </div>
               </button>
               <hr style={{ border: "none", borderTop: "1px solid #eee", margin: "13px 0" }} />
-              <button onClick={handleLogout} style={{ border: "none", background: "transparent", padding: "8px 4px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+              <button onClick={openLogoutConfirm} style={{ border: "none", background: "transparent", padding: "8px 4px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
                 <span style={{ width: 28, height: 28, borderRadius: 999, background: "#fdeceb", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, color: "#c23e3e" }}>⬅</span>
                 <span style={{ fontSize: 14, fontWeight: 500, color: "#c23e3e" }}>Log out</span>
               </button>
