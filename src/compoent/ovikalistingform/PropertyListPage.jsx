@@ -724,6 +724,7 @@ const SidebarContent = ({
   foodFilter, setFoodFilter,
   petsFilter, setPetsFilter,
   coupleFilter, setCoupleFilter,
+  pgSubFilter, setPgSubFilter,
   resetSidebar, onDone,
 }) => {
   const sectionTitle = (text) => (
@@ -792,7 +793,7 @@ const SidebarContent = ({
           {CATEGORIES.map(cat => {
             const isActive = activeCat?.id === cat.id;
             return (
-              <button key={cat.id} onClick={() => setActiveCat(isActive ? null : cat)} style={{
+              <button key={cat.id} onClick={() => { setActiveCat(isActive ? null : cat); if (cat.id !== 'PG & Co-Living') setPgSubFilter?.(null); }} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 7,
                 padding: '8px 12px', borderRadius: 9, textAlign: 'left',
                 border: `1.5px solid ${isActive ? '#C98B3E' : '#e8e8e8'}`,
@@ -808,6 +809,37 @@ const SidebarContent = ({
           })}
         </div>
       </div>
+
+      {/* PG Sub-filter chips — only when PG & Co-Living category is active */}
+      {activeCat?.id === 'PG & Co-Living' && (
+        <div style={{ marginBottom: 18 }}>
+          {sectionTitle('PG Type')}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {[
+              { id: 'boys',    label: 'Boys PG' },
+              { id: 'girls',   label: 'Girls PG' },
+              { id: 'coliving', label: 'Co-Living' },
+            ].map(({ id, label }) => {
+              const active = pgSubFilter === id;
+              return (
+                <button
+                  key={id}
+                  onClick={() => setPgSubFilter(active ? null : id)}
+                  style={{
+                    padding: '7px 14px', borderRadius: 20, fontSize: 12, fontWeight: active ? 700 : 500,
+                    border: `1.5px solid ${active ? '#C98B3E' : '#e8e8e8'}`,
+                    background: active ? '#FFF6EE' : '#fafafa',
+                    color: active ? '#C98B3E' : '#555',
+                    cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.18s ease',
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {divider}
 
@@ -986,6 +1018,7 @@ const PropertyListPage = () => {
   const [foodFilter, setFoodFilter] = useState(_ss.foodFilter ?? null);
   const [petsFilter, setPetsFilter] = useState(_ss.petsFilter ?? null);
   const [coupleFilter, setCoupleFilter] = useState(_ss.coupleFilter ?? null);
+  const [pgSubFilter, setPgSubFilter] = useState(_ss.pgSubFilter ?? null);
   const [userLat, setUserLat] = useState(null);
   const [userLng, setUserLng] = useState(null);
   const [nearMeLoading, setNearMeLoading] = useState(false);
@@ -1101,6 +1134,7 @@ const PropertyListPage = () => {
     setPropTypeFilter([]); setAmenitiesFilter([]);
     setFurnishingFilter(null); setTenantFilter(null);
     setFoodFilter(null); setPetsFilter(null); setCoupleFilter(null);
+    setPgSubFilter(null);
     setUserLat(null); setUserLng(null);
     setSearch('');
     setActiveCat(null);
@@ -1463,11 +1497,11 @@ const PropertyListPage = () => {
       search, activeCat, rentalType, guests, checkIn, checkOut,
       priceMin, priceMax, roomsFilter, propTypeFilter, amenitiesFilter,
       furnishingFilter, tenantFilter, foodFilter, petsFilter, coupleFilter,
-      sortBy, currentPage,
+      pgSubFilter, sortBy, currentPage,
     }));
   }, [search, activeCat, rentalType, guests, checkIn, checkOut, priceMin, priceMax,
       roomsFilter, propTypeFilter, amenitiesFilter, furnishingFilter, tenantFilter,
-      foodFilter, petsFilter, coupleFilter, sortBy, currentPage]);
+      foodFilter, petsFilter, coupleFilter, pgSubFilter, sortBy, currentPage]);
 
   // ── Restore scroll position after data loads (back navigation) ──
   useEffect(() => {
@@ -1609,6 +1643,19 @@ const PropertyListPage = () => {
       });
     }
 
+    // PG sub-filter: Boys PG / Girls PG / Co-Living
+    if (pgSubFilter && activeCat?.id === 'PG & Co-Living') {
+      filteredResults = filteredResults.filter(p => {
+        const pName = (p.property_name || '').toLowerCase();
+        const pType = (p.property_type || p.type || '').toLowerCase();
+        const pCat  = (p.property_category || '').toLowerCase();
+        if (pgSubFilter === 'boys')    return pType.includes('boys') || pName.includes('boys pg') || pName.includes('boys');
+        if (pgSubFilter === 'girls')   return pType.includes('girls') || pName.includes('girls pg') || pName.includes('girls');
+        if (pgSubFilter === 'coliving') return pType.includes('co-living') || pType.includes('coliving') || pCat.includes('co-living') || pCat.includes('coliving') || pName.includes('co-living') || pName.includes('coliving');
+        return true;
+      });
+    }
+
     // When search query is active, results are already sorted by keyword match score
     // — don't override with Signature-first pinning in that case
     const isSearchActive = search && search.trim().length > 0;
@@ -1649,7 +1696,7 @@ const PropertyListPage = () => {
     } else {
       setCurrentPage(1);
     }
-  }, [search, activeCat, properties, rentalType, priceMin, priceMax, roomsFilter, propTypeFilter, amenitiesFilter, furnishingFilter, tenantFilter, foodFilter, petsFilter, coupleFilter, sortBy, userLat, userLng]);
+  }, [search, activeCat, properties, rentalType, priceMin, priceMax, roomsFilter, propTypeFilter, amenitiesFilter, furnishingFilter, tenantFilter, foodFilter, petsFilter, coupleFilter, pgSubFilter, sortBy, userLat, userLng]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -2288,6 +2335,7 @@ const PropertyListPage = () => {
               foodFilter={foodFilter} setFoodFilter={setFoodFilter}
               petsFilter={petsFilter} setPetsFilter={setPetsFilter}
               coupleFilter={coupleFilter} setCoupleFilter={setCoupleFilter}
+              pgSubFilter={pgSubFilter} setPgSubFilter={setPgSubFilter}
               resetSidebar={resetSidebar}
               onDone={() => setSidebarOpen(false)}
             />
@@ -2442,6 +2490,7 @@ const PropertyListPage = () => {
             foodFilter={foodFilter} setFoodFilter={setFoodFilter}
             petsFilter={petsFilter} setPetsFilter={setPetsFilter}
             coupleFilter={coupleFilter} setCoupleFilter={setCoupleFilter}
+            pgSubFilter={pgSubFilter} setPgSubFilter={setPgSubFilter}
             resetSidebar={resetSidebar}
           />
         </div>
@@ -2473,16 +2522,20 @@ const PropertyListPage = () => {
               >
                 <FiTag style={{ fontSize: 13 }} /> Filters
               </button>
-              <h2 style={{ fontSize: 15, fontWeight: 700, color: '#1a1a1a', margin: 0, whiteSpace: 'nowrap' }}>
-                {activeCat ? activeCat.title : 'All Properties'}
-              </h2>
-              <span style={{
-                background: '#f5ede0', color: '#8B5E2A',
-                borderRadius: 20, padding: '2px 10px',
-                fontSize: 13, fontWeight: 600, flexShrink: 0,
-              }}>{filtered.length}</span>
+              {activeCat?.id !== 'PG & Co-Living' && (
+                <h2 style={{ fontSize: 15, fontWeight: 700, color: '#1a1a1a', margin: 0, whiteSpace: 'nowrap' }}>
+                  {activeCat ? activeCat.title : 'All Properties'}
+                </h2>
+              )}
+              {activeCat && activeCat.id !== 'PG & Co-Living' && (
+                <span style={{
+                  background: '#f5ede0', color: '#8B5E2A',
+                  borderRadius: 20, padding: '2px 10px',
+                  fontSize: 13, fontWeight: 600, flexShrink: 0,
+                }}>{filtered.length}</span>
+              )}
               {activeCat && (
-                <button onClick={() => setActiveCat(null)} style={{
+                <button onClick={() => { setActiveCat(null); setPgSubFilter(null); }} style={{
                   display: 'inline-flex', alignItems: 'center', gap: 4,
                   padding: '3px 10px', background: '#FFF6EE',
                   border: '1px solid rgba(201,139,62,0.3)',
@@ -2491,6 +2544,38 @@ const PropertyListPage = () => {
                 }}>
                   <FiX style={{ fontSize: 11 }} /> Clear
                 </button>
+              )}
+              {/* PG sub-filter chips in top bar */}
+              {activeCat?.id === 'PG & Co-Living' && (
+                <>
+                  {[
+                    { id: 'boys',     label: 'Boys PG' },
+                    { id: 'girls',    label: 'Girls PG' },
+                    { id: 'coliving', label: 'Co-Living' },
+                  ].map(({ id, label }) => {
+                    const active = pgSubFilter === id;
+                    return (
+                      <button
+                        key={id}
+                        onClick={() => setPgSubFilter(active ? null : id)}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 3,
+                          padding: '3px 11px', borderRadius: 20, fontSize: 12,
+                          fontWeight: active ? 700 : 500,
+                          border: `1.5px solid ${active ? '#C98B3E' : '#e8d9c0'}`,
+                          background: active ? '#C98B3E' : '#fff',
+                          color: active ? '#fff' : '#8B5E2A',
+                          cursor: 'pointer', fontFamily: 'inherit',
+                          flexShrink: 0, transition: 'all 0.15s ease',
+                          boxShadow: active ? '0 1px 4px rgba(201,139,62,0.25)' : 'none',
+                        }}
+                      >
+                        {active && <FiX style={{ fontSize: 10 }} />}
+                        {label}
+                      </button>
+                    );
+                  })}
+                </>
               )}
             </div>
 
