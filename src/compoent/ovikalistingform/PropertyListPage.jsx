@@ -364,7 +364,7 @@ function PropertyMapView({ properties, isMonthly, onCardClick, onPinSelect, isMo
 const CATEGORIES = [
   { id: 'Signature Stays',   title: 'Signature Stays'   },
   { id: 'Hotel Stays',       title: 'Hotel Stays'       },
-  { id: 'Homestays & BnBs',  title: 'Homestays & BnBs'  },
+  { id: 'Homestays & BnB',  title: 'Homestays & BnB'  },
   { id: 'Apartments & Villas', title: 'Apartments & Villas' },
   { id: 'PG & Co-Living',    title: 'PG & Co-Living'    },
 ];
@@ -372,7 +372,7 @@ const CATEGORIES = [
 const CategoryIcon = ({ id, size = 14, color = 'currentColor' }) => {
   if (id === 'Signature Stays') return <span style={{ fontSize: size }}>✨</span>;
   if (id === 'Hotel Stays')     return <span style={{ fontSize: size }}>🏨</span>;
-  if (id === 'Homestays & BnBs')    return <span style={{ fontSize: size }}>🏡</span>;
+  if (id === 'Homestays & BnB')    return <span style={{ fontSize: size }}>🏡</span>;
   if (id === 'Apartments & Villas') return <span style={{ fontSize: size }}>🏢</span>;
   if (id === 'PG & Co-Living')      return <FiHome style={{ fontSize: size, color }} />;
   return null;
@@ -1296,7 +1296,7 @@ const PropertyListPage = () => {
                 || pName.includes('hotel');
             }
 
-            if (cat.id === 'Homestays & BnBs') {
+            if (cat.id === 'Homestays & BnB') {
               if (pCat === 'homestays & bnbs' || pCat === 'home stays') return true;
               // Explicit category/type keywords
               const catKw = ['homestay','bnb','bed and breakfast','vacation rental','farm stay','cottage','guesthouse','inn','lodge','retreat','holiday','resort'];

@@ -37,7 +37,7 @@ const NIGHTLY = [
   },
   {
     id: 'homestay',
-    title: 'Homestays & BnBs',
+    title: 'Homestays & BnB',
     sub: 'Villas, Flats & Serviced Homes',
     badge: 'Nightly Rental',
     price: '₹2,499/night',
@@ -45,7 +45,7 @@ const NIGHTLY = [
     img: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80&auto=format&fit=crop',
     imgFallback: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80',
     rentalType: 'short',
-    category: 'Homestays & BnBs',
+    category: 'Homestays & BnB',
   },
   {
     id: 'apartments',
@@ -100,7 +100,7 @@ const MONTHLY = [
   },
   {
     id: 'homestay',
-    title: 'Homestays & BnBs',
+    title: 'Homestays & BnB',
     sub: 'Villas, Flats & Serviced Homes',
     badge: 'Monthly Rental',
     price: '₹15,999/month',
@@ -108,7 +108,7 @@ const MONTHLY = [
     img: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80&auto=format&fit=crop',
     imgFallback: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80',
     rentalType: 'long',
-    category: 'Homestays & BnBs',
+    category: 'Homestays & BnB',
   },
   {
     id: 'apartments',

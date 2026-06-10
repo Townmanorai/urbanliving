@@ -555,7 +555,7 @@ export default function HomePageNew1() {
   const QUICK_CHIPS = [
     { label: 'Signature Stays', rentalType: 'short', path: () => { const p = new URLSearchParams(); p.set('category', 'Signature Stays'); p.set('rentalType', 'short'); return `/properties?${p}`; } },
     { label: 'Hotel Stays',     rentalType: 'short', path: () => { const p = new URLSearchParams(); p.set('category', 'Hotel Stays');     p.set('rentalType', 'short'); return `/properties?${p}`; } },
-    { label: 'Homestays & BnBs',    rentalType: 'short', path: () => { const p = new URLSearchParams(); p.set('category', 'Homestays & BnBs');    p.set('rentalType', 'short'); return `/properties?${p}`; } },
+    { label: 'Homestays & BnB',    rentalType: 'short', path: () => { const p = new URLSearchParams(); p.set('category', 'Homestays & BnB');    p.set('rentalType', 'short'); return `/properties?${p}`; } },
     { label: 'Apartments & Villas', rentalType: 'short', path: () => { const p = new URLSearchParams(); p.set('category', 'Apartments & Villas'); p.set('rentalType', 'short'); return `/properties?${p}`; } },
     { label: 'PG & Co-Living',      rentalType: 'long',  path: () => { const p = new URLSearchParams(); p.set('category', 'PG & Co-Living');      p.set('rentalType', 'long');  return `/properties?${p}`; } },
   ];

@@ -60,7 +60,7 @@ const DEFAULT_CANCELLATION_POLICIES = ["Flexible", "Moderate", "Strict"];
 const DEFAULT_PROPERTY_CATEGORIES = [
   "Signature Stays",
   "Hotel Stays",
-  "Homestays & BnBs",
+  "Homestays & BnB",
   "Apartments & Villas",
   "PG & Co-Living",
 ];

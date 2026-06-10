@@ -9,7 +9,7 @@ function getBreakpoint() {
   return 'desktop';
 }
 
-const TABS = ['Popular', 'Signature Stays', 'Hotel Stays', 'Homestays & BnBs', 'Apartments & Villas', 'PG & Co-Living'];
+const TABS = ['Popular', 'Signature Stays', 'Hotel Stays', 'Homestays & BnB', 'Apartments & Villas', 'PG & Co-Living'];
 
 // All data based on REAL API data — only sectors with 3+ actual properties
 const DATA = {
@@ -22,8 +22,8 @@ const DATA = {
     { city: 'Sector 62, Noida',                type: 'PG Accommodation',     navTab: 'PG & Co-Living' },
     { city: 'Noida',                           type: 'Hotel Stay',           navTab: 'Hotel Stays' },
     { city: 'Delhi',                           type: 'Hotel Stay',           navTab: 'Hotel Stays' },
-    { city: 'Sector 130, Noida',               type: 'Homestay',             navTab: 'Homestays & BnBs' },
-    { city: 'Sector 72, Noida',                type: 'BnB',                  navTab: 'Homestays & BnBs' },
+    { city: 'Sector 130, Noida',               type: 'Homestay',             navTab: 'Homestays & BnB' },
+    { city: 'Sector 72, Noida',                type: 'BnB',                  navTab: 'Homestays & BnB' },
     { city: 'Gurugram',                        type: 'Luxury Apartment',     navTab: 'Apartments & Villas' },
     { city: 'Knowledge Park 3, Greater Noida', type: 'Signature Stay',       navTab: 'Signature Stays' },
   ],
@@ -46,7 +46,7 @@ const DATA = {
     { city: 'Sector 62, Noida', type: 'Business Hotel' },
   ],
 
-  'Homestays & BnBs': [
+  'Homestays & BnB': [
     { city: 'Sector 130, Noida',  type: 'Homestay' },
     { city: 'Sector 72, Noida',   type: 'BnB' },
     { city: 'Sector 116, Noida',  type: 'Homestay' },
@@ -110,8 +110,8 @@ function getSearchPath(tab, city, navTab) {
 
   if (resolvedTab === 'Hotel Stays') {
     p.set('category', 'Hotel Stays');
-  } else if (resolvedTab === 'Homestays & BnBs') {
-    p.set('category', 'Homestays & BnBs');
+  } else if (resolvedTab === 'Homestays & BnB') {
+    p.set('category', 'Homestays & BnB');
   } else if (resolvedTab === 'Apartments & Villas') {
     p.set('category', 'Apartments & Villas');
   } else if (resolvedTab === 'PG & Co-Living') {

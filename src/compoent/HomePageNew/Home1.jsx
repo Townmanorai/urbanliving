@@ -117,7 +117,7 @@ export default function Home1() {
   const cards = [
     { icon: '✨', title: 'Signature Stays',  subtitle: 'Fully managed premium stays', desc: 'Curated luxury for professionals, families & business travelers.', category: 'Signature Stays' },
     { icon: '🏨', title: 'Hotel Stays',      subtitle: 'Premium & Economy Hotels',   desc: '4-Star, 5-Star, boutique and budget hotels across India.',         category: 'Hotel Stays'     },
-    { icon: '🏡', title: 'Homestays & BnBs',    subtitle: 'Unique stays & Bed & Breakfast', desc: 'Cozy homestays, farm stays, vacation rentals & BnBs.',        category: 'Homestays & BnBs'    },
+    { icon: '🏡', title: 'Homestays & BnB',    subtitle: 'Unique stays & Bed & Breakfast', desc: 'Cozy homestays, farm stays, vacation rentals & BnB.',        category: 'Homestays & BnB'    },
     { icon: '🏢', title: 'Apartments & Villas', subtitle: 'Flats, Villas & Serviced Homes', desc: 'Furnished apartments, villas, studios & serviced residences.', category: 'Apartments & Villas' },
     { icon: '🏠', title: 'PG & Co-Living',      subtitle: 'Boys, Girls & Co-Living',        desc: 'Premium and standard PG with community living options.',      category: 'PG & Co-Living'      },
   ];

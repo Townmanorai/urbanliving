@@ -64,7 +64,7 @@ const TimePickerAMPM = ({ value, onChange }) => {
 const PROPERTY_CATEGORIES = [
   { id: "Signature Stays",    label: "Signature Stays",    sub: "Luxury villas, premium suites & signature homes", icon: <Hotel size={20} /> },
   { id: "Hotel Stays",        label: "Hotel Stays",        sub: "Hotel rooms, boutique & business hotels",         icon: <Building size={20} /> },
-  { id: "Homestays & BnBs",   label: "Homestays & BnBs",   sub: "Hosted homes, B&B, vacation rentals & farm stays",icon: <Home size={20} /> },
+  { id: "Homestays & BnB",   label: "Homestays & BnB",   sub: "Hosted homes, B&B, vacation rentals & farm stays",icon: <Home size={20} /> },
   { id: "Apartments & Villas",label: "Apartments & Villas",sub: "Apartments, villas, studio, penthouse & duplex",   icon: <Building size={20} /> },
   { id: "PG & Co-Living",     label: "PG & Co-Living",     sub: "PG, hostels & co-living spaces",                 icon: <Users size={20} /> },
 ];
@@ -94,7 +94,7 @@ const AMENITIES_MASTER = {
 const PROPERTY_TYPES = {
   "Signature Stays":    ["Luxury Villa", "Premium Suite", "Signature Home", "Serviced Apartment", "Luxury Penthouse"],
   "Hotel Stays":        ["Hotel Room", "Boutique Hotel", "Business Hotel", "Resort", "Service Apartment"],
-  "Homestays & BnBs":   ["Homestay", "Bed & Breakfast", "Vacation Rental", "Farm Stay", "Guesthouse", "Cottage"],
+  "Homestays & BnB":   ["Homestay", "Bed & Breakfast", "Vacation Rental", "Farm Stay", "Guesthouse", "Cottage"],
   "Apartments & Villas":["Standard Apartment", "Studio Apartment", "Villa", "Penthouse", "Duplex", "Builder Floor", "Independent House", "Farmhouse"],
   "PG & Co-Living":     ["Girls PG", "Boys PG", "Co-living Space", "Student Hostel", "Working Professionals PG"],
 };
