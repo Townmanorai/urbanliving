@@ -69,8 +69,8 @@ const PROPERTY_TYPES = ["Entire place", "Private room"];
 
 function useFilePreviews() {
   const [previews, setPreviews] = useState([]);
-  const update = (files) => {                      
-    const arr = Array.from(files || []).slice(0, 12);
+  const update = (files) => {
+    const arr = Array.from(files || []);
     const readers = arr.map((file) => {
       return new Promise((res) => {
         const r = new FileReader();
@@ -78,7 +78,12 @@ function useFilePreviews() {
         r.readAsDataURL(file);
       });
     });
-    Promise.all(readers).then(setPreviews);
+    Promise.all(readers).then((newResults) => {
+      setPreviews(prev => {
+        const combined = [...prev, ...newResults];
+        return combined.slice(0, 40);
+      });
+    });
   };
   const clear = () => setPreviews([]);
   return { previews, update, clear };

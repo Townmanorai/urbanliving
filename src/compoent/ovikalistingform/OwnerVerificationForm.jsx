@@ -428,7 +428,7 @@ export default function OwnerVerificationForm() {
                 multiple={true}
                 files={interiorPhotos}
                 onChange={setInteriorPhotos}
-                hint="Min 3, max 10 photos · JPG, PNG, WEBP"
+                hint="Min 3, max 40 photos · JPG, PNG, WEBP"
                 required
               />
               {interiorPhotos.length > 0 && interiorPhotos.length < 3 && (

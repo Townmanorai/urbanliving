@@ -138,7 +138,7 @@ function useFilePreviews() {
     Promise.all(readers).then((newResults) => {
        setPreviews(prev => {
          const combined = [...prev, ...newResults];
-         return combined.slice(0, 15);
+         return combined.slice(0, 40);
        });
     });
   };
@@ -1061,7 +1061,7 @@ const PGListingForm = () => {
                  <label htmlFor="photo-upload" className="upload-trigger">
                     <Camera size={40} />
                     <p>Click to upload property photos</p>
-                    <span>Up to 10 high-quality images</span>
+                    <span>Up to 40 high-quality images</span>
                  </label>
               </div>
               <div className="preview-grid">
