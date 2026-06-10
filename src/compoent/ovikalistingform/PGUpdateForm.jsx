@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect, useContext } from "react";
-import "./pg-listing-form.css"; 
+import "./pg-listing-form.css";
 import { AuthContext } from "../Login/AuthContext";
+import { useStepBackNav } from "../../utils/useStepBackNav";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { 
@@ -25,13 +26,11 @@ import {
 const API_BASE = "https://www.townmanor.ai/api";
 
 const PROPERTY_CATEGORIES = [
-  { id: "Flat", label: "Flat / Apartment", sub: "Apartments, Penthouses, Studio", icon: <Building size={20} /> },
-  { id: "House", label: "House / Villa / Farmhouse", sub: "Independent Home, Bungalow, Luxury Villa & Farmhouse", icon: <Home size={20} /> },
-  { id: "Home Stays", label: "Home Stays", sub: "Hosted homes, B&B, Guesthouses", icon: <Home size={20} /> },
-  { id: "PG", label: "PG / Hostel", sub: "Shared accommodation", icon: <Users size={20} /> },
-  { id: "Penthouse", label: "Penthouse", sub: "Top floor luxury", icon: <Building size={20} /> },
-  { id: "Studio", label: "Studio Apartment", sub: "1Room Kitchen sets", icon: <Zap size={20} /> },
-  { id: "Suite", label: "Suite", sub: "Luxury Suites & Living", icon: <Hotel size={20} /> },
+  { id: "Signature Stays",    label: "Signature Stays",    sub: "Luxury villas, premium suites & signature homes", icon: <Hotel size={20} /> },
+  { id: "Hotel Stays",        label: "Hotel Stays",        sub: "Hotel rooms, boutique & business hotels",         icon: <Building size={20} /> },
+  { id: "Homestays & BnBs",   label: "Homestays & BnBs",   sub: "Hosted homes, B&B, vacation rentals & farm stays",icon: <Home size={20} /> },
+  { id: "Apartments & Villas",label: "Apartments & Villas",sub: "Apartments, villas, studio, penthouse & duplex",   icon: <Building size={20} /> },
+  { id: "PG & Co-Living",     label: "PG & Co-Living",     sub: "PG, hostels & co-living spaces",                 icon: <Users size={20} /> },
 ];
 
 const FLOOR_TYPES = ["Vitrifed Tiles", "Marble", "Wooden", "Granite", "Mosaic", "Normal", "Laminate", "Carpeted"];
@@ -60,12 +59,11 @@ const AMENITIES_MASTER = {
 };
 
 const PROPERTY_TYPES = {
-  "Flat": ["Standard Apartment", "Studio Apartment", "Penthouse", "Duplex", "Service Apartment"],
-  "House": ["Independent House", "Bungalow", "Row House", "Luxury Villa", "Farmhouse", "Holiday Home"],
-  "PG": ["Girls PG", "Boys PG", "Co-living Space", "Student Hostel"],
-  "Penthouse": ["Luxury Penthouse", "Duplex Penthouse", "Studio Penthouse"],
-  "Studio": ["1RK Studio", "1BHK Studio", "Luxury Studio"],
-  "Suite": ["Standard Suite", "Executive Suite", "Presidential Suite", "Junior Suite"],
+  "Signature Stays":    ["Luxury Villa", "Premium Suite", "Signature Home", "Serviced Apartment", "Luxury Penthouse"],
+  "Hotel Stays":        ["Hotel Room", "Boutique Hotel", "Business Hotel", "Resort", "Service Apartment"],
+  "Homestays & BnBs":   ["Homestay", "Bed & Breakfast", "Vacation Rental", "Farm Stay", "Guesthouse", "Cottage"],
+  "Apartments & Villas":["Standard Apartment", "Studio Apartment", "Villa", "Penthouse", "Duplex", "Builder Floor", "Independent House", "Farmhouse"],
+  "PG & Co-Living":     ["Girls PG", "Boys PG", "Co-living Space", "Student Hostel", "Working Professionals PG"],
 };
 
 const FURNISHING_ITEMS = ["Fridge", "Sofa", "Study Table", "Geyser", "AC", "Washing Machine", "Microwave", "Cupboard", "Bed", "TV", "Mirror", "Curtains", "Shoe Rack", "Bookshelf", "Dishwasher", "Air Purifier", "Iron Table", "Chair", "Desk Lamp"];
@@ -102,7 +100,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
   const [step, setStep] = useState(0);
 
   const [form, setForm] = useState({
-    propertyCategory: "Flat",
+    propertyCategory: "Apartments & Villas",
     propertyType: "Apartment",
     title: "",
     mainDescription: "",
@@ -278,7 +276,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
         : (() => { try { return JSON.parse(rawBedroomsRaw) || []; } catch { return []; } })();
       const sanitizedBedrooms = rawBedrooms.map(room => ({
         ...room,
-        type: room.type || (data.property_category === 'PG' ? SHARING_TYPES[0] : ROOM_CATEGORIES[0]),
+        type: room.type || (data.property_category === 'PG' || data.property_category === 'PG & Co-Living' ? SHARING_TYPES[0] : ROOM_CATEGORIES[0]),
         roomNumber: room.roomNumber || "",
         bedType: room.bedType || BED_TYPES[0],
         bedCount: room.bedCount || 1,
@@ -477,6 +475,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
 
   const nextStep = () => { if(validateStep(step)) setStep(s => Math.min(s+1, STEPS.length-1)); window.scrollTo(0, 0); };
   const prevStep = () => { setStep(s => Math.max(s-1, 0)); window.scrollTo(0, 0); };
+  useStepBackNav(step, prevStep);
 
   const handlePhotos = (e) => {
     const files = Array.from(e.target.files).filter(isAcceptedFile);
@@ -594,7 +593,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
       // Rebuild meta so nightly-specific fields (amenities, propertyType, etc.) are never wiped on update
       const metaPayload = {
         propertyType: form.propertyType || "Standard PG",
-        propertyCategory: form.propertyCategory || "PG",
+        propertyCategory: form.propertyCategory || "PG & Co-Living",
         amenities: amenityList,
         beds: Number(totalBeds) || 0,
         area: form.area || "",
@@ -626,7 +625,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
         address: form.address || "",
         city: form.city || "",
         property_type: form.propertyType || "Standard PG",
-        property_category: form.propertyCategory || "PG",
+        property_category: form.propertyCategory || "PG & Co-Living",
         area: form.area || "",
         beds: Number(totalBeds) || 0,
         max_guests: Number(form.maxGuests) || Number(totalBeds) || 1,
@@ -791,7 +790,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
                               newList[idx].type = e.target.value;
                               setForm(f => ({ ...f, bedroomDetails: newList }));
                             }}>
-                              {form.propertyCategory === 'PG' 
+                              {(form.propertyCategory === 'PG' || form.propertyCategory === 'PG & Co-Living')
                                 ? SHARING_TYPES.map(s => <option key={s} value={s}>{s}</option>)
                                 : ROOM_CATEGORIES.map(r => <option key={r} value={r}>{r}</option>)
                               }
@@ -933,7 +932,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
                       const newId = Date.now();
                       setForm(f => ({ ...f, bedroomDetails: [...(f.bedroomDetails || []), { 
                         id: newId, 
-                        type: f.propertyCategory === 'PG' ? SHARING_TYPES[0] : ROOM_CATEGORIES[0], 
+                        type: (f.propertyCategory === 'PG' || f.propertyCategory === 'PG & Co-Living') ? SHARING_TYPES[0] : ROOM_CATEGORIES[0], 
                         roomNumber: "",
                         bedType: BED_TYPES[1],
                         bedCount: 1,

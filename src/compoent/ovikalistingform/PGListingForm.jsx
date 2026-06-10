@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import "./pg-listing-form.css";
 import { AuthContext } from "../Login/AuthContext";
+import { useStepBackNav } from "../../utils/useStepBackNav";
 import CityDropdown, { addressContainsCityOrState } from "./CityDropdown";
 import { 
   Building, 
@@ -60,12 +61,11 @@ const TimePickerAMPM = ({ value, onChange }) => {
 };
 
 const PROPERTY_CATEGORIES = [
-  { id: "Flat", label: "Flat / Apartment", sub: "Apartments, Penthouses, Studio", icon: <Building size={20} /> },
-  { id: "House", label: "House / Villa / Farmhouse", sub: "Independent Home, Bungalow, Luxury Villa & Farmhouse", icon: <Home size={20} /> },
-  { id: "PG", label: "PG / Hostel", sub: "Shared accommodation", icon: <Users size={20} /> },
-  { id: "Penthouse", label: "Penthouse", sub: "Top floor luxury", icon: <Building size={20} /> },
-  { id: "Studio", label: "Studio Apartment", sub: "1Room Kitchen sets", icon: <Zap size={20} /> },
-  { id: "Suite", label: "Suite", sub: "Luxury Suites & Living", icon: <Hotel size={20} /> },
+  { id: "Signature Stays",    label: "Signature Stays",    sub: "Luxury villas, premium suites & signature homes", icon: <Hotel size={20} /> },
+  { id: "Hotel Stays",        label: "Hotel Stays",        sub: "Hotel rooms, boutique & business hotels",         icon: <Building size={20} /> },
+  { id: "Homestays & BnBs",   label: "Homestays & BnBs",   sub: "Hosted homes, B&B, vacation rentals & farm stays",icon: <Home size={20} /> },
+  { id: "Apartments & Villas",label: "Apartments & Villas",sub: "Apartments, villas, studio, penthouse & duplex",   icon: <Building size={20} /> },
+  { id: "PG & Co-Living",     label: "PG & Co-Living",     sub: "PG, hostels & co-living spaces",                 icon: <Users size={20} /> },
 ];
 
 const FLOOR_TYPES = ["Vitrifed Tiles", "Marble", "Wooden", "Granite", "Mosaic", "Normal", "Laminate", "Carpeted"];
@@ -91,12 +91,11 @@ const AMENITIES_MASTER = {
 };
 
 const PROPERTY_TYPES = {
-  "Flat": ["Standard Apartment", "Studio Apartment", "Penthouse", "Duplex", "Service Apartment"],
-  "House": ["Independent House", "Bungalow", "Row House", "Luxury Villa", "Farmhouse", "Holiday Home"],
-  "PG": ["Girls PG", "Boys PG", "Co-living Space", "Student Hostel"],
-  "Penthouse": ["Luxury Penthouse", "Duplex Penthouse", "Studio Penthouse"],
-  "Studio": ["1RK Studio", "1BHK Studio", "Luxury Studio"],
-  "Suite": ["Standard Suite", "Executive Suite", "Presidential Suite", "Junior Suite"],
+  "Signature Stays":    ["Luxury Villa", "Premium Suite", "Signature Home", "Serviced Apartment", "Luxury Penthouse"],
+  "Hotel Stays":        ["Hotel Room", "Boutique Hotel", "Business Hotel", "Resort", "Service Apartment"],
+  "Homestays & BnBs":   ["Homestay", "Bed & Breakfast", "Vacation Rental", "Farm Stay", "Guesthouse", "Cottage"],
+  "Apartments & Villas":["Standard Apartment", "Studio Apartment", "Villa", "Penthouse", "Duplex", "Builder Floor", "Independent House", "Farmhouse"],
+  "PG & Co-Living":     ["Girls PG", "Boys PG", "Co-living Space", "Student Hostel", "Working Professionals PG"],
 };
 
 const FURNISHING_ITEMS = ["Fridge", "Sofa", "Study Table", "Geyser", "AC", "Washing Machine", "Microwave", "Cupboard", "Bed", "TV", "Mirror", "Curtains", "Shoe Rack", "Bookshelf", "Dishwasher", "Air Purifier", "Iron Table", "Chair", "Desk Lamp"];
@@ -115,7 +114,7 @@ const BATHROOM_TYPES = ["Attached", "Common", "En-suite", "Jack & Jill", "Separa
 const defaultBathroomEntry = () => ({ type: "Attached", count: 1 });
 
 // ─── isPG helper ─────────────────────────────────────────────────────────────
-const isPGCategory = (cat) => cat === "PG";
+const isPGCategory = (cat) => cat === "PG & Co-Living";
 
 // ─── Check if all rooms have same/no price (for non-PG) ──────────────────────
 const allRoomsSamePrice = (rooms) => {
@@ -165,7 +164,7 @@ const PGListingForm = () => {
   const [usePerRoomPricing, setUsePerRoomPricing] = useState(false);
 
   const [form, setForm] = useState({
-    propertyCategory: "Flat",
+    propertyCategory: "Apartments & Villas",
     propertyType: "Apartment",
     title: "",
     mainDescription: "",
@@ -312,6 +311,7 @@ const PGListingForm = () => {
 
   const nextStep = () => { if(validateStep(step)) setStep(s => Math.min(s+1, STEPS.length-1)); window.scrollTo(0, 0); };
   const prevStep = () => { setStep(s => Math.max(s-1, 0)); window.scrollTo(0, 0); };
+  useStepBackNav(step, prevStep);
 
   const handlePhotos = (e) => {
     const files = Array.from(e.target.files).filter(isAcceptedFile);
@@ -457,7 +457,7 @@ const PGListingForm = () => {
       fd.append("owner_id", user?.id || "99");
       fd.append("rental_type", "long");
       fd.append("property_type", "long term");
-      fd.append("property_category", form.propertyCategory || "Flat");
+      fd.append("property_category", form.propertyCategory || "Apartments & Villas");
       fd.append("bedrooms", JSON.stringify(form.bedroomDetails));
       fd.append("bathrooms", JSON.stringify((form.bathroomDetails || []).length > 0 ? form.bathroomDetails : [{ type: "Attached", count: form.bathrooms }]));
       fd.append("amenities", JSON.stringify(Object.keys(form.amenities).filter(k => form.amenities[k])));

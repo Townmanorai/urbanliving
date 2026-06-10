@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import "./tmx9pf-form.css";
 import { AuthContext } from "../Login/AuthContext";
 import CityDropdown, { addressContainsCityOrState } from "./CityDropdown";
+import { useStepBackNav } from "../../utils/useStepBackNav";
 
 const API_BASE = "https://www.townmanor.ai/api";
 const STORAGE_KEY = "user";
@@ -55,19 +56,12 @@ const AMENITIES = {
 };
 
 const DEFAULT_CANCELLATION_POLICIES = ["Flexible", "Moderate", "Strict"];
-// const DEFAULT_PROPERTY_CATEGORIES = ["Apartment", "House", "Villa", "Cabin", "Bungalow", "Studio", "Suite", "Other"];
 const DEFAULT_PROPERTY_CATEGORIES = [
-  "Apartment",
-  "House",
-  "Villa",
-  "Bungalow",
-  "Cabin",
-  "Studio",
-  "Suite",
-  "Home Stays",
-  "PG",
-  "Other",
-  "Hotel"
+  "Signature Stays",
+  "Hotel Stays",
+  "Homestays & BnBs",
+  "Apartments & Villas",
+  "PG & Co-Living",
 ];
 
 const PROPERTY_TYPES = ["Entire place", "Private room"];
@@ -477,6 +471,7 @@ const Tmx9PropertyForm = () => {
     setStep((s) => Math.max(s - 1, 0));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+  useStepBackNav(step, goPrev);
 
   function extractIdFromObj(obj) {
     if (!obj) return null;
@@ -562,7 +557,7 @@ const Tmx9PropertyForm = () => {
       fd.append("owner_id", String(ownerId));
       fd.append("rental_type", "short");
       fd.append("property_type", (form.propertyType || "entire place").toLowerCase());
-      fd.append("property_category", form.propertyCategory || "Apartment");
+      fd.append("property_category", form.propertyCategory || "Apartments & Villas");
       console.log("=== NIGHTLY FORM SUBMIT DATA ===");
 console.log("meta object:", JSON.parse(fd.get("meta") || "{}"));
 console.log("property_name:", fd.get("property_name"));

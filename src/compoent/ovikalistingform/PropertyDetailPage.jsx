@@ -1,6 +1,7 @@
 
 
 import React, { useState, useEffect, useRef, useContext } from 'react';
+import { useStepBackNav } from '../../utils/useStepBackNav';
 import * as ort from 'onnxruntime-web';
 ort.env.wasm.numThreads = 1;
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
@@ -1825,6 +1826,7 @@ const PropertyDetailPage = () => {
     if (!isNightlyOffer && step === 6) { setStep(3); return; }
     if (step > 1) setStep(step - 1);
   };
+  useStepBackNav(step, handlePrev);
 
   const handleFileDrop = (e) => { e.preventDefault(); e.stopPropagation(); if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]); };
   const handleFileChange = (e) => { if (e.target.files.length > 0) handleFile(e.target.files[0]); };

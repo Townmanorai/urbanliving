@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../Login/AuthContext';
 import './OwnerVerificationForm.css';
+import { useStepBackNav } from '../../utils/useStepBackNav';
 
 const API_BASE = 'https://www.townmanor.ai/api';
 const SUREPASS_TOKEN = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxMDE0NjA5NiwianRpIjoiNmM0YWMxNTMtNDE2MS00YzliLWI4N2EtZWIxYjhmNDRiOTU5IiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LnVzZXJuYW1lXzJ5MTV1OWk0MW10bjR3eWpsaTh6b2p6eXZiZEBzdXJlcGFzcy5pbyIsIm5iZiI6MTcxMDE0NjA5NiwiZXhwIjoyMzQwODY2MDk2LCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsidXNlciJdfX0.DfipEQt4RqFBQbOK29jbQju3slpn0wF9aoccdmtIsPg';
@@ -119,6 +120,8 @@ export default function OwnerVerificationForm() {
 
   // Step: 0 = mobile+OTP, 1 = media upload, 2 = location+submit
   const [step, setStep] = useState(0);
+  const prevStep = () => setStep(s => Math.max(0, s - 1));
+  useStepBackNav(step, prevStep);
 
   // Step 0 state
   const [mobile, setMobile] = useState('');

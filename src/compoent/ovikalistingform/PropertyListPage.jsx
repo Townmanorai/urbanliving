@@ -953,12 +953,14 @@ const PropertyListPage = () => {
   // NOTE: plp_back_expected is removed only in useEffect (not here) so that
   // React StrictMode's double-invoke doesn't clear it before the second render reads it.
   const initRef = useRef(null);
-  const skipPageResetRef = useRef(false);
+  // Number of filter-effect runs to skip page reset after back navigation.
+  // Initialization can trigger 4-5 runs (empty props → data load → rentalType → activeCat).
+  const skipPageResetRef = useRef(0);
   if (initRef.current === null) {
     initRef.current = true;
     const isBack = sessionStorage.getItem('plp_back_expected') === 'true';
     if (!isBack) { sessionStorage.removeItem('plp_filter_state'); sessionStorage.removeItem('plp_scroll_y'); }
-    if (isBack) { skipPageResetRef.current = true; }
+    if (isBack) { skipPageResetRef.current = 6; }
   }
   // ── Restore filter state from sessionStorage (back navigation) ──
   const _ss = (() => { try { return JSON.parse(sessionStorage.getItem('plp_filter_state') || '{}'); } catch { return {}; } })();
@@ -1069,7 +1071,9 @@ const PropertyListPage = () => {
 
     // 4. Property category check
     if (p.property_category === 'PG') return true;
+    if (p.property_category === 'PG & Co-Living') return true;
     if (meta.propertyCategory === 'PG') return true;
+    if (meta.propertyCategory === 'PG & Co-Living') return true;
 
     // 5. If property_type is still unknown, assume nightly (short-term)
     if (!pt) return false;
@@ -1243,28 +1247,43 @@ const PropertyListPage = () => {
             if (isSignatureProperty(p) || isSignatureOrOvika(p)) return false;
 
             if (cat.id === 'PG & Co-Living') {
-              return pCat === 'pg' || pType === 'pg'
+              return pCat === 'pg & co-living' || pCat === 'pg' || pType === 'pg'
                 || pCat.includes('co-living') || pCat.includes('coliving')
-                || pType.includes('co-living') || pType.includes('coliving');
+                || pType.includes('co-living') || pType.includes('coliving')
+                || pType.includes('pg');
             }
 
             // After PG check, exclude PG from remaining categories
-            if (pCat === 'pg' || pType === 'pg') return false;
+            if (pCat === 'pg' || pType === 'pg' || pCat === 'pg & co-living') return false;
 
             if (cat.id === 'Hotel Stays') {
-              return pCat === 'hotel' || pType === 'hotel' || pType === 'hotel room'
-                || pCat.includes('hotel') || pType.includes('hotel');
+              return pCat === 'hotel stays' || pCat === 'hotel'
+                || pCat.includes('hotel') || pType.includes('hotel')
+                || pName.includes('hotel');
             }
 
             if (cat.id === 'Homestays & BnBs') {
-              const types = ['homestay','bnb','bed and breakfast','vacation rental','farm stay','resort','cottage'];
-              return types.some(t => pCat.includes(t) || pType.includes(t) || pName.includes(t));
+              if (pCat === 'homestays & bnbs' || pCat === 'home stays') return true;
+              // Explicit category/type keywords
+              const catKw = ['homestay','bnb','bed and breakfast','vacation rental','farm stay','cottage','guesthouse','inn','lodge','retreat','holiday','resort'];
+              const typeKw = ['entire place','private room','shared room','guest house','home stay'];
+              const nameKw = ['homestay','cottage','inn','lodge','resort','retreat','holiday','guesthouse','guest house','bnb','farm','villa stay'];
+              if (catKw.some(t => pCat.includes(t) || pType.includes(t))) return true;
+              if (typeKw.some(t => pType.includes(t))) return true;
+              if (nameKw.some(t => pName.includes(t))) return true;
+              // Catch-all: nightly properties that are NOT hotel AND NOT apartment/villa type
+              if (!isMonthly) {
+                const isHotelType = pCat.includes('hotel') || pType.includes('hotel');
+                const isAptType   = ['apartment','villa','flat','penthouse','duplex','studio','bungalow','builder floor','independent house','serviced'].some(t => pCat.includes(t) || pType.includes(t));
+                if (!isHotelType && !isAptType) return true;
+              }
+              return false;
             }
 
             if (cat.id === 'Apartments & Villas') {
-              const types = ['apartment','villa','studio','serviced apartment','serviced residence','builder floor','independent house','bungalow','flat','penthouse'];
-              return types.some(t => pCat.includes(t) || pType.includes(t))
-                || (!isMonthly && !['hotel','pg','homestay','bnb'].some(t => pCat.includes(t) || pType.includes(t)));
+              if (pCat === 'apartments & villas') return true;
+              const types = ['apartment','villa','studio','serviced apartment','serviced residence','builder floor','independent house','bungalow','flat','penthouse','duplex'];
+              return types.some(t => pCat.includes(t) || pType.includes(t));
             }
 
             return false;
@@ -1625,8 +1644,8 @@ const PropertyListPage = () => {
           return 0;
         });
     setFiltered(sortedResults);
-    if (skipPageResetRef.current) {
-      skipPageResetRef.current = false; // skip only on first run after back navigation
+    if (skipPageResetRef.current > 0) {
+      skipPageResetRef.current--;
     } else {
       setCurrentPage(1);
     }
