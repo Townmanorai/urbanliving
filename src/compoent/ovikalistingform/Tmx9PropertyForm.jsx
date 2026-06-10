@@ -3,6 +3,7 @@ import "./tmx9pf-form.css";
 import { AuthContext } from "../Login/AuthContext";
 import CityDropdown, { addressContainsCityOrState } from "./CityDropdown";
 import { useStepBackNav } from "../../utils/useStepBackNav";
+import { compressImage } from "../../utils/compressImage";
 
 const API_BASE = "https://www.townmanor.ai/api";
 const STORAGE_KEY = "user";
@@ -482,7 +483,6 @@ const Tmx9PropertyForm = () => {
     try {
       const res = await fetch(`${API_BASE}/auth/me`, { method: "GET", credentials: "include" });
       const d = await res.json().catch(() => ({}));
-      console.log("Tmx9PropertyForm: /auth/me response:", res.status, d);
       const maybe = d?.user || d?.data || d;
       if (extractIdFromObj(maybe)) {
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(maybe)); } catch (e) {}
@@ -497,7 +497,6 @@ const Tmx9PropertyForm = () => {
   const resolveOwnerId = async () => {
     const idFromContext = extractIdFromObj(user);
     if (idFromContext) {
-      console.log("resolveOwnerId: using context id", idFromContext);
       return idFromContext;
     }
 
@@ -507,7 +506,6 @@ const Tmx9PropertyForm = () => {
         const parsed = JSON.parse(raw);
         const idFromLocal = extractIdFromObj(parsed);
         if (idFromLocal) {
-          console.log("resolveOwnerId: using localStorage id", idFromLocal);
           return idFromLocal;
         }
       }
@@ -518,11 +516,9 @@ const Tmx9PropertyForm = () => {
     const serverUser = await fetchServerUser();
     const idFromServer = extractIdFromObj(serverUser);
     if (idFromServer) {
-      console.log("resolveOwnerId: using server id", idFromServer);
       return idFromServer;
     }
 
-    console.log("resolveOwnerId: NO owner id found");
     return null;
   };
 
@@ -558,11 +554,6 @@ const Tmx9PropertyForm = () => {
       fd.append("rental_type", "short");
       fd.append("property_type", (form.propertyType || "entire place").toLowerCase());
       fd.append("property_category", form.propertyCategory || "Apartments & Villas");
-      console.log("=== NIGHTLY FORM SUBMIT DATA ===");
-console.log("meta object:", JSON.parse(fd.get("meta") || "{}"));
-console.log("property_name:", fd.get("property_name"));
-console.log("price:", fd.get("price"));
-console.log("booking_type:", fd.get("booking_type"));
 
       const guidebook = {
         transport_tips: {
@@ -640,9 +631,9 @@ console.log("booking_type:", fd.get("booking_type"));
 );
 
 
-      photoPreviews.previews.forEach((p, i) => {
-        if (p && p.file) fd.append("photos", p.file, p.name || `photo-${i}`);
-      });
+      const photoEntries = photoPreviews.previews.filter(p => p?.file);
+      const compressedPhotos = await Promise.all(photoEntries.map(p => compressImage(p.file)));
+      compressedPhotos.forEach((f, i) => fd.append("photos", f, photoEntries[i].name || `photo-${i}`));
 
       idFiles.forEach((f, i) => {
         fd.append("idFiles", f, f.name || `id-${i}`);
@@ -658,9 +649,6 @@ console.log("booking_type:", fd.get("booking_type"));
       });
 
       const data = await response.json().catch(() => ({ success: false, message: "Invalid JSON response" }));
-console.log("=== API RESPONSE (NIGHTLY) ===");
-console.log("Full response data:", data);
-console.log("Property saved as:", data?.data);
       if (!response.ok) {
         console.error("API error", data);
         alert(data.message || "Failed to create property");
@@ -1365,7 +1353,14 @@ console.log("Property saved as:", data?.data);
         {step < STEPS.length - 1 ? (
           <button type="button" onClick={goNext} className="tmx9pf-nav-btn tmx9pf-nav-next">Next</button>
         ) : (
-          <button type="submit" className="tmx9pf-nav-btn tmx9pf-nav-next" disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Publish"}</button>
+          <button type="submit" className="tmx9pf-nav-btn tmx9pf-nav-next" disabled={isSubmitting} style={{ opacity: isSubmitting ? 0.75 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}>
+            {isSubmitting ? (
+              <span style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" className="spin-icon"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeOpacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/></svg>
+                Uploading...
+              </span>
+            ) : "Publish"}
+          </button>
         )}
       </div>
     </form>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import "./pg-listing-form.css";
 import { AuthContext } from "../Login/AuthContext";
 import { useStepBackNav } from "../../utils/useStepBackNav";
+import { compressImage } from "../../utils/compressImage";
 import CityDropdown, { addressContainsCityOrState } from "./CityDropdown";
 import { 
   Building, 
@@ -494,9 +495,9 @@ const PGListingForm = () => {
       }));
       fd.append("cover_photo_index", String(coverIndex));
 
-      photoPreviews.previews.forEach((p) => {
-        if(p.file) fd.append("photos", p.file);
-      });
+      const photoFiles = photoPreviews.previews.filter(p => p?.file).map(p => p.file);
+      const compressed = await Promise.all(photoFiles.map(f => compressImage(f)));
+      compressed.forEach(f => fd.append("photos", f));
 
       const res = await fetch(`${API_BASE}/ovika/properties/upload`, {
         method: "POST",
@@ -1334,8 +1335,13 @@ const PGListingForm = () => {
            {step < STEPS.length - 1 ? (
              <button className="btn-next" onClick={nextStep}>Continue</button>
            ) : (
-             <button className="btn-submit" onClick={handleSubmit} disabled={isSubmitting}>
-               {isSubmitting ? 'Publishing...' : 'Publish Listing'}
+             <button className="btn-submit" onClick={handleSubmit} disabled={isSubmitting} style={{ opacity: isSubmitting ? 0.75 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}>
+               {isSubmitting ? (
+                 <span style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
+                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="spin-icon"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeOpacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/></svg>
+                   Compressing &amp; Uploading...
+                 </span>
+               ) : 'Publish Listing'}
              </button>
            )}
         </div>

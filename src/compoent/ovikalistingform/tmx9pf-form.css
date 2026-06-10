@@ -428,3 +428,5 @@
     padding-bottom: 10px;
   }
 }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin-icon { animation: spin 0.9s linear infinite; }
