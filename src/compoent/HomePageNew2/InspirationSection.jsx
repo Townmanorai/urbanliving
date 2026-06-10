@@ -16,66 +16,18 @@ const DATA = {
   Popular: [
     { city: 'Sector 137, Noida',               type: 'Signature Stay',       navTab: 'Signature Stays' },
     { city: 'Sector 143, Noida',               type: 'Signature Stay',       navTab: 'Signature Stays' },
-    { city: 'Sector 168, Noida',               type: 'Premium Apartment',    navTab: 'Premium Stays' },
-    { city: 'Greater Noida',                   type: 'Luxury Flat',          navTab: 'Premium Stays' },
-    { city: 'Sector 15, Noida',                type: 'PG & Co-Living',       navTab: 'PGs' },
-    { city: 'Sector 62, Noida',                type: 'PG Accommodation',     navTab: 'PGs' },
-    { city: 'Noida',                           type: 'Hotel Stay',           navTab: 'Hotels' },
-    { city: 'Delhi',                           type: 'Hotel Stay',           navTab: 'Hotels' },
-    { city: 'Sector 130, Noida',               type: 'Economy Stay',         navTab: 'Economy Stays' },
-    { city: 'Sector 72, Noida',                type: 'Co-Living Space',      navTab: 'Economy Stays' },
-    { city: 'Gurugram',                        type: 'Luxury Apartment',     navTab: 'Premium Stays' },
+    { city: 'Sector 168, Noida',               type: 'Furnished Apartment',  navTab: 'Apartments & Villas' },
+    { city: 'Greater Noida',                   type: 'Luxury Flat',          navTab: 'Apartments & Villas' },
+    { city: 'Sector 15, Noida',                type: 'PG & Co-Living',       navTab: 'PG & Co-Living' },
+    { city: 'Sector 62, Noida',                type: 'PG Accommodation',     navTab: 'PG & Co-Living' },
+    { city: 'Noida',                           type: 'Hotel Stay',           navTab: 'Hotel Stays' },
+    { city: 'Delhi',                           type: 'Hotel Stay',           navTab: 'Hotel Stays' },
+    { city: 'Sector 130, Noida',               type: 'Homestay',             navTab: 'Homestays & BnBs' },
+    { city: 'Sector 72, Noida',                type: 'BnB',                  navTab: 'Homestays & BnBs' },
+    { city: 'Gurugram',                        type: 'Luxury Apartment',     navTab: 'Apartments & Villas' },
     { city: 'Knowledge Park 3, Greater Noida', type: 'Signature Stay',       navTab: 'Signature Stays' },
   ],
 
-  // PG category (3+ props per sector) → navigates to Monthly Rental
-  PGs: [
-    { city: 'Sector 15, Noida',   type: 'PG Accommodation' },
-    { city: 'Sector 62, Noida',   type: 'PG Accommodation' },
-    { city: 'Sector 16, Noida',   type: 'PG Accommodation' },
-    { city: 'Sector 126, Noida',  type: 'PG Accommodation' },
-    { city: 'Sector 27, Noida',   type: 'PG Accommodation' },
-    { city: 'Sector 19, Noida',   type: 'PG Accommodation' },
-    { city: 'Sector 18, Noida',   type: 'PG Accommodation' },
-    { city: 'Sector 63, Noida',   type: 'PG Accommodation' },
-    { city: 'Sector 132, Noida',  type: 'PG Accommodation' },
-    { city: 'Sector 52, Noida',   type: 'PG Accommodation' },
-    { city: 'Sector 48, Noida',   type: 'PG Accommodation' },
-    { city: 'Sector 2, Noida',    type: 'PG Accommodation' },
-  ],
-
-  // Hotel properties — city level (hotel data is city-level in DB)
-  Hotels: [
-    { city: 'Noida',          type: 'Hotel Stay' },
-    { city: 'Delhi',          type: 'Hotel Stay' },
-    { city: 'Greater Noida',  type: 'Service Apartment' },
-    { city: 'Gurugram',       type: 'Hotel Stay' },
-    { city: 'Vrindavan',      type: 'Hotel Stay' },
-  ],
-
-  // Co-living Space type — sectors with 3+ properties
-  'Economy Stays': [
-    { city: 'Sector 130, Noida',  type: 'Co-Living Space' },
-    { city: 'Sector 72, Noida',   type: 'Co-Living Space' },
-    { city: 'Sector 116, Noida',  type: 'Co-Living Space' },
-    { city: 'Sector 73, Noida',   type: 'Co-Living Space' },
-    { city: 'Sector 15, Noida',   type: 'Co-Living Space' },
-    { city: 'Sector 137, Noida',  type: 'Co-Living Space' },
-    { city: 'Sector 144, Noida',  type: 'Co-Living Space' },
-    { city: 'Sector 27, Noida',   type: 'Co-Living Space' },
-  ],
-
-  // Apartment / Flat category
-  'Premium Stays': [
-    { city: 'Sector 168, Noida',  type: 'Furnished Apartment' },
-    { city: 'Sector 143, Noida',  type: 'Furnished Apartment' },
-    { city: 'Noida',              type: 'Premium Apartment' },
-    { city: 'Greater Noida',      type: 'Luxury Flat' },
-    { city: 'Delhi',              type: 'Premium Apartment' },
-    { city: 'Gurugram',           type: 'Luxury Apartment' },
-  ],
-
-  // Signature Stays — ONLY real Ovika Signature properties from DB
   'Signature Stays': [
     { city: 'Knowledge Park 3, Greater Noida', type: 'Ovika Signature 1' },
     { city: 'Sector 137, Noida',               type: 'Ovika Signature 2' },
@@ -83,10 +35,63 @@ const DATA = {
     { city: 'Sector 143, Noida',               type: 'Ovika Signature 4' },
     { city: 'Sector 143, Noida',               type: 'Ovika Signature 5' },
   ],
+
+  'Hotel Stays': [
+    { city: 'Noida',          type: 'Hotel Stay' },
+    { city: 'Delhi',          type: 'Hotel Stay' },
+    { city: 'Greater Noida',  type: 'Boutique Hotel' },
+    { city: 'Gurugram',       type: 'Hotel Stay' },
+    { city: 'Vrindavan',      type: 'Hotel Stay' },
+    { city: 'Sector 18, Noida', type: 'Budget Hotel' },
+    { city: 'Sector 62, Noida', type: 'Business Hotel' },
+  ],
+
+  'Homestays & BnBs': [
+    { city: 'Sector 130, Noida',  type: 'Homestay' },
+    { city: 'Sector 72, Noida',   type: 'BnB' },
+    { city: 'Sector 116, Noida',  type: 'Homestay' },
+    { city: 'Sector 73, Noida',   type: 'BnB' },
+    { city: 'Sector 15, Noida',   type: 'Homestay' },
+    { city: 'Sector 137, Noida',  type: 'Serviced Home' },
+    { city: 'Sector 144, Noida',  type: 'Homestay' },
+    { city: 'Sector 27, Noida',   type: 'BnB' },
+    { city: 'Greater Noida',      type: 'Villa Stay' },
+    { city: 'Delhi',              type: 'Homestay' },
+    { city: 'Gurugram',           type: 'BnB' },
+    { city: 'Noida',              type: 'Serviced Apartment' },
+  ],
+
+  'Apartments & Villas': [
+    { city: 'Sector 168, Noida',  type: 'Furnished Apartment' },
+    { city: 'Sector 143, Noida',  type: 'Furnished Apartment' },
+    { city: 'Noida',              type: 'Premium Apartment' },
+    { city: 'Greater Noida',      type: 'Luxury Flat' },
+    { city: 'Delhi',              type: 'Studio Apartment' },
+    { city: 'Gurugram',           type: 'Luxury Villa' },
+    { city: 'Sector 62, Noida',   type: '2 BHK Apartment' },
+    { city: 'Sector 137, Noida',  type: '3 BHK Apartment' },
+    { city: 'Sector 150, Noida',  type: 'Luxury Villa' },
+    { city: 'Knowledge Park, Greater Noida', type: 'Furnished Flat' },
+  ],
+
+  'PG & Co-Living': [
+    { city: 'Sector 15, Noida',   type: 'Boys PG' },
+    { city: 'Sector 62, Noida',   type: 'Girls PG' },
+    { city: 'Sector 16, Noida',   type: 'Co-Living Space' },
+    { city: 'Sector 126, Noida',  type: 'Boys PG' },
+    { city: 'Sector 27, Noida',   type: 'Girls PG' },
+    { city: 'Sector 19, Noida',   type: 'Co-Living Space' },
+    { city: 'Sector 18, Noida',   type: 'Boys PG' },
+    { city: 'Sector 63, Noida',   type: 'Girls PG' },
+    { city: 'Sector 132, Noida',  type: 'Co-Living Space' },
+    { city: 'Sector 52, Noida',   type: 'Boys PG' },
+    { city: 'Sector 48, Noida',   type: 'Girls PG' },
+    { city: 'Sector 2, Noida',    type: 'Co-Living Space' },
+  ],
 };
 
 function getRentalTypeForTab(tab) {
-  return tab === 'PGs' ? 'long' : 'short';
+  return tab === 'PG & Co-Living' ? 'long' : 'short';
 }
 
 function getSearchPath(tab, city, navTab) {
@@ -201,8 +206,8 @@ export default function InspirationSection() {
         {/* Divider */}
         <div style={{ height: 1, background: '#e5e7eb', marginBottom: 24 }} />
 
-        {/* Grid — flex+wrap (grid breaks in inline styles in this codebase) */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: bp === 'mobile' ? '16px 10px' : '20px 16px' }}>
+        {/* Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: bp === 'mobile' ? 'repeat(3, 1fr)' : bp === 'tablet' ? 'repeat(4, 1fr)' : 'repeat(6, 1fr)', gap: bp === 'mobile' ? '16px 10px' : '20px 16px' }}>
           {displayItems.map((item, i) => (
             <div
               key={i}
@@ -211,7 +216,6 @@ export default function InspirationSection() {
               onAuxClick={(e) => { sessionStorage.setItem('ovika_rental_type', getRentalTypeForTab(item.navTab || activeTab)); auxNavClick(e, getSearchPath(activeTab, item.city, item.navTab)); }}
               style={{
                 cursor: 'pointer',
-                flex: bp === 'mobile' ? '0 0 calc(33.33% - 7px)' : bp === 'tablet' ? '0 0 calc(33.33% - 11px)' : '1 1 calc(16.66% - 14px)',
                 minWidth: 0,
               }}
             >
@@ -226,7 +230,7 @@ export default function InspirationSection() {
 
           {/* Show more / less */}
           {items.length > 12 && (
-            <div style={{ flex: '1 1 calc(16.66% - 14px)', minWidth: 0, display: 'flex', alignItems: 'flex-start' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start' }}>
               <button
                 onClick={() => setShowAll(v => !v)}
                 style={{
