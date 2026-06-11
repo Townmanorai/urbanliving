@@ -209,7 +209,7 @@ export default function InspirationSection() {
         <div style={{ height: 1, background: '#e5e7eb', marginBottom: 24 }} />
 
         {/* Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: bp === 'mobile' ? 'repeat(2, 1fr)' : bp === 'tablet' ? 'repeat(4, 1fr)' : 'repeat(6, 1fr)', gap: bp === 'mobile' ? '10px' : '20px 16px' }}>
+        <div style={bp === 'mobile' ? { display: 'flex', flexWrap: 'wrap', gap: 10 } : { display: 'grid', gridTemplateColumns: bp === 'tablet' ? 'repeat(4, 1fr)' : 'repeat(6, 1fr)', gap: '20px 16px' }}>
           {displayItems.map((item, i) => (
             <div
               key={i}
@@ -220,6 +220,8 @@ export default function InspirationSection() {
                 cursor: 'pointer',
                 minWidth: 0,
                 ...(bp === 'mobile' ? {
+                  width: 'calc(50% - 5px)',
+                  boxSizing: 'border-box',
                   background: '#faf8f4',
                   border: '1px solid #e8ddd0',
                   borderRadius: 10,
@@ -246,7 +248,7 @@ export default function InspirationSection() {
 
           {/* Show more / less */}
           {items.length > 12 && (
-            <div style={{ display: 'flex', alignItems: 'flex-start', ...(bp === 'mobile' ? { gridColumn: '1 / -1' } : {}) }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', ...(bp === 'mobile' ? { width: '100%' } : { gridColumn: '1 / -1' }) }}>
               <button
                 onClick={() => setShowAll(v => !v)}
                 style={{

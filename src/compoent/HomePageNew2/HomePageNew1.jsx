@@ -696,19 +696,19 @@ export default function HomePageNew1() {
 
         </div>
 
-        {/* ── Features — vertical list like screenshot ── */}
-        <div style={{ padding:'0 20px 32px', display:'flex', flexDirection:'column', gap:0 }}>
+        {/* ── Features — 2×2 grid ── */}
+        <div style={{ padding:'0 20px 32px', display:'flex', flexWrap:'wrap', gap:10 }}>
           {[
             { icon:'🏠', title:'Fully Furnished', sub:'Move in with zero hassle' },
             { icon:'🛡', title:'Zero Brokerage', sub:'No hidden charges ever' },
             { icon:'✔', title:'Verified Properties', sub:'100% physically verified' },
             { icon:'⚡', title:'Instant Move-in', sub:'Same-day confirmation' },
-          ].map((f, i, arr) => (
-            <div key={f.title} style={{ display:'flex', alignItems:'center', gap:14, padding:'13px 0', borderBottom: i < arr.length - 1 ? '1px solid #e0d4c0' : 'none' }}>
-              <div style={{ width:36, height:36, borderRadius:10, background:'rgba(194,119,43,0.1)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1rem', flexShrink:0 }}>{f.icon}</div>
-              <div>
-                <div style={{ fontSize:'0.78rem', fontWeight:700, color:'#1a1209', lineHeight:1.2 }}>{f.title}</div>
-                <div style={{ fontSize:'0.62rem', color:'#9a8878', marginTop:2, lineHeight:1.3 }}>{f.sub}</div>
+          ].map((f) => (
+            <div key={f.title} style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 10px', background:'rgba(194,119,43,0.06)', borderRadius:12, border:'1px solid #e8ddd0', width:'calc(50% - 5px)', boxSizing:'border-box' }}>
+              <div style={{ width:32, height:32, borderRadius:9, background:'rgba(194,119,43,0.13)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'0.9rem', flexShrink:0 }}>{f.icon}</div>
+              <div style={{ minWidth:0 }}>
+                <div style={{ fontSize:'0.72rem', fontWeight:700, color:'#1a1209', lineHeight:1.2 }}>{f.title}</div>
+                <div style={{ fontSize:'0.6rem', color:'#9a8878', marginTop:2, lineHeight:1.3 }}>{f.sub}</div>
               </div>
             </div>
           ))}
