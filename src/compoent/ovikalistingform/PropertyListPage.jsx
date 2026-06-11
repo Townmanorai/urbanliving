@@ -1281,33 +1281,41 @@ const PropertyListPage = () => {
             if (isSignatureProperty(p) || isSignatureOrOvika(p)) return false;
 
             if (cat.id === 'PG & Co-Living') {
+              // Nightly PG → Homestays & BnB, not here
+              if (!isMonthly) return false;
               return pCat === 'pg & co-living' || pCat === 'pg' || pType === 'pg'
                 || pCat.includes('co-living') || pCat.includes('coliving')
                 || pType.includes('co-living') || pType.includes('coliving')
                 || pType.includes('pg');
             }
 
-            // After PG check, exclude PG from remaining categories
-            if (pCat === 'pg' || pType === 'pg' || pCat === 'pg & co-living') return false;
+            const isPgProperty = pCat === 'pg' || pType === 'pg' || pCat === 'pg & co-living'
+              || pCat.includes('pg') || pType.includes('pg');
 
             if (cat.id === 'Hotel Stays') {
+              if (isPgProperty) return false;
               return pCat === 'hotel stays' || pCat === 'hotel'
                 || pCat.includes('hotel') || pType.includes('hotel')
                 || pName.includes('hotel');
             }
 
             if (cat.id === 'Homestays & BnB') {
-              // Homestays = NIGHTLY only — monthly goes to Apartments & Villas
               if (isMonthly) return false;
-              // Exclude only properties explicitly categorized as Hotel Stays
-              if (pCat === 'hotel stays' || pCat === 'hotel') return false;
-              // All remaining nightly non-PG non-signature → Homestays
-              return true;
+              // PG nightly → show here
+              if (isPgProperty) return !isMonthly;
+              // Only show properties explicitly listed under this category
+              return pCat === 'homestays & bnb'
+                || pCat.includes('homestay') || pCat.includes('bnb') || pCat.includes('b&b')
+                || pType.includes('homestay') || pType.includes('bnb') || pType.includes('b&b')
+                || pType.includes('bed & breakfast') || pType.includes('vacation rental') || pType.includes('guesthouse') || pType.includes('cottage') || pType.includes('farm stay');
             }
+
+            // Exclude PG from other remaining categories (Apartments & Villas etc.)
+            if (isPgProperty) return false;
 
             if (cat.id === 'Apartments & Villas') {
               if (pCat === 'apartments & villas') return true;
-              const catKw = ['apartment','villa','studio','serviced apartment','serviced residence','builder floor','flat','penthouse','duplex'];
+              const catKw = ['apartment','villa','studio','serviced apartment','serviced residence','builder floor','flat','penthouse','duplex','independent house','farmhouse'];
               return catKw.some(t => pCat.includes(t) || pType.includes(t));
             }
 

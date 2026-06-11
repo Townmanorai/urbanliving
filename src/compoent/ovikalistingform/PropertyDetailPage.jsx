@@ -2151,7 +2151,7 @@ const PropertyDetailPage = () => {
   if (!property) return <div className="error-screen">Property not found</div>;
 
   const photos = property.photos || [];
-  const isPG = property.property_category === 'PG';
+  const isPG = property.property_category === 'PG' || property.property_category === 'PG & Co-Living' || (property.property_category || '').toLowerCase().includes('pg');
 
   const cleanDescription = (desc) => {
     if (!desc) return "";
