@@ -68,6 +68,7 @@ function SearchBar({ searchText, setSearchText, showSuggestions, setShowSuggesti
           placeholder={placeholder || "Search city, locality, PG, flat..."}
           style={{
             flex: 1, border: 'none', outline: 'none',
+            boxShadow: 'none', WebkitAppearance: 'none', appearance: 'none',
             fontSize: compact ? '0.84rem' : '0.92rem',
             fontWeight: 500, color: '#1a1209',
             fontFamily: "'Poppins', sans-serif",
