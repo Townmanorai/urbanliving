@@ -58,7 +58,6 @@ function SearchBar({ searchText, setSearchText, showSuggestions, setShowSuggesti
         minHeight: compact ? 48 : 50,
         overflow: 'hidden',
       }}>
-        <MapPin size={16} style={{ color: '#c2772b', flexShrink: 0, alignSelf: 'center', marginLeft: 14 }} />
         <input
           type="text"
           value={searchText}

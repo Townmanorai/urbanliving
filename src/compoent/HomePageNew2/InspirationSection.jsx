@@ -124,6 +124,8 @@ const css = `
 .insp-tab-bar::-webkit-scrollbar { display: none; }
 .insp-tab-bar { -ms-overflow-style: none; scrollbar-width: none; }
 .insp-item:hover .insp-city { text-decoration: underline; }
+.insp-card { transition: box-shadow 0.15s, transform 0.15s; }
+.insp-card:hover { box-shadow: 0 4px 16px rgba(194,119,43,0.18) !important; transform: translateY(-1px); }
 `;
 
 export default function InspirationSection() {
@@ -207,22 +209,36 @@ export default function InspirationSection() {
         <div style={{ height: 1, background: '#e5e7eb', marginBottom: 24 }} />
 
         {/* Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: bp === 'mobile' ? 'repeat(3, 1fr)' : bp === 'tablet' ? 'repeat(4, 1fr)' : 'repeat(6, 1fr)', gap: bp === 'mobile' ? '16px 10px' : '20px 16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: bp === 'mobile' ? 'repeat(2, 1fr)' : bp === 'tablet' ? 'repeat(4, 1fr)' : 'repeat(6, 1fr)', gap: bp === 'mobile' ? '10px' : '20px 16px' }}>
           {displayItems.map((item, i) => (
             <div
               key={i}
-              className="insp-item"
+              className="insp-item insp-card"
               onClick={(e) => { sessionStorage.setItem('ovika_rental_type', getRentalTypeForTab(item.navTab || activeTab)); navClick(e, getSearchPath(activeTab, item.city, item.navTab), navigate); }}
               onAuxClick={(e) => { sessionStorage.setItem('ovika_rental_type', getRentalTypeForTab(item.navTab || activeTab)); auxNavClick(e, getSearchPath(activeTab, item.city, item.navTab)); }}
               style={{
                 cursor: 'pointer',
                 minWidth: 0,
+                ...(bp === 'mobile' ? {
+                  background: '#faf8f4',
+                  border: '1px solid #e8ddd0',
+                  borderRadius: 10,
+                  padding: '10px 10px 8px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 4,
+                } : {}),
               }}
             >
-              <div className="insp-city" style={{ fontSize: bp === 'mobile' ? '0.68rem' : '0.875rem', fontWeight: 600, color: '#1a1209', lineHeight: 1.3 }}>
+              {bp === 'mobile' && (
+                <div style={{ fontSize: '1.1rem', marginBottom: 2 }}>
+                  {activeTab === 'Hotel Stays' ? '🏨' : activeTab === 'PG & Co-Living' ? '🏠' : activeTab === 'Homestays & BnB' ? '🏡' : activeTab === 'Apartments & Villas' ? '🏢' : activeTab === 'Signature Stays' ? '✨' : '📍'}
+                </div>
+              )}
+              <div className="insp-city" style={{ fontSize: bp === 'mobile' ? '0.72rem' : '0.875rem', fontWeight: 600, color: '#1a1209', lineHeight: 1.3 }}>
                 {item.city}
               </div>
-              <div style={{ fontSize: bp === 'mobile' ? '0.62rem' : '0.8rem', color: '#c2772b', marginTop: 2, fontWeight: 400 }}>
+              <div style={{ fontSize: bp === 'mobile' ? '0.65rem' : '0.8rem', color: '#c2772b', marginTop: bp === 'mobile' ? 0 : 2, fontWeight: 500 }}>
                 {item.type}
               </div>
             </div>
@@ -230,7 +246,7 @@ export default function InspirationSection() {
 
           {/* Show more / less */}
           {items.length > 12 && (
-            <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', ...(bp === 'mobile' ? { gridColumn: '1 / -1' } : {}) }}>
               <button
                 onClick={() => setShowAll(v => !v)}
                 style={{
