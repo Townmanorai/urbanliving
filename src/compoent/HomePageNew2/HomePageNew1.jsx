@@ -866,258 +866,204 @@ export default function HomePageNew1() {
   }
 
 
-  /* ════════ DESKTOP (>1024px) ════════ */
+  /* ════════ DESKTOP OLD (commented out) ════════
+  return (
+    <div style={{ background: 'linear-gradient(160deg, #f5efe4 0%, #ede4cf 55%, #e2d5be 100%)', display: 'flex', alignItems: 'stretch', padding: '16px 20px', fontFamily: "'Poppins', sans-serif", boxSizing: 'border-box' }}>
+      ... old flip-card layout removed ...
+    </div>
+  );
+  ════════ END OLD ════════ */
+
+  /* ════════ DESKTOP NEW (>1024px) ════════ */
   return (
     <div style={{
-      background: 'linear-gradient(160deg, #f5efe4 0%, #ede4cf 55%, #e2d5be 100%)',
-      display: 'flex', alignItems: 'stretch',
-      padding: '16px 20px', fontFamily: "'Poppins', sans-serif", boxSizing: 'border-box',
+      background: '#f5f0e8',
+      display: 'flex', alignItems: 'center',
+      padding: 'clamp(32px, 4vh, 60px) clamp(40px, 5vw, 80px)',
+      fontFamily: "'Poppins', sans-serif", boxSizing: 'border-box',
+      minHeight: 'clamp(560px, 85vh, 750px)',
     }}>
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 8 }}>
 
-        {/* Main Card */}
-        <div style={{
-          background: '#fff', borderRadius: 22, boxShadow: '0 16px 56px rgba(0,0,0,0.15)',
-          overflow: 'hidden', display: 'flex',
-          height: 'clamp(480px, 55vh, 620px)',
-          border: '1px solid rgba(194,119,43,0.12)',
-        }}>
+      <style>{`
+        @keyframes kenBurnsD { 0% { transform: scale(1); } 100% { transform: scale(1.06) translateX(-6px); } }
+        .img-card-large:hover img { animation: kenBurnsD 6s ease forwards; }
+        .img-card-sm:hover img { animation: kenBurnsD 6s ease forwards; }
+        .city-chip-desk:hover { background: #fdf0e0 !important; border-color: #c2772b !important; color: #c2772b !important; }
+        .pop-chip-desk:hover { background: #fdf0e0 !important; border-color: #c2772b !important; color: #c2772b !important; }
+      `}</style>
 
-          {/* LEFT panel */}
-          <div style={{
-            flex: '0 0 38%', background: 'linear-gradient(160deg, #fdf7ee 0%, #f5ead6 100%)',
-            padding: '28px 30px', display: 'flex', flexDirection: 'column',
-            borderRight: '1px solid #f0e8da', overflow: 'visible',
+      {/* ── LEFT panel ── */}
+      <div style={{ flex: '0 0 44%', paddingRight: 'clamp(32px, 4vw, 60px)', display: 'flex', flexDirection: 'column' }}>
+
+        {/* Badge */}
+        <div style={{ marginBottom: 18 }}>
+          <span style={{ fontSize: '0.6rem', color: '#c2772b', fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase' }}>✦ Smart Stay Platform</span>
+        </div>
+
+        {/* Heading */}
+        <h1 style={{ color: '#1a1209', fontSize: 'clamp(1.9rem, 2.8vw, 3.2rem)', fontWeight: 800, lineHeight: 1.08, margin: '0 0 14px', letterSpacing: -0.5 }}>
+          Find smart stays<br />
+          <span style={{ color: '#c2772b' }}>across NCR cities</span>
+        </h1>
+
+        {/* Subtitle */}
+        <p style={{ color: '#7a6858', fontSize: '0.86rem', fontWeight: 400, margin: '0 0 22px', lineHeight: 1.72, maxWidth: 400 }}>
+          Verified PGs, serviced apartments and premium homes — book by the night or settle in by the month. Zero brokerage, always.
+        </p>
+
+        {/* City chips */}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 18 }}>
+          {[
+            { label: 'Noida', city: 'Noida', active: true },
+            { label: 'Greater Noida', city: 'Greater Noida' },
+            { label: 'Delhi', city: 'Delhi' },
+            { label: 'Gurugram', city: 'Gurugram' },
+          ].map(c => (
+            <button key={c.label} className="city-chip-desk"
+              onClick={(e) => { const p = new URLSearchParams(); p.set('city', c.city); navClick(e, `/properties?${p}`, navigate); }}
+              onAuxClick={(e) => { const p = new URLSearchParams(); p.set('city', c.city); auxNavClick(e, `/properties?${p}`); }}
+              style={{
+                background: c.active ? '#c2772b' : 'transparent',
+                border: `1.5px solid ${c.active ? '#c2772b' : '#d0c0a8'}`,
+                borderRadius: 20, padding: '6px 18px',
+                fontSize: '0.72rem', fontWeight: 600,
+                color: c.active ? '#fff' : '#6b5540',
+                cursor: 'pointer', fontFamily: "'Poppins',sans-serif",
+                whiteSpace: 'nowrap', outline: 'none', transition: 'all 0.18s',
+              }}>
+              {c.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Search bar */}
+        <SearchBar compact={false}
+          searchText={searchText} setSearchText={setSearchText}
+          showSuggestions={showSuggestions} setShowSuggestions={setShowSuggestions}
+          searchRef={searchRef} filteredSuggestions={filteredSuggestions}
+          handleSearch={handleSearch} handleNearMe={handleNearMe}
+          locating={locating} handleSuggestionClick={handleSuggestionClick}
+          handleKeyDown={handleKeyDown} />
+
+        {/* Popular chips */}
+        <div style={{ marginTop: 16 }}>
+          <div style={{ fontSize: '0.58rem', color: '#b8a080', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 9 }}>Popular</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {QUICK_CHIPS.map(chip => (
+              <span key={chip.label} className="pop-chip-desk"
+                onClick={(e) => { sessionStorage.setItem('ovika_rental_type', chip.rentalType); navClick(e, chip.path(), navigate); }}
+                onAuxClick={(e) => { sessionStorage.setItem('ovika_rental_type', chip.rentalType); auxNavClick(e, chip.path()); }}
+                style={{
+                  fontSize: '0.7rem', color: '#6b5540', background: 'transparent',
+                  border: '1.5px solid #d0c0a8', borderRadius: 20, padding: '5px 14px',
+                  fontWeight: 500, cursor: 'pointer', transition: 'all 0.18s',
+                }}>
+                {chip.label}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Feature grid */}
+        <div style={{ marginTop: 'auto', paddingTop: 20, borderTop: '1px solid #e0d4c0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
+          {[
+            { icon: '🏠', title: 'Fully Furnished', sub: 'Move in with zero hassle' },
+            { icon: '🛡', title: 'Zero Brokerage', sub: 'No hidden charges ever' },
+            { icon: '✔', title: 'Verified Properties', sub: '100% physically verified' },
+            { icon: '⚡', title: 'Instant Move-in', sub: 'Same day confirmation' },
+          ].map((f, i) => (
+            <div key={f.title} style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              padding: '10px 0',
+              paddingRight: i % 2 === 0 ? 16 : 0,
+              paddingLeft: i % 2 === 1 ? 16 : 0,
+              borderRight: i % 2 === 0 ? '1px solid #e0d4c0' : 'none',
+              borderBottom: i < 2 ? '1px solid #e0d4c0' : 'none',
+            }}>
+              <div style={{ width: 32, height: 32, borderRadius: 9, background: 'rgba(194,119,43,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', flexShrink: 0 }}>
+                {f.icon}
+              </div>
+              <div>
+                <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#1a1209', lineHeight: 1.2 }}>{f.title}</div>
+                <div style={{ fontSize: '0.55rem', color: '#a08060', marginTop: 1 }}>{f.sub}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+      </div>
+
+      {/* ── RIGHT panel — overlapping image cards ── */}
+      <div style={{ flex: 1, position: 'relative', height: 'clamp(420px, 65vh, 600px)' }}>
+
+        {/* Large card — top-right (nightly) */}
+        <div className="img-card-large"
+          onClick={() => handleSearch('short')}
+          style={{
+            position: 'absolute', top: 0, right: 0,
+            width: '87%', height: '78%',
+            borderRadius: 24, overflow: 'hidden',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.18)',
+            cursor: 'pointer',
           }}>
-              <div style={{ display: 'inline-flex', alignSelf: 'flex-start', background: 'rgba(194,119,43,0.12)', border: '1px solid rgba(194,119,43,0.3)', borderRadius: 20, padding: '4px 14px', marginBottom: 14 }}>
-                <span style={{ fontSize: '0.62rem', color: '#c2772b', letterSpacing: 1.5, textTransform: 'uppercase', fontWeight: 600 }}>✦ Smart Stay Platform</span>
-              </div>
-              <h1 style={{ color: '#1a1209', fontSize: 'clamp(1.3rem, 1.8vw, 1.75rem)', fontWeight: 600, lineHeight: 1.2, margin: '0 0 10px' }}>
-                Find Smart Stays<br />
-                <span style={{ color: '#c2772b' }}>Across NCR Cities</span>
-              </h1>
-              <p style={{ color: '#6b5540', fontSize: '0.84rem', fontWeight: 400, margin: '0 0 12px', lineHeight: 1.65 }}>
-                Verified PGs, Apartments &amp; Premium Homes
-              </p>
+          <img
+            src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=900&q=85"
+            alt="Nightly Stay"
+            onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=900&q=80'; }}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.8s ease' }}
+          />
+          {/* Bottom gradient */}
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.28) 100%)' }} />
 
-              {/* City chips */}
-              <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', marginBottom: 16 }}>
-                {[
-                  { label: 'Noida', city: 'Noida' },
-                  { label: 'Greater Noida', city: 'Greater Noida' },
-                  { label: 'Delhi', city: 'Delhi' },
-                  { label: 'Gurugram', city: 'Gurugram' },
-                ].map(c => (
-                  <button key={c.label} onClick={(e) => { const p = new URLSearchParams(); p.set('city', c.city); navClick(e, `/properties?${p}`, navigate); }} onAuxClick={(e) => { const p = new URLSearchParams(); p.set('city', c.city); auxNavClick(e, `/properties?${p}`); }}
-                    style={{ background: '#fff', border: '1.5px solid #e8c88a', borderRadius: 20, padding: '5px 15px', fontSize: '0.7rem', fontWeight: 600, color: '#7a5530', cursor: 'pointer', fontFamily: "'Poppins',sans-serif", whiteSpace: 'nowrap', outline: 'none', transition: 'all 0.2s' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#fdf0e0'; e.currentTarget.style.borderColor = '#c2772b'; e.currentTarget.style.color = '#c2772b'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#e8c88a'; e.currentTarget.style.color = '#7a5530'; }}>
-                    {c.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Search bar */}
-              <SearchBar compact={false} searchText={searchText} setSearchText={setSearchText} showSuggestions={showSuggestions} setShowSuggestions={setShowSuggestions} searchRef={searchRef} filteredSuggestions={filteredSuggestions} handleSearch={handleSearch} handleNearMe={handleNearMe} locating={locating} handleSuggestionClick={handleSuggestionClick} handleKeyDown={handleKeyDown} />
-
-              {/* Quick Nav Chips */}
-              <div style={{ marginTop: 18 }}>
-                <div style={{ fontSize: '0.58rem', color: '#b8a080', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8 }}>🔍 Popular Searches</div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                  {QUICK_CHIPS.map(chip => (
-                    <span key={chip.label}
-                      onClick={(e) => { sessionStorage.setItem('ovika_rental_type', chip.rentalType); navClick(e, chip.path(), navigate); }}
-                  onAuxClick={(e) => { sessionStorage.setItem('ovika_rental_type', chip.rentalType); auxNavClick(e, chip.path()); }}
-                      style={{
-                        fontSize: '0.68rem', color: '#6b5540', background: '#fff',
-                        border: '1px solid #e8d8c0', borderRadius: 20, padding: '5px 12px',
-                        fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s',
-                      }}
-                      onMouseEnter={e => { e.currentTarget.style.background = '#fdf0e0'; e.currentTarget.style.borderColor = '#c2772b'; e.currentTarget.style.color = '#c2772b'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#e8d8c0'; e.currentTarget.style.color = '#6b5540'; }}
-                    >{chip.label}</span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Feature strip */}
-              <div style={{ marginTop: 'auto', paddingTop: 16, borderTop: '1px solid #e8d8c0' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
-                  {[
-                    { icon: '✦', title: 'Fully Furnished', sub: 'Move in with zero hassle' },
-                    { icon: '⚡', title: 'Instant Move-in', sub: 'Same day confirmation' },
-                    { icon: '🛡', title: 'Zero Brokerage', sub: 'No hidden charges ever' },
-                    { icon: '✔', title: 'Verified Properties', sub: '100% physically verified' },
-                  ].map((f, i) => (
-                    <div key={f.title} style={{
-                      display: 'flex', alignItems: 'center', gap: 8,
-                      padding: '10px 0',
-                      borderRight: i % 2 === 0 ? '1px solid #e8d8c0' : 'none',
-                      paddingRight: i % 2 === 0 ? 14 : 0,
-                      paddingLeft: i % 2 === 1 ? 14 : 0,
-                      borderBottom: i < 2 ? '1px solid #e8d8c0' : 'none',
-                    }}>
-                      <div style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(194,119,43,0.1)', border: '1px solid rgba(194,119,43,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <span style={{ fontSize: '0.8rem' }}>{f.icon}</span>
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '0.66rem', fontWeight: 600, color: '#1a1209', lineHeight: 1.2 }}>{f.title}</div>
-                        <div style={{ fontSize: '0.55rem', color: '#a08060', marginTop: 1 }}>{f.sub}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+          {/* Price badge — white card style like screenshot */}
+          <div style={{
+            position: 'absolute', top: 20, left: 20,
+            background: '#fff', borderRadius: 16,
+            padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.14)',
+          }}>
+            <div style={{ width: 34, height: 34, borderRadius: 9, background: '#f5f0e8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>🏠</div>
+            <div>
+              <div style={{ fontSize: '0.55rem', color: '#a08060', fontWeight: 500, lineHeight: 1 }}>Starting</div>
+              <div style={{ fontSize: '1rem', fontWeight: 700, color: '#1a1209', lineHeight: 1.2, letterSpacing: -0.3 }}>{shortDisplay}</div>
+            </div>
           </div>
 
-          {/* RIGHT panel — Flip layout: Nightly=image-top/content-bottom, Monthly=content-top/image-bottom */}
-          <style>{`
-            @keyframes kenBurns {
-              0%   { transform: scale(1) translateX(0); }
-              100% { transform: scale(1.06) translateX(-8px); }
-            }
-            @keyframes shimLine {
-              0%   { transform: translateX(-100%); }
-              100% { transform: translateX(220%); }
-            }
-            @keyframes fadeUp {
-              from { opacity: 0; transform: translateY(10px); }
-              to   { opacity: 1; transform: translateY(0); }
-            }
-            .flip-card { flex: 1; display: flex; flex-direction: column; overflow: hidden; cursor: pointer; background: #fdf8f2; transition: box-shadow 0.3s; }
-            .flip-card:hover { box-shadow: inset 0 0 0 2px rgba(194,119,43,0.18); }
-            .flip-img { position: relative; flex: 0 0 52%; overflow: hidden; }
-            .flip-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.8s ease; }
-            .flip-card:hover .flip-img img { animation: kenBurns 5s ease forwards; }
-            .flip-body { flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 20px 24px 20px; animation: fadeUp 0.5s ease both; }
-          `}</style>
+          {/* Bottom-right label */}
+          <div style={{ position: 'absolute', bottom: 16, right: 16 }}>
+            <span style={{ background: 'rgba(194,119,43,0.9)', borderRadius: 20, padding: '4px 14px', fontSize: '0.56rem', color: '#fff', fontWeight: 600, letterSpacing: 0.8, textTransform: 'uppercase' }}>🌙 Explore Nightly</span>
+          </div>
+        </div>
 
-          <div style={{ flex: 1, display: 'flex', minWidth: 0 }}>
+        {/* Small card — bottom-left (monthly), overlapping */}
+        <div className="img-card-sm"
+          onClick={() => handleSearch('long')}
+          style={{
+            position: 'absolute', bottom: 0, left: 0,
+            width: '54%', height: '55%',
+            borderRadius: 20, overflow: 'hidden',
+            boxShadow: '0 16px 40px rgba(0,0,0,0.2)',
+            border: '3px solid #f5f0e8',
+            cursor: 'pointer',
+          }}>
+          <img
+            src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=700&q=85"
+            alt="Monthly Rental"
+            onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=700&q=80'; }}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.8s ease' }}
+          />
+          {/* Gradient overlay */}
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 35%, rgba(0,0,0,0.55) 100%)' }} />
 
-            {/* ── NIGHTLY: Image TOP → Content BOTTOM ── */}
-            <div className="flip-card" onClick={() => handleSearch('short')}
-              style={{ borderRight: '1px solid #f0e8da' }}>
+          {/* Monthly price badge */}
+          <div style={{ position: 'absolute', bottom: 14, left: 14 }}>
+            <div style={{ fontSize: '0.48rem', color: 'rgba(255,255,255,0.75)', fontWeight: 500, marginBottom: 2, textTransform: 'uppercase', letterSpacing: 1 }}>Monthly from</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', lineHeight: 1, letterSpacing: -0.3 }}>{longDisplay}</div>
+          </div>
 
-              {/* IMAGE — top */}
-              <div className="flip-img">
-                <img
-                  src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=800&q=85"
-                  alt="Nightly Stay"
-                  onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80'; }}
-                />
-                {/* soft bottom fade into content bg */}
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to bottom, transparent, #fdf8f2)' }} />
-                {/* Badge */}
-                <div style={{ position: 'absolute', top: 14, left: 14 }}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(194,119,43,0.92)', borderRadius: 20, padding: '4px 12px', fontSize: '0.52rem', color: '#fff', fontWeight: 600, letterSpacing: 1.2, textTransform: 'uppercase', boxShadow: '0 2px 10px rgba(0,0,0,0.2)' }}>🌙 Nightly Stays</span>
-                </div>
-                {/* Top-right: small second image cut */}
-                <div style={{ position: 'absolute', top: 12, right: 12, width: 58, height: 44, borderRadius: 10, overflow: 'hidden', border: '2px solid rgba(255,255,255,0.7)', boxShadow: '0 4px 14px rgba(0,0,0,0.22)' }}>
-                  <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=200&q=75" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                    onError={e => { e.currentTarget.style.display = 'none'; }} />
-                </div>
-              </div>
-
-              {/* CONTENT — bottom */}
-              <div className="flip-body" style={{ background: '#fdf8f2' }}>
-                {/* eyebrow */}
-                <div>
-                  <div style={{ fontSize: '0.5rem', color: '#b8966a', fontWeight: 600, letterSpacing: 1.8, textTransform: 'uppercase', marginBottom: 5 }}>Short Trips · Business · Weekend</div>
-                  <div style={{ fontSize: 'clamp(0.95rem, 1.4vw, 1.2rem)', fontWeight: 600, color: '#1a1209', lineHeight: 1.25, marginBottom: 12 }}>
-                    Stay the Night,<br />
-                    <span style={{ color: '#c2772b' }}>Own the Morning</span>
-                  </div>
-
-                  {/* Price */}
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, marginBottom: 4 }}>
-                    <span style={{ fontSize: '0.54rem', color: '#a08060', fontWeight: 500, letterSpacing: 0.4 }}>STARTING</span>
-                    <span style={{ fontSize: 'clamp(1.4rem, 1.9vw, 1.75rem)', fontWeight: 300, color: '#1a1209', lineHeight: 1, letterSpacing: -0.5 }}>{shortDisplay}</span>
-                  </div>
-
-                  {/* Shimmer bar */}
-                  <div style={{ position: 'relative', height: 2, width: '60%', background: 'rgba(194,119,43,0.15)', borderRadius: 2, overflow: 'hidden', marginBottom: 12 }}>
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, transparent, #c2772b, transparent)', animation: 'shimLine 2.2s ease-in-out infinite' }} />
-                  </div>
-
-                  {/* Tags */}
-                  <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 0 }}>
-                    {['AC Rooms', 'Wi-Fi', 'Same-day'].map(t => (
-                      <span key={t} style={{ fontSize: '0.48rem', color: '#8a6840', fontWeight: 600, background: 'rgba(194,119,43,0.08)', border: '1px solid rgba(194,119,43,0.2)', borderRadius: 20, padding: '2px 8px' }}>✦ {t}</span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* CTA */}
-                <button onClick={e => { e.stopPropagation(); handleSearch('short'); }}
-                  style={{ width: '100%', padding: '10px 0', borderRadius: 9, border: 'none', background: 'linear-gradient(135deg, #c2772b, #a85e1f)', color: '#fff', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer', fontFamily: "'Poppins',sans-serif", boxShadow: '0 4px 16px rgba(194,119,43,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.22s' }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(194,119,43,0.5)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(194,119,43,0.35)'; }}>
-                  Explore Nightly Stays →
-                </button>
-              </div>
-            </div>
-
-            {/* ── MONTHLY: Content TOP → Image BOTTOM ── */}
-            <div className="flip-card" onClick={() => handleSearch('long')}>
-
-              {/* CONTENT — top */}
-              <div className="flip-body" style={{ flex: '0 0 48%', background: 'linear-gradient(160deg, #fdf5e8 0%, #faebd0 100%)', borderBottom: '1px solid #f0e0c0' }}>
-                <div>
-                  <div style={{ fontSize: '0.5rem', color: '#b8966a', fontWeight: 600, letterSpacing: 1.8, textTransform: 'uppercase', marginBottom: 5 }}>Professionals · Students · Long-term</div>
-                  {/* Badge */}
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(26,18,9,0.07)', border: '1px solid rgba(194,119,43,0.25)', borderRadius: 20, padding: '4px 12px', marginBottom: 8 }}>
-                    <span style={{ fontSize: '0.52rem', color: '#7a5025', fontWeight: 600, letterSpacing: 1.2, textTransform: 'uppercase' }}>🏠 Monthly Rental</span>
-                  </div>
-                  <div style={{ fontSize: 'clamp(0.95rem, 1.4vw, 1.2rem)', fontWeight: 600, color: '#1a1209', lineHeight: 1.25, marginBottom: 12 }}>
-                    Your City,<br />
-                    <span style={{ color: '#c2772b' }}>Your Home</span>
-                  </div>
-
-                  {/* Price */}
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 5, marginBottom: 4 }}>
-                    <span style={{ fontSize: '0.54rem', color: '#a08060', fontWeight: 500, letterSpacing: 0.4 }}>STARTING</span>
-                    <span style={{ fontSize: 'clamp(1.4rem, 1.9vw, 1.75rem)', fontWeight: 300, color: '#1a1209', lineHeight: 1, letterSpacing: -0.5 }}>{longDisplay}</span>
-                  </div>
-
-                  {/* Shimmer bar */}
-                  <div style={{ position: 'relative', height: 2, width: '60%', background: 'rgba(194,119,43,0.15)', borderRadius: 2, overflow: 'hidden', marginBottom: 12 }}>
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, transparent, #c2772b, transparent)', animation: 'shimLine 2.6s ease-in-out infinite' }} />
-                  </div>
-
-                  {/* Tags */}
-                  <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                    {['Furnished', 'Zero Brokerage', 'Flexible'].map(t => (
-                      <span key={t} style={{ fontSize: '0.48rem', color: '#8a6840', fontWeight: 600, background: 'rgba(194,119,43,0.08)', border: '1px solid rgba(194,119,43,0.2)', borderRadius: 20, padding: '2px 8px' }}>✦ {t}</span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* CTA */}
-                <button onClick={e => { e.stopPropagation(); handleSearch('long'); }}
-                  style={{ width: '100%', padding: '10px 0', borderRadius: 9, border: '1.5px solid #c2772b', background: 'transparent', color: '#c2772b', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer', fontFamily: "'Poppins',sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, transition: 'all 0.22s' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#c2772b'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#c2772b'; e.currentTarget.style.transform = 'translateY(0)'; }}>
-                  Explore Monthly Stays →
-                </button>
-              </div>
-
-              {/* IMAGE — bottom */}
-              <div className="flip-img" style={{ flex: 1 }}>
-                <img
-                  src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=85"
-                  alt="Monthly Rental"
-                  onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80'; }}
-                />
-                {/* soft top fade into content bg */}
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to top, transparent, #faebd0)' }} />
-                {/* Bottom-right: small second image cut */}
-                <div style={{ position: 'absolute', bottom: 12, right: 12, width: 58, height: 44, borderRadius: 10, overflow: 'hidden', border: '2px solid rgba(255,255,255,0.7)', boxShadow: '0 4px 14px rgba(0,0,0,0.22)' }}>
-                  <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=200&q=75" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                    onError={e => { e.currentTarget.style.display = 'none'; }} />
-                </div>
-              </div>
-            </div>
-
+          {/* Label */}
+          <div style={{ position: 'absolute', top: 12, right: 12 }}>
+            <span style={{ background: 'rgba(26,18,9,0.75)', borderRadius: 20, padding: '3px 11px', fontSize: '0.5rem', color: '#f0c070', fontWeight: 600, letterSpacing: 0.6, textTransform: 'uppercase' }}>🏠 Monthly</span>
           </div>
         </div>
 
