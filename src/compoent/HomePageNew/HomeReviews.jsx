@@ -91,6 +91,16 @@ const REVIEWS = [
     initials: "NJ",
     color: "#a05c2a",
   },
+  {
+    id: 10,
+    name: "Vikram",
+    location: "Canada",
+    date: "June 2026",
+    rating: 5,
+    text: "The host is very professional in his approach and has maintained the property well. The host is patient in hearing about issues and is very responsive. Overall a pleasure to use the property.",
+    initials: "V",
+    color: "#9b2063",
+  },
 ];
 
 const allReviews = [...REVIEWS, ...REVIEWS];
