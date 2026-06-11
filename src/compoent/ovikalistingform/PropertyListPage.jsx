@@ -1297,27 +1297,18 @@ const PropertyListPage = () => {
             }
 
             if (cat.id === 'Homestays & BnB') {
-              if (pCat === 'homestays & bnbs' || pCat === 'home stays') return true;
-              // Explicit category/type keywords
-              const catKw = ['homestay','bnb','bed and breakfast','vacation rental','farm stay','cottage','guesthouse','inn','lodge','retreat','holiday','resort'];
-              const typeKw = ['entire place','private room','shared room','guest house','home stay'];
-              const nameKw = ['homestay','cottage','inn','lodge','resort','retreat','holiday','guesthouse','guest house','bnb','farm','villa stay'];
-              if (catKw.some(t => pCat.includes(t) || pType.includes(t))) return true;
-              if (typeKw.some(t => pType.includes(t))) return true;
-              if (nameKw.some(t => pName.includes(t))) return true;
-              // Catch-all: nightly properties that are NOT hotel AND NOT apartment/villa type
-              if (!isMonthly) {
-                const isHotelType = pCat.includes('hotel') || pType.includes('hotel');
-                const isAptType   = ['apartment','villa','flat','penthouse','duplex','studio','bungalow','builder floor','independent house','serviced'].some(t => pCat.includes(t) || pType.includes(t));
-                if (!isHotelType && !isAptType) return true;
-              }
-              return false;
+              // Homestays = NIGHTLY only — monthly goes to Apartments & Villas
+              if (isMonthly) return false;
+              // Exclude only properties explicitly categorized as Hotel Stays
+              if (pCat === 'hotel stays' || pCat === 'hotel') return false;
+              // All remaining nightly non-PG non-signature → Homestays
+              return true;
             }
 
             if (cat.id === 'Apartments & Villas') {
               if (pCat === 'apartments & villas') return true;
-              const types = ['apartment','villa','studio','serviced apartment','serviced residence','builder floor','independent house','bungalow','flat','penthouse','duplex'];
-              return types.some(t => pCat.includes(t) || pType.includes(t));
+              const catKw = ['apartment','villa','studio','serviced apartment','serviced residence','builder floor','flat','penthouse','duplex'];
+              return catKw.some(t => pCat.includes(t) || pType.includes(t));
             }
 
             return false;
