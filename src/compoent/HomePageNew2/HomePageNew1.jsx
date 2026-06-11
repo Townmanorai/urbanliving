@@ -50,12 +50,12 @@ function SearchBar({ searchText, setSearchText, showSuggestions, setShowSuggesti
     <div ref={el => { wrapRef.current = el; if (searchRef) searchRef.current = el; }} style={{ position: 'relative' }}>
       <div style={{
         background: '#fff',
-        borderRadius: 14,
-        boxShadow: '0 8px 32px rgba(194,119,43,0.18), 0 2px 8px rgba(0,0,0,0.06)',
+        borderRadius: compact ? 14 : 50,
+        boxShadow: '0 4px 18px rgba(194,119,43,0.13), 0 1px 6px rgba(0,0,0,0.05)',
         border: '1.5px solid #d4b896',
         display: 'flex',
         alignItems: 'stretch',
-        minHeight: compact ? 48 : 62,
+        minHeight: compact ? 48 : 50,
         overflow: 'hidden',
       }}>
         <MapPin size={16} style={{ color: '#c2772b', flexShrink: 0, alignSelf: 'center', marginLeft: 14 }} />
@@ -102,12 +102,12 @@ function SearchBar({ searchText, setSearchText, showSuggestions, setShowSuggesti
         <button
           onClick={() => handleSearch(null)}
           style={{
-            flexShrink: 0, padding: compact ? '0 16px' : '0 22px', border: 'none',
+            flexShrink: 0, padding: compact ? '0 16px' : '0 20px', border: 'none',
             background: 'linear-gradient(135deg, #c2772b 0%, #a85e1f 100%)',
-            color: '#fff', fontSize: compact ? '0.8rem' : '0.86rem',
-            fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 7,
-            margin: '5px 5px 5px 0', borderRadius: 10,
-            boxShadow: '0 4px 14px rgba(194,119,43,0.4)',
+            color: '#fff', fontSize: compact ? '0.8rem' : '0.82rem',
+            fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+            margin: '5px 5px 5px 0', borderRadius: compact ? 10 : 40,
+            boxShadow: '0 3px 12px rgba(194,119,43,0.38)',
             fontFamily: "'Poppins', sans-serif",
             whiteSpace: 'nowrap',
           }}
