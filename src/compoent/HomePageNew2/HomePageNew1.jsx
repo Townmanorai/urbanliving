@@ -659,107 +659,105 @@ export default function HomePageNew1() {
           </div>
         </div>
 
-        {/* ── Flip-poster cards + feature boxes ── */}
-        <div style={{ background: 'linear-gradient(180deg, #fdf7ee 0%, #f5ead6 60%, #ede4cf 100%)', padding: '0 12px 24px' }}>
+        {/* ── Poster cards + feature boxes ── */}
+        <div style={{ background: 'linear-gradient(180deg, #fdf7ee 0%, #f5ead6 60%, #ede4cf 100%)', padding: '0 14px 28px' }}>
 
           <style>{`
             @keyframes shimLineMob { 0%{transform:translateX(-100%)} 100%{transform:translateX(220%)} }
+            .mob-card { transition: transform 0.18s, box-shadow 0.18s; }
+            .mob-card:active { transform: scale(0.98); }
           `}</style>
 
           {/* Two poster cards side by side */}
-          <div style={{ display: 'flex', gap: 9, marginBottom: 11 }}>
+          <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
 
             {/* ── NIGHTLY: image top → content bottom ── */}
-            <div onClick={() => handleSearch('short')}
-              style={{ flex: '1 1 0', minWidth: 0, background: '#fdf8f2', borderRadius: 14, overflow: 'hidden', boxShadow: '0 4px 18px rgba(0,0,0,0.11)', border: '1px solid #f0e8da', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}>
+            <div className="mob-card" onClick={() => handleSearch('short')}
+              style={{ flex: '1 1 0', minWidth: 0, background: '#fdf8f2', borderRadius: 16, overflow: 'hidden', boxShadow: '0 6px 24px rgba(0,0,0,0.13)', border: '1px solid #f0e8da', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}>
               {/* Image top */}
-              <div style={{ position: 'relative', flex: '0 0 52%', overflow: 'hidden', minHeight: 110 }}>
+              <div style={{ position: 'relative', overflow: 'hidden', height: 130 }}>
                 <img
-                  src="/b1.jpeg"
+                  src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=600&q=85"
                   alt="Nightly Stay"
-                  onError={e => { e.currentTarget.src = '/tmluxe1.jpeg'; }}
+                  onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80'; }}
                   style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 />
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 36, background: 'linear-gradient(to bottom, transparent, #fdf8f2)' }} />
-                <div style={{ position: 'absolute', top: 7, left: 7, background: 'rgba(194,119,43,0.92)', borderRadius: 20, padding: '2px 7px' }}>
-                  <span style={{ fontSize: '0.38rem', color: '#fff', fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase' }}>🌙 Nightly</span>
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 50, background: 'linear-gradient(to bottom, transparent, #fdf8f2)' }} />
+                <div style={{ position: 'absolute', top: 9, left: 9 }}>
+                  <span style={{ background: 'rgba(194,119,43,0.92)', borderRadius: 20, padding: '3px 10px', fontSize: '0.45rem', color: '#fff', fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase' }}>🌙 Nightly</span>
                 </div>
               </div>
               {/* Content bottom */}
-              <div style={{ flex: 1, padding: '8px 9px 10px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: '#fdf8f2' }}>
+              <div style={{ flex: 1, padding: '11px 12px 13px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: '#fdf8f2' }}>
                 <div>
-                  <div style={{ fontSize: '0.6rem', fontWeight: 600, color: '#1a1209', lineHeight: 1.2, marginBottom: 4 }}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#1a1209', lineHeight: 1.25, marginBottom: 5 }}>
                     Stay the Night,<br /><span style={{ color: '#c2772b' }}>Own the Morning</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, marginBottom: 3 }}>
-                    <span style={{ fontSize: '0.36rem', color: '#a08060', fontWeight: 500 }}>STARTING</span>
-                    <span style={{ fontSize: '0.82rem', fontWeight: 300, color: '#1a1209', lineHeight: 1 }}>{shortDisplay}</span>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 5 }}>
+                    <span style={{ fontSize: '0.4rem', color: '#a08060', fontWeight: 500 }}>FROM</span>
+                    <span style={{ fontSize: '0.95rem', fontWeight: 300, color: '#1a1209', lineHeight: 1 }}>{shortDisplay}</span>
                   </div>
-                  {/* shimmer */}
-                  <div style={{ position: 'relative', height: 1.5, width: '70%', background: 'rgba(194,119,43,0.15)', borderRadius: 2, overflow: 'hidden', marginBottom: 5 }}>
+                  <div style={{ position: 'relative', height: 2, width: '65%', background: 'rgba(194,119,43,0.15)', borderRadius: 2, overflow: 'hidden', marginBottom: 6 }}>
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg,transparent,#c2772b,transparent)', animation: 'shimLineMob 2.2s ease-in-out infinite' }} />
                   </div>
                 </div>
                 <button onClick={e => { e.stopPropagation(); handleSearch('short'); }}
-                  style={{ width: '100%', padding: '7px 0', borderRadius: 7, border: 'none', background: 'linear-gradient(135deg,#c2772b,#a85e1f)', color: '#fff', fontSize: '0.52rem', fontWeight: 600, cursor: 'pointer', fontFamily: "'Poppins',sans-serif" }}>
+                  style={{ width: '100%', padding: '9px 0', borderRadius: 9, border: 'none', background: 'linear-gradient(135deg,#c2772b,#a85e1f)', color: '#fff', fontSize: '0.6rem', fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins',sans-serif", letterSpacing: 0.3, boxShadow: '0 3px 10px rgba(194,119,43,0.35)' }}>
                   Explore Nightly →
                 </button>
               </div>
             </div>
 
             {/* ── MONTHLY: content top → image bottom ── */}
-            <div onClick={() => handleSearch('long')}
-              style={{ flex: '1 1 0', minWidth: 0, background: '#fdf5e8', borderRadius: 14, overflow: 'hidden', boxShadow: '0 4px 18px rgba(0,0,0,0.11)', border: '1px solid #f0e8da', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}>
+            <div className="mob-card" onClick={() => handleSearch('long')}
+              style={{ flex: '1 1 0', minWidth: 0, background: '#fdf5e8', borderRadius: 16, overflow: 'hidden', boxShadow: '0 6px 24px rgba(0,0,0,0.13)', border: '1px solid #f0e0c0', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}>
               {/* Content top */}
-              <div style={{ flex: '0 0 48%', padding: '8px 9px 6px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', background: 'linear-gradient(160deg,#fdf5e8,#faebd0)', borderBottom: '1px solid #f0e0c0' }}>
-                <div>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', background: 'rgba(26,18,9,0.07)', border: '1px solid rgba(194,119,43,0.25)', borderRadius: 20, padding: '2px 7px', marginBottom: 4 }}>
-                    <span style={{ fontSize: '0.38rem', color: '#7a5025', fontWeight: 600, letterSpacing: 0.8, textTransform: 'uppercase' }}>🏠 Monthly</span>
-                  </div>
-                  <div style={{ fontSize: '0.6rem', fontWeight: 600, color: '#1a1209', lineHeight: 1.2, marginBottom: 4 }}>
-                    Your City,<br /><span style={{ color: '#c2772b' }}>Your Home</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, marginBottom: 3 }}>
-                    <span style={{ fontSize: '0.36rem', color: '#a08060', fontWeight: 500 }}>STARTING</span>
-                    <span style={{ fontSize: '0.82rem', fontWeight: 300, color: '#1a1209', lineHeight: 1 }}>{longDisplay}</span>
-                  </div>
-                  {/* shimmer */}
-                  <div style={{ position: 'relative', height: 1.5, width: '70%', background: 'rgba(194,119,43,0.15)', borderRadius: 2, overflow: 'hidden', marginBottom: 5 }}>
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg,transparent,#c2772b,transparent)', animation: 'shimLineMob 2.6s ease-in-out infinite' }} />
-                  </div>
+              <div style={{ padding: '11px 12px 10px', display: 'flex', flexDirection: 'column', gap: 4, background: 'linear-gradient(160deg,#fdf5e8,#faebd0)', borderBottom: '1px solid #f0e0c0' }}>
+                <div style={{ display: 'inline-flex', alignSelf: 'flex-start', background: 'rgba(26,18,9,0.07)', border: '1px solid rgba(194,119,43,0.25)', borderRadius: 20, padding: '2px 9px' }}>
+                  <span style={{ fontSize: '0.42rem', color: '#7a5025', fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase' }}>🏠 Monthly</span>
+                </div>
+                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#1a1209', lineHeight: 1.25 }}>
+                  Your City,<br /><span style={{ color: '#c2772b' }}>Your Home</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                  <span style={{ fontSize: '0.4rem', color: '#a08060', fontWeight: 500 }}>FROM</span>
+                  <span style={{ fontSize: '0.95rem', fontWeight: 300, color: '#1a1209', lineHeight: 1 }}>{longDisplay}</span>
+                </div>
+                <div style={{ position: 'relative', height: 2, width: '65%', background: 'rgba(194,119,43,0.15)', borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg,transparent,#c2772b,transparent)', animation: 'shimLineMob 2.6s ease-in-out infinite' }} />
                 </div>
                 <button onClick={e => { e.stopPropagation(); handleSearch('long'); }}
-                  style={{ width: '100%', padding: '7px 0', borderRadius: 7, border: '1.5px solid #c2772b', background: 'transparent', color: '#c2772b', fontSize: '0.52rem', fontWeight: 600, cursor: 'pointer', fontFamily: "'Poppins',sans-serif" }}>
+                  style={{ width: '100%', padding: '9px 0', borderRadius: 9, border: '1.5px solid #c2772b', background: 'transparent', color: '#c2772b', fontSize: '0.6rem', fontWeight: 700, cursor: 'pointer', fontFamily: "'Poppins',sans-serif", letterSpacing: 0.3, marginTop: 2 }}>
                   Explore Monthly →
                 </button>
               </div>
               {/* Image bottom */}
-              <div style={{ flex: 1, position: 'relative', overflow: 'hidden', minHeight: 90 }}>
+              <div style={{ flex: 1, position: 'relative', overflow: 'hidden', minHeight: 100 }}>
                 <img
-                  src="/home2desktop.png"
+                  src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=600&q=85"
                   alt="Monthly Rental"
-                  onError={e => { e.currentTarget.src = '/apartmnet2.png'; }}
+                  onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=600&q=80'; }}
                   style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 />
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 32, background: 'linear-gradient(to top, transparent, #faebd0)' }} />
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 36, background: 'linear-gradient(to top, transparent, #faebd0)' }} />
               </div>
             </div>
 
           </div>
 
           {/* Feature boxes — 2 per row */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             {[
               { icon: '🏠', title: 'Fully Furnished', sub: 'Move in with zero hassle' },
               { icon: '⚡', title: 'Instant Move-in', sub: 'Same-day confirmation' },
               { icon: '🛡', title: 'Zero Brokerage', sub: 'No hidden charges ever' },
-              { icon: '✔', title: 'Verified', sub: '100% physically verified' },
+              { icon: '✔', title: '100% Verified', sub: 'Physically checked' },
             ].map(f => (
-              <div key={f.title} style={{ flex: '1 1 calc(50% - 4px)', minWidth: 0, background: '#fff', borderRadius: 11, padding: '9px 10px', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.06)', border: '1px solid #f0e8da' }}>
-                <div style={{ width: 26, height: 26, borderRadius: 7, background: 'rgba(194,119,43,0.1)', border: '1px solid rgba(194,119,43,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', flexShrink: 0 }}>{f.icon}</div>
+              <div key={f.title} style={{ background: '#fff', borderRadius: 12, padding: '10px 11px', display: 'flex', alignItems: 'center', gap: 9, boxShadow: '0 2px 8px rgba(0,0,0,0.06)', border: '1px solid #f0e8da' }}>
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(194,119,43,0.1)', border: '1px solid rgba(194,119,43,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', flexShrink: 0 }}>{f.icon}</div>
                 <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: '0.58rem', fontWeight: 600, color: '#1a1209', lineHeight: 1.2 }}>{f.title}</div>
-                  <div style={{ fontSize: '0.48rem', color: '#9a8878', fontWeight: 400, marginTop: 1, lineHeight: 1.3 }}>{f.sub}</div>
+                  <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#1a1209', lineHeight: 1.2 }}>{f.title}</div>
+                  <div style={{ fontSize: '0.5rem', color: '#9a8878', fontWeight: 400, marginTop: 1, lineHeight: 1.3 }}>{f.sub}</div>
                 </div>
               </div>
             ))}
@@ -804,8 +802,8 @@ export default function HomePageNew1() {
           {/* Nightly Card */}
           <div style={{ background: '#fff', borderRadius: 20, overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.1)', border: '1px solid #f0e8da' }}>
             <div style={{ height: 180, position: 'relative', overflow: 'hidden' }}>
-              <img src="/b1.jpeg" alt="Nightly Stay"
-                onError={e => { e.currentTarget.src = '/tmluxe1.jpeg'; }}
+              <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=700&q=85" alt="Nightly Stay"
+                onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=700&q=80'; }}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
                 onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.04)'; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }} />
@@ -830,8 +828,8 @@ export default function HomePageNew1() {
           {/* Monthly Card */}
           <div style={{ background: '#fff', borderRadius: 20, overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.1)', border: '1px solid #f0e8da' }}>
             <div style={{ height: 180, position: 'relative', overflow: 'hidden' }}>
-              <img src="/home2desktop.png" alt="Monthly Rental"
-                onError={e => { e.currentTarget.src = '/apartmnet2.png'; }}
+              <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=700&q=85" alt="Monthly Rental"
+                onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=700&q=80'; }}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
                 onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.04)'; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }} />
@@ -1003,9 +1001,9 @@ export default function HomePageNew1() {
               {/* IMAGE — top */}
               <div className="flip-img">
                 <img
-                  src="/b1.jpeg"
+                  src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=800&q=85"
                   alt="Nightly Stay"
-                  onError={e => { e.currentTarget.src = '/tmluxe1.jpeg'; }}
+                  onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80'; }}
                 />
                 {/* soft bottom fade into content bg */}
                 <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to bottom, transparent, #fdf8f2)' }} />
@@ -1015,7 +1013,7 @@ export default function HomePageNew1() {
                 </div>
                 {/* Top-right: small second image cut */}
                 <div style={{ position: 'absolute', top: 12, right: 12, width: 58, height: 44, borderRadius: 10, overflow: 'hidden', border: '2px solid rgba(255,255,255,0.7)', boxShadow: '0 4px 14px rgba(0,0,0,0.22)' }}>
-                  <img src="/b3.jpeg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=200&q=75" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                     onError={e => { e.currentTarget.style.display = 'none'; }} />
                 </div>
               </div>
@@ -1106,15 +1104,15 @@ export default function HomePageNew1() {
               {/* IMAGE — bottom */}
               <div className="flip-img" style={{ flex: 1 }}>
                 <img
-                  src="/home2desktop.png"
+                  src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=85"
                   alt="Monthly Rental"
-                  onError={e => { e.currentTarget.src = '/apartmnet2.png'; }}
+                  onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80'; }}
                 />
                 {/* soft top fade into content bg */}
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(to top, transparent, #faebd0)' }} />
                 {/* Bottom-right: small second image cut */}
                 <div style={{ position: 'absolute', bottom: 12, right: 12, width: 58, height: 44, borderRadius: 10, overflow: 'hidden', border: '2px solid rgba(255,255,255,0.7)', boxShadow: '0 4px 14px rgba(0,0,0,0.22)' }}>
-                  <img src="/novi1.png" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=200&q=75" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                     onError={e => { e.currentTarget.style.display = 'none'; }} />
                 </div>
               </div>
