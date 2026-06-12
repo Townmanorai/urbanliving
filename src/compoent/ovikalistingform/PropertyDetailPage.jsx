@@ -718,11 +718,6 @@ const ImageViewer = ({ images, initialIndex, onClose }) => {
       </div>
       {currentIndex > 0 && <button className="ivNavBtn ivPrev" onClick={handlePrevImage}><ChevronLeft size={24} /></button>}
       {currentIndex < images.length - 1 && <button className="ivNavBtn ivNext" onClick={handleNextImage}><ChevronRight size={24} /></button>}
-      <div className="ivThumbs">
-        {images.map((img, idx) => (
-          <img key={idx} src={getPhotoUrl(img)} alt={`Thumbnail ${idx + 1}`} onClick={() => setCurrentIndex(idx)} className={`ivThumb ${currentIndex === idx ? 'ivThumbActive' : ''}`} />
-        ))}
-      </div>
     </div>
   );
 };
@@ -1407,7 +1402,8 @@ const PropertyDetailPage = () => {
   useEffect(() => {
     const anyOpen = !!(showImageViewer || showPaymentModal || showLeadModal || showPhotoGallery);
     document.body.style.overflow = anyOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    document.documentElement.style.overflow = anyOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; document.documentElement.style.overflow = ''; };
   }, [showImageViewer, showPaymentModal, showLeadModal, showPhotoGallery]);
   const [calendarViewMonth, setCalendarViewMonth] = useState(new Date());
   const [monthlyDuration, setMonthlyDuration] = useState(1);
@@ -2974,28 +2970,24 @@ const PropertyDetailPage = () => {
         <div className="gallery-airbnb">
 
           {/* LEFT — big main image */}
-          <div className="gallery-main" onClick={handleMainImageClick}>
-            <img src={getPhotoUrl(photos[0]) || 'https://via.placeholder.com/800x500'} alt="Main Property" />
+          <div className="gallery-main" style={{ position:'relative', overflow:'hidden' }} onClick={handleMainImageClick}>
+            <img src={getPhotoUrl(photos[0]) || 'https://via.placeholder.com/800x500'} alt="Main Property" style={{ position:'absolute', top:0, left:0, right:0, bottom:0, width:'100%', height:'100%', objectFit:'cover', objectPosition:'center center', display:'block' }} />
           </div>
 
-          {/* RIGHT — 2 stacked images */}
-          <div className="gallery-side">
-            <div
-              className="gallery-side-cell gallery-side-top"
-              onClick={() => { if (photos[1]) { setViewerImageIndex(1); setShowImageViewer(true); } }}
-            >
-              {photos[1]
-                ? <img src={getPhotoUrl(photos[1])} alt="Property 2" />
-                : <div className="gallery-empty-cell" />}
-            </div>
-            <div
-              className="gallery-side-cell gallery-side-bottom"
-              onClick={() => { if (photos[2]) { setViewerImageIndex(2); setShowImageViewer(true); } }}
-            >
-              {photos[2]
-                ? <img src={getPhotoUrl(photos[2])} alt="Property 3" />
-                : <div className="gallery-empty-cell" />}
-            </div>
+          {/* RIGHT — 2×2 grid of 4 images */}
+          <div className="gallery-side gallery-side-grid">
+            {[1,2,3,4].map((idx, pos) => (
+              <div
+                key={idx}
+                className={`gallery-side-cell gallery-grid-cell gallery-grid-cell--${pos}`}
+                style={{ position:'relative', overflow:'hidden' }}
+                onClick={() => { if (photos[idx]) { setViewerImageIndex(idx); setShowImageViewer(true); } }}
+              >
+                {photos[idx]
+                  ? <img src={getPhotoUrl(photos[idx])} alt={`Property ${idx+1}`} style={{ position:'absolute', top:0, left:0, right:0, bottom:0, width:'100%', height:'100%', objectFit:'cover', objectPosition:'center center', display:'block' }} />
+                  : <div className="gallery-empty-cell" />}
+              </div>
+            ))}
           </div>
 
           {/* "Show all photos" button — absolute on whole grid bottom-right */}
