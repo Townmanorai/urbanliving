@@ -3142,6 +3142,30 @@ const PropertyDetailPage = () => {
 
       <div className="content-grid">
         <div className="details-column">
+
+          {/* ── Mobile-only Stay Details card ── */}
+          <div className="pdp-stay-details-card">
+            <h3 className="pdp-stay-details-title">Stay details</h3>
+            <div className="pdp-stay-details-grid">
+              <div className="pdp-stay-detail-item">
+                <span className="pdp-sd-label">CHECK-IN</span>
+                <span className="pdp-sd-value">{formatTime12h(property.check_in_time) || '2:00 PM'}</span>
+              </div>
+              <div className="pdp-stay-detail-item">
+                <span className="pdp-sd-label">CHECK-OUT</span>
+                <span className="pdp-sd-value">{formatTime12h(property.check_out_time || property.meta?.check_out_time || '11:00') || '11:00 AM'}</span>
+              </div>
+              <div className="pdp-stay-detail-item">
+                <span className="pdp-sd-label">GUESTS</span>
+                <span className="pdp-sd-value">{property.guests || property.max_guests || 2} Adults</span>
+              </div>
+              <div className="pdp-stay-detail-item">
+                <span className="pdp-sd-label">CANCELLATION</span>
+                <span className="pdp-sd-value pdp-sd-green">Free</span>
+              </div>
+            </div>
+          </div>
+
           {!(isPG && pricingMode === 'monthly') && <div className="features-bar">
               <div className="feature-box">
                 <BiBed className="f-icon"/>
@@ -3874,45 +3898,41 @@ const PropertyDetailPage = () => {
           </div>
 
           {/* ── Need Help card ── */}
-          <div style={{ background: '#fff', border: '1.5px solid #ddd0c0', borderRadius: 14, padding: '16px', marginTop: '0.75rem' }}>
-            <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#b0987c', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 14 }}>Need help?</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <a href="https://wa.me/919319392227" target="_blank" rel="noopener noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', padding: '11px 0', borderBottom: '1px solid #f0ece4' }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: '#f5f5f5', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.554 4.118 1.528 5.847L0 24l6.335-1.508A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.8 9.8 0 01-5.006-1.374l-.36-.213-3.728.887.916-3.618-.234-.373A9.77 9.77 0 012.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/></svg>
+          <div className="pdp-need-help-card">
+            <h3 className="pdp-g2k-title" style={{ marginBottom: 14 }}>Need help?</h3>
+            <div className="pdp-need-help-row">
+              <a href="https://wa.me/919319392227" target="_blank" rel="noopener noreferrer" className="pdp-help-btn">
+                <div className="pdp-help-icon-wrap" style={{ background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.554 4.118 1.528 5.847L0 24l6.335-1.508A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.84rem', fontWeight: 600, color: '#1a1209' }}>WhatsApp us</div>
-                  <div style={{ fontSize: '0.72rem', color: '#9a8878', marginTop: 1 }}>Typically replies in minutes</div>
+                  <div className="pdp-help-title">WhatsApp</div>
+                  <div className="pdp-help-sub">Replies in minutes</div>
                 </div>
-                <svg style={{ marginLeft: 'auto', color: '#c8bfb4', flexShrink: 0 }} width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 18l6-6-6-6"/></svg>
               </a>
-              <a href="tel:+919319392227"
-                style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', padding: '11px 0' }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: '#f5f5f5', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <a href="tel:+919319392227" className="pdp-help-btn">
+                <div className="pdp-help-icon-wrap" style={{ background: '#fff8f0', border: '1px solid #f0d9b5' }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c2772b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.02 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.84rem', fontWeight: 600, color: '#1a1209' }}>Call us</div>
-                  <div style={{ fontSize: '0.72rem', color: '#9a8878', marginTop: 1 }}>+91 93193 92227</div>
+                  <div className="pdp-help-title">Call us</div>
+                  <div className="pdp-help-sub">+91 99XXX XXXXX</div>
                 </div>
-                <svg style={{ marginLeft: 'auto', color: '#c8bfb4', flexShrink: 0 }} width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 18l6-6-6-6"/></svg>
               </a>
             </div>
           </div>
 
           {/* ── Safety card ── */}
-          <div style={{ background: '#fff', border: '1.5px solid #c8cdd5', borderRadius: 14, padding: '16px', marginTop: '0.75rem' }}>
-            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 12 }}>Safe booking</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div className="pdp-safe-card">
+            <h3 className="pdp-g2k-title" style={{ marginBottom: 14 }}>Safe &amp; secure</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
-                { icon: '🔒', text: 'Secure payment gateway' },
+                { icon: '🛡️', text: 'Secure payment gateway' },
                 { icon: '✅', text: 'Verified properties only' },
-                { icon: '🛡️', text: 'Zero brokerage, always' },
+                { icon: '🕐', text: '24x7 support, always' },
               ].map(({ icon, text }) => (
-                <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.8rem', color: '#374151', fontWeight: 500 }}>
-                  <span style={{ fontSize: '0.95rem' }}>{icon}</span>
+                <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.82rem', color: '#374151', fontWeight: 500 }}>
+                  <span style={{ fontSize: '1rem', flexShrink: 0 }}>{icon}</span>
                   {text}
                 </div>
               ))}
@@ -3932,6 +3952,28 @@ const PropertyDetailPage = () => {
             return (4.1 + ((Number(id) * 13 + 7) % 9) / 10).toFixed(1);
           })()}
         />
+      </div>
+
+      {/* ── Mobile Sticky Bottom Bar ── */}
+      <div className="pdp-mobile-sticky-bar">
+        <div className="pdp-msb-left">
+          <div className="pdp-msb-price-row">
+            <span className="pdp-msb-amount">₹{formatCurrency(isNightlyOfferProperty ? nightlyEffectivePrice : displayBasePrice)}</span>
+            {pdpOriginalPrice > 0 && pricingMode !== 'monthly' && (
+              <span className="pdp-msb-original">₹{formatCurrency(pdpOriginalPrice)}</span>
+            )}
+            {pdpActualPct > 0 && pricingMode !== 'monthly' && (
+              <span className="pdp-msb-badge">{pdpActualPct}% OFF</span>
+            )}
+          </div>
+          <div className="pdp-msb-sub">
+            per {pricingMode === 'monthly' ? 'month' : 'night'}
+            {pricingMode !== 'monthly' && ' · Free cancellation'}
+          </div>
+        </div>
+        <button className="pdp-msb-btn" onClick={handleReserveClick}>
+          {pricingMode === 'monthly' && !isOvikaOwnProperty ? 'Enquire Now' : 'Book Now'}
+        </button>
       </div>
 
       {/* OLD full-width sections removed — now inside details-column */}
