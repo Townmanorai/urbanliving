@@ -167,29 +167,26 @@ export default function PropertyReviews({ propertyId, propertyRating }) {
 
     return (
       <div className="pr-wrapper">
-        <h3 className="pr-heading">Customer Reviews</h3>
-        <div className="pr-global-top">
-          <div className="pr-global-left">
+        <h3 className="pr-heading">Customer reviews</h3>
+        <div className="pr-global-layout">
+          {/* Left: big number + stars */}
+          <div className="pr-global-left-new">
+            <div className="pr-global-big-num">{globalRating.toFixed(1)}</div>
             <div className="pr-global-stars-row">{renderStars(globalRating)}</div>
-            <div className="pr-global-score-text">
-              {globalRating.toFixed(1)} out of 5
-            </div>
+            <div className="pr-global-count-text">{globalCount} global ratings</div>
           </div>
-          <div className="pr-global-count-text">{globalCount} global ratings</div>
-        </div>
-        <div className="pr-global-bars">
-          {starDist.map(({ star, pct }) => (
-            <div className="pr-global-bar-row" key={star}>
-              <span className="pr-global-bar-label">{star} star</span>
-              <div className="pr-global-bar-track">
-                <div className="pr-global-bar-fill" style={{ width: `${pct}%` }} />
+          {/* Right: bar chart */}
+          <div className="pr-global-bars">
+            {starDist.map(({ star, pct }) => (
+              <div className="pr-global-bar-row" key={star}>
+                <span className="pr-global-bar-label">{star} star</span>
+                <div className="pr-global-bar-track">
+                  <div className="pr-global-bar-fill" style={{ width: `${pct}%` }} />
+                </div>
+                <span className="pr-global-bar-pct">{pct}%</span>
               </div>
-              <span className="pr-global-bar-pct">{pct}%</span>
-            </div>
-          ))}
-        </div>
-        <div className="pr-global-note">
-          Ratings reflect the overall quality of this property based on verified guest data.
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -199,7 +196,7 @@ export default function PropertyReviews({ propertyId, propertyRating }) {
     <div className="pr-wrapper">
       {/* ── Heading ── */}
       <h3 className="pr-heading">
-        Ratings &amp; Reviews
+        Customer reviews
       </h3>
 
       {/* ── Summary Row ── */}

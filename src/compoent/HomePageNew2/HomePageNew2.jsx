@@ -50,7 +50,7 @@ const NIGHTLY = [
   {
     id: 'apartments',
     title: 'Apartments & Villas',
-    sub: 'Furnished Flats, Studios & Villas',
+    sub: 'Furnished, Semi-Furnished, Unfurnished',
     badge: 'Nightly Rental',
     price: '₹2,499/night',
     btnText: 'View Apartments',
@@ -113,7 +113,7 @@ const MONTHLY = [
   {
     id: 'apartments',
     title: 'Apartments & Villas',
-    sub: 'Furnished Flats, Studios & Villas',
+    sub: 'Furnished, Semi-Furnished, Unfurnished',
     badge: 'Monthly Rental',
     price: '₹12,999/month',
     btnText: 'View Apartments',

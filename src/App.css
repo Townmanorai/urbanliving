@@ -5,6 +5,11 @@
 
 #root {
    overflow-x: hidden !important;
+   background: #fff;
+}
+
+html, body {
+   background: #fff;
 }
 
 /* ── iOS Safari / WebKit: stop automatic text size inflation ── */

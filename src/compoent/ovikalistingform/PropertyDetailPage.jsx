@@ -1397,6 +1397,19 @@ const PropertyDetailPage = () => {
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [selectedRoomForLead, setSelectedRoomForLead] = useState(null);
   const [showPhotoGallery, setShowPhotoGallery] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  useEffect(() => {
+    const prevBody = document.body.style.backgroundColor;
+    const prevHtml = document.documentElement.style.backgroundColor;
+    document.body.style.backgroundColor = '#fff';
+    document.documentElement.style.backgroundColor = '#fff';
+    return () => {
+      document.body.style.backgroundColor = prevBody;
+      document.documentElement.style.backgroundColor = prevHtml;
+    };
+  }, []);
 
   // Scroll lock when any modal is open
   useEffect(() => {
@@ -2307,6 +2320,105 @@ const PropertyDetailPage = () => {
       {showImageViewer && <ImageViewer images={photos} initialIndex={viewerImageIndex} onClose={() => setShowImageViewer(false)} />}
       {showPhotoGallery && <PhotoGallerySlider property={property} onClose={() => setShowPhotoGallery(false)} />}
 
+      {/* ── Share Modal ── */}
+      {showShareModal && (() => {
+        const shareUrl = window.location.href;
+        const shareText = encodeURIComponent(`Check out this property on OvikaLiving: ${property.property_name || ''}`);
+        const encodedUrl = encodeURIComponent(shareUrl);
+        const handleCopy = () => {
+          navigator.clipboard.writeText(shareUrl).then(() => {
+            setLinkCopied(true);
+            setTimeout(() => setLinkCopied(false), 2500);
+          });
+        };
+        const socials = [
+          {
+            name: 'WhatsApp',
+            color: '#25D366',
+            href: `https://wa.me/?text=${shareText}%20${encodedUrl}`,
+            icon: (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.124.554 4.118 1.528 5.847L0 24l6.335-1.508A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+            ),
+          },
+          {
+            name: 'Twitter / X',
+            color: '#000',
+            href: `https://twitter.com/intent/tweet?text=${shareText}&url=${encodedUrl}`,
+            icon: (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            ),
+          },
+          {
+            name: 'Facebook',
+            color: '#1877F2',
+            href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+            icon: (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.514c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+            ),
+          },
+          {
+            name: 'Telegram',
+            color: '#0088CC',
+            href: `https://t.me/share/url?url=${encodedUrl}&text=${shareText}`,
+            icon: (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+            ),
+          },
+          {
+            name: 'Email',
+            color: '#c2772b',
+            href: `mailto:?subject=${encodeURIComponent(property.property_name || 'OvikaLiving Property')}&body=${shareText}%20${encodedUrl}`,
+            icon: (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            ),
+          },
+        ];
+        return (
+          <div className="pdp-share-overlay" onClick={() => setShowShareModal(false)}>
+            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(3px)' }} />
+            <div className="pdp-share-modal" onClick={e => e.stopPropagation()}>
+              {/* drag handle — mobile only */}
+              <div className="pdp-share-handle" />
+              {/* Header */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                <div>
+                  <div style={{ fontSize: '1rem', fontWeight: 700, color: '#1a1209' }}>Share this property</div>
+                  <div style={{ fontSize: '0.72rem', color: '#9a8878', marginTop: 2 }}>{property.property_name}</div>
+                </div>
+                <button onClick={() => setShowShareModal(false)}
+                  style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px solid #e5e7eb', background: '#f9fafb', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6b7280' }}>
+                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+              </div>
+
+              {/* Link copy box */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f7f8fa', border: '1.5px solid #ddd0c0', borderRadius: 10, padding: '10px 12px', marginBottom: 22 }}>
+                <svg width="14" height="14" fill="none" stroke="#9a8878" strokeWidth="2" viewBox="0 0 24 24" style={{ flexShrink: 0 }}><path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101"/><path strokeLinecap="round" strokeLinejoin="round" d="M14.828 14.828a4 4 0 015.656 0l4-4a4 4 0 01-5.656-5.656l-1.1 1.1"/></svg>
+                <span style={{ flex: 1, fontSize: '0.73rem', color: '#6b7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{shareUrl}</span>
+                <button onClick={handleCopy}
+                  style={{ flexShrink: 0, background: linkCopied ? '#c2772b' : '#1a1209', color: '#fff', border: 'none', borderRadius: 7, padding: '5px 12px', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer', transition: 'background 0.2s' }}>
+                  {linkCopied ? '✓ Copied!' : 'Copy'}
+                </button>
+              </div>
+
+              {/* Social grid */}
+              <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#b0987c', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 12 }}>Share via</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+                {socials.map(s => (
+                  <a key={s.name} href={s.href} target="_blank" rel="noopener noreferrer"
+                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7, textDecoration: 'none', flex: 1 }}>
+                    <div style={{ width: 52, height: 52, borderRadius: 16, background: s.color, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 14px ${s.color}44` }}>
+                      {s.icon}
+                    </div>
+                    <span style={{ fontSize: '0.58rem', color: '#6b7280', fontWeight: 600, textAlign: 'center', lineHeight: 1.3, whiteSpace: 'nowrap' }}>{s.name}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       <LeadGenerationModal isOpen={showLeadModal} onClose={() => setShowLeadModal(false)} propertyName={property.property_name} propertyId={property.id} user={user} roomType={selectedRoomForLead} />
 
       {/* ── PAYMENT MODAL ─────────────────────────────────────────────────── */}
@@ -2940,28 +3052,41 @@ const PropertyDetailPage = () => {
           <span>Back</span>
         </button>
         <div className="header-actions">
-          <button className="action-btn action-btn--icon" title="Share"><FiShare size={16} /></button>
+          <button className="action-btn action-btn--icon" title="Share" onClick={() => setShowShareModal(true)}><FiShare size={16} /></button>
           <button className="action-btn action-btn--icon" title="Save"><FiHeart size={16} /></button>
         </div>
       </div>
 
       <section className="title-section">
-        <h1 style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          {property.property_name}
-          {(() => {
-            const m = property.meta && typeof property.meta === 'object' ? property.meta : (() => { try { return JSON.parse(property.meta || '{}'); } catch { return {}; } })();
-            const isGreenVerified = Number(property.verified_badge) === 1 || !!m.verified_badge;
-            const isGoldVerified  = Number(property.self_verified_badge) === 1 || !!m.self_verified_badge;
-            return (
-              <>
-                {isGreenVerified && <img src="/ovikaver.png" alt="Ovika Verified" style={{ height: 44, width: 'auto', pointerEvents: 'none' }} />}
-                {isGoldVerified  && <img src="/SelfVerified.jpeg" alt="Self Verified" style={{ height: 44, width: 'auto', pointerEvents: 'none', borderRadius: 4 }} />}
-              </>
-            );
-          })()}
-        </h1>
+        <div className="pdp-title-row">
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            {property.property_name}
+            {(() => {
+              const m = property.meta && typeof property.meta === 'object' ? property.meta : (() => { try { return JSON.parse(property.meta || '{}'); } catch { return {}; } })();
+              const isGreenVerified = Number(property.verified_badge) === 1 || !!m.verified_badge;
+              const isGoldVerified  = Number(property.self_verified_badge) === 1 || !!m.self_verified_badge;
+              return (
+                <>
+                  {isGreenVerified && <img src="/ovikaver.png" alt="Ovika Verified" style={{ height: 44, width: 'auto', pointerEvents: 'none' }} />}
+                  {isGoldVerified  && <img src="/SelfVerified.jpeg" alt="Self Verified" style={{ height: 44, width: 'auto', pointerEvents: 'none', borderRadius: 4 }} />}
+                </>
+              );
+            })()}
+          </h1>
+          <div className="pdp-rating-pill">
+            <span className="rp-star">★</span>
+            {(() => {
+              const FIVE_STAR_IDS = [77, 78, 79, 80, 81, 315, 316, 317, 323];
+              if (FIVE_STAR_IDS.includes(Number(id))) return '5.0';
+              return (4.1 + ((Number(id) * 13 + 7) % 9) / 10).toFixed(1);
+            })()}
+            <span className="rp-sep">·</span>
+            {4 + (Number(id) % 20)} reviews
+          </div>
+        </div>
         <div className="location-row">
-          <span>{property.city}, {property.address}</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#c2772b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>{[property.address, property.city].filter(Boolean).join(', ')}</span>
         </div>
       </section>
 
@@ -3379,6 +3504,127 @@ const PropertyDetailPage = () => {
             </>
           )}
 
+          {/* ── Amenities & Features ── */}
+          <div className="divider"></div>
+          <div className="text-section">
+            <h3>Amenities &amp; features</h3>
+            {Object.entries(groupedAmenities).length > 0 ? (
+              <div className="pdp-amenities-box">
+                <div className="pdp-checklist">
+                  {Object.values(groupedAmenities).flat().map((am, i) => (
+                    <div key={i} className="pdp-checklist-item">
+                      <FiCheck className="pdp-check-icon" />
+                      <span>{am}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : <p style={{ color: '#9ca3af', fontSize: '0.85rem' }}>No amenities listed.</p>}
+          </div>
+
+          {/* ── House Rules + Local Guide — side by side ── */}
+          <div className="divider"></div>
+          <div className="pdp-rules-guide-row">
+
+            {/* Left: House Rules */}
+            <div className="text-section" style={{ marginBottom: 0 }}>
+              <h3>House rules &amp; policies</h3>
+              <div className="pdp-rules-grid2">
+                <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{(property.smoking_allowed || property.smokingAllowed || property.meta?.smokingAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Smoking</span><span className="pdp-rule-val2">{(property.smoking_allowed || property.smokingAllowed || property.meta?.smokingAllowed) ? 'Allowed' : 'Not allowed'}</span></div></div>
+                <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{(property.pets_allowed || property.petsAllowed || property.meta?.petsAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Pets</span><span className="pdp-rule-val2">{(property.pets_allowed || property.petsAllowed || property.meta?.petsAllowed) ? 'Allowed' : 'Not allowed'}</span></div></div>
+                <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{(property.events_allowed || property.eventsAllowed || property.meta?.eventsAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Events</span><span className="pdp-rule-val2">{(property.events_allowed || property.eventsAllowed || property.meta?.eventsAllowed) ? 'Allowed' : 'Not allowed'}</span></div></div>
+                <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{(property.drinking_alcohol || property.drinking_allowed || property.drinkingAllowed || property.meta?.drinkingAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Alcohol</span><span className="pdp-rule-val2">{(property.drinking_alcohol || property.drinking_allowed || property.drinkingAllowed || property.meta?.drinkingAllowed) ? 'Allowed' : 'Not allowed'}</span></div></div>
+                {!isPG && <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{guestPolicy.family_allowed ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Family</span><span className="pdp-rule-val2">{guestPolicy.family_allowed ? 'Allowed' : 'Not allowed'}</span></div></div>}
+                <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{guestPolicy.unmarried_couple_allowed ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Couples</span><span className="pdp-rule-val2">{guestPolicy.unmarried_couple_allowed ? 'Allowed' : 'Not allowed'}</span></div></div>
+              </div>
+              {((property.cancellation_policy && property.cancellation_policy !== 'undefined') || guestPolicy.cancellationPolicy) && (
+                <div style={{ marginTop: '10px', padding: '8px 12px', background: '#fffbf5', borderRadius: '8px', border: '1px solid #ddd0c0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '0.78rem', color: '#374151' }}><strong>Cancellation:</strong> {property.cancellation_policy || guestPolicy.cancellationPolicy}</span>
+                  <a href="/refund-cancellation-policy" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.75rem', color: '#c98b3e', fontWeight: 700, whiteSpace: 'nowrap', marginLeft: 'auto' }}>Read full policy</a>
+                </div>
+              )}
+            </div>
+
+            {/* Right: Local Guide */}
+            <div className="text-section" style={{ marginBottom: 0 }}>
+              {(() => {
+                let gb = property?.guidebook;
+                if (typeof gb === 'string') { try { gb = JSON.parse(gb); } catch { gb = null; } }
+                if (typeof gb === 'string') { try { gb = JSON.parse(gb); } catch { gb = null; } }
+                if (!gb || typeof gb !== 'object' || Array.isArray(gb)) return null;
+                const hasValue = (v) => { if (v === null || v === undefined || v === '') return false; if (Array.isArray(v)) return v.length > 0; if (typeof v === 'object') return Object.values(v).some(x => x !== null && x !== undefined && x !== ''); return true; };
+                const keys = Object.keys(gb).filter(k => hasValue(gb[k]));
+                if (keys.length === 0) return null;
+                const renderVal = (val) => { if (val === null || val === undefined) return null; if (typeof val === 'string' || typeof val === 'number') return String(val); if (Array.isArray(val)) return val.map(v => typeof v === 'object' ? JSON.stringify(v) : String(v)).join(', '); if (typeof val === 'object') return Object.entries(val).map(([k,v]) => `${k}: ${v}`).join(' · '); return String(val); };
+                const ICON_MAP = { transport_tips: '🚌', cafes_restaurants: '☕', essentials_nearby: '🛒', house_specific_tips: '💡', must_visit: '📍', must_visit_places: '📍' };
+                const COUNT_LABEL = { transport_tips: 'routes', cafes_restaurants: 'nearby', essentials_nearby: 'spots', house_specific_tips: 'tips', must_visit: 'highlight', must_visit_places: 'highlight' };
+                return (
+                  <>
+                    <h3>Local guide</h3>
+                    <div className="gbGrid">
+                      {keys.map(key => {
+                        const val = gb[key];
+                        const label = key.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+                        const icon = ICON_MAP[key] || '📌';
+                        if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'object') {
+                          const cols = Object.keys(val[0]);
+                          return (
+                            <div key={key} className="gbCard gbCardWide">
+                              <div className="gbCardHeader">
+                                <div className="gbIconWrap" style={{ fontSize: '0.9rem' }}>{icon}</div>
+                                <div className="gbCardHeaderText"><div className="gbCardTitle">{label}</div><div className="gbCardMeta">{val.length} {COUNT_LABEL[key] || 'items'}</div></div>
+                              </div>
+                              <div className="gbTableWrap">
+                                <table className="gbTable">
+                                  <tbody>{val.map((item, idx) => <tr key={idx}>{cols.map((c,ci) => <td key={c} className={ci > 0 ? 'gbTdRight' : 'gbTdName'}>{item[c] ?? '-'}</td>)}</tr>)}</tbody>
+                                </table>
+                              </div>
+                            </div>
+                          );
+                        }
+                        if (Array.isArray(val) && val.length > 0) {
+                          return (
+                            <div key={key} className="gbCard gbCardWide">
+                              <div className="gbCardHeader">
+                                <div className="gbIconWrap" style={{ fontSize: '0.9rem' }}>{icon}</div>
+                                <div className="gbCardHeaderText"><div className="gbCardTitle">{label}</div><div className="gbCardMeta">{val.length} {COUNT_LABEL[key] || 'items'}</div></div>
+                              </div>
+                              <ul className="gbTips">{val.map((tip,idx)=><li key={idx} className="gbTip"><span className="gbTipDot"/><span className="gbTipText">{typeof tip==='object'?JSON.stringify(tip):String(tip)}</span></li>)}</ul>
+                            </div>
+                          );
+                        }
+                        if (typeof val === 'object' && !Array.isArray(val)) {
+                          const entries = Object.entries(val).filter(([,v])=>v);
+                          if (entries.length===0) return null;
+                          return (
+                            <div key={key} className="gbCard gbCardWide">
+                              <div className="gbCardHeader">
+                                <div className="gbIconWrap" style={{ fontSize: '0.9rem' }}>{icon}</div>
+                                <div className="gbCardHeaderText"><div className="gbCardTitle">{label}</div><div className="gbCardMeta">{entries.length} {COUNT_LABEL[key] || 'spots'}</div></div>
+                              </div>
+                              <div className="gbRows">{entries.map(([k,v])=><div key={k} className="gbRow"><div className="gbRowLeft"><span className="gbRowLabel">{k.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}</span></div><div className="gbRowValue">{renderVal(v)}</div></div>)}</div>
+                            </div>
+                          );
+                        }
+                        const text = renderVal(val);
+                        if (!text) return null;
+                        return (
+                          <div key={key} className="gbCard gbCardWide">
+                            <div className="gbCardHeader">
+                              <div className="gbIconWrap" style={{ fontSize: '0.9rem' }}>{icon}</div>
+                              <div className="gbCardHeaderText"><div className="gbCardTitle">{label}</div></div>
+                            </div>
+                            <div className="gbRows"><div className="gbRow"><div className="gbRowValue">{text}</div></div></div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+
         </div>
 
         {/* ── RIGHT SIDEBAR — sticky booking card + host ── */}
@@ -3550,21 +3796,146 @@ const PropertyDetailPage = () => {
           )}
 
           {/* Host Card */}
-          <div className="host-card">
+          <div className="host-card" style={{ cursor: 'default' }}>
             <div className="host-avatar">
-              {hostImage ? <img src={hostImage} alt="Host" className="host-img" /> : <UserCircle size={48} className="host-icon-fallback" />}
+              {hostImage ? <img src={hostImage} alt="Host" className="host-img" /> : <UserCircle size={44} className="host-icon-fallback" />}
             </div>
             <div className="host-info">
-              <h4>Hosted by {hostUser?.name || 'Loading...'}</h4>
-              <p style={{ fontSize: '0.85rem', color: '#777' }}>Property Owner</p>
+              <div style={{ fontSize: '0.7rem', color: '#9a8878', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 3 }}>Hosted by</div>
+              <h4 style={{ fontSize: '0.95rem', margin: 0, color: '#1a1209' }}>{hostUser?.name || 'Loading...'}</h4>
+              <p style={{ fontSize: '0.78rem', color: '#c2772b', fontWeight: 600, margin: '2px 0 0' }}>Property Owner</p>
+            </div>
+            <div className="pdp-host-arrow">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
           </div>
+
+          {/* ── Location Card ── */}
+          <div className="pdp-location-card">
+            <h3 className="pdp-location-title">Location</h3>
+            <p className="pdp-location-addr">{[property.address, property.city].filter(Boolean).join(', ')}</p>
+            <div className="pdp-map-wrap">
+              <iframe
+                title="Property Location"
+                src={
+                  property.latitude && property.longitude
+                    ? `https://maps.google.com/maps?q=${property.latitude},${property.longitude}&z=15&output=embed`
+                    : `https://maps.google.com/maps?q=${encodeURIComponent([property.address, property.city, 'India'].filter(Boolean).join(', '))}&z=15&output=embed`
+                }
+                width="100%"
+                height="200"
+                style={{ border: 0, borderRadius: 10, display: 'block' }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+            <a
+              href={
+                property.latitude && property.longitude
+                  ? `https://maps.google.com/?q=${property.latitude},${property.longitude}`
+                  : `https://maps.google.com/?q=${encodeURIComponent([property.address, property.city, 'India'].filter(Boolean).join(', '))}`
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pdp-map-btn"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              View on map
+            </a>
+          </div>
+
+          {/* ── Good to Know ── */}
+          <div className="pdp-g2k-card">
+            <h3 className="pdp-g2k-title">Good to know</h3>
+            <div className="pdp-g2k-list">
+              <div className="pdp-g2k-row">
+                <div className="pdp-g2k-icon-circle">🕐</div>
+                <div>
+                  <div className="pdp-g2k-label-main">Flexible cancellation</div>
+                  <div className="pdp-g2k-label">Free until 24h before check-in</div>
+                </div>
+              </div>
+              <div className="pdp-g2k-row">
+                <div className="pdp-g2k-icon-circle">⚡</div>
+                <div>
+                  <div className="pdp-g2k-label-main">Instant confirmation</div>
+                  <div className="pdp-g2k-label">Booking confirmed right away</div>
+                </div>
+              </div>
+              <div className="pdp-g2k-row">
+                <div className="pdp-g2k-icon-circle">🪪</div>
+                <div>
+                  <div className="pdp-g2k-label-main">Valid ID required</div>
+                  <div className="pdp-g2k-label">Govt. photo ID at check-in</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ── Need Help card ── */}
+          <div style={{ background: '#fff', border: '1.5px solid #ddd0c0', borderRadius: 14, padding: '16px', marginTop: '0.75rem' }}>
+            <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#b0987c', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 14 }}>Need help?</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <a href="https://wa.me/919319392227" target="_blank" rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', padding: '11px 0', borderBottom: '1px solid #f0ece4' }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: '#f5f5f5', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.554 4.118 1.528 5.847L0 24l6.335-1.508A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.8 9.8 0 01-5.006-1.374l-.36-.213-3.728.887.916-3.618-.234-.373A9.77 9.77 0 012.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/></svg>
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.84rem', fontWeight: 600, color: '#1a1209' }}>WhatsApp us</div>
+                  <div style={{ fontSize: '0.72rem', color: '#9a8878', marginTop: 1 }}>Typically replies in minutes</div>
+                </div>
+                <svg style={{ marginLeft: 'auto', color: '#c8bfb4', flexShrink: 0 }} width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 18l6-6-6-6"/></svg>
+              </a>
+              <a href="tel:+919319392227"
+                style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', padding: '11px 0' }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: '#f5f5f5', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c2772b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.02 2.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.84rem', fontWeight: 600, color: '#1a1209' }}>Call us</div>
+                  <div style={{ fontSize: '0.72rem', color: '#9a8878', marginTop: 1 }}>+91 93193 92227</div>
+                </div>
+                <svg style={{ marginLeft: 'auto', color: '#c8bfb4', flexShrink: 0 }} width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 18l6-6-6-6"/></svg>
+              </a>
+            </div>
+          </div>
+
+          {/* ── Safety card ── */}
+          <div style={{ background: '#fff', border: '1.5px solid #c8cdd5', borderRadius: 14, padding: '16px', marginTop: '0.75rem' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 12 }}>Safe booking</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {[
+                { icon: '🔒', text: 'Secure payment gateway' },
+                { icon: '✅', text: 'Verified properties only' },
+                { icon: '🛡️', text: 'Zero brokerage, always' },
+              ].map(({ icon, text }) => (
+                <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.8rem', color: '#374151', fontWeight: 500 }}>
+                  <span style={{ fontSize: '0.95rem' }}>{icon}</span>
+                  {text}
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
       </div>{/* end content-grid */}
 
-      {/* ── FULL WIDTH: Amenities + House Rules side by side ── */}
-      <div className="divider"></div>
-      <div className="amenities-rules-row">
+      {/* ── Full-width Customer Reviews ── */}
+      <div className="pdp-reviews-fullwidth">
+        <PropertyReviews
+          propertyId={id}
+          propertyRating={(() => {
+            const FIVE_STAR_IDS = [77, 78, 79, 80, 81, 315, 316, 317, 323];
+            if (FIVE_STAR_IDS.includes(Number(id))) return '5.0';
+            return (4.1 + ((Number(id) * 13 + 7) % 9) / 10).toFixed(1);
+          })()}
+        />
+      </div>
+
+      {/* OLD full-width sections removed — now inside details-column */}
+      <div className="amenities-rules-row" style={{ display:'none' }}>
         <div className="amenities-rules-col">
           <h3>Amenities & Features</h3>
           {Object.entries(groupedAmenities).length > 0 ? (
@@ -3612,8 +3983,8 @@ const PropertyDetailPage = () => {
         </div>
       </div>
 
-      {/* ── FULL WIDTH: Local Guide ── bulletproof renderer ── */}
-      {(() => {
+      {/* ── FULL WIDTH: Local Guide ── moved into details-column ── */}
+      {false && (() => {
         // Step 1: get raw value
         let gb = property?.guidebook;
         // Step 2: if still a string (double-encoded), parse it
@@ -3727,18 +4098,8 @@ const PropertyDetailPage = () => {
         );
       })()}
 
-      {/* ── Ratings & Reviews ── */}
-      <div className="divider" />
-      <div className="text-section">
-        <PropertyReviews
-          propertyId={id}
-          propertyRating={(() => {
-            const FIVE_STAR_IDS = [77, 78, 79, 80, 81, 315, 316, 317, 323];
-            if (FIVE_STAR_IDS.includes(Number(id))) return '5.0';
-            return (4.1 + ((Number(id) * 13 + 7) % 9) / 10).toFixed(1);
-          })()}
-        />
-      </div>
+      {/* old full-width reviews — now inside details-column */}
+      {/* placeholder end */}
 
     </div>
   );

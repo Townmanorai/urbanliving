@@ -605,17 +605,19 @@ export default function HomePageNew1() {
           </p>
 
           {/* City chips */}
-          <div style={{ display:'flex', gap:7, overflowX:'auto', paddingBottom:2, marginBottom:15, scrollbarWidth:'none', msOverflowStyle:'none' }}>
+          <div style={{ display:'flex', gap:7, flexWrap:'wrap', paddingBottom:2, marginBottom:15 }}>
             {[
               { label:'Noida', city:'Noida', active:true },
               { label:'Greater Noida', city:'Greater Noida' },
               { label:'Delhi', city:'Delhi' },
               { label:'Gurugram', city:'Gurugram' },
+              { label:'Faridabad', city:'Faridabad' },
+              { label:'Ghaziabad', city:'Ghaziabad' },
             ].map(c => (
               <button key={c.label}
                 onClick={e => { const p = new URLSearchParams(); p.set('city', c.city); navClick(e, `/properties?${p}`, navigate); }}
                 onAuxClick={e => { const p = new URLSearchParams(); p.set('city', c.city); auxNavClick(e, `/properties?${p}`); }}
-                style={{ flexShrink:0, background: c.active ? '#c2772b' : 'transparent', border:`1.5px solid ${c.active ? '#c2772b' : '#cdbfa6'}`, borderRadius:20, padding:'6px 16px', fontSize:'0.7rem', fontWeight:600, color: c.active ? '#fff' : '#6b5540', cursor:'pointer', fontFamily:"'Poppins',sans-serif", whiteSpace:'nowrap', outline:'none' }}>
+                style={{ background: c.active ? '#c2772b' : 'transparent', border:`1.5px solid ${c.active ? '#c2772b' : '#cdbfa6'}`, borderRadius:20, padding:'6px 16px', fontSize:'0.7rem', fontWeight:600, color: c.active ? '#fff' : '#6b5540', cursor:'pointer', fontFamily:"'Poppins',sans-serif", whiteSpace:'nowrap', outline:'none' }}>
                 {c.label}
               </button>
             ))}
@@ -862,12 +864,14 @@ export default function HomePageNew1() {
         </p>
 
         {/* City chips */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 18 }}>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'nowrap', overflowX: 'auto', marginBottom: 18, scrollbarWidth: 'none', msOverflowStyle: 'none', paddingBottom: 2 }}>
           {[
             { label: 'Noida', city: 'Noida', active: true },
             { label: 'Greater Noida', city: 'Greater Noida' },
             { label: 'Delhi', city: 'Delhi' },
             { label: 'Gurugram', city: 'Gurugram' },
+            { label: 'Faridabad', city: 'Faridabad' },
+            { label: 'Ghaziabad', city: 'Ghaziabad' },
           ].map(c => (
             <button key={c.label} className="city-chip-desk"
               onClick={(e) => { const p = new URLSearchParams(); p.set('city', c.city); navClick(e, `/properties?${p}`, navigate); }}
@@ -879,7 +883,7 @@ export default function HomePageNew1() {
                 fontSize: '0.72rem', fontWeight: 600,
                 color: c.active ? '#fff' : '#6b5540',
                 cursor: 'pointer', fontFamily: "'Poppins',sans-serif",
-                whiteSpace: 'nowrap', outline: 'none', transition: 'all 0.18s',
+                whiteSpace: 'nowrap', outline: 'none', transition: 'all 0.18s', flexShrink: 0,
               }}>
               {c.label}
             </button>
