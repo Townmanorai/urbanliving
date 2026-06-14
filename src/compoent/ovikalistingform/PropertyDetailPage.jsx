@@ -3822,15 +3822,23 @@ const PropertyDetailPage = () => {
           {/* Host Card */}
           <div className="host-card" style={{ cursor: 'default' }}>
             <div className="host-avatar">
-              {hostImage ? <img src={hostImage} alt="Host" className="host-img" /> : <UserCircle size={44} className="host-icon-fallback" />}
+              {hostImage
+                ? <img src={hostImage} alt="Host" className="host-img" />
+                : <span className="host-initial">
+                    {(hostUser?.name || property.property_name || 'H').charAt(0).toUpperCase()}
+                  </span>
+              }
             </div>
-            <div className="host-info">
-              <div style={{ fontSize: '0.7rem', color: '#9a8878', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 3 }}>Hosted by</div>
-              <h4 style={{ fontSize: '0.95rem', margin: 0, color: '#1a1209' }}>{hostUser?.name || 'Loading...'}</h4>
-              <p style={{ fontSize: '0.78rem', color: '#c2772b', fontWeight: 600, margin: '2px 0 0' }}>Property Owner</p>
+            <div className="host-info" style={{ flex: 1, minWidth: 0 }}>
+              <div className="host-label">Hosted by</div>
+              <h4 className="host-name">{hostUser?.name || property.property_name || 'Property Host'}</h4>
+              <p className="host-sub">
+                Property Owner
+                {(property.view || property.property_view) && <> · {property.view || property.property_view}</>}
+              </p>
             </div>
             <div className="pdp-host-arrow">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b0b0b0" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
           </div>
 
