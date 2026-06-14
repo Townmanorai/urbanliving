@@ -64,6 +64,7 @@ table {
   overflow-x: clip;
   background: #fff;
   min-height: 100vh;
+  position: relative;
 }
 
 
@@ -131,8 +132,42 @@ table {
 /* ── TITLE ── */
 .title-section {
   margin-bottom: 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
+/* Title row: name (left) + rating pill (right) */
+.pdp-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+.pdp-title-h1 {
+  flex: 1;
+  min-width: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.25;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+  word-break: break-word;
+}
+
+.location-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  color: var(--gray-500);
+  font-size: 0.82rem;
+}
+
+/* keep old h1 selector */
 .title-section h1 {
   font-size: 1.5rem;
   font-weight: 700;
@@ -2861,29 +2896,48 @@ table {
    PAYMENT MODAL — MOBILE
 ══════════════════════════════════════════════════════ */
 @media (max-width: 640px) {
+  /* Full screen overlay, no scroll on overlay itself */
   .pm-overlay {
     padding: 0;
+    display: flex;
     align-items: flex-end;
+    overflow: hidden;
   }
 
+  /* Modal card = full screen */
   .pm-card {
-    border-radius: 20px 20px 0 0;
-    padding: 3.5rem 1rem 1.5rem;
-    min-height: 92vh;
+    border-radius: 0;
+    padding: 0;
+    height: 100vh;
+    max-height: 100vh;
     margin: 0;
     max-width: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
+  /* Close button */
   .pm-close {
-    top: 0.85rem;
-    right: 0.85rem;
-    z-index: 10;
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 20;
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
   }
 
-  /* Step bar — hide text labels, show dots only */
-  .pm-steps-bar { margin-bottom: 1.25rem; }
+  /* Step bar — fixed at top of card */
+  .pm-steps-bar {
+    flex-shrink: 0;
+    padding: 1.2rem 1rem 0.75rem;
+    margin-bottom: 0;
+    border-bottom: 1px solid #f0ece6;
+  }
 
-  .pm-step-label { display: none; }
+  .pm-step-label { font-size: 0.6rem; }
 
   .pm-step-dot {
     width: 26px;
@@ -2891,54 +2945,63 @@ table {
     font-size: 0.78rem;
   }
 
+  /* Scrollable body */
+  .pm-body {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 1rem 1rem 0.5rem;
+    min-height: 0;
+  }
+
+  /* Step headings */
+  .pm-body h2 { font-size: 1.1rem !important; margin-bottom: 0.75rem !important; }
+
+  /* Terms scroll box — takes remaining space */
+  .pm-terms-box {
+    max-height: calc(100vh - 260px) !important;
+    overflow-y: auto;
+  }
+
   /* Step 1 property card — stack vertically */
   .pm-property-card {
     flex-direction: column;
-    padding: 1rem;
-    gap: 0.85rem;
+    padding: 0.75rem;
+    gap: 0.75rem;
   }
-
   .pm-property-img {
     width: 100%;
-    height: 180px;
+    height: 160px;
   }
 
   /* Step 3 dates grid — single column */
   .pm-dates-grid {
     grid-template-columns: 1fr;
-    gap: 1.25rem;
+    gap: 1rem;
   }
 
-  /* Footer buttons — full width stack */
+  /* Footer — sticky at bottom of card */
   .pm-footer {
+    flex-shrink: 0;
     flex-direction: row;
-    gap: 0.75rem;
-    margin-top: 1.25rem;
-    padding-top: 1rem;
-    position: sticky;
-    bottom: 0;
+    gap: 0.6rem;
+    margin-top: 0;
+    padding: 0.75rem 1rem;
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+    border-top: 1px solid #f0ece6;
     background: #fff;
-    padding-bottom: env(safe-area-inset-bottom, 0.5rem);
     z-index: 10;
   }
 
   .pm-btn-prev,
   .pm-btn-next {
     flex: 1;
-    padding: 14px 12px;
-    font-size: 0.9rem;
+    padding: 13px 10px;
+    font-size: 0.88rem;
     text-align: center;
   }
 
-  /* Step headings */
-  .pm-body h2 {
-    font-size: 1.2rem !important;
-  }
-
-  /* Terms scroll box */
-  .pm-body [style*="maxHeight: '400px'"] {
-    max-height: 260px !important;
-  }
+  /* Sticky bar is behind modal (z-index 999 < modal 9999) — no need to hide */
 }
 
 @media (max-width: 400px) {
@@ -3770,6 +3833,7 @@ table {
     padding: 16px;
     border-radius: 12px;
     margin-top: 1rem;
+    order: 4;
   }
 }
 
@@ -3779,9 +3843,56 @@ table {
 @media (max-width: 768px) {
 
   /* Page wrapper */
+  /* ── Mobile layout: gallery first, then title below ── */
   .detail-page-wrapper {
-    padding: 0.5rem 0.6rem 5rem;
+    padding: 0 0 5rem;
     background: #fff;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Order: header (floating) → gallery → title → content */
+  .detail-header {
+    order: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background: transparent;
+    margin-bottom: 0;
+    padding: 10px 12px;
+  }
+  .detail-header .back-btn {
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .detail-header .header-actions .action-btn {
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  .image-gallery {
+    order: 1;
+    margin: 0;
+    border-radius: 0;
+  }
+  .gallery-airbnb {
+    border-radius: 0 !important;
+    height: 260px;
+  }
+  .title-section {
+    order: 2;
+    padding: 14px 14px 6px;
+    background: #fff;
+  }
+
+  .content-grid {
+    order: 3;
+    padding: 0 10px;
+    margin-top: 6px;
   }
 
   /* Left column card — no border/radius on mobile, full bleed */
@@ -3791,11 +3902,42 @@ table {
     border-color: #ddd0c0;
   }
 
-  /* Title — keep rating pill on same row as title */
-  .title-section h1 { font-size: 1rem; line-height: 1.3; margin-bottom: 0; }
-  .pdp-title-row { flex-direction: row; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .pdp-title-row h1 { flex: 1 1 60%; min-width: 0; }
-  .pdp-rating-pill { flex-shrink: 0; font-size: 0.75rem; padding: 4px 10px; }
+  /* Title on mobile */
+  .title-section {
+    padding: 12px 14px 8px;
+    order: 2;
+    background: #fff;
+    gap: 5px;
+  }
+  .pdp-title-row { gap: 8px; flex-wrap: nowrap; }
+  .pdp-title-h1 { font-size: 0.98rem; line-height: 1.3; }
+  .title-section h1 { font-size: 0.98rem; }
+  .location-row { font-size: 0.75rem; flex-wrap: nowrap; overflow: hidden; }
+  .location-row span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pdp-rating-pill { font-size: 0.75rem; padding: 4px 11px; white-space: nowrap; flex-shrink: 0; }
+
+  /* Smaller floating buttons on mobile */
+  .detail-header .back-btn {
+    padding: 3px 8px 3px 5px;
+    font-size: 0.62rem;
+    gap: 2px;
+    border-radius: 50px;
+  }
+  .detail-header .action-btn--icon {
+    width: 24px;
+    height: 24px;
+  }
+  .detail-header .header-actions { gap: 4px; }
+
+  /* Show all photos button — smaller on mobile */
+  .gallery-show-all-btn {
+    padding: 4px 9px;
+    font-size: 10px;
+    gap: 4px;
+    border-radius: 7px;
+    bottom: 8px;
+    right: 8px;
+  }
 
   /* Feature chips — 2×2 grid, big icons */
   .features-bar {

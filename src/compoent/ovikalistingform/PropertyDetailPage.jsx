@@ -2538,7 +2538,7 @@ const PropertyDetailPage = () => {
               {step === 2 && (
                 <div>
                   <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Terms & Conditions</h2>
-                  <div style={{ maxHeight: '400px', overflow: 'auto', padding: '1.5rem', background: '#f8fafc', borderRadius: '8px', marginBottom: '1.5rem' }}>
+                  <div className="pm-terms-box" style={{ maxHeight: '400px', overflow: 'auto', padding: '1.5rem', background: '#f8fafc', borderRadius: '8px', marginBottom: '1.5rem' }}>
                     <p style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>1. Booking Agreement</p>
                     <p style={{ marginBottom: '1rem' }}>By confirming this booking, you agree to abide by all house rules, including check-in/check-out times, noise restrictions, and guest limits.</p>
                     <p style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>2. Cancellation Policy</p>
@@ -3058,8 +3058,9 @@ const PropertyDetailPage = () => {
       </div>
 
       <section className="title-section">
+        {/* title + rating on same row */}
         <div className="pdp-title-row">
-          <h1 style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <h1 className="pdp-title-h1" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', margin: 0 }}>
             {property.property_name}
             {(() => {
               const m = property.meta && typeof property.meta === 'object' ? property.meta : (() => { try { return JSON.parse(property.meta || '{}'); } catch { return {}; } })();
@@ -3084,6 +3085,7 @@ const PropertyDetailPage = () => {
             {4 + (Number(id) % 20)} reviews
           </div>
         </div>
+        {/* address below */}
         <div className="location-row">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#c2772b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
           <span>{[property.address, property.city].filter(Boolean).join(', ')}</span>
