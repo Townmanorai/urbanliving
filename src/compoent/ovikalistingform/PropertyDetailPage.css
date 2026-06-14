@@ -1618,8 +1618,8 @@ table {
 }
 
 .rm-th--action {
-  min-width: 130px;
-  width: 140px;
+  min-width: 150px;
+  width: 155px;
   text-align: right;
   padding-right: 16px;
 }
@@ -1991,7 +1991,7 @@ table {
   .rm-col--bath  { width: 23% !important; }
   .rm-col--area  { width: 10% !important; }
   .rm-th--price  { width: 22% !important; min-width: unset !important; }
-  .rm-th--action { width: 18% !important; min-width: unset !important; }
+  .rm-th--action { width: 22% !important; min-width: 110px !important; }
 
   .rm-th {
     padding: 7px 3px !important;
