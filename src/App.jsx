@@ -58,6 +58,7 @@ import BankDetails from "./compoent/AccountDetails/BankDetails";
 import OwnerLeads from "./compoent/AdminDashBoard/Leads/OwnerLeads";
 import LeadInvoices from "./compoent/AdminDashBoard/Leads/LeadInvoices";
 import LeadsSuccess from "./compoent/SubsriptionNew/LeadsSuccess";
+import MobileBottomNav from "./compoent/MobileBottomNav/MobileBottomNav";
 function RequireAuth({ children }) {
   const { user } = useContext(AuthContext);
   const location = useLocation();
@@ -221,6 +222,7 @@ function App() {
           <Route path="/admin-control-panel" element={<RequireAuth><SuperAdminDashboard /></RequireAuth>} />
         </Routes>
         <ConditionalFooter />
+        <MobileBottomNav />
         <CookieConsent />
         <WhatsAppButton />
       </Router>

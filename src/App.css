@@ -51,3 +51,13 @@ b {
 p, span, div, a, li, td, th, label, input, textarea, button {
    -webkit-text-size-adjust: 100% !important;
 }
+
+/* ── Mobile bottom nav padding so content doesn't hide behind it ── */
+@media (max-width: 1024px) {
+  body { padding-bottom: 70px; }
+  /* WhatsApp button — shift above bottom nav */
+  a[href*="wa.me"] {
+    bottom: 120px !important;
+    right: 16px !important;
+  }
+}

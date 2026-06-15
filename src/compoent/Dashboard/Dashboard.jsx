@@ -20,12 +20,14 @@ import "./Dashboard.css";
 import BookingDashboard from "./BookingDashboard";
 import BookingDetail from "./BookingDetail";
 import ProfilePage from "./ProfilePage";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import CancellationHistory from "./CancellationHistory";
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
-  const [navigation, setNavigation] = useState("dashboard");
+  const location = useLocation();
+  const initialTab = new URLSearchParams(location.search).get('tab') || "dashboard";
+  const [navigation, setNavigation] = useState(initialTab);
   const [bookingRequests, setBookingRequests] = useState([]);
   const [loadingNotification, setLoadingNotification] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -37,6 +39,12 @@ const Dashboard = () => {
   const [profilePhoto, setProfilePhoto] = useState("/user.png");
 
   const navigate = useNavigate();
+
+  // Sync tab with URL query param whenever it changes
+  useEffect(() => {
+    const tab = new URLSearchParams(location.search).get('tab');
+    if (tab) setNavigation(tab);
+  }, [location.search]);
 
   const itemClass = (key) =>
     navigation === key ? "sidebar-menu-item active" : "sidebar-menu-item";
