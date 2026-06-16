@@ -3088,7 +3088,7 @@ const PropertyDetailPage = () => {
         {/* address below */}
         <div className="location-row">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#c2772b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span>{[property.address, property.city].filter(Boolean).join(', ')}</span>
+          <span>{[property.city, property.address].filter(Boolean).join(', ')}</span>
         </div>
       </section>
 
@@ -3847,7 +3847,7 @@ const PropertyDetailPage = () => {
           {/* ── Location Card ── */}
           <div className="pdp-location-card">
             <h3 className="pdp-location-title">Location</h3>
-            <p className="pdp-location-addr">{[property.address, property.city].filter(Boolean).join(', ')}</p>
+            <p className="pdp-location-addr">{[property.city, property.address].filter(Boolean).join(', ')}</p>
             <div className="pdp-map-wrap">
               <iframe
                 title="Property Location"

@@ -517,6 +517,32 @@ const PropertyCard = ({ property, rentalType }) => {
   const bathCount = getBathCount(property.bathrooms);
   // ─────────────────────────────────────────────────────────────────────────
 
+  // Build display location — DB fields first, then smart fallbacks
+  const rawCity    = (property.city    || '').trim();
+  const rawAddress = (property.address || '').trim();
+
+  const nameL = (property.property_name || '').toLowerCase();
+  const isSignatureProp = nameL.includes('ovika') || nameL.includes('signature');
+
+  // Known Signature Stay locations (infer when DB city or address is missing)
+  const SIG_LOCS = [
+    { match: '1', city: 'Greater Noida', addr: 'Knowledge Park 3' },
+    { match: '2', city: 'Noida',         addr: 'Sector 62' },
+    { match: '3', city: 'Greater Noida', addr: 'Knowledge Park 3' },
+    { match: '4', city: 'Noida',         addr: 'Sector 50' },
+    { match: '5', city: 'Noida',         addr: 'Sector 50' },
+  ];
+
+  let inferredCity = 'Noida';
+  let inferredAddr = '';
+  if (isSignatureProp) {
+    const found = SIG_LOCS.find(s => nameL.includes(s.match));
+    if (found) { inferredCity = found.city; inferredAddr = found.addr; }
+  }
+
+  const displayCity    = rawCity    || (isSignatureProp ? inferredCity : '');
+  const displayAddress = rawAddress || (property.sector || '').trim() || (isSignatureProp ? inferredAddr : '');
+
   const categoryLabel = (property.property_name?.toLowerCase().includes('ovika') || property.property_name?.toLowerCase().includes('signature'))
     ? 'Signature Stays'
     : property.property_category || '';
@@ -614,10 +640,18 @@ const PropertyCard = ({ property, rentalType }) => {
           </div>
         </div>
 
+        {/* Address below heading — Signature nightly only */}
+        {isSignatureProp && !isMonthly && (displayCity || displayAddress) && (
+          <div style={{ fontSize: 12, color: '#666', marginTop: 2, marginBottom: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <FiMapPin style={{ fontSize: 11, color: '#C98B3E', flexShrink: 0 }} />
+            <span>{[displayCity, displayAddress].filter(Boolean).join(', ')}</span>
+          </div>
+        )}
+
         {/* Location */}
         <div className="plp-hcard-loc">
           <FiMapPin style={{ fontSize: 11, color: '#C98B3E', flexShrink: 0 }} />
-          <span>{property.city || ''}{property.address ? `, ${property.address}` : ''}</span>
+          <span>{[displayCity, displayAddress].filter(Boolean).join(', ') || 'NCR'}</span>
         </div>
 
         {/* Specs — bed/bath/area */}
@@ -1002,6 +1036,7 @@ const PropertyListPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState(_ss.search ?? '');
+  const [cityFilter, setCityFilter] = useState(''); // active city chip (from homepage city click)
   const [activeCat, setActiveCat] = useState(_ss.activeCat ?? null);
   const [rentalType, setRentalType] = useState(_ss.rentalType ?? null);
   const [guests, setGuests] = useState(_ss.guests ?? 1);
@@ -1224,8 +1259,22 @@ const PropertyListPage = () => {
     return [...new Set([...arr, ...metaAms])].map(a => (a || '').toLowerCase());
   };
 
-  const applyFilter = (list, cat, q, rental, uLat, uLng) => {
+  const applyFilter = (list, cat, q, rental, uLat, uLng, cityChip = '') => {
     let result = list;
+
+    // ── Strict city chip filter (from homepage city click) ──────────────────
+    if (cityChip) {
+      const chip = cityChip.toLowerCase().trim();
+      result = result.filter(p => {
+        const c = (p.city    || '').toLowerCase().trim();
+        const a = (p.address || '').toLowerCase();
+        if (chip === 'noida')          return (c === 'noida' || (c.includes('noida') && !c.includes('greater')));
+        if (chip === 'greater noida')  return c.includes('greater noida') || a.includes('greater noida');
+        if (chip === 'noida extension')return c.includes('noida extension') || a.includes('noida extension');
+        if (chip === 'gurugram' || chip === 'gurgaon') return c.includes('gurugram') || c.includes('gurgaon') || a.includes('gurugram') || a.includes('gurgaon');
+        return c.includes(chip) || a.includes(chip);
+      });
+    }
     const isMonthly = rental === 'long';
 
     // Signature Stays property IDs (Home7 se liye hain)
@@ -1345,8 +1394,14 @@ const PropertyListPage = () => {
         const subcat  = (p.property_subCategory || p.property_subcategory || '').toLowerCase();
         const amenities = getAmenities(p);
 
-        // Raw inclusion
-        if (name.includes(t) || addr.includes(t) || city.includes(t) || sector.includes(t)) return true;
+        // Raw inclusion — for 'noida' alone, exclude 'greater noida' (substring false-positive)
+        const cityMatch = t === 'noida'
+          ? (city === 'noida' || (city.includes('noida') && !city.includes('greater'))) && !city.startsWith('greater')
+          : city.includes(t);
+        const addrMatch = t === 'noida'
+          ? addr.includes('noida') && !addr.includes('greater noida')
+          : addr.includes(t);
+        if (name.includes(t) || addrMatch || cityMatch || sector.includes(t)) return true;
         if (cat.includes(t) || type.includes(t) || subcat.includes(t)) return true;
 
         // Semantic shortcuts & Synonyms
@@ -1376,9 +1431,15 @@ const PropertyListPage = () => {
 
         if (t === 'studio' && (type.includes('studio') || name.includes('studio'))) return true;
         
-        // Extended City/Location
-        if ((t === 'noida' || t === 'ncr') && (city.includes('noida') || addr.includes('noida'))) return true;
-        if (t === 'greater' && (city.includes('greater') || addr.includes('greater'))) return true;
+        // Extended City/Location — noida must NOT match greater noida
+        if (t === 'noida' || t === 'ncr') {
+          const noidaCity = city.includes('noida') && !city.includes('greater');
+          const noidaAddr = addr.includes('noida') && !addr.includes('greater noida');
+          if (noidaCity || noidaAddr) return true;
+        }
+        if (t === 'greater noida' || t === 'greater') {
+          if (city.includes('greater noida') || addr.includes('greater noida')) return true;
+        }
         if (t === 'gurugram' || t === 'gurgaon' || t === 'ggn') {
            if (city.includes('gurugram') || addr.includes('gurugram') || city.includes('gurgaon') || addr.includes('gurgaon')) return true;
         }
@@ -1437,7 +1498,15 @@ const PropertyListPage = () => {
             if (token.length > 3) {
                 const name = (p.property_name || '').toLowerCase();
                 const addr = (p.address || '').toLowerCase();
-                if (name.includes(token) || addr.includes(token)) return acc + 0.5;
+                const city = (p.city || '').toLowerCase();
+                // 'noida' token must not fuzzy-match greater noida
+                if (token === 'noida') {
+                  const noFalseAddr = addr.includes('noida') && !addr.includes('greater noida');
+                  const noFalseCity = city.includes('noida') && !city.includes('greater');
+                  if (name.includes(token) || noFalseAddr || noFalseCity) return acc + 0.5;
+                } else {
+                  if (name.includes(token) || addr.includes(token)) return acc + 0.5;
+                }
             }
             return acc;
           }, 0);
@@ -1513,7 +1582,7 @@ const PropertyListPage = () => {
   }, [loading]);
 
   useEffect(() => {
-    let filteredResults = applyFilter(properties, activeCat, search, rentalType, userLat, userLng);
+    let filteredResults = applyFilter(properties, activeCat, search, rentalType, userLat, userLng, cityFilter);
 
     // Sidebar price filter (Signature Stays ke liye bypass — ID se already filtered hain)
     filteredResults = filteredResults.filter(p => {
@@ -1695,7 +1764,7 @@ const PropertyListPage = () => {
     } else {
       setCurrentPage(1);
     }
-  }, [search, activeCat, properties, rentalType, priceMin, priceMax, roomsFilter, propTypeFilter, amenitiesFilter, furnishingFilter, tenantFilter, foodFilter, petsFilter, coupleFilter, pgSubFilter, sortBy, userLat, userLng]);
+  }, [search, cityFilter, activeCat, properties, rentalType, priceMin, priceMax, roomsFilter, propTypeFilter, amenitiesFilter, furnishingFilter, tenantFilter, foodFilter, petsFilter, coupleFilter, pgSubFilter, sortBy, userLat, userLng]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -1726,8 +1795,17 @@ const PropertyListPage = () => {
     if (lng) setUserLng(Number(lng));
     if (params.get('nearme') === '1' && lat && lng) setSortBy('distance');
 
-    const q = params.get('search') || params.get('city');
-    if (q) setSearch(q);
+    const KNOWN_CITY_NAMES = ['noida','greater noida','noida extension','delhi','gurugram','gurgaon','faridabad','ghaziabad'];
+    const cityParam  = (params.get('city')   || '').trim();
+    const searchParam = (params.get('search') || '').trim();
+    if (cityParam && KNOWN_CITY_NAMES.includes(cityParam.toLowerCase())) {
+      // City chip click — set as chip filter, not search bar
+      setCityFilter(cityParam);
+      setSearch('');
+    } else {
+      const q = searchParam || cityParam;
+      if (q) setSearch(q);
+    }
 
     const g = params.get('guests');
     if (g) {
@@ -2577,6 +2655,32 @@ const PropertyListPage = () => {
                 </>
               )}
             </div>
+
+            {/* ── Active City Chip ── */}
+            {cityFilter && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 5,
+                  background: '#c2772b', color: '#fff',
+                  borderRadius: 20, padding: '5px 10px 5px 11px',
+                  fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap',
+                  boxShadow: '0 2px 8px rgba(194,119,43,0.25)',
+                }}>
+                  <FiMapPin style={{ fontSize: 11 }} />
+                  {cityFilter}
+                  <button
+                    onClick={() => { setCityFilter(''); }}
+                    style={{
+                      background: 'rgba(255,255,255,0.25)', border: 'none', borderRadius: '50%',
+                      width: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      cursor: 'pointer', color: '#fff', marginLeft: 2, padding: 0,
+                    }}
+                  >
+                    <FiX style={{ fontSize: 9 }} />
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* ── Enhanced Search Bar ── */}
             <div className="plp-topbar-search" ref={searchBoxRef} style={{ position: 'relative' }}>
