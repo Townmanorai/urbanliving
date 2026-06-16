@@ -936,7 +936,7 @@ const HoomieFooter = () => {
                 <Instagram size={22} strokeWidth={2} />
               </a>
               <a
-                href="https://www.facebook.com/profile.php?id=61580058103004"
+                href="https://www.facebook.com/share/1BojvDLPY6/"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
