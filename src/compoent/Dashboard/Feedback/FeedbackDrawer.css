@@ -1,4 +1,4 @@
-/* ── Overlay ── */
+﻿/* ── Overlay ── */
 .fb-overlay {
   position: fixed;
   inset: 0;
@@ -47,7 +47,7 @@
 .fb-header h3 {
   margin: 0;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 500;
   color: #111827;
 }
 
@@ -75,7 +75,7 @@
   flex-shrink: 0;
 }
 .fb-booking-strip .fb-prop-name {
-  font-weight: 700;
+  font-weight: 500;
   font-size: 14px;
   color: #0369a1;
   margin-bottom: 4px;
@@ -174,7 +174,7 @@
   border: none;
   border-radius: 12px;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 500;
   cursor: pointer;
   transition: opacity 0.2s, transform 0.2s;
   letter-spacing: 0.3px;
@@ -204,7 +204,7 @@
 }
 .fb-success h3 {
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 500;
   color: #111827;
   margin: 0 0 10px;
 }
@@ -233,3 +233,4 @@
   .fb-drawer { width: 100vw; }
   .fb-star { font-size: 26px; }
 }
+

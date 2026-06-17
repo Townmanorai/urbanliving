@@ -1,4 +1,4 @@
-/* ── Page layout ────────────────────────────────────────────────────────────── */
+﻿/* ── Page layout ────────────────────────────────────────────────────────────── */
 .cb-page {
   min-height: 100vh;
   background: #faf7f2;
@@ -33,7 +33,7 @@
 }
 .cb-hero-content h1 {
   font-size: 1.8rem;
-  font-weight: 700;
+  font-weight: 500;
   margin: 0 0 6px;
 }
 .cb-hero-content p {
@@ -293,7 +293,7 @@
 .cb-month-label {
   text-align: center;
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #1a1209;
   margin-bottom: 10px;
 }
@@ -338,7 +338,7 @@
 .cb-day--blocked {
   background: #c2772b;
   color: #fff;
-  font-weight: 700;
+  font-weight: 500;
 }
 .cb-day--blocked:hover {
   background: #a85e1f;
@@ -351,7 +351,7 @@
 .cb-day--range-start {
   background: #fbbf24;
   color: #78350f;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 /* ── Legend ──────────────────────────────────────────────────────────────────── */
@@ -385,3 +385,4 @@
   .cb-calendars-row { padding: 16px; }
   .cb-hero-content h1 { font-size: 1.3rem; }
 }
+

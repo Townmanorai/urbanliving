@@ -1,4 +1,4 @@
-/* ══════════════════════════════
+﻿/* ══════════════════════════════
    LeadsSuccess Page
 ══════════════════════════════ */
 
@@ -33,7 +33,7 @@
   background: linear-gradient(135deg, #16a34a, #22c55e);
   color: #fff;
   font-size: 36px;
-  font-weight: 800;
+  font-weight: 600;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -44,7 +44,7 @@
 
 .ls-title {
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 600;
   color: #1a1209;
   margin: 0 0 10px;
   letter-spacing: -0.3px;
@@ -107,7 +107,7 @@
 }
 .ls-sum-row:last-child { margin-bottom: 0; }
 .ls-sum-row span { color: #6b5540; }
-.ls-sum-row strong { color: #1a1209; font-weight: 700; }
+.ls-sum-row strong { color: #1a1209; font-weight: 500; }
 
 .ls-sum-divider {
   border: none;
@@ -135,7 +135,7 @@
   border-radius: 12px;
   padding: 14px 24px;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 500;
   cursor: pointer;
   font-family: 'Poppins', sans-serif;
   transition: opacity 0.2s;
@@ -167,3 +167,4 @@
 @media (max-width: 480px) {
   .ls-card { padding: 36px 20px 28px; }
 }
+

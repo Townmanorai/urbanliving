@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,500&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,500&display=swap');
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -85,7 +85,7 @@
 .cs-hero-title {
   font-family: 'Playfair Display', serif;
   font-size: clamp(40px, 6.5vw, 82px);
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.05;
   color: #ffffff;
   margin-bottom: 24px;
@@ -211,7 +211,7 @@
 .cs-stat-num {
   font-family: 'Playfair Display', serif;
   font-size: 34px;
-  font-weight: 700;
+  font-weight: 500;
   color: #c2772b;
   display: block;
 }
@@ -257,7 +257,7 @@
 .cs-section-title {
   font-family: 'Playfair Display', serif;
   font-size: clamp(30px, 4.5vw, 50px);
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.15;
   color: #1f1207;
   margin-bottom: 18px;
@@ -449,7 +449,7 @@
 .cs-role-title {
   font-family: 'Playfair Display', serif;
   font-size: 21px;
-  font-weight: 700;
+  font-weight: 500;
   color: #1f1207;
   margin-bottom: 5px;
 }

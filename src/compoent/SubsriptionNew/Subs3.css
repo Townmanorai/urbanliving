@@ -1,4 +1,4 @@
-/* ══════════════════════════════
+﻿/* ══════════════════════════════
    Subs3 — FAQ + Contact CTA
 ══════════════════════════════ */
 
@@ -18,7 +18,7 @@
   border: 1px solid rgba(194,119,43,0.25);
   color: #c2772b;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 1.2px;
   text-transform: uppercase;
   padding: 4px 16px;
@@ -28,7 +28,7 @@
 
 .sl3-title {
   font-size: clamp(20px, 3vw, 28px);
-  font-weight: 700;
+  font-weight: 500;
   color: #1a1209;
   margin: 0 0 8px;
 }
@@ -83,7 +83,7 @@
   background: rgba(194,119,43,0.1);
   color: #c2772b;
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 600;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -121,7 +121,7 @@
 
 .sl3-cta-title {
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 500;
   color: #fff;
   margin: 0 0 8px;
 }
@@ -141,7 +141,7 @@
   color: #fff;
   text-decoration: none;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
   padding: 14px 28px;
   border-radius: 12px;
   white-space: nowrap;
@@ -162,3 +162,4 @@
   .sl3-cta-desc { font-size: 12.5px; }
   .sl3-whatsapp-btn { font-size: 13px; padding: 12px 22px; width: 100%; justify-content: center; }
 }
+

@@ -1,4 +1,4 @@
-/* ================================================
+﻿/* ================================================
    PROPERTY REVIEWS — OvikaLiving Theme
    ================================================ */
 
@@ -9,7 +9,7 @@
 /* ── Section Heading ── */
 .pr-heading {
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #1a1209;
   margin-bottom: 20px;
   display: flex;
@@ -34,7 +34,7 @@
   border: 1.5px solid #8b0000;
   border-radius: 4px;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 500;
   color: #8b0000;
   letter-spacing: 0.08em;
 }
@@ -65,7 +65,7 @@
 
 .pr-score-number {
   font-size: 28px;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1;
   display: flex;
   align-items: center;
@@ -79,7 +79,7 @@
 
 .pr-score-label {
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-top: 5px;
@@ -180,7 +180,7 @@
 
 .pr-cat-score {
   font-size: 17px;
-  font-weight: 700;
+  font-weight: 500;
   color: #0f172a;
 }
 
@@ -242,7 +242,7 @@
   align-items: center;
   justify-content: center;
   font-size: 17px;
-  font-weight: 700;
+  font-weight: 500;
   color: #fff;
   flex-shrink: 0;
   text-transform: uppercase;
@@ -255,7 +255,7 @@
 
 .pr-reviewer-name {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
   color: #111827;
 }
 
@@ -272,7 +272,7 @@
   padding: 3px 10px;
   border-radius: 5px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
   color: #fff;
   background: #C98B3E;
   flex-shrink: 0;
@@ -307,7 +307,7 @@
   border: none;
   color: #C98B3E;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
   cursor: pointer;
   padding: 0;
   text-decoration: underline;
@@ -357,7 +357,7 @@
 }
 .pr-global-big-num {
   font-size: 3.5rem;
-  font-weight: 800;
+  font-weight: 600;
   color: #1a1209;
   line-height: 1;
   letter-spacing: -0.03em;
@@ -465,3 +465,4 @@
   .pr-categories { grid-template-columns: 1fr 1fr; }
   .pr-heading { font-size: 18px; }
 }
+

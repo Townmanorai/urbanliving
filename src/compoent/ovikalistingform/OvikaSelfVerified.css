@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
 :root {
   --primary:       #E8600A;
@@ -48,7 +48,7 @@
 .svp-nav-logo {
   font-family: 'Playfair Display', serif;
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--text-dark);
   letter-spacing: -0.3px;
 }
@@ -129,7 +129,7 @@
 .svp-eyebrow {
   display: inline-block;
   font-size: 10.5px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 3px;
   text-transform: uppercase;
   color: var(--primary);
@@ -142,7 +142,7 @@
 .svp-hero-h1 {
   font-family: 'Playfair Display', serif;
   font-size: clamp(34px, 4vw, 56px);
-  font-weight: 900;
+  font-weight: 600;
   color: var(--text-dark);
   line-height: 1.1;
   margin-bottom: 16px;
@@ -177,7 +177,7 @@
   padding: 14px 36px;
   border-radius: 50px;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 500;
   font-family: 'Plus Jakarta Sans', sans-serif;
   border: none;
   cursor: pointer;
@@ -227,7 +227,7 @@
 .svp-hero-stat-num {
   font-family: 'Playfair Display', serif;
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--primary);
   line-height: 1;
   margin-bottom: 3px;
@@ -284,7 +284,7 @@
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
   color: #16A34A;
   margin-bottom: 6px;
 }
@@ -312,7 +312,7 @@
 .svp-section-title {
   font-family: 'Playfair Display', serif;
   font-size: clamp(22px, 2.8vw, 34px);
-  font-weight: 700;
+  font-weight: 500;
   color: var(--text-dark);
   line-height: 1.2;
   margin-bottom: 10px;
@@ -367,7 +367,7 @@
 .svp-benefit-card h3 {
   font-family: 'Playfair Display', serif;
   font-size: 15.5px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--text-dark);
   margin-bottom: 7px;
   line-height: 1.3;
@@ -382,7 +382,7 @@
   display: inline-block;
   margin-top: 12px;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--primary);
   background: rgba(232,96,10,0.07);
   padding: 3px 10px;
@@ -440,7 +440,7 @@
   background: var(--primary);
   display: flex; align-items: center; justify-content: center;
   font-family: 'Playfair Display', serif;
-  font-size: 17px; font-weight: 700;
+  font-size: 17px; font-weight: 500;
   color: #fff;
   box-shadow: 0 4px 14px rgba(232,96,10,0.3);
   position: relative; z-index: 1;
@@ -462,7 +462,7 @@
 
 .svp-step-box h4 {
   font-family: 'Playfair Display', serif;
-  font-size: 15px; font-weight: 700;
+  font-size: 15px; font-weight: 500;
   color: var(--text-dark);
   margin-bottom: 5px;
 }
@@ -475,7 +475,7 @@
 .svp-step-tag {
   display: inline-flex; align-items: center; gap: 4px;
   margin-top: 8px;
-  font-size: 11px; font-weight: 700;
+  font-size: 11px; font-weight: 500;
   color: var(--gold);
   background: var(--gold-pale);
   padding: 3px 10px;
@@ -517,7 +517,7 @@
 
 .svp-badge-preview h3 {
   font-family: 'Playfair Display', serif;
-  font-size: 17px; font-weight: 700;
+  font-size: 17px; font-weight: 500;
   color: var(--text-dark);
   margin: 8px 0 6px;
 }
@@ -612,7 +612,7 @@
 .svp-cta h2 {
   font-family: 'Playfair Display', serif;
   font-size: clamp(26px, 4vw, 44px);
-  font-weight: 700;
+  font-weight: 500;
   color: var(--text-dark);
   margin-bottom: 12px;
   letter-spacing: -0.5px;
@@ -633,7 +633,7 @@
   color: #fff;
   padding: 16px 44px;
   border-radius: 50px;
-  font-size: 16px; font-weight: 700;
+  font-size: 16px; font-weight: 500;
   font-family: 'Plus Jakarta Sans', sans-serif;
   border: none; cursor: pointer;
   box-shadow: 0 10px 36px rgba(232,96,10,0.35);
@@ -775,3 +775,4 @@
   .svp-middle { padding: 40px 16px; }
   .svp-cta    { padding: 44px 16px; }
 }
+

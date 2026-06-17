@@ -1,4 +1,4 @@
-/* ══════════════════════════════════════════════════════════
+﻿/* ══════════════════════════════════════════════════════════
    Home1.css  —  zoom-proof layout
 ══════════════════════════════════════════════════════════ */
 
@@ -422,7 +422,7 @@
 }
 
 .ovika-cal-title {
-  font-size: 0.65rem; font-weight: 700;
+  font-size: 0.65rem; font-weight: 500;
   color: #c8851a; text-transform: uppercase; letter-spacing: 0.8px;
 }
 
@@ -452,7 +452,7 @@
 }
 
 .ovika-cal-day-name {
-  font-size: 0.55rem; font-weight: 700; color: #c8a060;
+  font-size: 0.55rem; font-weight: 500; color: #c8a060;
   text-align: center; text-transform: uppercase;
   padding: 2px 0 4px; letter-spacing: 0.3px;
 }
@@ -468,7 +468,7 @@
 .ovika-cal-cell--active:hover { background: #fdf0e0; color: #c8851a; font-weight: 600; }
 .ovika-cal-cell--selected {
   background: linear-gradient(135deg, #f5a623, #e08c10) !important;
-  color: #fff !important; font-weight: 700 !important;
+  color: #fff !important; font-weight: 500 !important;
   box-shadow: 0 3px 10px rgba(245,166,35,0.45);
 }
 .ovika-cal-cell--past { color: #ccc !important; cursor: not-allowed !important; }

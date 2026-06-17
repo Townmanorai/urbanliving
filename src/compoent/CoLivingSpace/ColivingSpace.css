@@ -1,4 +1,4 @@
-/* ===========================
+﻿/* ===========================
    OvikaLiving — Global Variables
 =========================== */
 :root {
@@ -109,7 +109,7 @@
 }
 
 .ol-hero-subtitle strong {
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .ol-hero-desc {
@@ -254,7 +254,7 @@
 .ol-checklist li::before {
   content: "✓";
   color: var(--gold);
-  font-weight: 700;
+  font-weight: 500;
   font-size: 16px;
   flex-shrink: 0;
 }
@@ -415,7 +415,7 @@
 }
 
 .ol-footer-city {
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .ol-footer-sub {

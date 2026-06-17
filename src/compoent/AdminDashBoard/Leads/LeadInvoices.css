@@ -1,4 +1,4 @@
-/* ══════════════════════════════
+﻿/* ══════════════════════════════
    LeadInvoices Component
 ══════════════════════════════ */
 
@@ -19,7 +19,7 @@
 
 .li-title {
   font-size: 24px;
-  font-weight: 800;
+  font-weight: 600;
   color: #1e293b;
   margin: 0 0 5px;
 }
@@ -43,7 +43,7 @@
 
 .li-empty-title {
   font-size: 17px;
-  font-weight: 700;
+  font-weight: 500;
   color: #1e293b;
   margin: 0 0 8px;
 }
@@ -91,7 +91,7 @@
 
 .li-inv-no {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 500;
   color: #1e293b;
   font-family: 'Courier New', monospace;
   margin-bottom: 7px;
@@ -128,13 +128,13 @@
 
 .li-amount {
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 600;
   color: #1e293b;
 }
 
 .li-paid-badge {
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 600;
   color: #166534;
   background: #dcfce7;
   border: 1px solid #bbf7d0;
@@ -150,7 +150,7 @@
   border-radius: 9px;
   padding: 7px 16px;
   font-size: 12.5px;
-  font-weight: 700;
+  font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
   font-family: 'Inter', 'Poppins', sans-serif;
@@ -171,3 +171,4 @@
     gap: 8px;
   }
 }
+

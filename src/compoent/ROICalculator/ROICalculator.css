@@ -1,4 +1,4 @@
-/* ── Page wrap ─────────────────────────────────────────── */
+﻿/* ── Page wrap ─────────────────────────────────────────── */
 .roi-wrap {
   min-height: 100vh;
   background: #f8f5f0;
@@ -17,7 +17,7 @@
 
 .roi-page-title {
   font-size: 1.4rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #1a1209;
   margin: 0 0 4px;
 }
@@ -121,7 +121,7 @@
   border-radius: 7px;
   padding: 4px 12px;
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #c2772b;
   min-width: 90px;
   text-align: right;
@@ -281,7 +281,7 @@ input[type=range].roi-range::-moz-range-track { background: transparent; height:
 
 .roi-legend-val {
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #1a1209;
 }
 
@@ -319,7 +319,7 @@ input[type=range].roi-range::-moz-range-track { background: transparent; height:
 
 .roi-stat-val {
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #1a1209;
 }
 
@@ -425,7 +425,7 @@ input[type=range].roi-range::-moz-range-track { background: transparent; height:
 
 .roi-info-title {
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #1a1209;
   margin: 0 0 8px;
 }
@@ -462,3 +462,4 @@ input[type=range].roi-range::-moz-range-track { background: transparent; height:
     padding: 16px;
   }
 }
+

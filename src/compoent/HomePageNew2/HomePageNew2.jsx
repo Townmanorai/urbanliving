@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { navClick } from '../../utils/navClick';
@@ -20,7 +20,7 @@ const NIGHTLY = [
     rentalType: 'short', category: 'Signature Stays', color: '#7c4a1a',
   },
   {
-    id: 'hotel', title: 'Hotel Stays', sub: '4-Star, 5-Star & Boutique Hotels',
+    id: 'hotel', title: 'Hotel Stays', sub: 'Premium, Luxury & Boutique Hotels',
     badge: 'Nightly Rental', price: '₹1,499', unit: '/night', btnText: 'Explore Hotels',
     icon: '🏨', tags: ['4★ & 5★', 'Breakfast', 'Instant Book'], popular: true,
     img: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=700&q=80&auto=format&fit=crop',
@@ -207,7 +207,7 @@ export default function HomePageNew2() {
         {/* ── TRUST BAR ── */}
         <div style={{ margin: '0 14px', background: '#fff', borderRadius: 18, padding: '14px 16px', border: '1px solid #f0e8da', boxShadow: '0 2px 12px rgba(194,119,43,0.08)' }}>
           <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-            {[['🛡️','Zero Brokerage','No hidden fees'],['⚡','Instant Move-in','Ready today'],['✅','Verified','All listings checked'],['🏠','500+ Listings','Across NCR']].map(([ic,lb,desc]) => (
+            {[['🛡️','Zero Brokerage','No hidden fees'],['⚡','Instant Move-in','Ready today'],['✅','Verified','All listings checked'],['🏠','1000+ Listings','Across NCR']].map(([ic,lb,desc]) => (
               <div key={lb} style={{ width: '50%', boxSizing: 'border-box', padding: '6px 8px 6px 0', display: 'flex', alignItems: 'center', gap: 7 }}>
                 <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>{ic}</span>
                 <div>
@@ -308,7 +308,7 @@ export default function HomePageNew2() {
 
         {/* Trust strip */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginTop: 14 }}>
-          {[['🛡️','Zero Brokerage'],['⚡','Instant Move-in'],['✅','Verified Properties'],['🏠','500+ Listings']].map(([ic,lb]) => (
+          {[['🛡️','Zero Brokerage'],['⚡','Instant Move-in'],['✅','Verified Properties'],['🏠','1000+ Listings']].map(([ic,lb]) => (
             <div key={lb} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.7)', border: '1px solid #f0e8da', borderRadius: 20, padding: '7px 14px', backdropFilter: 'blur(6px)' }}>
               <span style={{ fontSize: '0.85rem' }}>{ic}</span>
               <span style={{ fontSize: '0.65rem', color: '#5a4a3a', fontWeight: 600 }}>{lb}</span>
@@ -464,7 +464,7 @@ export default function HomePageNew2() {
 
         {/* Bottom row — trust strip spans all 3 right cols */}
         <div style={{ gridColumn: '2 / 4', gridRow: '2', display: 'flex', alignItems: 'center', gap: 10 }}>
-          {[['🛡️','Zero Brokerage','No hidden charges, ever'],['⚡','Instant Move-in','Ready homes, move today'],['✅','Verified Properties','Every listing is checked'],['🏠','500+ Listings','Across NCR & Noida']].map(([ic,lb,desc]) => (
+          {[['🛡️','Zero Brokerage','No hidden charges, ever'],['⚡','Instant Move-in','Ready homes, move today'],['✅','Verified Properties','Every listing is checked'],['🏠','1000+ Listings','Across NCR & Noida']].map(([ic,lb,desc]) => (
             <div key={lb} style={{ flex: 1, background: 'rgba(255,255,255,0.75)', border: '1px solid #f0e8da', borderRadius: 14, padding: '14px 14px', display: 'flex', alignItems: 'center', gap: 10, backdropFilter: 'blur(6px)' }}>
               <span style={{ fontSize: '1.4rem', flexShrink: 0 }}>{ic}</span>
               <div>
@@ -479,3 +479,4 @@ export default function HomePageNew2() {
     </section>
   );
 }
+

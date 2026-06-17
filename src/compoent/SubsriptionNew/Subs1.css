@@ -1,4 +1,4 @@
-/* ══════════════════════════════
+﻿/* ══════════════════════════════
    Subs1 — How it Works + Benefits
 ══════════════════════════════ */
 
@@ -20,7 +20,7 @@
   border: 1px solid rgba(194,119,43,0.25);
   color: #c2772b;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 1.2px;
   text-transform: uppercase;
   padding: 4px 16px;
@@ -30,7 +30,7 @@
 
 .sl1-section-title {
   font-size: clamp(20px, 3vw, 30px);
-  font-weight: 700;
+  font-weight: 500;
   color: #1a1209;
   margin: 0 0 36px;
   text-align: center;
@@ -58,13 +58,13 @@
 
 .sl1-step-num {
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 600;
   color: #c2772b;
   letter-spacing: 0.1em;
   margin-bottom: 10px;
 }
 .sl1-step-icon { font-size: 32px; margin-bottom: 12px; }
-.sl1-step-title { font-size: 15px; font-weight: 700; color: #1a1209; margin: 0 0 8px; }
+.sl1-step-title { font-size: 15px; font-weight: 500; color: #1a1209; margin: 0 0 8px; }
 .sl1-step-desc  { font-size: 13px; color: #6b5540; line-height: 1.65; margin: 0; }
 
 /* ── Benefits ── */
@@ -132,3 +132,4 @@
   .sl1-benefit-item { padding: 10px 14px; font-size: 12.5px; }
   .sl1-benefit-icon { font-size: 16px; }
 }
+

@@ -1,4 +1,4 @@
-/* ══════════════════════════════
+﻿/* ══════════════════════════════
    Buy Leads — Hero
 ══════════════════════════════ */
 
@@ -21,13 +21,13 @@
   color: #c2772b;
   letter-spacing: 1.4px;
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 500;
   margin-bottom: 16px;
 }
 
 .bl-hero-title {
   font-size: clamp(26px, 5vw, 46px);
-  font-weight: 800;
+  font-weight: 600;
   color: #1a1209;
   line-height: 1.18;
   letter-spacing: -0.5px;
@@ -74,3 +74,4 @@
     padding: 4px 11px;
   }
 }
+

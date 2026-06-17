@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════
+﻿/* ═══════════════════════════════════════
    Owner Leads — styles
 ═══════════════════════════════════════ */
 
@@ -26,7 +26,7 @@
   border: 1.5px dashed #e2e8f0;
 }
 .ol-no-pg-icon { font-size: 52px; margin-bottom: 16px; }
-.ol-no-pg h3 { font-size: 20px; font-weight: 700; color: #1e293b; margin: 0 0 10px; }
+.ol-no-pg h3 { font-size: 20px; font-weight: 500; color: #1e293b; margin: 0 0 10px; }
 .ol-no-pg p  { font-size: 14px; color: #64748b; margin: 0 0 24px; }
 .ol-cta-btn {
   background: #c98b3e;
@@ -51,7 +51,7 @@
   border: 1px solid #fde68a;
   color: #92400e;
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.08em;
   padding: 4px 12px;
   border-radius: 20px;
@@ -61,7 +61,7 @@
 
 .ol-title {
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 600;
   color: #1e293b;
   margin: 0 0 6px;
 }
@@ -104,14 +104,14 @@
   justify-content: center;
   color: #fff;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.03em;
 }
 
 .ol-lead-info { flex: 1; min-width: 0; }
 .ol-lead-name {
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 500;
   color: #1e293b;
   margin-bottom: 5px;
 }
@@ -135,7 +135,7 @@
 }
 .ol-phone-visible {
   font-size: 13.5px;
-  font-weight: 700;
+  font-weight: 500;
   color: #1e293b;
   font-family: monospace;
   letter-spacing: 0.04em;
@@ -212,13 +212,13 @@
   gap: 2px;
   flex: 1;
 }
-.ol-pb-text strong { font-size: 15px; font-weight: 700; color: #166534; }
+.ol-pb-text strong { font-size: 15px; font-weight: 500; color: #166534; }
 .ol-pb-text span   { font-size: 13px; color: #16a34a; line-height: 1.5; }
 .ol-pb-badge {
   background: #16a34a;
   color: #fff;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
   padding: 4px 12px;
   border-radius: 20px;
   white-space: nowrap;
@@ -256,7 +256,7 @@
   border-radius: 14px;
   padding: 16px 48px;
   font-size: 17px;
-  font-weight: 800;
+  font-weight: 600;
   cursor: pointer;
   letter-spacing: 0.02em;
   box-shadow: 0 6px 24px rgba(201,139,62,0.32);
@@ -285,7 +285,7 @@
 .ol-buy-section {}
 .ol-buy-title {
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 600;
   color: #1e293b;
   margin: 0 0 6px;
 }
@@ -331,7 +331,7 @@
   background: linear-gradient(135deg, #c98b3e, #e0a94e);
   color: #fff;
   font-size: 10.5px;
-  font-weight: 700;
+  font-weight: 500;
   padding: 3px 12px;
   border-radius: 20px;
   white-space: nowrap;
@@ -340,13 +340,13 @@
 
 .ol-slab-count {
   font-size: 22px;
-  font-weight: 800;
+  font-weight: 600;
   color: #1e293b;
   margin-bottom: 6px;
 }
 .ol-slab-price {
   font-size: 28px;
-  font-weight: 800;
+  font-weight: 600;
   color: #c98b3e;
   margin-bottom: 4px;
 }
@@ -359,7 +359,7 @@
 .ol-slab-gst {
   font-size: 11px;
   color: #f59e0b;
-  font-weight: 700;
+  font-weight: 500;
   margin-bottom: 2px;
 }
 .ol-slab-per {
@@ -376,7 +376,7 @@
   border-radius: 10px;
   padding: 11px 0;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
   cursor: pointer;
   transition: opacity 0.2s;
 }
@@ -394,7 +394,7 @@
   border-radius: 10px;
   padding: 10px 0;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
 }
@@ -420,7 +420,7 @@
 .ol-table th {
   padding: 14px 18px;
   text-align: left;
-  font-weight: 700;
+  font-weight: 500;
   color: #475569;
   font-size: 12px;
   letter-spacing: 0.05em;
@@ -439,7 +439,7 @@
   background: #fef3c7;
   color: #92400e;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
   padding: 2px 8px;
   border-radius: 20px;
 }
@@ -451,7 +451,7 @@
   border-radius: 8px;
   padding: 7px 18px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 500;
   cursor: pointer;
 }
 .ol-table-buy-btn:hover { opacity: 0.88; }
@@ -463,7 +463,7 @@
   border-radius: 8px;
   padding: 6px 14px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 500;
   cursor: pointer;
 }
 .ol-table-contact-btn:hover { background: #c98b3e; color: #fff; }
@@ -484,7 +484,7 @@
 
 .ol-inv-title {
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 600;
   color: #1e293b;
   margin: 0 0 6px;
 }
@@ -521,7 +521,7 @@
 
 .ol-inv-no {
   font-size: 13.5px;
-  font-weight: 700;
+  font-weight: 500;
   color: #1e293b;
   margin-bottom: 4px;
   font-family: monospace;
@@ -545,13 +545,13 @@
 
 .ol-inv-amount {
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 600;
   color: #1e293b;
 }
 
 .ol-inv-paid {
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 600;
   color: #166534;
   background: #dcfce7;
   padding: 2px 8px;
@@ -566,7 +566,7 @@
   border-radius: 8px;
   padding: 6px 14px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
   white-space: nowrap;
@@ -577,3 +577,4 @@
   .ol-inv-card { flex-wrap: wrap; }
   .ol-inv-right { align-items: flex-start; width: 100%; flex-direction: row; flex-wrap: wrap; gap: 8px; }
 }
+

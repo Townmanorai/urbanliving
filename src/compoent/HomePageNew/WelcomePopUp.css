@@ -1,4 +1,4 @@
-/* WelcomePopup.css */
+﻿/* WelcomePopup.css */
 
 /* ── Overlay ── */
 .ovika-popup-overlay {
@@ -161,7 +161,7 @@
 
 .ovika-section-title {
   font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #1a1a1a;
   margin: 0 0 0.45rem;
 }
