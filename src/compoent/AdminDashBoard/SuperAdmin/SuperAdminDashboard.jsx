@@ -89,6 +89,13 @@ export default function SuperAdminDashboard() {
   const [biSearch, setBiSearch] = useState('');
   const [biPhotoModal, setBiPhotoModal] = useState(null);
 
+  // ── Owner Details states ──
+  const [ownersList, setOwnersList] = useState([]);
+  const [ownersLoading, setOwnersLoading] = useState(false);
+  const [ownersSearch, setOwnersSearch] = useState('');
+  const [ownersExpanded, setOwnersExpanded] = useState(null);
+  const [ownersTab, setOwnersTab] = useState('all'); // 'all' | 'nightly' | 'monthly'
+
   // ── Self Verification states ──
   const [svList, setSvList] = useState([]);
   const [svLoading, setSvLoading] = useState(false);
@@ -417,7 +424,52 @@ export default function SuperAdminDashboard() {
     if (view === 'self-verification') fetchSelfVerifications();
     if (view === 'lead-purchases') fetchLeadPurchases();
     if (view === 'booking-inquiries') fetchBookingInquiries();
+    if (view === 'owners') fetchOwners();
   }, [view]);
+
+  const fetchOwners = async () => {
+    setOwnersLoading(true);
+    try {
+      const [propRes, userRes] = await Promise.all([
+        axios.get(API_PROPERTIES),
+        axios.get(API_USERS, { validateStatus: false }),
+      ]);
+      const propsArr = Array.isArray(propRes.data) ? propRes.data : (propRes.data?.data || []);
+      const usersArr = Array.isArray(userRes.data) ? userRes.data : (userRes.data?.data || []);
+
+      // Build owner_id → user map
+      const userMap = {};
+      usersArr.forEach(u => {
+        const uid = u.id || u.user_id;
+        if (uid) userMap[uid] = u;
+      });
+
+      // Monthly categories (property_category field)
+      const MONTHLY_CATS = ['pg', 'pg & co-living', 'co-living', 'coliving', 'apartments & villas', 'apartment', 'apartments'];
+
+      const map = {};
+      propsArr.forEach(p => {
+        const oid = p.owner_id || 'unknown';
+        const user = userMap[oid] || {};
+        const name  = user.full_name || user.name || user.username || user.email || `Owner #${oid}`;
+        const phone = user.phone || user.phone_number || user.mobile || '—';
+        if (!map[oid]) map[oid] = { name, phone, ownerId: oid, properties: [] };
+
+        const cat = (p.property_category || p.property_type || '').toLowerCase().trim();
+        const rentalType = MONTHLY_CATS.some(c => cat.includes(c)) ? 'monthly' : 'nightly';
+        map[oid].properties.push({ ...p, _rentalType: rentalType });
+      });
+
+      const sorted = Object.values(map)
+        .filter(o => o.ownerId !== 'unknown' || o.properties.length > 0)
+        .sort((a, b) => b.properties.length - a.properties.length);
+      setOwnersList(sorted);
+    } catch(e) {
+      console.error('fetchOwners error', e);
+    } finally {
+      setOwnersLoading(false);
+    }
+  };
 
   const fetchBookingInquiries = async () => {
     setBiLoading(true);
@@ -1075,6 +1127,9 @@ export default function SuperAdminDashboard() {
                 </button>
                 <button className={view === 'booking-inquiries' ? 'active' : ''} onClick={() => setView('booking-inquiries')}>
                     <span className="sa-nav-icon">🏨</span> Booking Inquiries
+                </button>
+                <button className={view === 'owners' ? 'active' : ''} onClick={() => setView('owners')} style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '4px', paddingTop: '12px' }}>
+                    <span className="sa-nav-icon">👤</span> Owner Details
                 </button>
             </nav>
         </div>
@@ -3342,6 +3397,186 @@ export default function SuperAdminDashboard() {
                   {biPhotoModal && (
                     <div onClick={() => setBiPhotoModal(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, cursor: 'zoom-out' }}>
                       <img src={biPhotoModal} alt="Customer" style={{ maxWidth: '90vw', maxHeight: '85vh', borderRadius: 12, objectFit: 'contain', boxShadow: '0 8px 40px rgba(0,0,0,0.4)' }} />
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
+            {/* VIEW: OWNER DETAILS */}
+            {view === 'owners' && (() => {
+              const q = ownersSearch.toLowerCase();
+
+              // Per-owner: filter properties by tab, then filter owners
+              const ownersWithFiltered = ownersList.map(o => ({
+                ...o,
+                visibleProps: ownersTab === 'all'
+                  ? o.properties
+                  : o.properties.filter(p => p._rentalType === ownersTab),
+              })).filter(o =>
+                o.visibleProps.length > 0 &&
+                (!q || (o.name || '').toLowerCase().includes(q) || (o.phone || '').toLowerCase().includes(q))
+              );
+
+              const totalProps   = ownersWithFiltered.reduce((s, o) => s + o.visibleProps.length, 0);
+              const multiOwners  = ownersWithFiltered.filter(o => o.visibleProps.length > 1).length;
+
+              const tabStyle = (t) => ({
+                padding: '8px 18px', borderRadius: 22, fontSize: 13, cursor: 'pointer', border: 'none',
+                background: ownersTab === t ? '#c2772b' : '#f1f5f9',
+                color:      ownersTab === t ? '#fff'     : '#475569',
+                fontWeight: ownersTab === t ? 600 : 400,
+              });
+
+              return (
+                <div style={{ padding: '24px' }}>
+                  {/* Header */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
+                    <div>
+                      <h2 style={{ margin: 0, fontSize: 20, color: '#1e293b' }}>👤 Owner Details</h2>
+                      <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: 13 }}>Sorted by most listings • click any owner to expand</p>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                      <input
+                        value={ownersSearch}
+                        onChange={e => setOwnersSearch(e.target.value)}
+                        placeholder="Search name / phone..."
+                        style={{ padding: '8px 14px', borderRadius: 9, border: '1.5px solid #e2e8f0', fontSize: 13, width: 210, outline: 'none' }}
+                      />
+                      <button onClick={fetchOwners} style={{ padding: '8px 16px', borderRadius: 9, border: 'none', background: '#c2772b', color: '#fff', fontSize: 13, cursor: 'pointer' }}>↻ Refresh</button>
+                    </div>
+                  </div>
+
+                  {/* Nightly / Monthly tabs */}
+                  <div style={{ display: 'flex', gap: 8, marginBottom: 18 }}>
+                    <button style={tabStyle('all')}     onClick={() => { setOwnersTab('all');     setOwnersExpanded(null); }}>All</button>
+                    <button style={tabStyle('nightly')} onClick={() => { setOwnersTab('nightly'); setOwnersExpanded(null); }}>🌙 Nightly</button>
+                    <button style={tabStyle('monthly')} onClick={() => { setOwnersTab('monthly'); setOwnersExpanded(null); }}>📅 Monthly</button>
+                  </div>
+
+                  {/* Stats */}
+                  <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
+                    {[
+                      { label: 'Owners',            val: ownersWithFiltered.length, color: '#3b82f6' },
+                      { label: 'Total Listings',    val: totalProps,                color: '#c2772b' },
+                      { label: 'Multiple Listings', val: multiOwners,              color: '#16a34a', note: 'owners with 2+' },
+                    ].map(({ label, val, color, note }) => (
+                      <div key={label} style={{ background: '#fff', border: '1.5px solid #e2e8f0', borderRadius: 12, padding: '12px 18px', minWidth: 130 }}>
+                        <div style={{ fontSize: 24, fontWeight: 600, color }}>{val}</div>
+                        <div style={{ fontSize: 12, color: '#64748b', marginTop: 1 }}>{label}</div>
+                        {note && <div style={{ fontSize: 10, color: '#94a3b8' }}>{note}</div>}
+                      </div>
+                    ))}
+                  </div>
+
+                  {ownersLoading ? (
+                    <div style={{ textAlign: 'center', padding: 60, color: '#94a3b8', fontSize: 15 }}>Loading owner data...</div>
+                  ) : ownersWithFiltered.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: 60, color: '#94a3b8', fontSize: 15 }}>No owners found for this filter.</div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      {ownersWithFiltered.map((owner, idx) => {
+                        const isOpen = ownersExpanded === idx;
+                        const cnt    = owner.visibleProps.length;
+                        const hasMulti = cnt > 1;
+                        return (
+                          <div key={idx} style={{ background: '#fff', border: `1.5px solid ${hasMulti ? '#f0d8b0' : '#e2e8f0'}`, borderRadius: 14, overflow: 'hidden' }}>
+                            {/* Owner row */}
+                            <div
+                              onClick={() => setOwnersExpanded(isOpen ? null : idx)}
+                              style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 18px', cursor: 'pointer', background: isOpen ? '#fdf7ee' : hasMulti ? '#fffbf5' : '#fff', borderBottom: isOpen ? '1px solid #f0e8da' : 'none' }}
+                            >
+                              {/* Avatar */}
+                              <div style={{ width: 38, height: 38, borderRadius: '50%', background: hasMulti ? 'linear-gradient(135deg,#c2772b,#e09a4f)' : '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: hasMulti ? '#fff' : '#64748b', fontSize: 15, fontWeight: 600, flexShrink: 0 }}>
+                                {(owner.name || 'O')[0].toUpperCase()}
+                              </div>
+
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontSize: 14, fontWeight: 600, color: '#1e293b', display: 'flex', alignItems: 'center', gap: 6 }}>
+                                  {owner.name}
+                                  {hasMulti && <span style={{ background: '#c2772b', color: '#fff', borderRadius: 20, fontSize: 10, padding: '1px 7px' }}>Multi-listing</span>}
+                                </div>
+                                <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>📞 {owner.phone}</div>
+                              </div>
+
+                              {/* Per-type mini counts */}
+                              <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                                {ownersTab === 'all' && (() => {
+                                  const n = owner.properties.filter(p => p._rentalType === 'nightly').length;
+                                  const m = owner.properties.filter(p => p._rentalType === 'monthly').length;
+                                  return (
+                                    <>
+                                      {n > 0 && <span style={{ background: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe', borderRadius: 20, padding: '3px 10px', fontSize: 11 }}>🌙 {n} Nightly</span>}
+                                      {m > 0 && <span style={{ background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0', borderRadius: 20, padding: '3px 10px', fontSize: 11 }}>📅 {m} Monthly</span>}
+                                    </>
+                                  );
+                                })()}
+                              </div>
+
+                              <div style={{ background: '#fdf2e4', color: '#c2772b', border: '1px solid #f0d8b0', borderRadius: 20, padding: '4px 12px', fontSize: 12, fontWeight: 600, flexShrink: 0 }}>
+                                {cnt} {cnt === 1 ? 'Listing' : 'Listings'}
+                              </div>
+                              <div style={{ color: '#94a3b8', fontSize: 16, flexShrink: 0 }}>{isOpen ? '▲' : '▼'}</div>
+                            </div>
+
+                            {/* Expanded: property table */}
+                            {isOpen && (
+                              <div style={{ overflowX: 'auto' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                                  <thead>
+                                    <tr style={{ background: '#f8fafc' }}>
+                                      {['#', 'Property Name', 'City / Address', 'Price', 'Type', 'Category', 'Status'].map(h => (
+                                        <th key={h} style={{ padding: '9px 14px', textAlign: 'left', fontSize: 11, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1px solid #e2e8f0', whiteSpace: 'nowrap' }}>{h}</th>
+                                      ))}
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {owner.visibleProps.map((p, pi) => {
+                                      const isNightly = p._rentalType === 'nightly';
+                                      const isMonthly = p._rentalType === 'monthly';
+                                      const priceVal  = p.price || p.base_rate || p.rent || p.monthly_rent;
+                                      return (
+                                        <tr key={pi} style={{ borderBottom: '1px solid #f1f5f9', background: pi % 2 === 0 ? '#fff' : '#fafafa' }}>
+                                          <td style={{ padding: '9px 14px', color: '#94a3b8', fontSize: 11 }}>{p.id || pi + 1}</td>
+                                          <td style={{ padding: '9px 14px', fontWeight: 500, color: '#1e293b' }}>
+                                            {p.property_name || p.name || '—'}
+                                          </td>
+                                          <td style={{ padding: '9px 14px', color: '#475569', maxWidth: 220 }}>
+                                            <div style={{ fontSize: 12, fontWeight: 500 }}>{p.city || '—'}</div>
+                                            <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>{p.address || ''}</div>
+                                          </td>
+                                          <td style={{ padding: '9px 14px', fontWeight: 600, color: '#c2772b', whiteSpace: 'nowrap' }}>
+                                            {priceVal ? `₹${Number(priceVal).toLocaleString('en-IN')}` : '—'}
+                                          </td>
+                                          <td style={{ padding: '9px 14px' }}>
+                                            {isNightly ? (
+                                              <span style={{ background: '#eff6ff', color: '#2563eb', borderRadius: 20, padding: '2px 9px', fontSize: 11, border: '1px solid #bfdbfe' }}>🌙 Nightly</span>
+                                            ) : isMonthly ? (
+                                              <span style={{ background: '#f0fdf4', color: '#16a34a', borderRadius: 20, padding: '2px 9px', fontSize: 11, border: '1px solid #bbf7d0' }}>📅 Monthly</span>
+                                            ) : (
+                                              <span style={{ background: '#f1f5f9', color: '#475569', borderRadius: 20, padding: '2px 9px', fontSize: 11 }}>—</span>
+                                            )}
+                                          </td>
+                                          <td style={{ padding: '9px 14px' }}>
+                                            <span style={{ background: '#f1f5f9', color: '#475569', borderRadius: 20, padding: '2px 9px', fontSize: 11 }}>
+                                              {p.property_category || p.category || p.property_type || '—'}
+                                            </span>
+                                          </td>
+                                          <td style={{ padding: '9px 14px' }}>
+                                            <span style={{ background: (p.is_active === true || p.status === 'active') ? '#dcfce7' : '#fee2e2', color: (p.is_active === true || p.status === 'active') ? '#166534' : '#991b1b', borderRadius: 20, padding: '2px 9px', fontSize: 11 }}>
+                                              {(p.is_active === true || p.status === 'active') ? 'Active' : 'Inactive'}
+                                            </span>
+                                          </td>
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                </table>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>

@@ -259,6 +259,7 @@ export default function OwnerVerificationForm() {
         body: formData,
       });
       const data = await res.json();
+      // const datasheet= await axios.get()
       console.log('Backend response:', data);
       if (!res.ok) throw new Error(data.message || 'Submission failed');
       setSuccess(true);
