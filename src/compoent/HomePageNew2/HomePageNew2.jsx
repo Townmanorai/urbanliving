@@ -206,13 +206,13 @@ export default function HomePageNew2() {
 
         {/* ── TRUST BAR ── */}
         <div style={{ margin: '0 14px', background: '#fff', borderRadius: 18, padding: '14px 16px', border: '1px solid #f0e8da', boxShadow: '0 2px 12px rgba(194,119,43,0.08)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
             {[['🛡️','Zero Brokerage','No hidden fees'],['⚡','Instant Move-in','Ready today'],['✅','Verified','All listings checked'],['🏠','500+ Listings','Across NCR']].map(([ic,lb,desc]) => (
-              <div key={lb} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div key={lb} style={{ width: '50%', boxSizing: 'border-box', padding: '6px 8px 6px 0', display: 'flex', alignItems: 'center', gap: 7 }}>
                 <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>{ic}</span>
                 <div>
-                  <div style={{ fontSize: '0.65rem', color: '#1a1209', fontWeight: 700, lineHeight: 1.2 }}>{lb}</div>
-                  <div style={{ fontSize: '0.55rem', color: '#8a6a3a' }}>{desc}</div>
+                  <div style={{ fontSize: '0.64rem', color: '#1a1209', fontWeight: 700, lineHeight: 1.2 }}>{lb}</div>
+                  <div style={{ fontSize: '0.54rem', color: '#8a6a3a' }}>{desc}</div>
                 </div>
               </div>
             ))}
