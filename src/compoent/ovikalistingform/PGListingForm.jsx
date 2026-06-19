@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import "./pg-listing-form.css";
 import { AuthContext } from "../Login/AuthContext";
@@ -340,6 +340,79 @@ const PGListingForm = () => {
   const [phoneOtp, setPhoneOtp] = useState("");
   const [otpClientId, setOtpClientId] = useState(null);
 
+  // ── Address autocomplete (Nominatim / OpenStreetMap) ─────────────────────
+  const [addrSuggestions, setAddrSuggestions] = useState([]);
+  const [addrLoading, setAddrLoading]         = useState(false);
+  const [showAddrDrop, setShowAddrDrop]       = useState(false);
+  const [addrAutoFilled, setAddrAutoFilled]   = useState(false); // skip city/state validation when autocompleted
+  const addrTimer   = useRef(null);
+  const addrWrapRef = useRef(null);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (addrWrapRef.current && !addrWrapRef.current.contains(e.target)) setShowAddrDrop(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const handleAddressInput = (e) => {
+    const val = e.target.value;
+    setAddrAutoFilled(false); // user typing manually — re-enable validation
+    setForm(f => ({ ...f, address: val }));
+    if (addrTimer.current) clearTimeout(addrTimer.current);
+    if (val.trim().length < 3) { setAddrSuggestions([]); setShowAddrDrop(false); setAddrLoading(false); return; }
+    setAddrLoading(true);
+    addrTimer.current = setTimeout(async () => {
+      try {
+        // Search all place types: shops, landmarks, roads, areas — everything
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(val)}&format=json&addressdetails=1&namedetails=1&limit=8&countrycodes=in&dedupe=1`,
+          { headers: { 'Accept-Language': 'en' } }
+        );
+        const data = await res.json();
+        setAddrSuggestions(data);
+        setShowAddrDrop(data.length > 0);
+      } catch (_) {}
+      setAddrLoading(false);
+    }, 280);
+  };
+
+  const selectAddrSuggestion = (item) => {
+    const a = item.address || {};
+
+    // City: prefer city > town > village > county
+    const city = a.city || a.town || a.village || a.county || a.state_district || '';
+    const pincode = a.postcode || '';
+
+    // Full local address: shop/POI name + house no + road + locality
+    // item.name = actual place name (shop, landmark, building, etc.)
+    const poiName = item.name && item.name !== a.road ? item.name : null;
+    const localParts = [
+      poiName,
+      a.house_number,
+      a.road || a.pedestrian || a.footway || a.path,
+      a.suburb || a.neighbourhood || a.quarter || a.residential || a.hamlet || a.village,
+    ].filter(Boolean);
+
+    // If we got good local parts use them, else take first 3 comma parts of display_name
+    const fullAddr = localParts.length >= 2
+      ? localParts.join(', ')
+      : item.display_name.split(',').slice(0, 3).join(',').trim();
+
+    setAddrAutoFilled(true); // city/state are set in separate field — skip inline validation
+    setForm(f => ({
+      ...f,
+      address:    fullAddr,
+      city:       city || f.city,
+      postalCode: pincode || f.postalCode,
+      latitude:   item.lat  || f.latitude,
+      longitude:  item.lon  || f.longitude,
+    }));
+    setAddrSuggestions([]);
+    setShowAddrDrop(false);
+  };
+
   // ── isPG shorthand ────────────────────────────────────────────────────────
   const isPG = isPGCategory(form.propertyCategory);
 
@@ -371,7 +444,7 @@ const PGListingForm = () => {
       if (!form.title.trim()) err.title = "Required";
       if (!form.city.trim()) err.city = "Required";
       if (!form.address.trim()) err.address = "Required";
-      else { const hit = addressContainsCityOrState(form.address); if (hit) err.address = `City/state name "${hit}" not allowed in address. Use the City field below.`; }
+      else if (!addrAutoFilled) { const hit = addressContainsCityOrState(form.address); if (hit) err.address = `City/state name "${hit}" not allowed in address. Use the City field below.`; }
     }
     setErrors(err);
     return Object.keys(err).length === 0;
@@ -650,9 +723,56 @@ const PGListingForm = () => {
                   <label>Short Description *</label>
                   <textarea name="mainDescription" value={form.mainDescription} onChange={handleChange} rows="2" placeholder="Tell us about the highlights of your property..." />
                 </div>
-                <div className="field-group full">
+                <div className="field-group full" ref={addrWrapRef} style={{ position: 'relative' }}>
                   <label>Full Address *</label>
-                  <textarea name="address" value={form.address} onChange={handleChange} rows="3" placeholder="Street, Sector, Locality..." style={errors.address ? { borderColor: '#ef4444' } : {}} />
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      name="address"
+                      value={form.address}
+                      onChange={handleAddressInput}
+                      onFocus={() => addrSuggestions.length > 0 && setShowAddrDrop(true)}
+                      placeholder="Start typing street, locality, area..."
+                      autoComplete="off"
+                      style={errors.address ? { borderColor: '#ef4444', width: '100%', boxSizing: 'border-box' } : { width: '100%', boxSizing: 'border-box' }}
+                    />
+                    {addrLoading && (
+                      <span style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', fontSize: 12, color: '#94a3b8' }}>
+                        Searching...
+                      </span>
+                    )}
+                  </div>
+                  {showAddrDrop && addrSuggestions.length > 0 && (
+                    <ul style={{
+                      position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 999,
+                      background: '#fff', border: '1.5px solid #e2e8f0', borderRadius: 12,
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.10)', margin: '4px 0 0', padding: 0,
+                      listStyle: 'none', overflow: 'hidden',
+                    }}>
+                      {addrSuggestions.map((item, idx) => (
+                        <li
+                          key={idx}
+                          onMouseDown={() => selectAddrSuggestion(item)}
+                          style={{
+                            padding: '10px 14px', cursor: 'pointer', fontSize: 13,
+                            color: '#334155', borderBottom: idx < addrSuggestions.length - 1 ? '1px solid #f1f5f9' : 'none',
+                            display: 'flex', alignItems: 'flex-start', gap: 10,
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.background = '#fef4e6'}
+                          onMouseLeave={e => e.currentTarget.style.background = ''}
+                        >
+                          <MapPin size={14} style={{ color: '#c2772b', marginTop: 3, flexShrink: 0 }} />
+                          <span style={{ flex: 1, minWidth: 0 }}>
+                            <span style={{ fontWeight: 600, color: '#1e293b', display: 'block', lineHeight: 1.3 }}>
+                              {item.name || item.display_name.split(',')[0]}
+                            </span>
+                            <span style={{ color: '#64748b', fontSize: 11.5, display: 'block', marginTop: 2, lineHeight: 1.4 }}>
+                              {item.display_name.split(',').slice(1, 5).join(', ').trim()}
+                            </span>
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                   {errors.address && <span style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px', display: 'block' }}>{errors.address}</span>}
                 </div>
                 <div className="field-group">
