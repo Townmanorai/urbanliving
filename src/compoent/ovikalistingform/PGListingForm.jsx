@@ -1,28 +1,99 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useSearchParams } from "react-router-dom";
 import "./pg-listing-form.css";
 import { AuthContext } from "../Login/AuthContext";
 import { useStepBackNav } from "../../utils/useStepBackNav";
 import { compressImage } from "../../utils/compressImage";
 import CityDropdown, { addressContainsCityOrState } from "./CityDropdown";
-import { 
-  Building, 
-  Home, 
-  Hotel, 
-  Users, 
-  MapPin, 
-  Info, 
-  FileText, 
-  Camera, 
-  CreditCard, 
-  ShieldCheck,
-  Zap,
-  Wifi,
-  Trash2,
-  CheckCircle2,
-  ToggleLeft,
-  ToggleRight,
-  Plus
+import {
+  Building, Home, Hotel, Users, MapPin, Info, FileText, Camera, CreditCard, ShieldCheck,
+  Zap, Wifi, Trash2, CheckCircle2, ToggleLeft, ToggleRight, Plus,
+  Eye, Shield, Flame, Phone, ArrowUpDown, Waves, Dumbbell, UtensilsCrossed,
+  Wind, Tv, Shirt, Package, Leaf, TreePine,
+  Car, Sun, Droplets, Lightbulb, Footprints, BookOpen, Gamepad2, BedDouble,
+  Coffee, Microwave, CircleDot, ShowerHead, Bath,
+  Lock, DoorOpen, AlertTriangle, Cpu, ShoppingBag, Drill, Recycle,
+  Battery, Table2, PawPrint, Star, KeyRound, Thermometer, Utensils, CupSoda
 } from "lucide-react";
+
+const S = 18; // icon size
+const AMENITY_ICONS = {
+  // Safety & Security
+  'CCTV':                  <Eye size={S} />,
+  'Security Guard':        <Shield size={S} />,
+  'Fire Extinguisher':     <Flame size={S} />,
+  'Intercom':              <Phone size={S} />,
+  'Biometric Entry':       <CircleDot size={S} />,
+  'Gated Community':       <Lock size={S} />,
+  'Fire Alarm':            <AlertTriangle size={S} />,
+  'Sprinklers':            <Droplets size={S} />,
+  'Sprinkler':             <Droplets size={S} />,
+  'Smoke Detectors':       <AlertTriangle size={S} />,
+  'Emergency Exit':        <DoorOpen size={S} />,
+  'Electronic Entry Lock': <KeyRound size={S} />,
+  'Electronic Bedroom Lock':<Lock size={S} />,
+  // Modern Living
+  'Lift':                  <ArrowUpDown size={S} />,
+  'Power Backup':          <Lightbulb size={S} />,
+  'Wi-Fi':                 <Wifi size={S} />,
+  'Swimming Pool':         <Waves size={S} />,
+  'Gym':                   <Dumbbell size={S} />,
+  'Clubhouse':             <Building size={S} />,
+  'Club House':            <Building size={S} />,
+  'Modular Kitchen':       <UtensilsCrossed size={S} />,
+  'Chimney':               <Thermometer size={S} />,
+  'Central AC':            <Wind size={S} />,
+  'Smart Home Tech':       <Cpu size={S} />,
+  'EV Charging Point':     <Zap size={S} />,
+  'Vending Machine':       <CupSoda size={S} />,
+  // Basic Utilities
+  'Water Supply 24/7':     <Droplets size={S} />,
+  'Borewell':              <Drill size={S} />,
+  'Corporation Water':     <Droplets size={S} />,
+  'Gas Pipeline':          <Flame size={S} />,
+  'Solar Water':           <Sun size={S} />,
+  'Reserved Parking':      <Car size={S} />,
+  'Visitor Parking':       <Car size={S} />,
+  'STP Plant':             <Recycle size={S} />,
+  'Waste Management':      <Recycle size={S} />,
+  // Indoor Features
+  'Air Conditioner':       <Wind size={S} />,
+  'Geyser':                <ShowerHead size={S} />,
+  'RO Water':              <Droplets size={S} />,
+  'Washing Machine':       <Shirt size={S} />,
+  'Refrigerator':          <Package size={S} />,
+  'Inverter':              <Battery size={S} />,
+  'Wardrobe':              <ShoppingBag size={S} />,
+  'Study Table':           <Table2 size={S} />,
+  'Smart TV':              <Tv size={S} />,
+  'Google TV':             <Tv size={S} />,
+  'Gas Stove':             <Flame size={S} />,
+  'Dishwasher':            <Waves size={S} />,
+  'Microwave':             <Microwave size={S} />,
+  'Iron & Board':          <Shirt size={S} />,
+  // Bathroom
+  'Bath Towels':           <Bath size={S} />,
+  'Soap & Shampoo':        <Droplets size={S} />,
+  // Kitchen Appliances
+  'Electric Kettle':       <Coffee size={S} />,
+  'Hob':                   <Flame size={S} />,
+  'Toaster':               <Zap size={S} />,
+  'Rice Cooker':           <UtensilsCrossed size={S} />,
+  'Coffee Maker':          <Coffee size={S} />,
+  'Induction Cooktop':     <Flame size={S} />,
+  'Dining Counter':        <Utensils size={S} />,
+  'Cooking utensils':      <Utensils size={S} />,
+  // Outer Spaces
+  'Balcony':               <Home size={S} />,
+  'Private Terrace':       <Sun size={S} />,
+  'Garden':                <Leaf size={S} />,
+  'Park Area':             <TreePine size={S} />,
+  'Pet Area':              <PawPrint size={S} />,
+  'Kids Play Area':        <Star size={S} />,
+  'Jogging Track':         <Footprints size={S} />,
+  'Library':               <BookOpen size={S} />,
+  'Indoor Games Area':     <Gamepad2 size={S} />,
+};
 
 const API_BASE = "https://www.townmanor.ai/api";
 
@@ -76,7 +147,7 @@ const HOUSE_RULES = ["Smoking Allowed", "Pets Allowed", "Events Allowed", "Drink
 const WINDOW_TYPES = ["Normal", "Large / Full Sized", "French Windows", "Bay Windows", "No Window", "Sky Light"];
 
 const FURNISHING_STATUS = ["Unfurnished", "Semi-Furnished", "Fully Furnished"];
-const SHARING_TYPES = ["Private Room", "Double Sharing", "Triple Sharing", "Four Sharing", "Five Sharing", "Dormitory"];
+const SHARING_TYPES = ["Single Room", "Double Sharing", "Triple Sharing", "Four Sharing", "Five Sharing", "Dormitory"];
 const TENANT_PREFERENCES = ["Bachelors (Any)", "Bachelors (Female Only)", "Bachelors (Male Only)", "Family", "Working Professionals", "Students Only", "No Preference"];
 const CANCELLATION_POLICIES = ["Flexible: Full refund 1 day prior", "Moderate: Full refund 5 days prior", "Strict: 50% refund 7 days prior", "No Refund"];
 const FACING_OPTIONS = ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"];
@@ -156,17 +227,22 @@ function isAcceptedFile(file) {
 
 const PGListingForm = () => {
   const { user } = useContext(AuthContext);
+  const [searchParams] = useSearchParams();
+
+  const VALID_CATS = ["Apartments & Villas", "PG & Co-Living", "Signature Stays", "Hotel Stays", "Homestays & BnB"];
+  const urlCategory = searchParams.get('category');
+  const initCategory = VALID_CATS.includes(urlCategory) ? urlCategory : "Apartments & Villas";
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
 
   // ── KEY NEW STATE: per-room pricing toggle (only for non-PG) ─────────────
   const [usePerRoomPricing, setUsePerRoomPricing] = useState(false);
 
   const [form, setForm] = useState({
-    propertyCategory: "Apartments & Villas",
-    propertyType: "Apartment",
+    propertyCategory: initCategory,
+    propertyType: isPGCategory(initCategory) ? "Girls PG" : "Apartment",
     title: "",
     mainDescription: "",
     address: "",
@@ -252,6 +328,7 @@ const PGListingForm = () => {
 
   const photoPreviews = useFilePreviews();
   const [coverIndex, setCoverIndex] = useState(0);
+  const [photoLabels, setPhotoLabels] = useState([]);
   const [aadhaarNumber, setAadhaarNumber] = useState("");
   const [aadhaarVerified, setAadhaarVerified] = useState(false);
   const [isVerifyingAadhaar, setIsVerifyingAadhaar] = useState(false);
@@ -273,7 +350,6 @@ const PGListingForm = () => {
   }, [form.propertyCategory]);
 
   const STEPS = [
-    { id: 0, title: "Category", icon: <Zap size={18} /> },
     { id: 1, title: "Info", icon: <Info size={18} /> },
     { id: 2, title: "Details", icon: <FileText size={18} /> },
     { id: 3, title: "Amenities", icon: <Wifi size={18} /> },
@@ -310,13 +386,24 @@ const PGListingForm = () => {
     setForm(f => ({ ...f, amenities: { ...f.amenities, [a]: !f.amenities[a] } }));
   };
 
-  const nextStep = () => { if(validateStep(step)) setStep(s => Math.min(s+1, STEPS.length-1)); window.scrollTo(0, 0); };
-  const prevStep = () => { setStep(s => Math.max(s-1, 0)); window.scrollTo(0, 0); };
+  const nextStep = () => { if(validateStep(step)) setStep(s => Math.min(s+1, 7)); window.scrollTo(0, 0); };
+  const prevStep = () => { setStep(s => Math.max(s-1, 1)); window.scrollTo(0, 0); };
   useStepBackNav(step, prevStep);
 
   const handlePhotos = (e) => {
     const files = Array.from(e.target.files).filter(isAcceptedFile);
     photoPreviews.update(files);
+    setPhotoLabels(prev => [...prev, ...files.map(() => '')]);
+  };
+
+  const handleRemovePhoto = (i) => {
+    photoPreviews.remove(i);
+    setPhotoLabels(prev => prev.filter((_, idx) => idx !== i));
+    if (coverIndex >= i && coverIndex > 0) setCoverIndex(c => c - 1);
+  };
+
+  const handlePhotoLabel = (i, val) => {
+    setPhotoLabels(prev => { const n = [...prev]; n[i] = val; return n; });
   };
 
   // ── Room field updater ────────────────────────────────────────────────────
@@ -433,7 +520,7 @@ const PGListingForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    if (!aadhaarVerified || !isPhoneVerified) return alert("Please complete verification");
+    if (!isPG && (!aadhaarVerified || !isPhoneVerified)) return alert("Please complete verification");
     setIsSubmitting(true);
 
     try {
@@ -498,6 +585,10 @@ const PGListingForm = () => {
       const photoFiles = photoPreviews.previews.filter(p => p?.file).map(p => p.file);
       const compressed = await Promise.all(photoFiles.map(f => compressImage(f)));
       compressed.forEach(f => fd.append("photos", f));
+      // Photo room labels — same order as photos array
+      fd.append("photo_labels", JSON.stringify(
+        photoPreviews.previews.map((_, i) => photoLabels[i] || '')
+      ));
 
       const res = await fetch(`${API_BASE}/ovika/properties/upload`, {
         method: "POST",
@@ -529,9 +620,9 @@ const PGListingForm = () => {
              <p>Market your property to thousands of high-quality tenants</p>
           </div>
           <div className="stepper-horizontal">
-            {STEPS.map((s, i) => (
-              <div key={s.id} className={`step-item ${i === step ? 'active' : i < step ? 'completed' : ''}`}>
-                <div className="icon-box">{i < step ? <CheckCircle2 size={16} /> : s.icon}</div>
+            {STEPS.map((s) => (
+              <div key={s.id} className={`step-item ${s.id === step ? 'active' : s.id < step ? 'completed' : ''}`}>
+                <div className="icon-box">{s.id < step ? <CheckCircle2 size={16} /> : s.icon}</div>
                 <span>{s.title}</span>
               </div>
             ))}
@@ -539,28 +630,6 @@ const PGListingForm = () => {
         </div>
 
         <div className="form-main-card">
-          {/* ── STEP 0: Category ─────────────────────────────────────────────── */}
-          {step === 0 && (
-            <div className="step-fade">
-              <h2 className="step-title">Select Property Category</h2>
-              <div className="category-grid">
-                 {PROPERTY_CATEGORIES.map(cat => (
-                   <div 
-                    key={cat.id} 
-                    className={`category-card ${form.propertyCategory === cat.id ? 'active' : ''}`}
-                    onClick={() => setForm(f => ({ ...f, propertyCategory: cat.id }))}
-                   >
-                     <div className="cat-icon">{cat.icon}</div>
-                     <div className="cat-info">
-                        <h3>{cat.label}</h3>
-                        <p>{cat.sub}</p>
-                     </div>
-                   </div>
-                 ))}
-              </div>
-            </div>
-          )}
-
           {/* ── STEP 1: Basic Info ───────────────────────────────────────────── */}
           {step === 1 && (
             <div className="step-fade">
@@ -910,54 +979,27 @@ const PGListingForm = () => {
                 </div>
                 {/* ── END BATHROOM SECTION ── */}
 
-                {/* ── MAXIMUM GUESTS ── */}
+                {!isPG && (
                 <div className="field-group full">
-                  <div className="section-subtitle" style={{ marginTop: '24px' }}>
-                    Maximum Guests Allowed
-                  </div>
-                  <div style={{
-                    border: '1px solid #e5e7eb', borderRadius: '10px',
-                    padding: '16px', background: '#fafafa',
-                  }}>
-                    <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '12px' }}>
-                      How many guests can stay at this property at once?
-                    </p>
+                  <div className="section-subtitle" style={{ marginTop: '24px' }}>Maximum Guests Allowed</div>
+                  <div style={{ border: '1px solid #e5e7eb', borderRadius: '10px', padding: '16px', background: '#fafafa' }}>
+                    <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '12px' }}>How many guests can stay at this property at once?</p>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                      <button
-                        type="button"
-                        onClick={() => setForm(f => ({ ...f, maxGuests: Math.max(1, (Number(f.maxGuests) || 1) - 1) }))}
-                        disabled={form.maxGuests <= 1}
-                        style={{
-                          width: '40px', height: '40px', borderRadius: '50%',
-                          border: '1.5px solid #d1d5db', background: '#fff',
-                          fontSize: '1.3rem', cursor: form.maxGuests <= 1 ? 'not-allowed' : 'pointer',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontWeight: '700', color: form.maxGuests <= 1 ? '#ccc' : '#374151',
-                        }}
-                      >−</button>
-                      <span style={{ fontSize: '1.5rem', fontWeight: '700', minWidth: '2.5rem', textAlign: 'center', color: '#1e293b' }}>
-                        {form.maxGuests || 1}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setForm(f => ({ ...f, maxGuests: (Number(f.maxGuests) || 1) + 1 }))}
-                        style={{
-                          width: '40px', height: '40px', borderRadius: '50%',
-                          border: '1.5px solid #c98b3e', background: '#c98b3e',
-                          fontSize: '1.3rem', cursor: 'pointer',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontWeight: '700', color: '#fff',
-                        }}
-                      >+</button>
+                      <button type="button" onClick={() => setForm(f => ({ ...f, maxGuests: Math.max(1, (Number(f.maxGuests) || 1) - 1) }))} disabled={form.maxGuests <= 1} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1.5px solid #d1d5db', background: '#fff', fontSize: '1.3rem', cursor: form.maxGuests <= 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: form.maxGuests <= 1 ? '#ccc' : '#374151' }}>−</button>
+                      <span style={{ fontSize: '1.5rem', fontWeight: '700', minWidth: '2.5rem', textAlign: 'center', color: '#1e293b' }}>{form.maxGuests || 1}</span>
+                      <button type="button" onClick={() => setForm(f => ({ ...f, maxGuests: (Number(f.maxGuests) || 1) + 1 }))} style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1.5px solid #c98b3e', background: '#c98b3e', fontSize: '1.3rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: '#fff' }}>+</button>
                       <span style={{ fontSize: '13px', color: '#6b7280' }}>guests</span>
                     </div>
                   </div>
                 </div>
+                )}
 
+                {!isPG && (
                 <div className="field-group">
                   <label>Total Built-up Area (Sq Ft) *</label>
                   <input type="number" name="area" value={form.area} onChange={handleChange} placeholder="Total house area" />
                 </div>
+                )}
                 <div className="field-group">
                   <label>Overall Furnishing</label>
                   <select name="furnishing" value={form.furnishing} onChange={e => {
@@ -1001,12 +1043,20 @@ const PGListingForm = () => {
                       <h4>{group}</h4>
                       <div className="chips-grid">
                         {list.map(a => (
-                          <div 
-                           key={a} 
+                          <div
+                           key={a}
                            className={`amenity-chip ${form.amenities[a] ? 'selected' : ''}`}
                            onClick={() => handleAmenityToggle(a)}
                           >
-                            {form.amenities[a] && <CheckCircle2 size={14} className="check-icon" />}
+                            {form.amenities[a] ? (
+                              <span style={{ display:'flex', alignItems:'center', justifyContent:'center', width: 30, height: 30, borderRadius: 8, background: '#fff', color: '#c98b3e', flexShrink: 0 }}>
+                                <CheckCircle2 size={18} />
+                              </span>
+                            ) : AMENITY_ICONS[a] ? (
+                              <span style={{ display:'flex', alignItems:'center', justifyContent:'center', width: 30, height: 30, borderRadius: 8, background: 'rgba(201,139,62,0.15)', color: '#c98b3e', flexShrink: 0 }}>
+                                {AMENITY_ICONS[a]}
+                              </span>
+                            ) : null}
                             {a}
                           </div>
                         ))}
@@ -1067,28 +1117,66 @@ const PGListingForm = () => {
               <div className="preview-grid">
                  {photoPreviews.previews.map((p, i) => (
                    <div key={i} className={`preview-item ${coverIndex === i ? 'is-cover' : ''}`}>
-                      <img src={p.url} alt="prop" />
-                      <div className="preview-overlay-fixed">
-                         <div className="top-actions">
-                            <button 
-                              type="button" 
-                              className="remove-btn-premium" 
-                              onClick={(e) => { e.stopPropagation(); photoPreviews.remove(i); }}
-                              title="Delete Photo"
-                            >
-                               <Trash2 size={14} />
-                               <span>Delete</span>
-                            </button>
-                         </div>
-                         <div className="bottom-actions">
-                            <div 
-                              className={`badge-cover-premium ${coverIndex === i ? 'active' : ''}`} 
-                              onClick={() => setCoverIndex(i)}
-                            >
-                              {coverIndex === i ? 'Main Cover' : 'Set as Cover'}
-                            </div>
-                         </div>
+                      <div className="preview-item-img-wrap">
+                        <img src={p.url} alt="prop" />
+                        <div className="preview-overlay-fixed">
+                           <div className="top-actions">
+                              <button
+                                type="button"
+                                className="remove-btn-premium"
+                                onClick={(e) => { e.stopPropagation(); handleRemovePhoto(i); }}
+                                title="Delete Photo"
+                              >
+                                 <Trash2 size={14} />
+                                 <span>Delete</span>
+                              </button>
+                           </div>
+                           <div className="bottom-actions">
+                              <div
+                                className={`badge-cover-premium ${coverIndex === i ? 'active' : ''}`}
+                                onClick={() => setCoverIndex(i)}
+                              >
+                                {coverIndex === i ? 'Main Cover' : 'Set as Cover'}
+                              </div>
+                           </div>
+                        </div>
                       </div>
+                      {/* Room label dropdown */}
+                      <select
+                        value={photoLabels[i] || ''}
+                        onChange={(e) => handlePhotoLabel(i, e.target.value)}
+                        style={{
+                          width: '100%',
+                          border: '1.5px solid #e2e8f0',
+                          borderTop: 'none',
+                          borderRadius: '0 0 10px 10px',
+                          padding: '8px 10px',
+                          fontSize: 12,
+                          color: photoLabels[i] ? '#1e293b' : '#9ca3af',
+                          background: '#f9fafb',
+                          cursor: 'pointer',
+                          outline: 'none',
+                        }}
+                      >
+                        <option value="">— Tag this photo —</option>
+                        <option value="Living Room">🪑 Living Room</option>
+                        <option value="Bedroom">🛏️ Bedroom</option>
+                        <option value="Kitchen">🍳 Kitchen</option>
+                        <option value="Dining Area">🍽️ Dining Area</option>
+                        <option value="Bathroom">🚿 Bathroom</option>
+                        <option value="Common Area">🛋️ Common Area</option>
+                        <option value="Balcony">🌿 Balcony</option>
+                        <option value="Terrace">☀️ Terrace</option>
+                        <option value="Study Room">📚 Study Room</option>
+                        <option value="Entrance / Main Door">🚪 Entrance / Main Door</option>
+                        <option value="Staircase">🪜 Staircase</option>
+                        <option value="Parking">🚗 Parking</option>
+                        <option value="Garden / Outdoor">🌳 Garden / Outdoor</option>
+                        <option value="Gym">💪 Gym</option>
+                        <option value="Swimming Pool">🏊 Swimming Pool</option>
+                        <option value="Exterior / Building">🏢 Exterior / Building</option>
+                        <option value="Other">📷 Other</option>
+                      </select>
                    </div>
                  ))}
               </div>
@@ -1231,10 +1319,10 @@ const PGListingForm = () => {
                   </select>
                 </div>
 
+                {!isPG && (<>
                 <div className="field-group full">
                   <div className="section-separator">Long-term Stay Discounts</div>
                 </div>
-
                 <div className="field-group">
                   <label>90 Days Discount (%)</label>
                   <input type="number" name="discount90Days" value={form.discount90Days} onChange={handleChange} placeholder="e.g. 5" />
@@ -1243,86 +1331,39 @@ const PGListingForm = () => {
                   <label>180 Days Discount (%)</label>
                   <input type="number" name="discount180Days" value={form.discount180Days} onChange={handleChange} placeholder="e.g. 10" />
                 </div>
+                </>)}
               </div>
             </div>
           )}
 
-          {/* ── STEP 7: Verification ─────────────────────────────────────────── */}
-          {step === 7 && (
+          {/* ── STEP 7: Verification (non-PG only) ────────────────────────────── */}
+          {step === 7 && !isPG && (
             <div className="step-fade">
               <h2 className="step-title">Final Verification</h2>
               <div className="verification-box">
                  <div className="v-item">
                     <div className="v-label">Aadhaar Number (Identity)</div>
                     <div className="v-input-row">
-                       <input 
-                        placeholder="12 digit number" 
-                        value={aadhaarNumber} 
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/\D/g, '').slice(0, 12);
-                          setAadhaarNumber(val);
-                          if (aadhaarVerified) setAadhaarVerified(false);
-                        }} 
-                        disabled={isVerifyingAadhaar}
-                        style={{ borderColor: aadhaarVerified ? '#10b981' : '' }}
-                       />
-                       <button 
-                        onClick={verifyAadhaar} 
-                        disabled={aadhaarVerified || isVerifyingAadhaar || aadhaarNumber.length !== 12} 
-                        className={aadhaarVerified ? 'verified' : ''}
-                       >
+                       <input placeholder="12 digit number" value={aadhaarNumber} onChange={(e) => { const val = e.target.value.replace(/\D/g, '').slice(0, 12); setAadhaarNumber(val); if (aadhaarVerified) setAadhaarVerified(false); }} disabled={isVerifyingAadhaar} style={{ borderColor: aadhaarVerified ? '#10b981' : '' }} />
+                       <button onClick={verifyAadhaar} disabled={aadhaarVerified || isVerifyingAadhaar || aadhaarNumber.length !== 12} className={aadhaarVerified ? 'verified' : ''}>
                           {isVerifyingAadhaar ? 'Verifying...' : aadhaarVerified ? 'Verified ✓' : 'Verify Now'}
                        </button>
                     </div>
                     {aadhaarVerified && <p className="success-msg">✓ Aadhaar verification successful.</p>}
                  </div>
-
                  <div className="v-item">
                     <div className="v-label">Mobile Number Verification</div>
                     <div className="v-input-row">
-                       <input 
-                        placeholder="10 digit number" 
-                        value={phoneNumber} 
-                         onChange={(e) => {
-                           const val = e.target.value.replace(/\D/g,'').slice(0,10);
-                           setPhoneNumber(val);
-                           if (isPhoneVerified) setIsPhoneVerified(false);
-                           if (otpSent) setOtpSent(false);
-                           setPhoneOtp('');
-                         }} 
-                        disabled={isPhoneVerified || isSendingOtp}
-                        style={{ flex: 1, borderColor: isPhoneVerified ? '#10b981' : '' }}
-                       />
-                       
-                       {!otpSent && !isPhoneVerified && (
-                         <button onClick={handleSendOtp} disabled={isSendingOtp || phoneNumber.length !== 10}>
-                            {isSendingOtp ? 'Sending...' : 'Send OTP'}
-                         </button>
-                       )}
-
-                       {isPhoneVerified && (
-                         <button className="verified" disabled><CheckCircle2 size={16} /> Verified ✓</button>
-                       )}
+                       <input placeholder="10 digit number" value={phoneNumber} onChange={(e) => { const val = e.target.value.replace(/\D/g,'').slice(0,10); setPhoneNumber(val); if (isPhoneVerified) setIsPhoneVerified(false); if (otpSent) setOtpSent(false); setPhoneOtp(''); }} disabled={isPhoneVerified || isSendingOtp} style={{ flex: 1, borderColor: isPhoneVerified ? '#10b981' : '' }} />
+                       {!otpSent && !isPhoneVerified && (<button onClick={handleSendOtp} disabled={isSendingOtp || phoneNumber.length !== 10}>{isSendingOtp ? 'Sending...' : 'Send OTP'}</button>)}
+                       {isPhoneVerified && (<button className="verified" disabled><CheckCircle2 size={16} /> Verified ✓</button>)}
                     </div>
-
                     {otpSent && !isPhoneVerified && (
                       <div className="otp-container" style={{ marginTop: '15px' }}>
-                        <input 
-                          placeholder="Enter OTP" 
-                          className="otp-input"
-                          value={phoneOtp}
-                          onChange={(e) => setPhoneOtp(e.target.value.replace(/\D/g, ''))}
-                        />
-                        <button 
-                          onClick={handleVerifyOtp} 
-                          className="verify-btn"
-                          disabled={isVerifyingOtp || !phoneOtp}
-                        >
-                          {isVerifyingOtp ? 'Verifying...' : 'Verify OTP'}
-                        </button>
+                        <input placeholder="Enter OTP" className="otp-input" value={phoneOtp} onChange={(e) => setPhoneOtp(e.target.value.replace(/\D/g, ''))} />
+                        <button onClick={handleVerifyOtp} className="verify-btn" disabled={isVerifyingOtp || !phoneOtp}>{isVerifyingOtp ? 'Verifying...' : 'Verify OTP'}</button>
                       </div>
                     )}
-                    
                     {isPhoneVerified && <p className="success-msg">✓ Phone number verified successfully.</p>}
                  </div>
               </div>
@@ -1331,8 +1372,8 @@ const PGListingForm = () => {
         </div>
 
         <div className="form-footer-nav">
-           <button className="btn-back" onClick={prevStep} disabled={step === 0}>Back</button>
-           {step < STEPS.length - 1 ? (
+           <button className="btn-back" onClick={prevStep} disabled={step === 1}>Back</button>
+           {step < (isPG ? 6 : 7) ? (
              <button className="btn-next" onClick={nextStep}>Continue</button>
            ) : (
              <button className="btn-submit" onClick={handleSubmit} disabled={isSubmitting} style={{ opacity: isSubmitting ? 0.75 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}>

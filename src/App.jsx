@@ -13,6 +13,8 @@ import Dashboard from "./compoent/Dashboard/Dashboard";
 import Sucess from "./compoent/payment/Sucess";
 import Failure from "./compoent/payment/Failure";
 import ListPropertyPage from "./compoent/ListProperty/ListPropertyPage";
+import CategorySelectPage from "./compoent/ListProperty/CategorySelectPage";
+import ListingGuidePage from "./compoent/ListProperty/ListingGuidePage";
 import SelfManage from "./compoent/FourthPage/SelfManage";
 import FifthMain from "./compoent/Fifth/FifthMain";
 import Ownermain from "./Owner/Ownermain";
@@ -154,6 +156,8 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/list-property" element={<ListPropertyPage />} />
+          <Route path="/list-category" element={<CategorySelectPage />} />
+          <Route path="/listing-guide" element={<ListingGuidePage />} />
           <Route path="/success" element={<Sucess />} />
           <Route path="/failure" element={<Failure />} />
           <Route path="/selfmanage" element={<SelfManage />} />

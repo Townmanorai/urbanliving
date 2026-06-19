@@ -1,0 +1,218 @@
+.lg-root {
+  min-height: 100vh;
+  background: #fdf8f2;
+  padding: 60px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Header ── */
+.lg-header {
+  text-align: center;
+  max-width: 620px;
+  margin-bottom: 52px;
+}
+
+.lg-eyebrow {
+  display: inline-block;
+  background: #fdf2e4;
+  color: #c2772b;
+  border: 1px solid #f0d8b0;
+  border-radius: 20px;
+  padding: 5px 16px;
+  font-size: 12.5px;
+  letter-spacing: 0.05em;
+  margin-bottom: 14px;
+}
+
+.lg-title {
+  font-size: clamp(1.7rem, 3.5vw, 2.3rem);
+  color: #1e293b;
+  margin: 0 0 10px;
+  line-height: 1.25;
+}
+
+.lg-accent { color: #c2772b; }
+
+.lg-sub {
+  font-size: 15px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.65;
+}
+
+/* ── Card list ── */
+.lg-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 860px;
+}
+
+/* ── Single card ── */
+.lg-card {
+  background: #fff;
+  border: 1.5px solid #e8e0d5;
+  border-radius: 18px;
+  padding: 32px 28px;
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+.lg-card:hover {
+  border-color: #c2772b;
+  box-shadow: 0 6px 24px rgba(194,119,43,0.09);
+}
+
+/* ── Left col ── */
+.lg-card-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.lg-icon-box {
+  width: 68px;
+  height: 68px;
+  background: #fdf2e4;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c2772b;
+}
+
+.lg-tag {
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 20px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+.lg-tag--nightly {
+  background: #fdf2e4;
+  color: #c2772b;
+  border: 1px solid #f0d8b0;
+}
+
+.lg-tag--monthly {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+/* ── Right col ── */
+.lg-card-right { flex: 1; min-width: 0; }
+
+.lg-cat-title {
+  font-size: 19px;
+  color: #1e293b;
+  margin: 0 0 4px;
+}
+
+.lg-cat-sub {
+  font-size: 13px;
+  color: #c2772b;
+  margin: 0 0 12px;
+}
+
+.lg-cat-about {
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.65;
+  margin: 0 0 18px;
+}
+
+/* ── Two columns: ideal for + features ── */
+.lg-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.lg-col-head {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.lg-list-ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lg-list-ul li {
+  font-size: 13px;
+  color: #334155;
+  padding-left: 16px;
+  position: relative;
+  line-height: 1.4;
+}
+
+.lg-list-ul li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #c2772b;
+  font-size: 11px;
+  top: 1px;
+}
+
+/* ── CTA button ── */
+.lg-cta {
+  display: inline-flex;
+  align-items: center;
+  background: #c2772b;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.lg-cta:hover { background: #a8621f; }
+
+/* ── Back button ── */
+.lg-back {
+  margin-top: 36px;
+  background: none;
+  border: none;
+  color: #c2772b;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  .lg-root { padding: 40px 16px 60px; }
+
+  .lg-card {
+    flex-direction: column;
+    padding: 22px 18px;
+    gap: 16px;
+  }
+
+  .lg-card-left { flex-direction: row; align-items: center; }
+
+  .lg-two-col { grid-template-columns: 1fr; }
+
+  .lg-cat-title { font-size: 17px; }
+  .lg-cat-about { font-size: 13.5px; }
+}

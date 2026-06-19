@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useSearchParams } from "react-router-dom";
 import "./tmx9pf-form.css";
 import { AuthContext } from "../Login/AuthContext";
 import CityDropdown, { addressContainsCityOrState } from "./CityDropdown";
@@ -105,13 +106,19 @@ function isAcceptedFile(file) {
 
 const Tmx9PropertyForm = () => {
   const { user } = useContext(AuthContext);
+  const [searchParams] = useSearchParams();
+
+  const urlCategory = searchParams.get('category');
+  const initCategory = DEFAULT_PROPERTY_CATEGORIES.includes(urlCategory)
+    ? urlCategory
+    : DEFAULT_PROPERTY_CATEGORIES[0];
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [form, setForm] = useState({
     propertyType: PROPERTY_TYPES[0],
-    propertyCategory: DEFAULT_PROPERTY_CATEGORIES[0],
+    propertyCategory: initCategory,
     title: "",
     mainDescription: "",
     address: "",
@@ -760,12 +767,6 @@ const Tmx9PropertyForm = () => {
                 </select>
               </div>
 
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Category</label>
-                <select name="propertyCategory" value={form.propertyCategory} onChange={handleChange} className="tmx9pf-select">
-                  {DEFAULT_PROPERTY_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
 
               <div className="tmx9pf-field full">
                 <label className="tmx9pf-label">Listing Title *</label>

@@ -105,9 +105,9 @@ export default function Navbar() {
 
   const handleLogin = (e) => navClick(e, "/login", navigate);
   const goDashboard = (e) => { setSideMenuOpen(false); setHamburgerMenuOpen(false); navClick(e, "/dashboard", navigate); };
-  const goListingPage = () => { setSideMenuOpen(false); setHamburgerMenuOpen(false); setRentalCategoryPopup(true); };
+  const goListingPage = (e) => { setSideMenuOpen(false); setHamburgerMenuOpen(false); navClick(e || {}, "/list-category", navigate); };
   const goOwnerDashboard = (e) => { setSideMenuOpen(false); setHamburgerMenuOpen(false); navClick(e, "/admindashboard", navigate); };
-  const handleBecomeHostClick = () => setRentalCategoryPopup(true);
+  const handleBecomeHostClick = (e) => { setSideMenuOpen(false); setHamburgerMenuOpen(false); navClick(e || {}, "/list-category", navigate); };
   const goCareer = (e) => { setSideMenuOpen(false); setHamburgerMenuOpen(false); navClick(e, "/career-support", navigate); };
   const goOvikaVerified = (e) => { setSideMenuOpen(false); setHamburgerMenuOpen(false); navClick(e, "/ovika-verified", navigate); };
   const goSelfVerified  = (e) => { setSideMenuOpen(false); setHamburgerMenuOpen(false); navClick(e, "/ovika-self-verified", navigate); };
@@ -297,7 +297,7 @@ export default function Navbar() {
                       { icon: "🌙", label: "Nightly Stays", path: "/nightly-stays", action: (e) => { closeMobileMenu(); navClick(e, "/nightly-stays", navigate); } },
                       { icon: "📅", label: "Monthly Rental", path: "/monthly-rentals", action: (e) => { closeMobileMenu(); navClick(e, "/monthly-rentals", navigate); } },
                       { icon: "✨", label: "Signature Stays", path: "/properties?category=Signature+Stays", action: (e) => { closeMobileMenu(); handleSignatureStaysClick(e); } },
-                      { icon: "🏘️", label: "List Property", action: () => { closeMobileMenu(); setRentalCategoryPopup(true); } },
+                      { icon: "🏘️", label: "List Property", path: "/list-category", action: (e) => { closeMobileMenu(); navClick(e, "/list-category", navigate); } },
                       { icon: "📈", label: "ROI Calculator", path: "/roi-calculator", action: (e) => { closeMobileMenu(); navClick(e, "/roi-calculator", navigate); } },
                       { icon: "📊", label: "Profile", path: "/dashboard", action: (e) => { closeMobileMenu(); navClick(e, "/dashboard", navigate); } },
                       { icon: "🛡️", label: "Owner Dashboard", path: "/admindashboard", action: (e) => { closeMobileMenu(); navClick(e, "/admindashboard", navigate); } },
@@ -521,7 +521,7 @@ export default function Navbar() {
                 { icon: "🌙", label: "Nightly Stays", path: "/nightly-stays", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/nightly-stays", navigate); } },
                 { icon: "📅", label: "Monthly Rental", path: "/monthly-rentals", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/monthly-rentals", navigate); } },
                 { icon: "✨", label: "Signature Stays", path: "/properties?category=Signature+Stays", action: handleSignatureStaysClick },
-                { icon: "🏘️", label: "List Property", action: () => { setHamburgerMenuOpen(false); setRentalCategoryPopup(true); } },
+                { icon: "🏘️", label: "List Property", path: "/list-category", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/list-category", navigate); } },
                 { icon: "📈", label: "ROI Calculator", path: "/roi-calculator", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/roi-calculator", navigate); } },
                 { icon: "📊", label: "Profile", path: "/dashboard", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/dashboard", navigate); } },
                 { icon: "🛡️", label: "Owner Dashboard", path: "/admindashboard", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/admindashboard", navigate); } },

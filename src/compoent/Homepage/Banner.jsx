@@ -73,14 +73,7 @@ function Banner() {
           <span className='heading_design3'> Smart Living Simplified.</span> <br />Your Space!<br></br><span id='heading_design'>Your Comfort!</span>  <br></br><span id='heading_design2'>Your Freedom!</span>
           </h1>
           <p className='banner_content_p'>From shared to stylish - living spaces for every lifestyle</p>
-          {/* <div className="search-bar">
-            <div className="search-container">
-            
-              <span className="search-bar-icon"> <input type="text" placeholder="Search your location" /><IoSearch size={25} id='search-icon'/></span>
-             
-            </div>
-            <button>Search</button>
-          </div> */}
+       
         </div>
 
         <div className='backpart'>

@@ -942,6 +942,63 @@ export default function SuperAdminDashboard() {
     return cat || 'Other';
   };
 
+  /* helper: smart label + color for owner-details property table */
+  const getOwnerPropLabel = (p) => {
+    let metaObj = null;
+    try { metaObj = p.meta ? (typeof p.meta === 'string' ? JSON.parse(p.meta) : p.meta) : null; } catch (_) {}
+
+    let guestPolicy = null;
+    try { guestPolicy = p.guest_policy ? (typeof p.guest_policy === 'string' ? JSON.parse(p.guest_policy) : p.guest_policy) : null; } catch (_) {}
+
+    const subType = (metaObj?.propertyType || '').trim();
+    const cat = (p.property_category || p.category || '').trim();
+    const catLow = cat.toLowerCase();
+    const tenants = guestPolicy?.preferredTenants || metaObj?.preferredTenants || [];
+
+    // PG & Co-Living — determine gender from subType OR preferredTenants
+    if (catLow.includes('pg') || catLow.includes('co-living') || catLow.includes('coliving')) {
+      const stLow = subType.toLowerCase();
+      // Valid PG-specific subtypes only (ignore "Apartment" or other wrong defaults)
+      const isPGSubtype = ['girls', 'boys', 'co-living', 'coliving', 'hostel', 'working', 'student'].some(k => stLow.includes(k));
+
+      if (isPGSubtype) {
+        if (stLow.includes('girls')) return { label: '👩 Girls PG', bg: '#fdf2f8', color: '#be185d' };
+        if (stLow.includes('boys'))  return { label: '👦 Boys PG',  bg: '#eff6ff', color: '#2563eb' };
+        if (stLow.includes('co-living') || stLow.includes('coliving')) return { label: '🏘 Co-Living', bg: '#f0fdf4', color: '#15803d' };
+        if (stLow.includes('hostel'))   return { label: '🏨 Hostel',         bg: '#fff7ed', color: '#c2410c' };
+        if (stLow.includes('working'))  return { label: '💼 Working Pro PG', bg: '#fefce8', color: '#a16207' };
+        if (stLow.includes('student'))  return { label: '📚 Student PG',     bg: '#f5f3ff', color: '#6d28d9' };
+      }
+
+      // subType is invalid/missing — determine from preferredTenants
+      const hasFemale = tenants.some(t => t.toLowerCase().includes('female'));
+      const hasMale   = tenants.some(t => t.toLowerCase().includes('male') && !t.toLowerCase().includes('female'));
+      const hasAny    = tenants.some(t => t.toLowerCase().includes('bachelors (any)'));
+      if (hasFemale && !hasMale) return { label: '👩 Girls PG', bg: '#fdf2f8', color: '#be185d' };
+      if (hasMale && !hasFemale) return { label: '👦 Boys PG',  bg: '#eff6ff', color: '#2563eb' };
+      if (hasAny || (hasMale && hasFemale)) return { label: '👫 Boys & Girls PG', bg: '#f5f3ff', color: '#6d28d9' };
+
+      // no data at all
+      return { label: 'PG', bg: '#eff6ff', color: '#2563eb' };
+    }
+
+    // Apartments & Villas
+    if (catLow.includes('apartment') || catLow.includes('villa')) {
+      const label = subType || cat || 'Apartment';
+      return { label, bg: '#f0f9ff', color: '#0369a1' };
+    }
+
+    // Nightly types
+    if (catLow.includes('signature')) return { label: subType || 'Signature Stay', bg: '#fdf4ff', color: '#7e22ce' };
+    if (catLow.includes('hotel'))     return { label: subType || 'Hotel Stay',     bg: '#fff7ed', color: '#c2410c' };
+    if (catLow.includes('homestay') || catLow.includes('bnb') || catLow.includes('b&b'))
+      return { label: subType || 'Homestay / BnB', bg: '#f0fdf4', color: '#15803d' };
+
+    // fallback
+    const label = subType || cat || '—';
+    return { label, bg: '#f1f5f9', color: '#475569' };
+  };
+
   const getListingGrowthData = () => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const now = new Date();
@@ -3558,9 +3615,14 @@ export default function SuperAdminDashboard() {
                                             )}
                                           </td>
                                           <td style={{ padding: '9px 14px' }}>
-                                            <span style={{ background: '#f1f5f9', color: '#475569', borderRadius: 20, padding: '2px 9px', fontSize: 11 }}>
-                                              {p.property_category || p.category || p.property_type || '—'}
-                                            </span>
+                                            {(() => {
+                                              const { label, bg, color } = getOwnerPropLabel(p);
+                                              return (
+                                                <span style={{ background: bg, color, borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 500, border: `1px solid ${color}30`, whiteSpace: 'nowrap' }}>
+                                                  {label}
+                                                </span>
+                                              );
+                                            })()}
                                           </td>
                                           <td style={{ padding: '9px 14px' }}>
                                             <span style={{ background: (p.is_active === true || p.status === 'active') ? '#dcfce7' : '#fee2e2', color: (p.is_active === true || p.status === 'active') ? '#166534' : '#991b1b', borderRadius: 20, padding: '2px 9px', fontSize: 11 }}>
