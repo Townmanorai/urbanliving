@@ -6,6 +6,16 @@
 #root {
    overflow-x: hidden !important;
    background: #fff;
+   display: flex;
+   flex-direction: column;
+   min-height: 100vh;
+}
+
+/* routes wrapper grows to fill remaining space, pushing footer to bottom */
+.app-routes-wrapper {
+   flex: 1 0 auto;
+   display: flex;
+   flex-direction: column;
 }
 
 html, body {

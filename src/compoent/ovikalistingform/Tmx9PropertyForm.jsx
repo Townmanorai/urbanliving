@@ -68,6 +68,15 @@ const DEFAULT_PROPERTY_CATEGORIES = [
 
 const PROPERTY_TYPES = ["Entire place", "Private room"];
 
+// ── Homestay & BnB specific ───────────────────────────────────────────────
+const BNB_PLACE_TYPES = [
+  { id: "Entire Place",  label: "An entire place",           desc: "Guests have the whole place to themselves.", icon: "🏠" },
+  { id: "Private Room",  label: "A private room",            desc: "Guests have their own room, plus access to shared spaces.", icon: "🚪" },
+  { id: "Shared Room",   label: "A shared room in a hostel", desc: "Guests sleep in a shared room with other guests.", icon: "🛏️" },
+];
+const BNB_PROP_TYPES   = ["Homestay", "Bed & Breakfast", "Vacation Rental", "Farm Stay", "Guesthouse", "Cottage", "Villa", "Treehouse", "Tiny Home"];
+const BNB_HIGHLIGHTS   = ["Peaceful", "Unique", "Family-friendly", "Stylish", "Central", "Spacious", "Scenic", "Cozy"];
+
 function useFilePreviews() {
   const [previews, setPreviews] = useState([]);
   const update = (files) => {
@@ -113,12 +122,19 @@ const Tmx9PropertyForm = () => {
     ? urlCategory
     : DEFAULT_PROPERTY_CATEGORIES[0];
 
+  const isHomestay = initCategory === "Homestays & BnB";
+
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [form, setForm] = useState({
     propertyType: PROPERTY_TYPES[0],
     propertyCategory: initCategory,
+    bnbPlaceType: "Entire Place",
+    bnbPropType: "Homestay",
+    bnbHighlights: [],
+    newListingDiscount: false,
+    lastMinuteDiscount: false,
     title: "",
     mainDescription: "",
     address: "",
@@ -193,12 +209,15 @@ const Tmx9PropertyForm = () => {
   const [otpClientId, setOtpClientId] = useState(null);
 
   const STEPS = [
-    { id: 1, title: "Basic & Description" },
-    { id: 2, title: "Details & Amenities" },
-    { id: 3, title: "House Rules" },
-    { id: 4, title: "Photos & Media" },
-    { id: 5, title: "Pricing & Check-in" },
-    { id: 6, title: "IDs & Legal" },
+    { id: 1, title: "Your Space" },
+    { id: 2, title: "About" },
+    { id: 3, title: "Location" },
+    { id: 4, title: "Rooms" },
+    { id: 5, title: "Amenities" },
+    { id: 6, title: "Rules" },
+    { id: 7, title: "Nearby" },
+    { id: 8, title: "Photos" },
+    { id: 9, title: "Pricing" },
   ];
   const [step, setStep] = useState(0);
 
@@ -210,15 +229,21 @@ const Tmx9PropertyForm = () => {
 
   const validateForStep = (s) => {
     const newErrors = {};
-    if (s === 0) {
+
+    // s=0: Your Space — no required fields (place type has default)
+
+    if (s === 1) {
+      if (!form.title?.trim()) newErrors.title = "Title is required";
+      if (!form.mainDescription?.trim()) newErrors.mainDescription = "Description is required";
+      else if (form.mainDescription.length < 30) newErrors.mainDescription = "Description should be at least 30 characters";
+    }
+
+    if (s === 2) {
       if (!form.address?.trim()) newErrors.address = "Address is required";
       else { const hit = addressContainsCityOrState(form.address); if (hit) newErrors.address = `City/state name "${hit}" not allowed in address. Use the City field below.`; }
       if (!form.city?.trim()) newErrors.city = "City is required";
       if (!form.postalCode?.trim()) newErrors.postalCode = "Postal code is required";
       if (!form.country?.trim()) newErrors.country = "Country is required";
-      if (!form.title?.trim()) newErrors.title = "Title is required";
-      if (!form.mainDescription?.trim()) newErrors.mainDescription = "Description is required";
-      else if (form.mainDescription.length < 30) newErrors.mainDescription = "Description should be at least 30 characters";
       if (form.latitude !== "" && form.latitude !== undefined) {
         const lat = Number(form.latitude);
         if (isNaN(lat) || lat < -90 || lat > 90) newErrors.latitude = "Latitude must be between -90 and 90";
@@ -229,7 +254,7 @@ const Tmx9PropertyForm = () => {
       }
     }
 
-    if (s === 1) {
+    if (s === 3 && !isHomestay) {
       const totalBedrooms = form.bedroomDetails.reduce((sum, item) => sum + (Number(item.count) || 0), 0);
       const totalBathrooms = form.bathroomDetails.reduce((sum, item) => sum + (Number(item.count) || 0), 0);
       if (totalBedrooms <= 0) newErrors.bedrooms = "At least one bedroom is required";
@@ -241,28 +266,27 @@ const Tmx9PropertyForm = () => {
       else if (form.area.length > 20) newErrors.area = "Area should not exceed 20 characters";
     }
 
-    if (s === 2) {
+    // s=4: Amenities — optional
+    // s=6: Nearby & Tips — optional
+
+    if (s === 5) {
       if (!form.checkInTime) newErrors.checkInTime = "Check-in time required";
       if (!form.checkOutTime) newErrors.checkOutTime = "Check-out time required";
       if (form.maxGuests === "" || form.maxGuests < 1) newErrors.maxGuests = "Max guests must be at least 1";
     }
 
-    if (s === 3) {
+    if (s === 7) {
       if (photoPreviews.previews.length === 0) newErrors.photos = "At least one photo is required";
     }
 
-    if (s === 4) {
+    if (s === 8) {
       if (!form.baseRate && form.baseRate !== 0) newErrors.baseRate = "Base rate is required";
       if (form.baseRate && Number(form.baseRate) <= 0) newErrors.baseRate = "Rate must be positive";
       if (form.weeklyDiscountPct && (form.weeklyDiscountPct < 0 || form.weeklyDiscountPct > 100)) newErrors.weeklyDiscountPct = "Discount must be between 0 and 100";
       if (!form.selfCheckIn?.trim()) newErrors.selfCheckIn = "Please select self-check-in availability";
       if (form.bookingType !== 0 && form.bookingType !== 1) newErrors.bookingType = "Please select booking type";
+      if (!isHomestay && !aadhaarVerified) newErrors.idFiles = "Please verify your Aadhaar number";
     }
-
-    if (s === 5) {
-      if (!aadhaarVerified) newErrors.idFiles = "Please verify your Aadhaar number";
-    }
-    
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -755,76 +779,319 @@ const Tmx9PropertyForm = () => {
       </header>
 
       <div className="tmx9pf-card">
-        {/* STEP 0 */}
+
+        {/* ── STEP 0: Your Space ── */}
         {step === 0 && (
           <section className="tmx9pf-section">
-            <h2 className="tmx9pf-section-title">Basic Property Information &amp; Description</h2>
-            <div className="tmx9pf-grid">
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Property Type</label>
-                <select name="propertyType" value={form.propertyType} onChange={handleChange} className="tmx9pf-select">
-                  {PROPERTY_TYPES.map((p) => <option key={p} value={p}>{p}</option>)}
-                </select>
+            <h2 className="tmx9pf-section-title">{isHomestay ? "Which best describes your place?" : "Property Type"}</h2>
+            {isHomestay ? (
+              <>
+                <div className="bnb-place-types" style={{marginBottom:24}}>
+                  {BNB_PLACE_TYPES.map(pt => (
+                    <div key={pt.id}
+                      className={`bnb-place-card ${form.bnbPlaceType === pt.id ? 'selected' : ''}`}
+                      onClick={() => setForm(f => ({ ...f, bnbPlaceType: pt.id }))}>
+                      <span className="bnb-place-icon">{pt.icon}</span>
+                      <div>
+                        <div className="bnb-place-title">{pt.label}</div>
+                        <div className="bnb-place-desc">{pt.desc}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{marginBottom:20}}>
+                  <div className="tmx9pf-label" style={{marginBottom:8}}>Property Type</div>
+                  <div className="bnb-chips-row">
+                    {BNB_PROP_TYPES.map(t => (
+                      <div key={t} className={`bnb-chip ${form.bnbPropType === t ? 'selected' : ''}`}
+                        onClick={() => setForm(f => ({ ...f, bnbPropType: t }))}>
+                        {t}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <div className="tmx9pf-label" style={{marginBottom:8}}>What makes your place special? <span style={{fontWeight:400,fontSize:12,color:'#9ca3af'}}>(pick up to 2)</span></div>
+                  <div className="bnb-chips-row">
+                    {BNB_HIGHLIGHTS.map(h => {
+                      const sel = form.bnbHighlights.includes(h);
+                      return (
+                        <div key={h} className={`bnb-chip ${sel ? 'selected' : ''}`}
+                          onClick={() => setForm(f => {
+                            const arr = f.bnbHighlights;
+                            return { ...f, bnbHighlights: sel ? arr.filter(x=>x!==h) : arr.length < 2 ? [...arr,h] : arr };
+                          })}>
+                          {h}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="tmx9pf-grid">
+                <div className="tmx9pf-field">
+                  <label className="tmx9pf-label">Property Type</label>
+                  <select name="propertyType" value={form.propertyType} onChange={handleChange} className="tmx9pf-select">
+                    {PROPERTY_TYPES.map((p) => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </div>
               </div>
+            )}
+          </section>
+        )}
 
-
-              <div className="tmx9pf-field full">
-                <label className="tmx9pf-label">Listing Title *</label>
-                <input name="title" value={form.title} onChange={handleChange} className={`tmx9pf-input ${errors.title ? "tmx9pf-input--error" : ""}`} placeholder="Cozy 2-Bedroom Apartment Near City Center" />
+        {/* ── STEP 1: Name & Description ── */}
+        {step === 1 && (
+          <section className="tmx9pf-section">
+            <h2 className="tmx9pf-section-title">{isHomestay ? "Give your place a title" : "Listing Title & Description"}</h2>
+            {isHomestay && <p style={{color:'#6b7280',fontSize:14,marginBottom:20,marginTop:-8}}>A catchy title helps guests find you faster.</p>}
+            <div style={{display:'flex',flexDirection:'column',gap:20}}>
+              <div className="tmx9pf-field">
+                <label className="tmx9pf-label">{isHomestay ? "Title *" : "Listing Title *"}</label>
+                <input name="title" value={form.title} onChange={handleChange}
+                  className={`tmx9pf-input ${errors.title ? "tmx9pf-input--error" : ""}`}
+                  placeholder={isHomestay ? "e.g. Cozy hillside cottage with mountain view" : "Cozy 2-Bedroom Apartment Near City Center"}
+                  maxLength={50} />
+                {isHomestay && <div style={{fontSize:11,color:'#9ca3af',marginTop:3}}>{form.title.length}/50</div>}
                 {renderError("title")}
               </div>
-
-              <div className="tmx9pf-field full">
-                <label className="tmx9pf-label">Property Description *</label>
-                <textarea name="mainDescription" value={form.mainDescription} onChange={handleChange} rows="4" className={`tmx9pf-textarea ${errors.mainDescription ? "tmx9pf-input--error" : ""}`} />
+              <div className="tmx9pf-field">
+                <label className="tmx9pf-label">{isHomestay ? "Describe your place *" : "Property Description *"}</label>
+                <textarea name="mainDescription" value={form.mainDescription} onChange={handleChange}
+                  rows={isHomestay ? 6 : 5}
+                  className={`tmx9pf-textarea ${errors.mainDescription ? "tmx9pf-input--error" : ""}`}
+                  placeholder={isHomestay ? "Share what makes your place special — views, vibes, what guests love most..." : "Describe your property in detail..."}
+                  maxLength={500} />
+                {isHomestay && <div style={{fontSize:11,color:'#9ca3af',marginTop:3}}>{form.mainDescription.length}/500</div>}
                 {renderError("mainDescription")}
               </div>
+            </div>
+          </section>
+        )}
 
+        {/* ── STEP 2: Location ── */}
+        {step === 2 && (
+          <section className="tmx9pf-section">
+            <h2 className="tmx9pf-section-title">Where is your place located?</h2>
+            <div className="tmx9pf-grid">
               <div className="tmx9pf-field full">
-                <label className="tmx9pf-label">Address *</label>
-                <input placeholder="Street" name="address" value={form.address} onChange={handleChange} className={`tmx9pf-input ${errors.address ? "tmx9pf-input--error" : ""}`} />
+                <label className="tmx9pf-label">Street Address *</label>
+                <input placeholder="Street / Building name" name="address" value={form.address} onChange={handleChange} className={`tmx9pf-input ${errors.address ? "tmx9pf-input--error" : ""}`} />
                 {renderError("address")}
               </div>
-
               <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Country *</label>
-                <input name="country" value={form.country} onChange={handleChange} className={`tmx9pf-input ${errors.country ? "tmx9pf-input--error" : ""}`} />
-                {renderError("country")}
+                <label className="tmx9pf-label">City *</label>
+                <CityDropdown value={form.city} onChange={handleChange} className="tmx9pf-input" hasError={!!errors.city} placeholder="Select City" />
+                {renderError("city")}
               </div>
-
               <div className="tmx9pf-field">
                 <label className="tmx9pf-label">ZIP / Postal Code *</label>
                 <input name="postalCode" value={form.postalCode} onChange={(e) => { const v = e.target.value.replace(/\D/g, "").slice(0, 10); setForm((s) => ({ ...s, postalCode: v })); }} maxLength={10} className={`tmx9pf-input ${errors.postalCode ? "tmx9pf-input--error" : ""}`} />
                 {renderError("postalCode")}
               </div>
-
               <div className="tmx9pf-field">
-                <label className="tmx9pf-label">City *</label>
-                <CityDropdown
-                  value={form.city}
-                  onChange={handleChange}
-                  className="tmx9pf-input"
-                  hasError={!!errors.city}
-                  placeholder="Select City"
-                />
-                {renderError("city")}
+                <label className="tmx9pf-label">Country *</label>
+                <input name="country" value={form.country} onChange={handleChange} className={`tmx9pf-input ${errors.country ? "tmx9pf-input--error" : ""}`} />
+                {renderError("country")}
               </div>
-
               <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Latitude</label>
+                <label className="tmx9pf-label">Latitude <span style={{color:'#9ca3af',fontWeight:400}}>(optional)</span></label>
                 <input type="number" step="0.000001" name="latitude" value={form.latitude} onChange={handleNumChange} className={`tmx9pf-input ${errors.latitude ? "tmx9pf-input--error" : ""}`} placeholder="e.g., 19.0760" />
                 {renderError("latitude")}
               </div>
-
               <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Longitude</label>
+                <label className="tmx9pf-label">Longitude <span style={{color:'#9ca3af',fontWeight:400}}>(optional)</span></label>
                 <input type="number" step="0.000001" name="longitude" value={form.longitude} onChange={handleNumChange} className={`tmx9pf-input ${errors.longitude ? "tmx9pf-input--error" : ""}`} placeholder="e.g., 72.8777" />
                 {renderError("longitude")}
               </div>
             </div>
+          </section>
+        )}
 
-            {/* GUIDEBOOK SECTION 1: Transport Tips */}
-            <div className="tmx9pf-guidebook-section">
+        {/* ── STEP 3: Rooms / Basics ── */}
+        {step === 3 && (
+          <section className="tmx9pf-section">
+            <h2 className="tmx9pf-section-title">{isHomestay ? "Share some basics" : "Room Details"}</h2>
+            {isHomestay && <p style={{color:'#6b7280',fontSize:14,marginBottom:20,marginTop:-8}}>You can always update these later.</p>}
+            <div className="tmx9pf-grid">
+              {isHomestay ? (
+                <div className="tmx9pf-field full">
+                  <div className="bnb-stepper-list">
+                    {[
+                      { label: 'Guests',    key: 'maxGuests',  min: 1, max: 30 },
+                      { label: 'Bedrooms',  key: 'beds',       min: 0, max: 20 },
+                      { label: 'Beds',      key: 'beds',       min: 1, max: 30 },
+                      { label: 'Bathrooms', key: 'bathCount',  min: 1, max: 20 },
+                    ].map(({ label, key, min, max }) => (
+                      <div key={label} className="bnb-stepper-row">
+                        <span className="bnb-stepper-label">{label}</span>
+                        <div className="bnb-stepper-controls">
+                          <button type="button" className="bnb-stepper-btn"
+                            disabled={Number(form[key]||1) <= min}
+                            onClick={() => setForm(f => ({ ...f, [key]: Math.max(min, Number(f[key]||1) - 1) }))}>−</button>
+                          <span className="bnb-stepper-val">{form[key] || 1}</span>
+                          <button type="button" className="bnb-stepper-btn"
+                            disabled={Number(form[key]||1) >= max}
+                            onClick={() => setForm(f => ({ ...f, [key]: Math.min(max, Number(f[key]||1) + 1) }))}>+</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {renderError("bedrooms")}
+                  {renderError("beds")}
+                  {renderError("bathrooms")}
+                </div>
+              ) : (
+                <>
+                  <div className="tmx9pf-field full">
+                    <label className="tmx9pf-label">Bedroom Configuration *</label>
+                    <div className="tmx9pf-dynamic-list">
+                      {form.bedroomDetails.map((item, index) => (
+                        <div key={item.id} className="tmx9pf-dynamic-row">
+                          <select value={item.type} onChange={(e) => { const newDetails = [...form.bedroomDetails]; newDetails[index].type = e.target.value; setForm(f => ({ ...f, bedroomDetails: newDetails })); }} className="tmx9pf-select" style={{ flex: 2 }}>
+                            <option value="">Select Room Type</option>
+                            {["King Bed", "Queen Bed", "Double Bed", "Single Bed", "Bunk Bed", "Sofa Bed"].map(opt => (
+                              <option key={opt} value={opt}>{opt}</option>
+                            ))}
+                          </select>
+                          <input type="number" min="1" placeholder="Count" value={item.count} onChange={(e) => { const newDetails = [...form.bedroomDetails]; newDetails[index].count = Number(e.target.value); setForm(f => ({ ...f, bedroomDetails: newDetails })); }} className="tmx9pf-input" style={{ flex: 1 }} />
+                          {form.bedroomDetails.length > 1 && (
+                            <button type="button" onClick={() => { const newDetails = form.bedroomDetails.filter((_, i) => i !== index); setForm(f => ({ ...f, bedroomDetails: newDetails })); }} className="tmx9pf-small-btn danger">×</button>
+                          )}
+                        </div>
+                      ))}
+                      <button type="button" onClick={() => setForm(f => ({ ...f, bedroomDetails: [...f.bedroomDetails, { id: Date.now(), type: "King Bed", count: 1 }] }))} className="tmx9pf-small-btn" style={{ marginTop: "8px" }}>+ Add Bedroom Type</button>
+                    </div>
+                    {renderError("bedrooms")}
+                  </div>
+                  <div className="tmx9pf-field">
+                    <label className="tmx9pf-label">Total Beds *</label>
+                    <input name="beds" type="number" min="1" value={form.beds} onChange={handleNumChange} className={`tmx9pf-input ${errors.beds ? "tmx9pf-input--error" : ""}`} />
+                    {renderError("beds")}
+                  </div>
+                  <div className="tmx9pf-field full">
+                    <label className="tmx9pf-label">Bathroom Configuration *</label>
+                    <div className="tmx9pf-dynamic-list">
+                      {form.bathroomDetails.map((item, index) => (
+                        <div key={item.id} className="tmx9pf-dynamic-row">
+                          <select value={item.type} onChange={(e) => { const newDetails = [...form.bathroomDetails]; newDetails[index].type = e.target.value; setForm(f => ({ ...f, bathroomDetails: newDetails })); }} className="tmx9pf-select" style={{ flex: 2 }}>
+                            <option value="">Select Bathroom Type</option>
+                            {["Attached", "Common", "En-suite", "Jack & Jill", "Separate", "Other"].map(opt => (
+                              <option key={opt} value={opt}>{opt}</option>
+                            ))}
+                          </select>
+                          <input type="number" min="1" placeholder="Count" value={item.count} onChange={(e) => { const newDetails = [...form.bathroomDetails]; newDetails[index].count = Number(e.target.value); setForm(f => ({ ...f, bathroomDetails: newDetails })); }} className="tmx9pf-input" style={{ flex: 1 }} />
+                          {form.bathroomDetails.length > 1 && (
+                            <button type="button" onClick={() => { const newDetails = form.bathroomDetails.filter((_, i) => i !== index); setForm(f => ({ ...f, bathroomDetails: newDetails })); }} className="tmx9pf-small-btn danger">×</button>
+                          )}
+                        </div>
+                      ))}
+                      <button type="button" onClick={() => setForm(f => ({ ...f, bathroomDetails: [...f.bathroomDetails, { id: Date.now(), type: "Attached", count: 1 }] }))} className="tmx9pf-small-btn" style={{ marginTop: "8px" }}>+ Add Bathroom Type</button>
+                    </div>
+                    {renderError("bathrooms")}
+                  </div>
+                  <div className="tmx9pf-field">
+                    <label className="tmx9pf-label">Area (sq ft) *</label>
+                    <input name="area" value={form.area} onChange={handleChange} maxLength={20} className={`tmx9pf-input ${errors.area ? "tmx9pf-input--error" : ""}`} placeholder="e.g., 1500 sqft" />
+                    {renderError("area")}
+                  </div>
+                </>
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* ── STEP 4: Amenities ── */}
+        {step === 4 && (
+          <section className="tmx9pf-section">
+            <h2 className="tmx9pf-section-title">What does your place offer?</h2>
+            <p style={{color:'#6b7280',fontSize:14,marginBottom:20,marginTop:-8}}>Select all amenities available for guests.</p>
+            <div className="tmx9pf-amenities">
+              {Object.entries(AMENITIES).map(([group, list]) => (
+                <div key={group} className="tmx9pf-amenity-group">
+                  <div className="tmx9pf-amenity-group-title">{group}</div>
+                  <div className="tmx9pf-amenity-list">
+                    {list.map((a) => (
+                      <label key={a} className="tmx9pf-amenity">
+                        <input type="checkbox" checked={!!form.amenities[a]} onChange={() => handleAmenityToggle(a)} />
+                        <span>{a}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── STEP 5: House Rules ── */}
+        {step === 5 && (
+          <section className="tmx9pf-section">
+            <h2 className="tmx9pf-section-title">House Rules</h2>
+            <div className="tmx9pf-grid">
+              <div className="tmx9pf-field">
+                <label className="tmx9pf-label">Check-in Time *</label>
+                <TimePickerAMPM value={form.checkInTime} onChange={(val) => setForm(f => ({ ...f, checkInTime: val }))} className={`tmx9pf-input ${errors.checkInTime ? "tmx9pf-input--error" : ""}`} />
+                {renderError("checkInTime")}
+              </div>
+              <div className="tmx9pf-field">
+                <label className="tmx9pf-label">Check-out Time *</label>
+                <TimePickerAMPM value={form.checkOutTime} onChange={(val) => setForm(f => ({ ...f, checkOutTime: val }))} className={`tmx9pf-input ${errors.checkOutTime ? "tmx9pf-input--error" : ""}`} />
+                {renderError("checkOutTime")}
+              </div>
+              <div className="tmx9pf-field">
+                <label className="tmx9pf-label">Maximum Guests *</label>
+                <input name="maxGuests" type="number" min="1" value={form.maxGuests} onChange={handleNumChange} className={`tmx9pf-input ${errors.maxGuests ? "tmx9pf-input--error" : ""}`} />
+                {renderError("maxGuests")}
+              </div>
+              <div className="tmx9pf-field">
+                <label className="tmx9pf-label">Quiet Hours</label>
+                <input name="quietHours" value={form.quietHours} onChange={handleChange} className="tmx9pf-input" />
+              </div>
+              <div className="tmx9pf-field">
+                <label className="tmx9pf-label">Smoking Allowed</label>
+                <Toggle name="smokingAllowed" value={form.smokingAllowed} onChange={(v) => setForm((s) => ({ ...s, smokingAllowed: v }))} />
+              </div>
+              <div className="tmx9pf-field">
+                <label className="tmx9pf-label">Pets Allowed</label>
+                <Toggle name="petsAllowed" value={form.petsAllowed} onChange={(v) => setForm((s) => ({ ...s, petsAllowed: v }))} />
+              </div>
+              <div className="tmx9pf-field">
+                <label className="tmx9pf-label">Events / Parties Allowed</label>
+                <Toggle name="eventsAllowed" value={form.eventsAllowed} onChange={(v) => setForm((s) => ({ ...s, eventsAllowed: v }))} />
+              </div>
+              <div className="tmx9pf-field">
+                <label className="tmx9pf-label">Drinking Alcohol Allowed</label>
+                <Toggle name="drinkingAllowed" value={form.drinkingAllowed} onChange={(v) => setForm((s) => ({ ...s, drinkingAllowed: v }))} />
+              </div>
+              <div className="tmx9pf-field">
+                <label className="tmx9pf-label">Outside Guests Allowed</label>
+                <Toggle name="outsideGuestsAllowed" value={form.outsideGuestsAllowed} onChange={(v) => setForm((s) => ({ ...s, outsideGuestsAllowed: v }))} />
+              </div>
+              <div className="tmx9pf-field">
+                <label className="tmx9pf-label">Only Family Allowed</label>
+                <Toggle name="familyAllowed" value={form.familyAllowed} onChange={(v) => setForm((s) => ({ ...s, familyAllowed: v }))} />
+              </div>
+              <div className="tmx9pf-field">
+                <label className="tmx9pf-label">Unmarried Couple Allowed</label>
+                <Toggle name="unmarriedCoupleAllowed" value={form.unmarriedCoupleAllowed} onChange={(v) => setForm((s) => ({ ...s, unmarriedCoupleAllowed: v }))} />
+              </div>
+              <div className="tmx9pf-field">
+                <label className="tmx9pf-label">Bachelor Allowed</label>
+                <Toggle name="bachelorAllowed" value={form.bachelorAllowed} onChange={(v) => setForm((s) => ({ ...s, bachelorAllowed: v }))} />
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ── STEP 6: Nearby & Tips (Guidebook) ── */}
+        {step === 6 && (
+          <section className="tmx9pf-section">
+            <h2 className="tmx9pf-section-title">Nearby & Guest Tips</h2>
+            <p style={{color:'#6b7280',fontSize:14,marginBottom:20,marginTop:-8}}>Optional — help guests explore the neighbourhood.</p>
+
+            <div className="tmx9pf-guidebook-section" style={{marginTop:0,paddingTop:0,borderTop:'none'}}>
               <h3 className="tmx9pf-guidebook-title">🚗 Transport & Travel Tips</h3>
               <div className="tmx9pf-grid">
                 <div className="tmx9pf-field">
@@ -842,7 +1109,6 @@ const Tmx9PropertyForm = () => {
               </div>
             </div>
 
-            {/* GUIDEBOOK SECTION 2: Cafes & Restaurants */}
             <div className="tmx9pf-guidebook-section">
               <h3 className="tmx9pf-guidebook-title">🍽️ Nearby Cafes & Restaurants</h3>
               <div className="tmx9pf-dynamic-list">
@@ -859,7 +1125,6 @@ const Tmx9PropertyForm = () => {
               </div>
             </div>
 
-            {/* GUIDEBOOK SECTION 3: Essentials Nearby */}
             <div className="tmx9pf-guidebook-section">
               <h3 className="tmx9pf-guidebook-title">🏪 Essentials Nearby</h3>
               <div className="tmx9pf-grid">
@@ -872,192 +1137,12 @@ const Tmx9PropertyForm = () => {
                   <input value={form.essentialsNearby.grocery} onChange={(e) => setForm(f => ({ ...f, essentialsNearby: { ...f.essentialsNearby, grocery: e.target.value } }))} className="tmx9pf-input" placeholder="e.g., Reliance Fresh (200m)" />
                 </div>
                 <div className="tmx9pf-field">
-                  <label className="tmx9pf-label">Medical/Pharmacy</label>
+                  <label className="tmx9pf-label">Medical / Pharmacy</label>
                   <input value={form.essentialsNearby.medical} onChange={(e) => setForm(f => ({ ...f, essentialsNearby: { ...f.essentialsNearby, medical: e.target.value } }))} className="tmx9pf-input" placeholder="e.g., Apollo Pharmacy (300m)" />
                 </div>
               </div>
             </div>
-          </section>
-        )}
 
-        {/* STEP 1 */}
-        {step === 1 && (
-          <section className="tmx9pf-section">
-            <h2 className="tmx9pf-section-title">Property Details &amp; Features</h2>
-            <div className="tmx9pf-grid">
-              <div className="tmx9pf-field full">
-                <label className="tmx9pf-label">Bedroom Configuration *</label>
-                <div className="tmx9pf-dynamic-list">
-                  {form.bedroomDetails.map((item, index) => (
-                    <div key={item.id} className="tmx9pf-dynamic-row">
-                      <select value={item.type} onChange={(e) => { const newDetails = [...form.bedroomDetails]; newDetails[index].type = e.target.value; setForm(f => ({ ...f, bedroomDetails: newDetails })); }} className="tmx9pf-select" style={{ flex: 2 }}>
-                        <option value="">Select Room Type</option>
-                        {["King Bed", "Queen Bed", "Double Bed", "Single Bed", "Bunk Bed", "Sofa Bed"].map(opt => (
-                          <option key={opt} value={opt}>{opt}</option>
-                        ))}
-                      </select>
-                      <input type="number" min="1" placeholder="Count" value={item.count} onChange={(e) => { const newDetails = [...form.bedroomDetails]; newDetails[index].count = Number(e.target.value); setForm(f => ({ ...f, bedroomDetails: newDetails })); }} className="tmx9pf-input" style={{ flex: 1 }} />
-                      {form.bedroomDetails.length > 1 && (
-                        <button type="button" onClick={() => { const newDetails = form.bedroomDetails.filter((_, i) => i !== index); setForm(f => ({ ...f, bedroomDetails: newDetails })); }} className="tmx9pf-small-btn danger">×</button>
-                      )}
-                    </div>
-                  ))}
-                  <button type="button" onClick={() => setForm(f => ({ ...f, bedroomDetails: [...f.bedroomDetails, { id: Date.now(), type: "King Bed", count: 1 }] }))} className="tmx9pf-small-btn" style={{ marginTop: "8px" }}>+ Add Bedroom Type</button>
-                </div>
-                {renderError("bedrooms")}
-              </div>
-
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Total Beds *</label>
-                <input name="beds" type="number" min="1" value={form.beds} onChange={handleNumChange} className={`tmx9pf-input ${errors.beds ? "tmx9pf-input--error" : ""}`} />
-                {renderError("beds")}
-              </div>
-
-              <div className="tmx9pf-field full">
-                <label className="tmx9pf-label">Bathroom Configuration *</label>
-                <div className="tmx9pf-dynamic-list">
-                  {form.bathroomDetails.map((item, index) => (
-                    <div key={item.id} className="tmx9pf-dynamic-row">
-                      <select value={item.type} onChange={(e) => { const newDetails = [...form.bathroomDetails]; newDetails[index].type = e.target.value; setForm(f => ({ ...f, bathroomDetails: newDetails })); }} className="tmx9pf-select" style={{ flex: 2 }}>
-                        <option value="">Select Bathroom Type</option>
-                        {["Attached", "Common", "En-suite", "Jack & Jill", "Separate", "Other"].map(opt => (
-                          <option key={opt} value={opt}>{opt}</option>
-                        ))}
-                      </select>
-                      <input type="number" min="1" placeholder="Count" value={item.count} onChange={(e) => { const newDetails = [...form.bathroomDetails]; newDetails[index].count = Number(e.target.value); setForm(f => ({ ...f, bathroomDetails: newDetails })); }} className="tmx9pf-input" style={{ flex: 1 }} />
-                      {form.bathroomDetails.length > 1 && (
-                        <button type="button" onClick={() => { const newDetails = form.bathroomDetails.filter((_, i) => i !== index); setForm(f => ({ ...f, bathroomDetails: newDetails })); }} className="tmx9pf-small-btn danger">×</button>
-                      )}
-                    </div>
-                  ))}
-                  <button type="button" onClick={() => setForm(f => ({ ...f, bathroomDetails: [...f.bathroomDetails, { id: Date.now(), type: "Attached", count: 1 }] }))} className="tmx9pf-small-btn" style={{ marginTop: "8px" }}>+ Add Bathroom Type</button>
-                </div>
-                {renderError("bathrooms")}
-              </div>
-
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Area (sq ft) *</label>
-                <input name="area" value={form.area} onChange={handleChange} maxLength={20} className={`tmx9pf-input ${errors.area ? "tmx9pf-input--error" : ""}`} placeholder="e.g., 1500 sqft" />
-                {renderError("area")}
-              </div>
-
-              <div className="tmx9pf-field full">
-                <label className="tmx9pf-label">Amenities (select all that apply)</label>
-                <div className="tmx9pf-amenities">
-                  {Object.entries(AMENITIES).map(([group, list]) => (
-                    <div key={group} className="tmx9pf-amenity-group">
-                      <div className="tmx9pf-amenity-group-title">{group}</div>
-                      <div className="tmx9pf-amenity-list">
-                        {list.map((a) => (
-                          <label key={a} className="tmx9pf-amenity">
-                            <input type="checkbox" checked={!!form.amenities[a]} onChange={() => handleAmenityToggle(a)} />
-                            <span>{a}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* STEP 2 */}
-        {step === 2 && (
-          <section className="tmx9pf-section">
-            <h2 className="tmx9pf-section-title">House Rules</h2>
-            <div className="tmx9pf-grid">
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Check-in Time *</label>
-                <TimePickerAMPM
-                  value={form.checkInTime}
-                  onChange={(val) => setForm(f => ({ ...f, checkInTime: val }))}
-                  className={`tmx9pf-input ${errors.checkInTime ? "tmx9pf-input--error" : ""}`}
-                />
-                {renderError("checkInTime")}
-              </div>
-
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Check-out Time *</label>
-                <TimePickerAMPM
-                  value={form.checkOutTime}
-                  onChange={(val) => setForm(f => ({ ...f, checkOutTime: val }))}
-                  className={`tmx9pf-input ${errors.checkOutTime ? "tmx9pf-input--error" : ""}`}
-                />
-                {renderError("checkOutTime")}
-              </div>
-
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Smoking Allowed</label>
-                <Toggle name="smokingAllowed" value={form.smokingAllowed} onChange={(v) => setForm((s) => ({ ...s, smokingAllowed: v }))} />
-              </div>
-
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Pets Allowed</label>
-                <Toggle name="petsAllowed" value={form.petsAllowed} onChange={(v) => setForm((s) => ({ ...s, petsAllowed: v }))} />
-              </div>
-
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Events / Parties Allowed</label>
-                <Toggle name="eventsAllowed" value={form.eventsAllowed} onChange={(v) => setForm((s) => ({ ...s, eventsAllowed: v }))} />
-              </div>
-
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Drinking Alcohol Allowed</label>
-                <Toggle name="drinkingAllowed" value={form.drinkingAllowed} onChange={(v) => setForm((s) => ({ ...s, drinkingAllowed: v }))} />
-              </div>
-
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Outside Guests Allowed</label>
-                <Toggle name="outsideGuestsAllowed" value={form.outsideGuestsAllowed} onChange={(v) => setForm((s) => ({ ...s, outsideGuestsAllowed: v }))} />
-              </div>
-<div className="tmx9pf-field">
-  <label className="tmx9pf-label">Only Family Allowed</label>
-  <Toggle
-    name="familyAllowed" 
-    value={form.familyAllowed}
-    onChange={(v) =>
-      setForm((s) => ({ ...s, familyAllowed: v }))
-    }
-  />
-</div>
-
-<div className="tmx9pf-field">
-  <label className="tmx9pf-label">Unmarried Couple Allowed</label>
-  <Toggle
-    name="unmarriedCoupleAllowed"
-    value={form.unmarriedCoupleAllowed}
-    onChange={(v) =>
-      setForm((s) => ({ ...s, unmarriedCoupleAllowed: v }))
-    }
-  />
-</div>
-<div className="tmx9pf-field">
-  <label className="tmx9pf-label">Bachelor Allowed</label>
-  <Toggle
-    name="bachelorAllowed"
-    value={form.bachelorAllowed}
-    onChange={(v) =>
-      setForm((s) => ({ ...s, bachelorAllowed: v }))
-    }
-  />
-</div>
-
-
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Quiet Hours</label>
-                <input name="quietHours" value={form.quietHours} onChange={handleChange} className="tmx9pf-input" />
-              </div>
-
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Maximum Guests *</label>
-                <input name="maxGuests" type="number" min="1" value={form.maxGuests} onChange={handleNumChange} className={`tmx9pf-input ${errors.maxGuests ? "tmx9pf-input--error" : ""}`} />
-                {renderError("maxGuests")}
-              </div>
-            </div>
-
-            {/* GUIDEBOOK SECTION 4: Must Visit Places */}
             <div className="tmx9pf-guidebook-section">
               <h3 className="tmx9pf-guidebook-title">📍 Must Visit Places</h3>
               <div className="tmx9pf-dynamic-list">
@@ -1074,7 +1159,6 @@ const Tmx9PropertyForm = () => {
               </div>
             </div>
 
-            {/* GUIDEBOOK SECTION 5: House Specific Tips */}
             <div className="tmx9pf-guidebook-section">
               <h3 className="tmx9pf-guidebook-title">💡 House-Specific Tips</h3>
               <div className="tmx9pf-dynamic-list">
@@ -1092,13 +1176,13 @@ const Tmx9PropertyForm = () => {
           </section>
         )}
 
-        {/* STEP 3 */}
-        {step === 3 && (
+        {/* ── STEP 7: Photos ── */}
+        {step === 7 && (
           <section className="tmx9pf-section">
             <h2 className="tmx9pf-section-title">Photos &amp; Media</h2>
             <div className="tmx9pf-grid">
               <div className="tmx9pf-field full">
-                <label className="tmx9pf-label">Photos (drag &amp; select) — up to 12 *</label>
+                <label className="tmx9pf-label">Photos — up to 12 *</label>
                 <input type="file" accept="image/*,application/pdf" multiple onChange={handlePhotos} className={`tmx9pf-file ${errors.photos ? "tmx9pf-file--error" : ""}`} />
                 {renderError("photos")}
                 <div className="tmx9pf-photo-previews">
@@ -1118,37 +1202,93 @@ const Tmx9PropertyForm = () => {
           </section>
         )}
 
-        {/* STEP 4 */}
-        {step === 4 && (
+        {/* ── STEP 8: Pricing & Legal ── */}
+        {step === 8 && (
           <section className="tmx9pf-section">
-            <h2 className="tmx9pf-section-title">Pricing &amp; Availability</h2>
+            <h2 className="tmx9pf-section-title">{isHomestay ? "Now, set your price" : "Pricing & Availability"}</h2>
+            {isHomestay && <p style={{color:'#6b7280',fontSize:14,marginBottom:20,marginTop:-8}}>You can always change it later.</p>}
             <div className="tmx9pf-grid">
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Base nightly rate (Rs) *</label>
-                <input name="baseRate" type="number" min="0" value={form.baseRate} onChange={handleNumChange} className={`tmx9pf-input ${errors.baseRate ? "tmx9pf-input--error" : ""}`} />
-                {renderError("baseRate")}
-              </div>
-
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Weekend rate</label>
-                <input type="number" name="weekendRate" value={form.weekendRate} onChange={handleChange} className="tmx9pf-input" />
-              </div>
-
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Weekly Discount %</label>
-                <input step="0.01" name="weeklyDiscountPct" type="number" min="0" max="100" value={form.weeklyDiscountPct} onChange={handleNumChange} className={`tmx9pf-input ${errors.weeklyDiscountPct ? "tmx9pf-input--error" : ""}`} />
-                {renderError("weeklyDiscountPct")}
-              </div>
-
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Monthly discount (%)</label>
-                <input step="0.01" name="monthlyDiscountPct" type="number" min="0" max="100" value={form.monthlyDiscountPct} onChange={handleNumChange} className="tmx9pf-input" />
-              </div>
-
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Cleaning fee</label>
-                <input name="cleaningFee" value={form.cleaningFee} onChange={handleChange} className="tmx9pf-input" />
-              </div>
+              {isHomestay ? (
+                <>
+                  <div className="tmx9pf-field full">
+                    <label className="tmx9pf-label">Nightly Rate (₹) *</label>
+                    <div className="bnb-price-input-wrap">
+                      <span className="bnb-price-symbol">₹</span>
+                      <input name="baseRate" type="number" min="0" value={form.baseRate} onChange={handleNumChange}
+                        className={`bnb-price-input ${errors.baseRate ? "tmx9pf-input--error" : ""}`} placeholder="0" />
+                    </div>
+                    {renderError("baseRate")}
+                  </div>
+                  <div className="tmx9pf-field full">
+                    <label className="tmx9pf-label" style={{marginBottom:6}}>Add discounts</label>
+                    <p style={{fontSize:13,color:'#6b7280',marginBottom:12,marginTop:0}}>Help your place stand out and get booked faster.</p>
+                    <div className="bnb-discount-list">
+                      {[
+                        { key: 'newListingDiscount', pct: '20%', title: 'New listing promotion', desc: 'Offer 20% off your first 3 bookings' },
+                        { key: 'lastMinuteDiscount', pct: '5%',  title: 'Last-minute discount',  desc: 'For stays booked 14 days or less before arrival' },
+                      ].map(d => (
+                        <label key={d.key} className={`bnb-discount-card ${form[d.key] ? 'active' : ''}`}>
+                          <div className="bnb-discount-pct">{d.pct}</div>
+                          <div className="bnb-discount-info">
+                            <div className="bnb-discount-title">{d.title}</div>
+                            <div className="bnb-discount-desc">{d.desc}</div>
+                          </div>
+                          <input type="checkbox" checked={!!form[d.key]}
+                            onChange={e => setForm(f => ({ ...f, [d.key]: e.target.checked }))}
+                            style={{width:18,height:18,accentColor:'#c98b3e',cursor:'pointer',flexShrink:0}} />
+                        </label>
+                      ))}
+                      <div className="bnb-discount-card" style={{cursor:'default'}}>
+                        <div className="bnb-discount-pct">%</div>
+                        <div className="bnb-discount-info">
+                          <div className="bnb-discount-title">Weekly discount</div>
+                          <div className="bnb-discount-desc">For stays of 7 nights or more</div>
+                        </div>
+                        <input type="number" name="weeklyDiscountPct" value={form.weeklyDiscountPct} onChange={handleChange}
+                          placeholder="0%" style={{width:60,border:'1px solid #e5e7eb',borderRadius:8,padding:'6px 8px',fontSize:14,textAlign:'center'}} />
+                      </div>
+                      <div className="bnb-discount-card" style={{cursor:'default'}}>
+                        <div className="bnb-discount-pct">%</div>
+                        <div className="bnb-discount-info">
+                          <div className="bnb-discount-title">Monthly discount</div>
+                          <div className="bnb-discount-desc">For stays of 28 nights or more</div>
+                        </div>
+                        <input type="number" name="monthlyDiscountPct" value={form.monthlyDiscountPct} onChange={handleChange}
+                          placeholder="0%" style={{width:60,border:'1px solid #e5e7eb',borderRadius:8,padding:'6px 8px',fontSize:14,textAlign:'center'}} />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="tmx9pf-field">
+                    <label className="tmx9pf-label">Cleaning fee (₹)</label>
+                    <input name="cleaningFee" value={form.cleaningFee} onChange={handleChange} className="tmx9pf-input" placeholder="e.g. 500" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="tmx9pf-field">
+                    <label className="tmx9pf-label">Base nightly rate (₹) *</label>
+                    <input name="baseRate" type="number" min="0" value={form.baseRate} onChange={handleNumChange} className={`tmx9pf-input ${errors.baseRate ? "tmx9pf-input--error" : ""}`} />
+                    {renderError("baseRate")}
+                  </div>
+                  <div className="tmx9pf-field">
+                    <label className="tmx9pf-label">Weekend rate</label>
+                    <input type="number" name="weekendRate" value={form.weekendRate} onChange={handleChange} className="tmx9pf-input" />
+                  </div>
+                  <div className="tmx9pf-field">
+                    <label className="tmx9pf-label">Weekly Discount %</label>
+                    <input step="0.01" name="weeklyDiscountPct" type="number" min="0" max="100" value={form.weeklyDiscountPct} onChange={handleNumChange} className={`tmx9pf-input ${errors.weeklyDiscountPct ? "tmx9pf-input--error" : ""}`} />
+                    {renderError("weeklyDiscountPct")}
+                  </div>
+                  <div className="tmx9pf-field">
+                    <label className="tmx9pf-label">Monthly discount (%)</label>
+                    <input step="0.01" name="monthlyDiscountPct" type="number" min="0" max="100" value={form.monthlyDiscountPct} onChange={handleNumChange} className="tmx9pf-input" />
+                  </div>
+                  <div className="tmx9pf-field">
+                    <label className="tmx9pf-label">Cleaning fee</label>
+                    <input name="cleaningFee" value={form.cleaningFee} onChange={handleChange} className="tmx9pf-input" />
+                  </div>
+                </>
+              )}
 
               <div className="tmx9pf-field">
                 <label className="tmx9pf-label">Self-check-in *</label>
@@ -1159,13 +1299,10 @@ const Tmx9PropertyForm = () => {
                 </select>
                 {renderError("selfCheckIn")}
               </div>
-
               <div className="tmx9pf-field">
                 <label className="tmx9pf-label">Booking Type *</label>
                 <div style={{ marginBottom: "8px", fontSize: "0.85rem", color: "#64748b" }}>
-                  {form.bookingType === 1 
-                    ? "Approval Required: You must approve each booking request." 
-                    : "Instant Booking: Guests can book instantly without your approval."}
+                  {form.bookingType === 1 ? "Approval Required: You must approve each booking request." : "Instant Booking: Guests can book instantly without your approval."}
                 </div>
                 <select value={form.bookingType} onChange={(e) => setForm((s) => ({ ...s, bookingType: e.target.value === "1" ? 1 : 0 }))} className={`tmx9pf-select ${errors.bookingType ? "tmx9pf-input--error" : ""}`}>
                   <option value="1">Approval Required</option>
@@ -1173,167 +1310,15 @@ const Tmx9PropertyForm = () => {
                 </select>
                 {renderError("bookingType")}
               </div>
-            </div>
-          </section>
-        )}
-
-        {/* STEP 5 */}
-        {step === 5 && (
-          <section className="tmx9pf-section">
-            <h2 className="tmx9pf-section-title">Identity &amp; Legal</h2>
-            <div className="tmx9pf-grid">
-              
-              <div className="tmx9pf-field full">
-                <label className="tmx9pf-label">Identity Verification *</label>
-              </div>
-
-              <div className="tmx9pf-field full" style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                <label className="tmx9pf-label">Enter Aadhaar Number *</label>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                  <div style={{ flex: 1 }}>
-                    <input 
-                      type="text" 
-                      maxLength="12"
-                      placeholder="12-digit Aadhaar Number" 
-                      value={aadhaarNumber} 
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, '').slice(0, 12);
-                        setAadhaarNumber(val);
-                        if (aadhaarVerified) setAadhaarVerified(false); // Reset verification on change
-                      }}
-                      className={`tmx9pf-input ${errors.idFiles ? "tmx9pf-input--error" : ""}`}
-                      disabled={aadhaarVerified}
-                      style={{ borderColor: aadhaarVerified ? '#22c55e' : '' }}
-                    />
-                    {renderError("idFiles")}
-                  </div>
-                  <button 
-                    type="button" 
-                    onClick={verifyAadhaar} 
-                    disabled={aadhaarVerified || isVerifyingAadhaar || aadhaarNumber.length !== 12}
-                    className="tmx9pf-small-btn"
-                    style={{ 
-                      height: '42px', 
-                      padding: '0 20px', 
-                      background: aadhaarVerified ? '#22c55e' : '#3b82f6', 
-                      color: 'white', 
-                      border: 'none',
-                      cursor: (aadhaarVerified || isVerifyingAadhaar) ? 'default' : 'pointer'
-                    }}
-                  >
-                    {isVerifyingAadhaar ? "Verifying..." : aadhaarVerified ? "Verified ✓" : "Verify Now"}
-                  </button>
-                </div>
-                {aadhaarVerified && <p style={{ color: '#166534', fontSize: '13px', marginTop: '8px' }}>✓ Aadhaar verification successful. You can proceed.</p>}
-              </div>
-
-
-
-              {/* Phone Verification Section */}
-              <div className="tmx9pf-field full" style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0', marginTop: '16px' }}>
-                <label className="tmx9pf-label">Phone Verification *</label>
-                <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
-                  
-                  {/* Phone Input Row */}
-                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center', width: '100%' }}>
-                    <input 
-                      type="text" 
-                      maxLength="10"
-                      placeholder="10-digit Phone Number" 
-                      value={phoneNumber} 
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, '').slice(0, 10);
-                        setPhoneNumber(val);
-                        if (isPhoneVerified) setIsPhoneVerified(false);
-                        if (otpSent) setOtpSent(false); // Reset OTP flow if number changes
-                      }}
-                      className={`tmx9pf-input`}
-                      disabled={isPhoneVerified || otpSent}
-                      style={{ flex: 1, borderColor: isPhoneVerified ? '#22c55e' : '' }}
-                    />
-                    
-                    {!otpSent && !isPhoneVerified && (
-                      <button 
-                        type="button" 
-                        onClick={sendPhoneOtp}
-                        disabled={isSendingOtp || phoneNumber.length !== 10}
-                        className="tmx9pf-small-btn"
-                        style={{ 
-                          height: '42px', 
-                          padding: '0 20px', 
-                          whiteSpace: 'nowrap',
-                          background: '#3b82f6', 
-                          color: 'white', 
-                          border: 'none',
-                          cursor: (isSendingOtp || phoneNumber.length !== 10) ? 'default' : 'pointer',
-                          opacity: (isSendingOtp || phoneNumber.length !== 10) ? 0.7 : 1
-                        }}
-                      >
-                        {isSendingOtp ? "Sending..." : "Send OTP"}
-                      </button>
-                    )}
-
-                    {isPhoneVerified && (
-                      <span style={{ color: '#166534', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        ✓ Verified
-                      </span>
-                    )}
-                  </div>
-
-                  {/* OTP Input Row */}
-                  {otpSent && !isPhoneVerified && (
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center', width: '100%', marginTop: '10px' }}>
-                      <input 
-                        type="text" 
-                        maxLength="6"
-                        placeholder="Enter OTP" 
-                        value={phoneOtp} 
-                        onChange={(e) => setPhoneOtp(e.target.value.replace(/\D/g, ''))}
-                        className="tmx9pf-input"
-                        style={{ flex: 1 }}
-                      />
-                      <button 
-                        type="button" 
-                        onClick={verifyPhoneOtp}
-                        disabled={isVerifyingOtp || phoneOtp.length < 4}
-                        className="tmx9pf-small-btn"
-                        style={{ 
-                          height: '42px', 
-                          padding: '0 20px', 
-                          whiteSpace: 'nowrap',
-                          background: '#10b981', 
-                          color: 'white', 
-                          border: 'none',
-                          cursor: (isVerifyingOtp || phoneOtp.length < 4) ? 'default' : 'pointer',
-                          opacity: (isVerifyingOtp || phoneOtp.length < 4) ? 0.7 : 1
-                        }}
-                      >
-                        {isVerifyingOtp ? "Verifying..." : "Verify OTP"}
-                      </button>
-                    </div>
-                  )}
-                  
-                  {isPhoneVerified && <p style={{ color: '#166534', fontSize: '13px', margin: 0 }}>✓ Phone number verified successfully.</p>}
-                  
-                </div>
-              </div>
-
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Selfie verification (optional)</label>
-                <input type="file" accept="image/*" onChange={handleSelfie} className="tmx9pf-file" />
-                <div className="tmx9pf-muted">{selfieFile ? selfieFile.name : "No selfie selected"}</div>
-              </div>
-
               <div className="tmx9pf-field">
                 <label className="tmx9pf-label">Cancellation policy</label>
                 <select value={policy} onChange={(e) => setPolicy(e.target.value)} className="tmx9pf-select">
                   {DEFAULT_CANCELLATION_POLICIES.map((p) => <option key={p} value={p}>{p}</option>)}
                 </select>
                 <div className="tmx9pf-muted">
-                  See our <a href="/refund-cancellation-policy" target="_blank" rel="noopener noreferrer">Refund &amp; Cancellation Policy</a> for details on Flexible, Moderate, and Strict tiers.
+                  See our <a href="/refund-cancellation-policy" target="_blank" rel="noopener noreferrer">Refund &amp; Cancellation Policy</a> for details.
                 </div>
               </div>
-
               <div className="tmx9pf-field">
                 <label className="tmx9pf-label">Insurance option</label>
                 <select value={insurance ? "yes" : "no"} onChange={(e) => setInsurance(e.target.value === "yes")} className="tmx9pf-select">
@@ -1341,7 +1326,6 @@ const Tmx9PropertyForm = () => {
                   <option value="yes">Yes - include</option>
                 </select>
               </div>
-
               <div className="tmx9pf-field">
                 <label className="tmx9pf-label">Damage protection</label>
                 <select value={damageProtection ? "yes" : "no"} onChange={(e) => setDamageProtection(e.target.value === "yes")} className="tmx9pf-select">
@@ -1349,6 +1333,66 @@ const Tmx9PropertyForm = () => {
                   <option value="yes">Yes - require</option>
                 </select>
               </div>
+
+              {!isHomestay && (
+                <>
+                  <div className="tmx9pf-field full">
+                    <label className="tmx9pf-label">Identity Verification *</label>
+                  </div>
+                  <div className="tmx9pf-field full" style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    <label className="tmx9pf-label">Enter Aadhaar Number *</label>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                      <div style={{ flex: 1 }}>
+                        <input type="text" maxLength="12" placeholder="12-digit Aadhaar Number" value={aadhaarNumber}
+                          onChange={(e) => { const val = e.target.value.replace(/\D/g, '').slice(0, 12); setAadhaarNumber(val); if (aadhaarVerified) setAadhaarVerified(false); }}
+                          className={`tmx9pf-input ${errors.idFiles ? "tmx9pf-input--error" : ""}`}
+                          disabled={aadhaarVerified} style={{ borderColor: aadhaarVerified ? '#22c55e' : '' }} />
+                        {renderError("idFiles")}
+                      </div>
+                      <button type="button" onClick={verifyAadhaar} disabled={aadhaarVerified || isVerifyingAadhaar || aadhaarNumber.length !== 12}
+                        className="tmx9pf-small-btn"
+                        style={{ height: '42px', padding: '0 20px', background: aadhaarVerified ? '#22c55e' : '#3b82f6', color: 'white', border: 'none', cursor: (aadhaarVerified || isVerifyingAadhaar) ? 'default' : 'pointer' }}>
+                        {isVerifyingAadhaar ? "Verifying..." : aadhaarVerified ? "Verified ✓" : "Verify Now"}
+                      </button>
+                    </div>
+                    {aadhaarVerified && <p style={{ color: '#166534', fontSize: '13px', marginTop: '8px' }}>✓ Aadhaar verification successful.</p>}
+                  </div>
+                  <div className="tmx9pf-field full" style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    <label className="tmx9pf-label">Phone Verification</label>
+                    <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', width: '100%' }}>
+                        <input type="text" maxLength="10" placeholder="10-digit Phone Number" value={phoneNumber}
+                          onChange={(e) => { const val = e.target.value.replace(/\D/g, '').slice(0, 10); setPhoneNumber(val); if (isPhoneVerified) setIsPhoneVerified(false); if (otpSent) setOtpSent(false); }}
+                          className="tmx9pf-input" disabled={isPhoneVerified || otpSent} style={{ flex: 1, borderColor: isPhoneVerified ? '#22c55e' : '' }} />
+                        {!otpSent && !isPhoneVerified && (
+                          <button type="button" onClick={sendPhoneOtp} disabled={isSendingOtp || phoneNumber.length !== 10}
+                            className="tmx9pf-small-btn"
+                            style={{ height: '42px', padding: '0 20px', whiteSpace: 'nowrap', background: '#3b82f6', color: 'white', border: 'none', cursor: (isSendingOtp || phoneNumber.length !== 10) ? 'default' : 'pointer', opacity: (isSendingOtp || phoneNumber.length !== 10) ? 0.7 : 1 }}>
+                            {isSendingOtp ? "Sending..." : "Send OTP"}
+                          </button>
+                        )}
+                        {isPhoneVerified && <span style={{ color: '#166534', fontWeight: 'bold' }}>✓ Verified</span>}
+                      </div>
+                      {otpSent && !isPhoneVerified && (
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', width: '100%' }}>
+                          <input type="text" maxLength="6" placeholder="Enter OTP" value={phoneOtp} onChange={(e) => setPhoneOtp(e.target.value.replace(/\D/g, ''))} className="tmx9pf-input" style={{ flex: 1 }} />
+                          <button type="button" onClick={verifyPhoneOtp} disabled={isVerifyingOtp || phoneOtp.length < 4}
+                            className="tmx9pf-small-btn"
+                            style={{ height: '42px', padding: '0 20px', whiteSpace: 'nowrap', background: '#10b981', color: 'white', border: 'none', cursor: (isVerifyingOtp || phoneOtp.length < 4) ? 'default' : 'pointer', opacity: (isVerifyingOtp || phoneOtp.length < 4) ? 0.7 : 1 }}>
+                            {isVerifyingOtp ? "Verifying..." : "Verify OTP"}
+                          </button>
+                        </div>
+                      )}
+                      {isPhoneVerified && <p style={{ color: '#166534', fontSize: '13px', margin: 0 }}>✓ Phone number verified successfully.</p>}
+                    </div>
+                  </div>
+                  <div className="tmx9pf-field">
+                    <label className="tmx9pf-label">Selfie verification (optional)</label>
+                    <input type="file" accept="image/*" onChange={handleSelfie} className="tmx9pf-file" />
+                    <div className="tmx9pf-muted">{selfieFile ? selfieFile.name : "No selfie selected"}</div>
+                  </div>
+                </>
+              )}
             </div>
           </section>
         )}

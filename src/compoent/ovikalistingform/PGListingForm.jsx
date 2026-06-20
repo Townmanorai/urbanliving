@@ -150,6 +150,20 @@ const FURNISHING_STATUS = ["Unfurnished", "Semi-Furnished", "Fully Furnished"];
 const SHARING_TYPES = ["Single Room", "Double Sharing", "Triple Sharing", "Four Sharing", "Five Sharing", "Dormitory"];
 const TENANT_PREFERENCES = ["Bachelors (Any)", "Bachelors (Female Only)", "Bachelors (Male Only)", "Family", "Working Professionals", "Students Only", "No Preference"];
 const CANCELLATION_POLICIES = ["Flexible: Full refund 1 day prior", "Moderate: Full refund 5 days prior", "Strict: 50% refund 7 days prior", "No Refund"];
+
+// ── Apartments & Villas specific constants ────────────────────────────────────
+const BHK_OPTIONS        = ["1 BHK", "2 BHK", "3 BHK", "4 BHK", "4+ BHK"];
+const APT_PROP_TYPES     = ["Apartment", "Independent House", "Duplex", "Independent Floor", "Villa", "Penthouse", "Studio", "Farm House"];
+const SECURITY_DEP_OPTS  = ["None", "1 month", "2 month", "3 month", "Custom"];
+const MAINTENANCE_OPTS   = ["Include in rent", "Separate"];
+const LOCK_IN_OPTS       = ["None", "1 month", "6 month", "Custom"];
+const PARKING_CHG_OPTS   = ["Include in rent", "Separate"];
+const PAINTING_CHG_OPTS  = ["None", "As per cost", "1 month rent", "Custom"];
+const TENANT_TYPE_SIMPLE = ["Family", "Bachelors", "Company", "Any"];
+const FLAT_FURNISHINGS   = ["Dining Table","Washing Machine","Cupboard","Sofa","Microwave","Stove","Fridge","Water Purifier","Gas Pipeline","Chimney","Modular Kitchen","Fan","Light","AC","Wardrobe","TV","Bed","Geyser"];
+const PARK_COUNT_OPTS    = [0, 1, 2, 3, "3+"];
+const BATH_COUNT_OPTS    = [1, 2, 3, "4+"];
+const BALCONY_OPTS       = [0, 1, 2, 3];
 const FACING_OPTIONS = ["North", "South", "East", "West", "North-East", "North-West", "South-East", "South-West"];
 
 const AMENITIES_MASTER = {
@@ -185,8 +199,17 @@ const BOOKING_TYPES = [
 const BATHROOM_TYPES = ["Attached", "Common", "En-suite", "Jack & Jill", "Separate", "Other"];
 const defaultBathroomEntry = () => ({ type: "Attached", count: 1 });
 
-// ─── isPG helper ─────────────────────────────────────────────────────────────
-const isPGCategory = (cat) => cat === "PG & Co-Living";
+// ─── category helpers ────────────────────────────────────────────────────────
+const isPGCategory       = (cat) => cat === "PG & Co-Living";
+const isHomestayCategory = (cat) => cat === "Homestays & BnB";
+
+const PLACE_TYPES_BNB = [
+  { id: "Entire Place",  label: "An entire place",            desc: "Guests have the whole place to themselves.", icon: "🏠" },
+  { id: "Private Room",  label: "A private room",             desc: "Guests have their own room, plus access to shared spaces.", icon: "🚪" },
+  { id: "Shared Room",   label: "A shared room in a hostel",  desc: "Guests sleep in a shared room with other guests.", icon: "🛏️" },
+];
+const BNB_PROP_TYPES   = ["Homestay", "Bed & Breakfast", "Vacation Rental", "Farm Stay", "Guesthouse", "Cottage", "Villa", "Treehouse", "Tiny Home"];
+const DESC_HIGHLIGHTS  = ["Peaceful", "Unique", "Family-friendly", "Stylish", "Central", "Spacious", "Scenic", "Cozy"];
 
 // ─── Check if all rooms have same/no price (for non-PG) ──────────────────────
 const allRoomsSamePrice = (rooms) => {
@@ -289,7 +312,35 @@ const PGListingForm = () => {
     carParking: "1 Open",
     preferredTenants: [TENANT_PREFERENCES[0]],
     houseRules: ["Couple Friendly"],
-    
+
+    // ── Apartments & Villas extra fields ─────────────────────────────────────
+    bhk: "2 BHK",
+    coveredParking: 0,
+    openParking: 0,
+    servantRoom: "No",
+    flatNo: "",
+    carpetArea: "",
+    areaUnit: "sq. ft.",
+    securityDepositType: "1 month",
+    customSecurityDeposit: "",
+    maintenanceChargesType: "Include in rent",
+    parkingChargesType: "Include in rent",
+    paintingChargesType: "None",
+    customPaintingCharges: "",
+    customLockIn: "",
+    tenantTypeSimple: [],
+    petFriendly: "No",
+    flatFurnishings: {},
+
+    // ── Homestays & BnB extra fields ─────────────────────────────────────────
+    placeType: "Entire Place",
+    descriptionHighlights: [],
+    weeklyDiscount: "",
+    monthlyDiscount: "",
+    newListingDiscount: false,
+    lastMinuteDiscount: false,
+    beds: 1,
+
     foodAvailable: false,
     foodDetails: { breakfast: true, lunch: false, dinner: true, type: "Both" },
     noticePeriod: "",
@@ -413,8 +464,9 @@ const PGListingForm = () => {
     setShowAddrDrop(false);
   };
 
-  // ── isPG shorthand ────────────────────────────────────────────────────────
-  const isPG = isPGCategory(form.propertyCategory);
+  // ── category shorthands ──────────────────────────────────────────────────
+  const isPG       = isPGCategory(form.propertyCategory);
+  const isHomestay = isHomestayCategory(form.propertyCategory);
 
   // ── When category switches to PG, force per-room pricing on (PG always has room-wise prices) ──
   useEffect(() => {
@@ -429,7 +481,6 @@ const PGListingForm = () => {
     { id: 4, title: "Local Guide", icon: <MapPin size={18} /> },
     { id: 5, title: "Photos", icon: <Camera size={18} /> },
     { id: 6, title: "Pricing", icon: <CreditCard size={18} /> },
-    { id: 7, title: "Verification", icon: <ShieldCheck size={18} /> },
   ];
 
   useEffect(() => {
@@ -593,7 +644,6 @@ const PGListingForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    if (!isPG && (!aadhaarVerified || !isPhoneVerified)) return alert("Please complete verification");
     setIsSubmitting(true);
 
     try {
@@ -706,22 +756,120 @@ const PGListingForm = () => {
           {/* ── STEP 1: Basic Info ───────────────────────────────────────────── */}
           {step === 1 && (
             <div className="step-fade">
-              <h2 className="step-title">Basic Information</h2>
+              <h2 className="step-title">{isHomestay ? "Tell us about your place" : "Basic Information"}</h2>
               <div className="form-grid">
+                {/* ── Homestay & BnB: place type cards ── */}
+                {isHomestay && (
+                  <>
+                    <div className="field-group full">
+                      <label>Which best describes your place?</label>
+                      <div className="bnb-place-types">
+                        {PLACE_TYPES_BNB.map(pt => (
+                          <div
+                            key={pt.id}
+                            className={`bnb-place-card ${form.placeType === pt.id ? 'selected' : ''}`}
+                            onClick={() => setForm(f => ({ ...f, placeType: pt.id }))}
+                          >
+                            <span className="bnb-place-icon">{pt.icon}</span>
+                            <div>
+                              <div className="bnb-place-title">{pt.label}</div>
+                              <div className="bnb-place-desc">{pt.desc}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="field-group full">
+                      <label>Property Type</label>
+                      <div className="chips-grid">
+                        {BNB_PROP_TYPES.map(t => (
+                          <div key={t} className={`amenity-chip ${form.propertyType === t ? 'selected' : ''}`}
+                            onClick={() => setForm(f => ({ ...f, propertyType: t }))}>
+                            {t}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* ── Apartment & Villas: chip-based property type + BHK ── */}
+                {!isPG && !isHomestay ? (
+                  <>
+                    <div className="field-group full">
+                      <label>Property Type</label>
+                      <div className="chips-grid">
+                        {APT_PROP_TYPES.map(t => (
+                          <div key={t} className={`amenity-chip ${form.propertyType === t ? 'selected' : ''}`}
+                            onClick={() => setForm(f => ({ ...f, propertyType: t }))}>
+                            {t}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="field-group full">
+                      <label>BHK Configuration</label>
+                      <div className="chips-grid">
+                        {BHK_OPTIONS.map(b => (
+                          <div key={b} className={`amenity-chip ${form.bhk === b ? 'selected' : ''}`}
+                            onClick={() => setForm(f => ({ ...f, bhk: b }))}>
+                            {b}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                ) : isPG ? (
+                  <div className="field-group">
+                    <label>Specific Property Type</label>
+                    <select name="propertyType" value={form.propertyType} onChange={handleChange}>
+                      {PROPERTY_TYPES[form.propertyCategory]?.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </div>
+                ) : null}
+
+                {/* ── Non-Homestay: title at top ── */}
+                {!isHomestay && (
+                  <div className="field-group full">
+                    <label>Property Title / Building Name *</label>
+                    <input name="title" value={form.title} onChange={handleChange} placeholder="e.g. Spacious 3BHK in DLF Phase 5" />
+                    {errors.title && <span className="error">{errors.title}</span>}
+                  </div>
+                )}
+
+                {/* ── Homestay: description highlights ── */}
+                {isHomestay && (
+                  <div className="field-group full">
+                    <label>What makes your place special? <span style={{fontWeight:400,color:'#9ca3af',fontSize:12}}>(choose up to 2)</span></label>
+                    <div className="chips-grid">
+                      {DESC_HIGHLIGHTS.map(h => {
+                        const selected = form.descriptionHighlights.includes(h);
+                        return (
+                          <div key={h}
+                            className={`amenity-chip ${selected ? 'selected' : ''}`}
+                            onClick={() => setForm(f => {
+                              const arr = f.descriptionHighlights;
+                              return { ...f, descriptionHighlights: selected ? arr.filter(x => x !== h) : arr.length < 2 ? [...arr, h] : arr };
+                            })}>
+                            {h}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 <div className="field-group full">
-                  <label>Property Title / Building Name *</label>
-                  <input name="title" value={form.title} onChange={handleChange} placeholder="e.g. Spacious 3BHK in DLF Phase 5" />
+                  <label>{isHomestay ? 'Give your place a title *' : 'Property Title / Building Name *'}</label>
+                  <input name="title" value={form.title} onChange={handleChange} placeholder={isHomestay ? 'e.g. Cozy hillside cottage with mountain view' : 'e.g. Spacious 3BHK in DLF Phase 5'} />
+                  {isHomestay && <div style={{fontSize:11,color:'#9ca3af',marginTop:4}}>{form.title.length}/50 characters</div>}
                   {errors.title && <span className="error">{errors.title}</span>}
                 </div>
-                <div className="field-group">
-                  <label>Specific Property Type</label>
-                  <select name="propertyType" value={form.propertyType} onChange={handleChange}>
-                    {PROPERTY_TYPES[form.propertyCategory]?.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
-                </div>
+
                 <div className="field-group full">
                   <label>Short Description *</label>
-                  <textarea name="mainDescription" value={form.mainDescription} onChange={handleChange} rows="2" placeholder="Tell us about the highlights of your property..." />
+                  <textarea name="mainDescription" value={form.mainDescription} onChange={handleChange} rows={isHomestay ? 4 : 2} placeholder={isHomestay ? 'Share what makes your place special — views, vibes, what guests love most...' : 'Tell us about the highlights of your property...'} />
+                  {isHomestay && <div style={{fontSize:11,color:'#9ca3af',marginTop:4}}>{form.mainDescription.length}/500 characters</div>}
                 </div>
                 <div className="field-group full" ref={addrWrapRef} style={{ position: 'relative' }}>
                   <label>Full Address *</label>
@@ -789,6 +937,25 @@ const PGListingForm = () => {
                   <label>Postal Code</label>
                   <input name="postalCode" value={form.postalCode} onChange={handleChange} placeholder="6 Digits" />
                 </div>
+                {!isPG && (
+                  <>
+                    <div className="field-group">
+                      <label>Flat / Unit No.</label>
+                      <input name="flatNo" value={form.flatNo} onChange={handleChange} placeholder="e.g. A-304" />
+                    </div>
+                    <div className="field-group">
+                      <label>Carpet Area</label>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <input type="number" name="carpetArea" value={form.carpetArea} onChange={handleChange} placeholder="e.g. 950" style={{ flex: 1 }} />
+                        <select name="areaUnit" value={form.areaUnit} onChange={handleChange} style={{ width: 100 }}>
+                          <option>sq. ft.</option>
+                          <option>sq. m.</option>
+                          <option>sq. yd.</option>
+                        </select>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -796,11 +963,45 @@ const PGListingForm = () => {
           {/* ── STEP 2: Layout & Room Config ─────────────────────────────────── */}
           {step === 2 && (
             <div className="step-fade">
-              <h2 className="step-title">Property Layout & Room Configuration</h2>
+              <h2 className="step-title">{isHomestay ? "Share some basics about your place" : "Property Layout & Room Configuration"}</h2>
+              {isHomestay && <p style={{color:'#6b7280',fontSize:14,marginBottom:20,marginTop:-8}}>You'll add more details later, such as bed types.</p>}
               <div className="form-grid">
 
-                {/* ── PRICING MODE TOGGLE (only for non-PG) ─────────────────── */}
-                {!isPG && (
+                {/* ── HOMESTAY: Airbnb-style stepper counters ─────────────────── */}
+                {isHomestay && (
+                  <div className="field-group full">
+                    <div className="bnb-stepper-list">
+                      {[
+                        { label: 'Guests',    key: 'maxGuests', min: 1, max: 30 },
+                        { label: 'Bedrooms',  key: 'bedrooms',  min: 0, max: 20 },
+                        { label: 'Beds',      key: 'beds',      min: 1, max: 30 },
+                        { label: 'Bathrooms', key: 'bathrooms', min: 1, max: 20 },
+                      ].map(({ label, key, min, max }) => (
+                        <div key={key} className="bnb-stepper-row">
+                          <span className="bnb-stepper-label">{label}</span>
+                          <div className="bnb-stepper-controls">
+                            <button type="button"
+                              className="bnb-stepper-btn"
+                              disabled={Number(form[key]) <= min}
+                              onClick={() => setForm(f => ({ ...f, [key]: Math.max(min, Number(f[key]) - 1) }))}>
+                              −
+                            </button>
+                            <span className="bnb-stepper-val">{form[key]}</span>
+                            <button type="button"
+                              className="bnb-stepper-btn"
+                              disabled={Number(form[key]) >= max}
+                              onClick={() => setForm(f => ({ ...f, [key]: Math.min(max, Number(f[key]) + 1) }))}>
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* ── PRICING MODE TOGGLE (only for non-PG, non-Homestay) ──────── */}
+                {!isPG && !isHomestay && (
                   <div className="field-group full">
                     <div
                       className="pricing-toggle-banner"
@@ -839,8 +1040,8 @@ const PGListingForm = () => {
                   </div>
                 )}
 
-                {/* ── ROOM DETAILS ──────────────────────────────────────────── */}
-                <div className="field-group full">
+                {/* ── ROOM DETAILS (not for Homestay — they use steppers above) ── */}
+                {!isHomestay && <div className="field-group full">
                   <div className="section-subtitle">Room Details Configuration</div>
                   <div className="room-config-list">
                     {form.bedroomDetails.map((room, idx) => (
@@ -971,10 +1172,10 @@ const PGListingForm = () => {
                       <Users size={18} /> Add Another Room Configuration
                     </button>
                   </div>
-                </div>
+                </div>}
 
-                {/* ── BATHROOM CONFIGURATION ── */}
-                <div className="field-group full">
+                {/* ── BATHROOM CONFIGURATION (PG only — Apartments use chips below) ── */}
+                {isPG && <div className="field-group full">
                   <div className="section-subtitle" style={{ marginTop: '24px' }}>
                     Bathroom Configuration
                   </div>
@@ -1096,8 +1297,71 @@ const PGListingForm = () => {
                       {' '}({(form.bathroomDetails || []).map(b => `${b.count} ${b.type}`).join(', ')})
                     </div>
                   </div>
-                </div>
+                </div>}
                 {/* ── END BATHROOM SECTION ── */}
+
+                {/* ── Apartments: quick count chips for bath/balcony/parking ── */}
+                {!isPG && (
+                  <div className="field-group full">
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 8 }}>
+                      <div>
+                        <label style={{ fontWeight: 600, fontSize: 13, color: '#374151', marginBottom: 8, display: 'block' }}>Bathrooms</label>
+                        <div className="chips-grid">
+                          {BATH_COUNT_OPTS.map(n => (
+                            <div key={n} className={`amenity-chip ${form.bathrooms === n ? 'selected' : ''}`}
+                              onClick={() => setForm(f => ({ ...f, bathrooms: n }))}>
+                              {n}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <label style={{ fontWeight: 600, fontSize: 13, color: '#374151', marginBottom: 8, display: 'block' }}>Balconies</label>
+                        <div className="chips-grid">
+                          {BALCONY_OPTS.map(n => (
+                            <div key={n} className={`amenity-chip ${form.balconies === n ? 'selected' : ''}`}
+                              onClick={() => setForm(f => ({ ...f, balconies: n }))}>
+                              {n}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <label style={{ fontWeight: 600, fontSize: 13, color: '#374151', marginBottom: 8, display: 'block' }}>Covered Parking</label>
+                        <div className="chips-grid">
+                          {PARK_COUNT_OPTS.map(n => (
+                            <div key={n} className={`amenity-chip ${form.coveredParking === n ? 'selected' : ''}`}
+                              onClick={() => setForm(f => ({ ...f, coveredParking: n }))}>
+                              {n}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <label style={{ fontWeight: 600, fontSize: 13, color: '#374151', marginBottom: 8, display: 'block' }}>Open Parking</label>
+                        <div className="chips-grid">
+                          {PARK_COUNT_OPTS.map(n => (
+                            <div key={n} className={`amenity-chip ${form.openParking === n ? 'selected' : ''}`}
+                              onClick={() => setForm(f => ({ ...f, openParking: n }))}>
+                              {n}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ marginTop: 16 }}>
+                      <label style={{ fontWeight: 600, fontSize: 13, color: '#374151', marginBottom: 8, display: 'block' }}>Servant Room</label>
+                      <div className="chips-grid">
+                        {['No', 'Yes'].map(v => (
+                          <div key={v} className={`amenity-chip ${form.servantRoom === v ? 'selected' : ''}`}
+                            onClick={() => setForm(f => ({ ...f, servantRoom: v }))}>
+                            {v}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {!isPG && (
                 <div className="field-group full">
@@ -1157,6 +1421,33 @@ const PGListingForm = () => {
           {step === 3 && (
             <div className="step-fade">
               <h2 className="step-title">Amenities & Features</h2>
+
+              {/* ── Flat Furnishings (only for Apartments & Villas) ── */}
+              {!isPG && (
+                <div className="amenity-group" style={{ marginBottom: 24 }}>
+                  <h4>What's in the Flat? (Furnishings)</h4>
+                  <div className="chips-grid">
+                    {FLAT_FURNISHINGS.map(item => (
+                      <div
+                        key={item}
+                        className={`amenity-chip ${form.flatFurnishings[item] ? 'selected' : ''}`}
+                        onClick={() => setForm(f => ({
+                          ...f,
+                          flatFurnishings: { ...f.flatFurnishings, [item]: !f.flatFurnishings[item] }
+                        }))}
+                      >
+                        {form.flatFurnishings[item] && (
+                          <span style={{ display:'flex', alignItems:'center', justifyContent:'center', width: 26, height: 26, borderRadius: 8, background: '#fff', color: '#c98b3e', flexShrink: 0 }}>
+                            <CheckCircle2 size={16} />
+                          </span>
+                        )}
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="amenities-container">
                  {Object.entries(AMENITIES_MASTER).map(([group, list]) => (
                    <div key={group} className="amenity-group">
@@ -1306,11 +1597,72 @@ const PGListingForm = () => {
           {/* ── STEP 6: Pricing ──────────────────────────────────────────────── */}
           {step === 6 && (
             <div className="step-fade">
-              <h2 className="step-title">Rent & Financials</h2>
+              <h2 className="step-title">{isHomestay ? "Now, set your price" : "Rent & Financials"}</h2>
+              {isHomestay && <p style={{color:'#6b7280',fontSize:14,marginBottom:20,marginTop:-8}}>You can always change it later.</p>}
               <div className="form-grid">
 
-                {/* ── For non-PG single pricing: show base price fields ── */}
-                {!isPG && !usePerRoomPricing && (
+                {/* ── HOMESTAY: nightly base price + discounts ── */}
+                {isHomestay && (
+                  <>
+                    <div className="field-group full">
+                      <label>Nightly Rate (₹)</label>
+                      <div className="bnb-price-input-wrap">
+                        <span className="bnb-price-symbol">₹</span>
+                        <input type="number" name="baseRate" value={form.baseRate} onChange={handleChange}
+                          className="bnb-price-input" placeholder="0" />
+                      </div>
+                    </div>
+
+                    <div className="field-group full">
+                      <label>Available From</label>
+                      <input type="date" name="availableFrom" value={form.availableFrom} onChange={handleChange} />
+                    </div>
+
+                    {/* Discount cards */}
+                    <div className="field-group full">
+                      <div className="section-separator">Add discounts</div>
+                      <p style={{fontSize:13,color:'#6b7280',marginBottom:12}}>Help your place stand out and get booked faster.</p>
+                      <div className="bnb-discount-list">
+                        {[
+                          { key: 'newListingDiscount',  pct: '20%', title: 'New listing promotion',  desc: 'Offer 20% off your first 3 bookings' },
+                          { key: 'lastMinuteDiscount',  pct: '5%',  title: 'Last-minute discount',   desc: 'For stays booked 14 days or less before arrival' },
+                        ].map(d => (
+                          <label key={d.key} className={`bnb-discount-card ${form[d.key] ? 'active' : ''}`}>
+                            <div className="bnb-discount-pct">{d.pct}</div>
+                            <div className="bnb-discount-info">
+                              <div className="bnb-discount-title">{d.title}</div>
+                              <div className="bnb-discount-desc">{d.desc}</div>
+                            </div>
+                            <input type="checkbox" checked={form[d.key]}
+                              onChange={e => setForm(f => ({ ...f, [d.key]: e.target.checked }))}
+                              style={{width:18,height:18,accentColor:'#c98b3e',cursor:'pointer',flexShrink:0}} />
+                          </label>
+                        ))}
+                        <div className="bnb-discount-card" style={{cursor:'default'}}>
+                          <div className="bnb-discount-pct">%</div>
+                          <div className="bnb-discount-info">
+                            <div className="bnb-discount-title">Weekly discount</div>
+                            <div className="bnb-discount-desc">For stays of 7 nights or more</div>
+                          </div>
+                          <input type="number" value={form.weeklyDiscount} onChange={e => setForm(f => ({ ...f, weeklyDiscount: e.target.value }))}
+                            placeholder="0%" style={{width:60,border:'1px solid #e5e7eb',borderRadius:8,padding:'6px 8px',fontSize:14,textAlign:'center'}} />
+                        </div>
+                        <div className="bnb-discount-card" style={{cursor:'default'}}>
+                          <div className="bnb-discount-pct">%</div>
+                          <div className="bnb-discount-info">
+                            <div className="bnb-discount-title">Monthly discount</div>
+                            <div className="bnb-discount-desc">For stays of 28 nights or more</div>
+                          </div>
+                          <input type="number" value={form.monthlyDiscount} onChange={e => setForm(f => ({ ...f, monthlyDiscount: e.target.value }))}
+                            placeholder="0%" style={{width:60,border:'1px solid #e5e7eb',borderRadius:8,padding:'6px 8px',fontSize:14,textAlign:'center'}} />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* ── For non-PG, non-Homestay single pricing: show base price fields ── */}
+                {!isPG && !isHomestay && !usePerRoomPricing && (
                   <>
                     <div className="field-group">
                       <label>Monthly Rent / Base Price (₹) *</label>
@@ -1331,8 +1683,8 @@ const PGListingForm = () => {
                   </>
                 )}
 
-                {/* ── For per-room pricing (non-PG): show summary / reminder ── */}
-                {!isPG && usePerRoomPricing && (
+                {/* ── For per-room pricing (non-PG, non-Homestay): show summary / reminder ── */}
+                {!isPG && !isHomestay && usePerRoomPricing && (
                   <div className="field-group full">
                     <div style={{
                       padding: '14px 18px',
@@ -1385,6 +1737,7 @@ const PGListingForm = () => {
                   </div>
                 )}
 
+                {!isHomestay && <>
                 <div className="field-group">
                   <label>Gate Closing Time</label>
                   <TimePickerAMPM
@@ -1396,17 +1749,19 @@ const PGListingForm = () => {
                   <label>Notice Period (Days)</label>
                   <input type="number" name="noticePeriod" value={form.noticePeriod} onChange={handleChange} />
                 </div>
+                </>}
 
+                {isPG && (
                 <div className="field-group full">
                    <label>Preferred Tenant (Select Multiple)</label>
                    <div className="chips-grid">
                       {TENANT_PREFERENCES.map(p => (
-                        <div 
-                          key={p} 
+                        <div
+                          key={p}
                           className={`amenity-chip ${form.preferredTenants.includes(p) ? 'selected' : ''}`}
                           onClick={() => {
-                            const newTenants = form.preferredTenants.includes(p) 
-                              ? form.preferredTenants.filter(t => t !== p) 
+                            const newTenants = form.preferredTenants.includes(p)
+                              ? form.preferredTenants.filter(t => t !== p)
                               : [...form.preferredTenants, p];
                             setForm(f => ({ ...f, preferredTenants: newTenants }));
                           }}
@@ -1416,11 +1771,13 @@ const PGListingForm = () => {
                       ))}
                    </div>
                 </div>
+                )}
 
+                {!isHomestay && <>
                 <div className="field-group full">
                   <div className="section-separator">Bill Payment Policy</div>
                 </div>
-                
+
                 <div className="field-group">
                   <label>Electricity Charges</label>
                   <select name="electricityCharges" value={form.electricityCharges} onChange={handleChange}>
@@ -1438,62 +1795,144 @@ const PGListingForm = () => {
                     <option>Shared Bill</option>
                   </select>
                 </div>
+                </>}
 
-                {!isPG && (<>
+                {!isPG && !isHomestay && (<>
+                {/* ── Security Deposit chips ── */}
                 <div className="field-group full">
-                  <div className="section-separator">Long-term Stay Discounts</div>
+                  <div className="section-separator">Security Deposit</div>
                 </div>
+                <div className="field-group full">
+                  <div className="chips-grid">
+                    {SECURITY_DEP_OPTS.map(v => (
+                      <div key={v} className={`amenity-chip ${form.securityDepositType === v ? 'selected' : ''}`}
+                        onClick={() => setForm(f => ({ ...f, securityDepositType: v }))}>
+                        {v}
+                      </div>
+                    ))}
+                  </div>
+                  {form.securityDepositType === 'Custom' && (
+                    <input type="number" style={{ marginTop: 10 }} placeholder="Enter security deposit amount (₹)"
+                      name="customSecurityDeposit" value={form.customSecurityDeposit} onChange={handleChange} />
+                  )}
+                </div>
+
+                {/* ── Maintenance Charges chips ── */}
+                <div className="field-group full">
+                  <div className="section-separator">Maintenance Charges</div>
+                </div>
+                <div className="field-group full">
+                  <div className="chips-grid">
+                    {MAINTENANCE_OPTS.map(v => (
+                      <div key={v} className={`amenity-chip ${form.maintenanceChargesType === v ? 'selected' : ''}`}
+                        onClick={() => setForm(f => ({ ...f, maintenanceChargesType: v }))}>
+                        {v}
+                      </div>
+                    ))}
+                  </div>
+                  {form.maintenanceChargesType === 'Separate' && (
+                    <input type="number" style={{ marginTop: 10 }} placeholder="Maintenance amount (₹/month)"
+                      name="maintenanceCharge" value={form.maintenanceCharge} onChange={handleChange} />
+                  )}
+                </div>
+
+                {/* ── Lock-in Period chips ── */}
+                <div className="field-group full">
+                  <div className="section-separator">Lock-in Period</div>
+                </div>
+                <div className="field-group full">
+                  <div className="chips-grid">
+                    {LOCK_IN_OPTS.map(v => (
+                      <div key={v} className={`amenity-chip ${form.lockInPeriod === v ? 'selected' : ''}`}
+                        onClick={() => setForm(f => ({ ...f, lockInPeriod: v }))}>
+                        {v}
+                      </div>
+                    ))}
+                  </div>
+                  {form.lockInPeriod === 'Custom' && (
+                    <input type="text" style={{ marginTop: 10 }} placeholder="e.g. 3 months"
+                      name="customLockIn" value={form.customLockIn} onChange={handleChange} />
+                  )}
+                </div>
+
+                {/* ── Parking Charges chips ── */}
+                <div className="field-group full">
+                  <div className="section-separator">Parking Charges</div>
+                </div>
+                <div className="field-group full">
+                  <div className="chips-grid">
+                    {PARKING_CHG_OPTS.map(v => (
+                      <div key={v} className={`amenity-chip ${form.parkingChargesType === v ? 'selected' : ''}`}
+                        onClick={() => setForm(f => ({ ...f, parkingChargesType: v }))}>
+                        {v}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* ── Painting Charges chips ── */}
+                <div className="field-group full">
+                  <div className="section-separator">Painting Charges (at move-out)</div>
+                </div>
+                <div className="field-group full">
+                  <div className="chips-grid">
+                    {PAINTING_CHG_OPTS.map(v => (
+                      <div key={v} className={`amenity-chip ${form.paintingChargesType === v ? 'selected' : ''}`}
+                        onClick={() => setForm(f => ({ ...f, paintingChargesType: v }))}>
+                        {v}
+                      </div>
+                    ))}
+                  </div>
+                  {form.paintingChargesType === 'Custom' && (
+                    <input type="text" style={{ marginTop: 10 }} placeholder="e.g. ₹5000 fixed"
+                      name="customPaintingCharges" value={form.customPaintingCharges} onChange={handleChange} />
+                  )}
+                </div>
+
+                {/* ── Tenant Type simplified chips ── */}
+                <div className="field-group full">
+                  <div className="section-separator">Preferred Tenants</div>
+                </div>
+                <div className="field-group full">
+                  <div className="chips-grid">
+                    {TENANT_TYPE_SIMPLE.map(v => (
+                      <div key={v}
+                        className={`amenity-chip ${form.tenantTypeSimple.includes(v) ? 'selected' : ''}`}
+                        onClick={() => setForm(f => ({
+                          ...f,
+                          tenantTypeSimple: f.tenantTypeSimple.includes(v)
+                            ? f.tenantTypeSimple.filter(t => t !== v)
+                            : [...f.tenantTypeSimple, v]
+                        }))}>
+                        {v}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* ── Pet Friendly chips ── */}
                 <div className="field-group">
-                  <label>90 Days Discount (%)</label>
-                  <input type="number" name="discount90Days" value={form.discount90Days} onChange={handleChange} placeholder="e.g. 5" />
+                  <label>Pet Friendly</label>
+                  <div className="chips-grid">
+                    {['Yes', 'No', 'Negotiable'].map(v => (
+                      <div key={v} className={`amenity-chip ${form.petFriendly === v ? 'selected' : ''}`}
+                        onClick={() => setForm(f => ({ ...f, petFriendly: v }))}>
+                        {v}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="field-group">
-                  <label>180 Days Discount (%)</label>
-                  <input type="number" name="discount180Days" value={form.discount180Days} onChange={handleChange} placeholder="e.g. 10" />
-                </div>
+
                 </>)}
               </div>
             </div>
           )}
 
-          {/* ── STEP 7: Verification (non-PG only) ────────────────────────────── */}
-          {step === 7 && !isPG && (
-            <div className="step-fade">
-              <h2 className="step-title">Final Verification</h2>
-              <div className="verification-box">
-                 <div className="v-item">
-                    <div className="v-label">Aadhaar Number (Identity)</div>
-                    <div className="v-input-row">
-                       <input placeholder="12 digit number" value={aadhaarNumber} onChange={(e) => { const val = e.target.value.replace(/\D/g, '').slice(0, 12); setAadhaarNumber(val); if (aadhaarVerified) setAadhaarVerified(false); }} disabled={isVerifyingAadhaar} style={{ borderColor: aadhaarVerified ? '#10b981' : '' }} />
-                       <button onClick={verifyAadhaar} disabled={aadhaarVerified || isVerifyingAadhaar || aadhaarNumber.length !== 12} className={aadhaarVerified ? 'verified' : ''}>
-                          {isVerifyingAadhaar ? 'Verifying...' : aadhaarVerified ? 'Verified ✓' : 'Verify Now'}
-                       </button>
-                    </div>
-                    {aadhaarVerified && <p className="success-msg">✓ Aadhaar verification successful.</p>}
-                 </div>
-                 <div className="v-item">
-                    <div className="v-label">Mobile Number Verification</div>
-                    <div className="v-input-row">
-                       <input placeholder="10 digit number" value={phoneNumber} onChange={(e) => { const val = e.target.value.replace(/\D/g,'').slice(0,10); setPhoneNumber(val); if (isPhoneVerified) setIsPhoneVerified(false); if (otpSent) setOtpSent(false); setPhoneOtp(''); }} disabled={isPhoneVerified || isSendingOtp} style={{ flex: 1, borderColor: isPhoneVerified ? '#10b981' : '' }} />
-                       {!otpSent && !isPhoneVerified && (<button onClick={handleSendOtp} disabled={isSendingOtp || phoneNumber.length !== 10}>{isSendingOtp ? 'Sending...' : 'Send OTP'}</button>)}
-                       {isPhoneVerified && (<button className="verified" disabled><CheckCircle2 size={16} /> Verified ✓</button>)}
-                    </div>
-                    {otpSent && !isPhoneVerified && (
-                      <div className="otp-container" style={{ marginTop: '15px' }}>
-                        <input placeholder="Enter OTP" className="otp-input" value={phoneOtp} onChange={(e) => setPhoneOtp(e.target.value.replace(/\D/g, ''))} />
-                        <button onClick={handleVerifyOtp} className="verify-btn" disabled={isVerifyingOtp || !phoneOtp}>{isVerifyingOtp ? 'Verifying...' : 'Verify OTP'}</button>
-                      </div>
-                    )}
-                    {isPhoneVerified && <p className="success-msg">✓ Phone number verified successfully.</p>}
-                 </div>
-              </div>
-            </div>
-          )}
         </div>
 
         <div className="form-footer-nav">
            <button className="btn-back" onClick={prevStep} disabled={step === 1}>Back</button>
-           {step < (isPG ? 6 : 7) ? (
+           {step < 6 ? (
              <button className="btn-next" onClick={nextStep}>Continue</button>
            ) : (
              <button className="btn-submit" onClick={handleSubmit} disabled={isSubmitting} style={{ opacity: isSubmitting ? 0.75 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}>

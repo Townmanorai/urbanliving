@@ -42,7 +42,10 @@
   line-height: 1.6;
 }
 
-/* ── Rows ── */
+/* ── Desktop rows ── */
+.csp-desktop-rows { width: 100%; max-width: 1140px; }
+.csp-mobile-stack  { display: none; }
+
 .csp-row {
   display: grid;
   gap: 20px;
@@ -55,9 +58,11 @@
 .csp-row--2 {
   grid-template-columns: repeat(2, 1fr);
   max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* ── Card ── */
+/* ── Card (shared desktop + mobile) ── */
 .csp-card {
   position: relative;
   display: flex;
@@ -77,7 +82,7 @@
 .csp-card:hover {
   border-color: #c2772b;
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 
 /* ── Icon box ── */
@@ -133,6 +138,11 @@
   border: 1px solid #bbf7d0;
 }
 
+/* ── Blinking arrow ── */
+.csp-arrow-blink {
+  display: none; /* hidden on desktop */
+}
+
 /* ── Footer note ── */
 .csp-note {
   margin-top: 28px;
@@ -152,20 +162,89 @@
   .csp-row--2 { grid-template-columns: 1fr; max-width: 100%; }
 }
 
-/* ── Mobile ── */
-@media (max-width: 480px) {
-  .csp-root { padding: 44px 16px 60px; }
+/* ═══════════════════════════════
+   MOBILE — all 5 cards on screen
+═══════════════════════════════ */
+@keyframes blink-arrow {
+  0%, 100% { opacity: 1;   transform: translateX(0); }
+  50%       { opacity: 0.3; transform: translateX(4px); }
+}
 
-  .csp-row--3,
-  .csp-row--2 {
-    grid-template-columns: 1fr;
-    max-width: 100%;
+@media (max-width: 540px) {
+  .csp-root {
+    padding: 28px 14px 24px;
+    min-height: unset;
+    flex: 1;
+    justify-content: flex-start;
   }
 
-  .csp-card { padding: 18px 16px; gap: 14px; }
+  .csp-header {
+    margin-bottom: 18px;
+    padding: 0 4px;
+  }
+  .csp-title  { font-size: 1.45rem; margin-bottom: 6px; }
+  .csp-sub    { font-size: 13px; }
+  .csp-eyebrow { font-size: 11px; padding: 4px 12px; margin-bottom: 10px; }
 
-  .csp-cat-icon { width: 44px; height: 44px; min-width: 44px; }
+  /* hide desktop rows, show mobile stack */
+  .csp-desktop-rows { display: none; }
+  .csp-mobile-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    width: 100%;
+  }
 
-  .csp-cat-info h3 { font-size: 14px; }
-  .csp-cat-info p  { font-size: 11.5px; }
+  /* Compact mobile card */
+  .csp-mobile-stack .csp-card {
+    min-height: unset;
+    padding: 13px 14px 13px 14px;
+    border-radius: 14px;
+    gap: 12px;
+    align-items: center;
+    /* leave space for arrow on right */
+    padding-right: 40px;
+  }
+  .csp-mobile-stack .csp-card:hover,
+  .csp-mobile-stack .csp-card:active {
+    transform: none;
+    border-color: #c2772b;
+    box-shadow: 0 4px 16px rgba(194,119,43,0.15);
+  }
+
+  /* Smaller icon */
+  .csp-mobile-stack .csp-cat-icon {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    border-radius: 10px;
+  }
+
+  .csp-mobile-stack .csp-cat-info h3 { font-size: 14.5px; margin-bottom: 3px; }
+  .csp-mobile-stack .csp-cat-info p  { font-size: 12px; line-height: 1.4; }
+
+  /* Tag — smaller, keep top-right */
+  .csp-mobile-stack .csp-tag {
+    top: 10px;
+    right: 36px; /* don't overlap arrow */
+    font-size: 9.5px;
+    padding: 2px 7px;
+  }
+
+  /* Blinking arrow — bottom right of card */
+  .csp-mobile-stack .csp-arrow-blink {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    font-size: 16px;
+    color: #c2772b;
+    animation: blink-arrow 1.2s ease-in-out infinite;
+    font-style: normal;
+    line-height: 1;
+  }
+
+  .csp-note { margin-top: 16px; font-size: 12px; }
 }

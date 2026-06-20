@@ -15,6 +15,7 @@ import Failure from "./compoent/payment/Failure";
 import ListPropertyPage from "./compoent/ListProperty/ListPropertyPage";
 import CategorySelectPage from "./compoent/ListProperty/CategorySelectPage";
 import ListingGuidePage from "./compoent/ListProperty/ListingGuidePage";
+import SignatureContactPage from "./compoent/ListProperty/SignatureContactPage";
 import SelfManage from "./compoent/FourthPage/SelfManage";
 import FifthMain from "./compoent/Fifth/FifthMain";
 import Ownermain from "./Owner/Ownermain";
@@ -145,6 +146,7 @@ function App() {
         <ScrollRestoration />
         <AnalyticsTracker />
         <Navbar />
+        <div className="app-routes-wrapper">
         <Routes>
           <Route path="/home" element={<Home />} />
           <Route path="/home-main" element={<HomeMain />} />
@@ -158,6 +160,7 @@ function App() {
           <Route path="/list-property" element={<ListPropertyPage />} />
           <Route path="/list-category" element={<CategorySelectPage />} />
           <Route path="/listing-guide" element={<ListingGuidePage />} />
+          <Route path="/signature-listing" element={<SignatureContactPage />} />
           <Route path="/success" element={<Sucess />} />
           <Route path="/failure" element={<Failure />} />
           <Route path="/selfmanage" element={<SelfManage />} />
@@ -225,6 +228,7 @@ function App() {
           <Route path="/leads-success" element={<LeadsSuccess />} />
           <Route path="/admin-control-panel" element={<RequireAuth><SuperAdminDashboard /></RequireAuth>} />
         </Routes>
+        </div>
         <ConditionalFooter />
         <MobileBottomNav />
         <CookieConsent />

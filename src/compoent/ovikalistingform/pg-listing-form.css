@@ -686,3 +686,210 @@
 
 @keyframes spin { to { transform: rotate(360deg); } }
 .spin-icon { animation: spin 0.9s linear infinite; }
+
+/* ═══════════════════════════════════════════════════════
+   HOMESTAY & BnB — Airbnb-style UI components
+═══════════════════════════════════════════════════════ */
+
+/* Place type cards */
+.bnb-place-types {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.bnb-place-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 14px;
+  cursor: pointer;
+  background: #fff;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+.bnb-place-card:hover {
+  border-color: #c98b3e;
+  box-shadow: 0 2px 12px rgba(201,139,62,0.10);
+}
+.bnb-place-card.selected {
+  border-color: #c98b3e;
+  background: #fffbf5;
+  box-shadow: 0 0 0 3px rgba(201,139,62,0.12);
+}
+.bnb-place-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+  width: 44px;
+  text-align: center;
+}
+.bnb-place-title {
+  font-weight: 600;
+  font-size: 15px;
+  color: #1e293b;
+  margin-bottom: 2px;
+}
+.bnb-place-desc {
+  font-size: 12.5px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* Stepper counters (Share basics) */
+.bnb-stepper-list {
+  border: 1.5px solid #e5e7eb;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+}
+.bnb-stepper-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.bnb-stepper-row:last-child { border-bottom: none; }
+.bnb-stepper-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1e293b;
+}
+.bnb-stepper-controls {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.bnb-stepper-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid #d1d5db;
+  background: #fff;
+  font-size: 20px;
+  font-weight: 400;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #374151;
+  transition: border-color 0.15s, color 0.15s;
+  line-height: 1;
+}
+.bnb-stepper-btn:hover:not(:disabled) {
+  border-color: #c98b3e;
+  color: #c98b3e;
+}
+.bnb-stepper-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.bnb-stepper-val {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1e293b;
+  min-width: 28px;
+  text-align: center;
+}
+
+/* Nightly price input */
+.bnb-price-input-wrap {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  max-width: 260px;
+  transition: border-color 0.18s;
+}
+.bnb-price-input-wrap:focus-within {
+  border-color: #c98b3e;
+  box-shadow: 0 0 0 3px rgba(201,139,62,0.10);
+}
+.bnb-price-symbol {
+  padding: 14px 16px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #374151;
+  background: #f9fafb;
+  border-right: 1.5px solid #e5e7eb;
+  user-select: none;
+}
+.bnb-price-input {
+  border: none !important;
+  outline: none !important;
+  padding: 14px 16px !important;
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  color: #1e293b !important;
+  width: 100% !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Discount cards */
+.bnb-discount-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bnb-discount-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.bnb-discount-card.active {
+  border-color: #c98b3e;
+  background: #fffbf5;
+}
+.bnb-discount-pct {
+  min-width: 48px;
+  height: 48px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+  background: #f9fafb;
+  flex-shrink: 0;
+}
+.bnb-discount-card.active .bnb-discount-pct {
+  border-color: #c98b3e;
+  color: #c98b3e;
+  background: #fef4e6;
+}
+.bnb-discount-info { flex: 1; min-width: 0; }
+.bnb-discount-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 2px;
+}
+.bnb-discount-desc {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* ── Mobile responsive ─────────────────────────────── */
+@media (max-width: 600px) {
+  .bnb-place-card { padding: 14px 14px; gap: 12px; }
+  .bnb-place-icon { font-size: 22px; width: 36px; }
+  .bnb-place-title { font-size: 14px; }
+  .bnb-stepper-row { padding: 16px 16px; }
+  .bnb-stepper-label { font-size: 14px; }
+  .bnb-stepper-btn { width: 34px; height: 34px; font-size: 18px; }
+  .bnb-price-input-wrap { max-width: 100%; }
+  .bnb-price-input { font-size: 22px !important; }
+  .bnb-discount-card { padding: 12px 14px; gap: 12px; }
+}

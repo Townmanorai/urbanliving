@@ -266,14 +266,13 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* ── SINGLE RIGHT PANEL — all items ── */}
+        {/* ── FULL-SCREEN MOBILE MENU ── */}
         {sideMenuOpen && (
           <>
-            <div onClick={closeMobileMenu} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.3)", zIndex: 1000000 }} />
-            <div style={{ position: "fixed", top: 0, right: 0, height: "100vh", width: "min(290px, 82vw)", background: "#fff", borderRadius: "20px 0 0 20px", boxShadow: "0 10px 40px rgba(0,0,0,0.18)", zIndex: 1000003, display: "flex", flexDirection: "column", animation: "slideDownSidebar .28s ease-out", overflowY: "auto" }}>
+            <div style={{ position: "fixed", inset: 0, width: "100vw", height: "100vh", background: "#fff", zIndex: 1000003, display: "flex", flexDirection: "column", animation: "slideDownSidebar .25s ease-out", overflowY: "auto" }}>
 
               {/* Header */}
-              <div style={{ background: "#fdf8f2", borderBottom: "1px solid #f0e8d8", padding: "16px 16px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 1 }}>
+              <div style={{ background: "#fdf8f2", borderBottom: "1px solid #f0e8d8", padding: "14px 20px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 1 }}>
                 {user ? (
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <div style={{ width: 36, height: 36, borderRadius: "50%", background: "linear-gradient(135deg, #c2772b, #a85e1f)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 700, flexShrink: 0 }}>{user.username?.[0]?.toUpperCase() || "U"}</div>
@@ -285,13 +284,13 @@ export default function Navbar() {
                 ) : (
                   <div style={{ fontSize: 14, fontWeight: 600, color: "#1a1a1a" }}>Welcome</div>
                 )}
-                <button onClick={closeMobileMenu} style={{ border: "none", background: "#f3f3f3", width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, cursor: "pointer", flexShrink: 0 }}>✕</button>
+                <button onClick={closeMobileMenu} style={{ border: "none", background: "#f3f3f3", width: 34, height: 34, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, cursor: "pointer", flexShrink: 0, color: "#555" }}>✕</button>
               </div>
 
               {user ? (
                 <>
                   {/* Nav items — only when logged in */}
-                  <div style={{ display: "flex", flexDirection: "column", gap: 2, padding: "12px 12px 8px", flex: 1 }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4, padding: "14px 20px 8px", flex: 1 }}>
                     {[
                       { icon: "🏠", label: "Home", path: "/", action: (e) => { closeMobileMenu(); navClick(e, "/", navigate); } },
                       { icon: "🌙", label: "Nightly Stays", path: "/nightly-stays", action: (e) => { closeMobileMenu(); navClick(e, "/nightly-stays", navigate); } },
@@ -310,21 +309,20 @@ export default function Navbar() {
                     ].map((item) => (
                       <button key={item.label} onClick={(e) => item.action(e)}
                         onAuxClick={(e) => item.path ? auxNavClick(e, item.path) : null}
-                        style={{ border: "none", background: "transparent", padding: "9px 8px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", width: "100%", borderRadius: 10, transition: "background 0.15s", textAlign: "left" }}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = "#fef9f2"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                        style={{ border: "1.5px solid #f0e8d8", background: "#fff", padding: "11px 14px", display: "flex", alignItems: "center", gap: 12, cursor: "pointer", width: "100%", borderRadius: 14, transition: "border-color 0.15s, background 0.15s", textAlign: "left", boxShadow: "0 1px 4px rgba(194,119,43,0.07)" }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = "#fef9f2"; e.currentTarget.style.borderColor = "#c2772b"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.borderColor = "#f0e8d8"; }}
                       >
-                        <span style={{ width: 30, height: 30, borderRadius: 10, background: "#f4f4f4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>{item.icon}</span>
-                        <div>
-                          <div style={{ fontSize: 13, fontWeight: 500, color: "#232323" }}>{item.label}</div>
-                        </div>
+                        <span style={{ width: 36, height: 36, borderRadius: 10, background: "#fdf2e4", border: "1px solid #f0d8b0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>{item.icon}</span>
+                        <div style={{ fontSize: 13.5, fontWeight: 500, color: "#232323" }}>{item.label}</div>
+                        <span style={{ marginLeft: "auto", fontSize: 13, color: "#c2772b", opacity: 0.5 }}>›</span>
                       </button>
                     ))}
                   </div>
 
                   {/* Footer: logout */}
-                  <div style={{ padding: "12px 12px 24px", borderTop: "1px solid #f0e8d8" }}>
-                    <button onClick={openLogoutConfirm} style={{ border: "1.5px solid #f0ddd0", background: "#fff8f5", padding: "10px 14px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", width: "100%", borderRadius: 10 }}>
+                  <div style={{ padding: "12px 20px 32px", borderTop: "1px solid #f0e8d8" }}>
+                    <button onClick={openLogoutConfirm} style={{ border: "1.5px solid #f0ddd0", background: "#fff8f5", padding: "11px 14px", display: "flex", alignItems: "center", gap: 12, cursor: "pointer", width: "100%", borderRadius: 14, boxShadow: "0 1px 4px rgba(194,119,43,0.07)" }}>
                       <span style={{ width: 28, height: 28, borderRadius: "50%", background: "#fdf3e7", display: "flex", alignItems: "center", justifyContent: "center", color: "#c2772b" }}>
                         <LogOut size={14} strokeWidth={2} color="#c2772b" />
                       </span>

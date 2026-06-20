@@ -5,18 +5,18 @@ import { Hotel, Building2, Home, Building, Users } from 'lucide-react';
 import { navClick, auxNavClick } from '../../utils/navClick';
 import './CategorySelectPage.css';
 
-const ROW1 = [
+const ALL_CATS = [
   {
     id: 'signature',
-    icon: <Hotel size={30} strokeWidth={1.5} />,
+    icon: <Hotel size={26} strokeWidth={1.5} />,
     label: 'Signature Stays',
     sub: 'Luxury villas, premium suites & signature homes',
     tag: 'Nightly',
-    path: '/listed1?category=Signature+Stays',
+    path: '/signature-listing',
   },
   {
     id: 'hotel',
-    icon: <Building2 size={30} strokeWidth={1.5} />,
+    icon: <Building2 size={26} strokeWidth={1.5} />,
     label: 'Hotel Stays',
     sub: 'Hotel rooms, boutique & business hotels',
     tag: 'Nightly',
@@ -24,18 +24,15 @@ const ROW1 = [
   },
   {
     id: 'homestay',
-    icon: <Home size={30} strokeWidth={1.5} />,
+    icon: <Home size={26} strokeWidth={1.5} />,
     label: 'Homestays & BnB',
     sub: 'Hosted homes, B&B, vacation rentals & farm stays',
     tag: 'Nightly',
     path: '/listed1?category=Homestays+%26+BnB',
   },
-];
-
-const ROW2 = [
   {
     id: 'apartments',
-    icon: <Building size={30} strokeWidth={1.5} />,
+    icon: <Building size={26} strokeWidth={1.5} />,
     label: 'Apartments & Villas',
     sub: 'Apartments, villas, studio, penthouse & duplex',
     tag: 'Monthly',
@@ -43,13 +40,16 @@ const ROW2 = [
   },
   {
     id: 'pg',
-    icon: <Users size={30} strokeWidth={1.5} />,
+    icon: <Users size={26} strokeWidth={1.5} />,
     label: 'PG & Co-Living',
     sub: 'PG, hostels & co-living spaces',
     tag: 'Monthly',
     path: '/list-pg?category=PG+%26+Co-Living',
   },
 ];
+
+const ROW1 = ALL_CATS.slice(0, 3);
+const ROW2 = ALL_CATS.slice(3);
 
 const CatCard = ({ cat, navigate }) => (
   <button
@@ -63,6 +63,7 @@ const CatCard = ({ cat, navigate }) => (
       <h3>{cat.label}</h3>
       <p>{cat.sub}</p>
     </div>
+    <span className="csp-arrow-blink">&#8594;</span>
   </button>
 );
 
@@ -83,6 +84,7 @@ const CategorySelectPage = () => {
         <meta name="twitter:description" content="List your property on OvikaLiving. 5 categories — nightly stays, apartments, PG & co-living." />
         <meta name="robots" content="index, follow" />
       </Helmet>
+
       <div className="csp-header">
         <div className="csp-eyebrow">List Your Property</div>
         <h1 className="csp-title">
@@ -93,14 +95,19 @@ const CategorySelectPage = () => {
         </p>
       </div>
 
-      {/* Row 1 — 3 cards */}
-      <div className="csp-row csp-row--3">
-        {ROW1.map(cat => <CatCard key={cat.id} cat={cat} navigate={navigate} />)}
+      {/* Desktop: 2 rows */}
+      <div className="csp-desktop-rows">
+        <div className="csp-row csp-row--3">
+          {ROW1.map(cat => <CatCard key={cat.id} cat={cat} navigate={navigate} />)}
+        </div>
+        <div className="csp-row csp-row--2">
+          {ROW2.map(cat => <CatCard key={cat.id} cat={cat} navigate={navigate} />)}
+        </div>
       </div>
 
-      {/* Row 2 — 2 cards */}
-      <div className="csp-row csp-row--2">
-        {ROW2.map(cat => <CatCard key={cat.id} cat={cat} navigate={navigate} />)}
+      {/* Mobile: all 5 stacked */}
+      <div className="csp-mobile-stack">
+        {ALL_CATS.map(cat => <CatCard key={cat.id} cat={cat} navigate={navigate} />)}
       </div>
 
       <p className="csp-note">
