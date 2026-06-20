@@ -35,12 +35,12 @@ function Home() {
      <meta property="og:url" content="https://www.ovikaliving.com/home" />
      <meta property="og:type" content="website" />
      <meta property="og:site_name" content="OvikaLiving" />
-     <meta property="og:image" content="https://www.ovikaliving.com/og-image.jpg" />
+     <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
      <meta property="og:locale" content="en_IN" />
      <meta name="twitter:card" content="summary_large_image" />
      <meta name="twitter:title" content="OvikaLiving – Premium Living Spaces in Noida & Greater Noida" />
      <meta name="twitter:description" content="Premium & luxury living spaces in Noida & Greater Noida. Corporate stays, luxury PG & elite furnished apartments. No brokerage. Book now!" />
-     <meta name="twitter:image" content="https://www.ovikaliving.com/og-image.jpg" />
+     <meta name="twitter:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
    </Helmet>
    {/* <Navbar/> */}
    <MainBanner/>

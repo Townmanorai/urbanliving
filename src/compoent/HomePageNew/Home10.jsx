@@ -55,12 +55,12 @@ const Home10 = () => {
       <meta property="og:url" content="https://www.ovikaliving.com/monthly-rentals" />
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content="OvikaLiving" />
-      <meta property="og:image" content="https://www.ovikaliving.com/og-image.jpg" />
+      <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
       <meta property="og:locale" content="en_IN" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content="Monthly Rentals Noida | Best PG & Co-Living | OvikaLiving" />
       <meta name="twitter:description" content="Best monthly PG, co-living & furnished apartments in Noida & Greater Noida. Flexible lease, no brokerage. Book now!" />
-      <meta name="twitter:image" content="https://www.ovikaliving.com/og-image.jpg" />
+      <meta name="twitter:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
     </Helmet>
     <section className="monthly-rentals">
       <div className="monthly-rentals__header">

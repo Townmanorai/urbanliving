@@ -63,12 +63,12 @@ const ContactMain = () => {
         <meta property="og:url" content="https://www.ovikaliving.com/contactus" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="OvikaLiving" />
-        <meta property="og:image" content="https://www.ovikaliving.com/og-image.jpg" />
+        <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
         <meta property="og:locale" content="en_IN" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Contact OvikaLiving | PG & Co-Living Help Noida" />
         <meta name="twitter:description" content="Contact OvikaLiving for support with PG, co-living & flexible stays in Noida & Greater Noida. 24/7 customer care." />
-        <meta name="twitter:image" content="https://www.ovikaliving.com/og-image.jpg" />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
       </Helmet>
       {/* Header Section */}
       <div style={{

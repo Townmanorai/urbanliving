@@ -89,12 +89,12 @@ const ListPropertyPage = () => {
         <meta property="og:url" content="https://www.ovikaliving.com/list-property" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="OvikaLiving" />
-        <meta property="og:image" content="https://www.ovikaliving.com/og-image.jpg" />
+        <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
         <meta property="og:locale" content="en_IN" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="List Property Noida & Earn | OvikaLiving" />
         <meta name="twitter:description" content="List your PG or property in Noida. OvikaLiving handles everything — earn passive rental income. Get OvikaLiving Verified!" />
-        <meta name="twitter:image" content="https://www.ovikaliving.com/og-image.jpg" />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
       </Helmet>
       {/* Hero Section */}
       <div className="hero-section">

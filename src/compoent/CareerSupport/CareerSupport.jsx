@@ -1,6 +1,7 @@
 
 
 import React, { useState, useEffect, useRef } from "react";
+import { Helmet } from "react-helmet";
 import "./CareerSupport.css";
 
 // react-icons imports
@@ -128,6 +129,19 @@ export default function CareerSupport() {
 
   return (
     <div className="cs-page">
+      <Helmet>
+        <title>Careers at OvikaLiving — Join Our Team | Townmanor Technologies</title>
+        <meta name="description" content="Explore career opportunities at OvikaLiving by Townmanor Technologies. Join our team of innovators building India's smartest rental and co-living platform. Apply for tech, sales, operations & more roles." />
+        <link rel="canonical" href="https://www.ovikaliving.com/career-support" />
+        <meta property="og:title" content="Careers at OvikaLiving | Townmanor Technologies" />
+        <meta property="og:description" content="Join OvikaLiving — India's smartest rental platform. Open roles in tech, sales, operations and more. Apply today." />
+        <meta property="og:url" content="https://www.ovikaliving.com/career-support" />
+        <meta property="og:image" content="https://www.ovikaliving.com/careerdesktop.png" />
+        <meta name="twitter:title" content="Careers at OvikaLiving | Townmanor Technologies" />
+        <meta name="twitter:description" content="Join OvikaLiving — open roles in tech, sales & operations. Apply today." />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/careerdesktop.png" />
+        <meta name="robots" content="index, follow" />
+      </Helmet>
 
       {/* ═══ HERO ═══════════════════════════════════════════ */}
       <section className="cs-hero">

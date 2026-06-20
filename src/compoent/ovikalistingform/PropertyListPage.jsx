@@ -2325,7 +2325,7 @@ const PropertyListPage = () => {
         <meta property="og:description" content={lockedRental === 'short' ? 'Verified nightly stays & short-term furnished rentals in Noida. Flexible check-in from ₹999/night. No brokerage. Book now!' : lockedRental === 'long' ? 'Best PG & monthly rental rooms in Noida from ₹8,000/mo. Meals, Wi-Fi, AC. Verified. Zero brokerage. Book now!' : 'All verified PG, co-living & furnished stays in Noida & Greater Noida. No brokerage. Book now!'} />
         <meta property="og:url" content={lockedRental === 'short' ? 'https://www.ovikaliving.com/nightly-stays' : lockedRental === 'long' ? 'https://www.ovikaliving.com/monthly-rentals' : 'https://www.ovikaliving.com/properties'} />
         <meta property="og:site_name" content="OvikaLiving" />
-        <meta property="og:image" content="https://www.ovikaliving.com/og-properties.jpg" />
+        <meta property="og:image" content="https://www.ovikaliving.com/pglivingspace.jpeg" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="OvikaLiving — Verified PG and Rentals in Noida" />
@@ -2335,7 +2335,7 @@ const PropertyListPage = () => {
         <meta name="twitter:site" content="@OvikaLiving" />
         <meta name="twitter:title" content={lockedRental === 'short' ? 'Nightly Stays in Noida | OvikaLiving' : lockedRental === 'long' ? 'Monthly Rentals & PG Noida | OvikaLiving' : 'Browse All PG & Co-Living in Noida | OvikaLiving'} />
         <meta name="twitter:description" content={lockedRental === 'short' ? 'Book verified short-term stays in Noida from ₹999/night. No brokerage.' : lockedRental === 'long' ? 'PG & monthly rooms in Noida from ₹8K/mo. Wi-Fi, meals, AC. Zero brokerage.' : 'Best PG, co-living & furnished rentals in Noida. All sectors. No brokerage!'} />
-        <meta name="twitter:image" content="https://www.ovikaliving.com/og-properties.jpg" />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/pglivingspace.jpeg" />
 
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",

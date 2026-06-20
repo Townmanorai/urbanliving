@@ -1,88 +1,165 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Update the base URL below to your production domain (e.g., https://urbanliving.example or your Vercel domain). -->
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- ── Homepage ── -->
   <url>
-    <loc>https://ovika.co.in/</loc>
-    <lastmod>2025-09-10</lastmod>
+    <loc>https://www.ovikaliving.com/</loc>
+    <lastmod>2026-06-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://www.ovikaliving.com/ovikalivinglogonew.png</image:loc>
+      <image:title>OvikaLiving — Smart Urban Living</image:title>
+      <image:caption>OvikaLiving by Townmanor — PG, Co-Living &amp; Nightly Stays in Noida, Delhi NCR</image:caption>
+    </image:image>
+  </url>
+
+  <!-- ── Property Listings ── -->
+  <url>
+    <loc>https://www.ovikaliving.com/nightly-stays</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://ovika.co.in/tmluxe</loc>
-    <lastmod>2025-09-10</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://www.ovikaliving.com/monthly-rentals</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://www.ovikaliving.com/properties</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- ── List Property Flow ── -->
+  <url>
+    <loc>https://www.ovikaliving.com/list-category</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ovikaliving.com/about</loc>
-    <lastmod>2025-09-10</lastmod>
+    <loc>https://www.ovikaliving.com/listing-guide</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://www.ovikaliving.com/list-property</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- ── Co-Living & Speciality ── -->
+  <url>
+    <loc>https://www.ovikaliving.com/coliving-space</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://www.ovikaliving.com/colivingspace.jpeg</image:loc>
+      <image:title>Co-Living Spaces in Noida &amp; Delhi NCR</image:title>
+      <image:caption>Modern co-living spaces with all amenities — OvikaLiving</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.ovikaliving.com/tmluxe</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.ovikaliving.com/Luxe.png</image:loc>
+      <image:title>Luxury Stays — TMLuxe by OvikaLiving</image:title>
+    </image:image>
+  </url>
+
+  <!-- ── Verification Pages ── -->
+  <url>
+    <loc>https://www.ovikaliving.com/ovika-verified</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.ovika-self-verified</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- ── Info & Tools ── -->
+  <url>
+    <loc>https://www.ovikaliving.com/about</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://www.ovikaliving.com/mission.jpeg</image:loc>
+      <image:title>About OvikaLiving — Our Mission</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.ovikaliving.com/roi-calculator</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://www.ovikaliving.com/faq</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://www.ovikaliving.com/contactus</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.ovikaliving.com/legal-information</loc>
+    <lastmod>2026-06-20</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ovikaliving.com/</loc>
-    <lastmod>2025-09-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
+    <loc>https://www.ovikaliving.com/buy-leads</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- ── Legal ── -->
+  <url>
+    <loc>https://www.ovikaliving.com/privacy-policy</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://ovikaliving.com/tmluxe</loc>
-    <lastmod>2025-09-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://www.ovikaliving.com/terms-and-conditions</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://ovika.co.in/about</loc>
-    <lastmod>2025-09-10</lastmod>
+    <loc>https://www.ovikaliving.com/refund-cancellation-policy</loc>
+    <lastmod>2026-06-20</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.4</priority>
   </url>
-   <url>
-    <loc>https://www.ovika.co.in/tmluxespecific/2</loc>
-    <lastmod>2025-09-10</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.8</priority>
-  </url>
-     <url>
-    <loc>https://www.ovikaliving.com/tmluxespecific/2</loc>
-    <lastmod>2025-09-10</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.8</priority>
-  </url>
-    <url>
-    <loc>https://www.ovika.co.in/tmluxespecific/1</loc>
-    <lastmod>2025-09-10</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.8</priority>
-  </url>
-     <url>
-    <loc>https://www.ovikaliving.com/tmluxespecific/1</loc>
-    <lastmod>2025-09-10</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.8</priority>
-  </url>
-   <url>
-    <loc>https://www.ovika.co.in/dashboard</loc>
-    <lastmod>2025-09-10</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.8</priority>
-  </url>
-    <url>
-    <loc>https://www.ovikaliving.com/dashboard</loc>
-    <lastmod>2025-09-10</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.8</priority>
-  </url>
-   <url>
-    <loc>https://www.ovika.co.in/login</loc>
-    <lastmod>2025-09-10</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.8</priority>
-  </url>
-    <url>
+
+  <!-- ── Login ── -->
+  <url>
     <loc>https://www.ovikaliving.com/login</loc>
-    <lastmod>2025-09-10</lastmod>
+    <lastmod>2026-06-20</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.3</priority>
   </url>
+
 </urlset>

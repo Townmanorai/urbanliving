@@ -329,7 +329,7 @@ export default function LegalInformation() {
         <meta property="og:description" content="Official legal & compliance details of OvikaLiving by Townmanor Technologies Pvt. Ltd. GST, MSME, company registration documents." />
         <meta property="og:url" content="https://www.ovikaliving.com/legal-information" />
         <meta property="og:site_name" content="OvikaLiving" />
-        <meta property="og:image" content="https://www.ovikaliving.com/og-homepage.jpg" />
+        <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
         <meta property="og:locale" content="en_IN" />
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:site" content="@OvikaLiving" />

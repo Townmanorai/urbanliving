@@ -25,12 +25,12 @@ const AboutUs = () => {
         <meta property="og:url" content="https://www.ovikaliving.com/about" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="OvikaLiving" />
-        <meta property="og:image" content="https://www.ovikaliving.com/og-image.jpg" />
+        <meta property="og:image" content="https://www.ovikaliving.com/mission.jpeg" />
         <meta property="og:locale" content="en_IN" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="About OvikaLiving | Flexible Stay Platform Noida" />
         <meta name="twitter:description" content="OvikaLiving — flexible stay platform in Noida & Greater Noida. Verified PG, co-living, furnished apartments for remote workers, startup founders & students." />
-        <meta name="twitter:image" content="https://www.ovikaliving.com/og-image.jpg" />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/mission.jpeg" />
       </Helmet>
       {/* Hero Section */}
       <section className="about-hero">

@@ -1,5 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
+import { Helmet } from 'react-helmet';
 import { CheckCircle, XCircle, UploadCloud, Loader, ChevronLeft, ChevronRight } from 'lucide-react';
 import './Payment.css';
 import { MdCurrencyRupee, MdOutlineCurrencyRupee } from 'react-icons/md';
@@ -978,6 +979,11 @@ function Payment() {
 
   return (
     <>
+      <Helmet>
+        <title>Book Your Stay — OvikaLiving</title>
+        <meta name="description" content="Complete your booking on OvikaLiving. Secure payment, verified properties, instant confirmation." />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="booking-form-wrapper">
         <div className="booking-form-container">
           <div className="progress-bar-container">

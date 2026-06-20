@@ -46,12 +46,12 @@ const FAQ = () => {
         <meta property="og:url" content="https://www.ovikaliving.com/faq" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="OvikaLiving" />
-        <meta property="og:image" content="https://www.ovikaliving.com/og-image.jpg" />
+        <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
         <meta property="og:locale" content="en_IN" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="FAQ | OvikaLiving PG & Co-Living Help Center Noida" />
         <meta name="twitter:description" content="All answers about OvikaLiving PG, co-living & flexible stays in Noida. Booking, cancellation, amenities, policies & more." />
-        <meta name="twitter:image" content="https://www.ovikaliving.com/og-image.jpg" />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
       </Helmet>
       <div className="faq-page-header-unique">
         <h1>Frequently Asked Questions</h1>

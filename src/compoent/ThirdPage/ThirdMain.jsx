@@ -179,7 +179,7 @@ function ThirdMain() {
         <meta property="og:type" content="website" />
         <meta property="og:title" content={`${name} | Premium Co-Living in Noida`} />
         <meta property="og:description" content={seoDescription} />
-        <meta property="og:image" content={images[0] || '/default-og-image.jpg'} />
+        <meta property="og:image" content={images[0] || '/ovikalivinglogonew.png'} />
         <meta property="og:url" content={window.location.href} />
         <meta property="og:site_name" content="Town Manor" />
         <meta name="twitter:card" content="summary_large_image" />

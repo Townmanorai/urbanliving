@@ -32,12 +32,12 @@ export const HomeMain = () => {
         <meta property="og:description" content="India's #1 Flexible Stay Platform – Verified PG, co-living & furnished stays in Noida & Greater Noida for remote workers, startup founders, interns & professionals. No brokerage. Book now!" />
         <meta property="og:url" content="https://www.ovikaliving.com/" />
         <meta property="og:site_name" content="OvikaLiving" />
-        <meta property="og:image" content="https://www.ovikaliving.com/og-image.jpg" />
+        <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
         <meta property="og:locale" content="en_IN" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="OvikaLiving | Best PG & Co-Living in Noida | No Brokerage" />
         <meta name="twitter:description" content="India's #1 Flexible Stay Platform – Verified PG, co-living & furnished stays in Noida & Greater Noida. No brokerage. Book now!" />
-        <meta name="twitter:image" content="https://www.ovikaliving.com/og-image.jpg" />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
       </Helmet>
       {/* <WelcomePopUp/> */}
       <Home1 />

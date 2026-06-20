@@ -1,4 +1,5 @@
 import React, { useState, useContext, useRef } from 'react';
+import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../Login/AuthContext';
@@ -293,6 +294,10 @@ export default function OwnerVerificationForm() {
 
   return (
     <div className="ovf-root">
+      <Helmet>
+        <title>Owner Verification — OvikaLiving</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="ovf-container">
 
         {/* Header */}

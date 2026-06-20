@@ -177,7 +177,7 @@ export const HomePageNewMain = () => {
         <meta property="og:description" content="Verified PG, co-living, furnished apartments & nightly stays in Noida, Greater Noida, Delhi & Gurugram. Flexible, affordable, instant booking — OvikaLiving." />
         <meta property="og:url" content="https://www.ovikaliving.com/" />
         <meta property="og:site_name" content="OvikaLiving" />
-        <meta property="og:image" content="https://www.ovikaliving.com/og-homepage.jpg" />
+        <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="OvikaLiving — Smart Stays & PG in Noida" />
@@ -187,7 +187,7 @@ export const HomePageNewMain = () => {
         <meta name="twitter:site" content="@OvikaLiving" />
         <meta name="twitter:title" content="OvikaLiving — Smart Stays, PG & Co-Living in Noida | Book Now" />
         <meta name="twitter:description" content="Verified PG, co-living & furnished apartments in Noida, Greater Noida, Delhi & Gurugram. No brokerage. Instant booking." />
-        <meta name="twitter:image" content="https://www.ovikaliving.com/og-homepage.jpg" />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
         {/* JSON-LD */}
         <script type="application/ld+json">{JSON.stringify(homeJsonLd)}</script>
         <script type="application/ld+json">{JSON.stringify(imageGalleryJsonLd)}</script>

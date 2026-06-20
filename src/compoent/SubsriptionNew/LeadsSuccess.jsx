@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
 import "./LeadsSuccess.css";
 
@@ -228,6 +229,11 @@ export default function LeadsSuccess() {
 
   return (
     <div className="ls-page">
+      <Helmet>
+        <title>Lead Purchase Successful — OvikaLiving</title>
+        <meta name="description" content="Your lead purchase on OvikaLiving was successful. Start connecting with potential tenants now." />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="ls-card">
 
         {/* ── Icon ── */}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import { Hotel, Building2, Home, Building, Users, ArrowRight } from 'lucide-react';
 import { navClick, auxNavClick } from '../../utils/navClick';
@@ -77,6 +78,19 @@ const ListingGuidePage = () => {
 
   return (
     <div className="lg-root">
+      <Helmet>
+        <title>Property Listing Guide — Which Type Suits You? | OvikaLiving</title>
+        <meta name="description" content="Complete guide to listing your property on OvikaLiving. Compare Signature Stays, Hotel Stays, Homestays & BnB, Apartments & Villas, and PG & Co-Living. Find the right category and start listing today." />
+        <link rel="canonical" href="https://www.ovikaliving.com/listing-guide" />
+        <meta property="og:title" content="Property Listing Guide | OvikaLiving" />
+        <meta property="og:description" content="Compare all 5 property listing categories on OvikaLiving — Signature Stays, Hotels, Homestays, Apartments & PG Co-Living. Pick the right one and start earning." />
+        <meta property="og:url" content="https://www.ovikaliving.com/listing-guide" />
+        <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
+        <meta name="twitter:title" content="Property Listing Guide | OvikaLiving" />
+        <meta name="twitter:description" content="Compare all 5 property categories. Find the right listing type for your property on OvikaLiving." />
+        <meta name="robots" content="index, follow" />
+      </Helmet>
+
       {/* Header */}
       <div className="lg-header">
         <div className="lg-eyebrow">Listing Guide</div>

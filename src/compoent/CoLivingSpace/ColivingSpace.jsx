@@ -28,12 +28,12 @@ export default function ColivingSpace() {
         <meta property="og:url" content="https://www.ovikaliving.com/coliving-space" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="OvikaLiving" />
-        <meta property="og:image" content="https://www.ovikaliving.com/og-image.jpg" />
+        <meta property="og:image" content="https://www.ovikaliving.com/colivingspace.jpeg" />
         <meta property="og:locale" content="en_IN" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Co-Living Spaces Noida | Best Shared Living | OvikaLiving" />
         <meta name="twitter:description" content="Premium co-living spaces in Noida & Greater Noida. Fully furnished, community living, flexible lease. No brokerage!" />
-        <meta name="twitter:image" content="https://www.ovikaliving.com/og-image.jpg" />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/colivingspace.jpeg" />
       </Helmet>
         <C1/>
         {/* <C2/> */}

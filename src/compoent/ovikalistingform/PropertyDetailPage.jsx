@@ -1080,7 +1080,7 @@ const PhotoGallerySlider = ({ property, onClose }) => {
               className={`pgs-tab${activeTab===g?' pgs-tab--active':''}`}
               onClick={() => setActiveTab(g)}
             >
-              <img src={getPhotoUrl(grouped[g][0])} className="pgs-tab-thumb" alt="" />
+              <img src={getPhotoUrl(grouped[g][0])} className="pgs-tab-thumb" alt={`${GALLERY_LABELS[g] || g} photo thumbnail`} />
               {GALLERY_ICONS[g]} {GALLERY_LABELS[g]} ({grouped[g].length})
             </button>
           ))}
@@ -1117,7 +1117,7 @@ const PhotoGallerySlider = ({ property, onClose }) => {
                 const r = results[url];
                 return (
                   <div key={i} className="pgs-card" onClick={() => openLightbox(url, photos)}>
-                    <img src={getPhotoUrl(url)} alt="" loading="lazy" />
+                    <img src={getPhotoUrl(url)} alt={`Property photo ${i + 1}${r && r.label && r.label !== '_other' ? ` — ${GALLERY_LABELS[r.label] || r.label}` : ''}`} loading="lazy" />
                     <div className="pgs-card-tag pgs-card-tag--classifying">
                       {!r || r.loading ? '⏳ Classifying...'
                         : (r.error || r.label === '_other') ? '📦 Other'
@@ -1179,7 +1179,7 @@ const PhotoGallerySlider = ({ property, onClose }) => {
             <button className="pgs-lb-nav pgs-lb-prev"
               onClick={e => { e.stopPropagation(); setLightbox(l => ({ ...l, idx: l.idx - 1 })); }}>‹</button>
           )}
-          <img src={getPhotoUrl(lightbox.urls[lightbox.idx])} alt="" onClick={e => e.stopPropagation()} />
+          <img src={getPhotoUrl(lightbox.urls[lightbox.idx])} alt={`Property photo ${lightbox.idx + 1}`} onClick={e => e.stopPropagation()} />
           {lightbox.idx < lightbox.urls.length - 1 && (
             <button className="pgs-lb-nav pgs-lb-next"
               onClick={e => { e.stopPropagation(); setLightbox(l => ({ ...l, idx: l.idx + 1 })); }}>›</button>
@@ -2259,7 +2259,7 @@ const PropertyDetailPage = () => {
                     "height": 800,
                     "representativeOfPage": i === 0
                   }))
-                : [{ "@type": "ImageObject", "url": "https://www.ovikaliving.com/og-image.jpg" }],
+                : [{ "@type": "ImageObject", "url": "https://www.ovikaliving.com/ovikalivinglogonew.png" }],
               "address": {
                 "@type": "PostalAddress",
                 "streetAddress": property.address || "",

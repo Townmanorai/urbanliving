@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# Block auth-only and internal pages
+Disallow: /admin-control-panel
+Disallow: /admindashboard
+Disallow: /dashboard
+Disallow: /notification
+Disallow: /update-pg/
+Disallow: /listed1
+Disallow: /list-pg
+Disallow: /listed
+Disallow: /payment
+Disallow: /success
+Disallow: /failure
+Disallow: /leads-success
+Disallow: /career-support
+
+# Sitemap
+Sitemap: https://www.ovikaliving.com/sitemap.xml

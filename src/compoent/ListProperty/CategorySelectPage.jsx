@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import { Hotel, Building2, Home, Building, Users } from 'lucide-react';
 import { navClick, auxNavClick } from '../../utils/navClick';
@@ -70,6 +71,18 @@ const CategorySelectPage = () => {
 
   return (
     <div className="csp-root">
+      <Helmet>
+        <title>List Your Property — Choose Category | OvikaLiving</title>
+        <meta name="description" content="List your property on OvikaLiving. Choose from Signature Stays, Hotel Stays, Homestays, Apartments & Villas, or PG & Co-Living. Start listing in minutes — no brokerage." />
+        <link rel="canonical" href="https://www.ovikaliving.com/list-category" />
+        <meta property="og:title" content="List Your Property — Choose Category | OvikaLiving" />
+        <meta property="og:description" content="List your property on OvikaLiving. 5 categories — nightly stays, apartments, PG & co-living. Start listing in minutes." />
+        <meta property="og:url" content="https://www.ovikaliving.com/list-category" />
+        <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
+        <meta name="twitter:title" content="List Your Property — Choose Category | OvikaLiving" />
+        <meta name="twitter:description" content="List your property on OvikaLiving. 5 categories — nightly stays, apartments, PG & co-living." />
+        <meta name="robots" content="index, follow" />
+      </Helmet>
       <div className="csp-header">
         <div className="csp-eyebrow">List Your Property</div>
         <h1 className="csp-title">

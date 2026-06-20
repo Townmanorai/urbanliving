@@ -728,7 +728,7 @@ export default function HomePageNew1() {
 
         {/* Hero */}
         <div style={{ position: 'relative', height: 280, overflow: 'hidden' }}>
-          <img src="/newhome1mobile.png" alt=""
+          <img src="/newhome1mobile.png" alt="OvikaLiving — Find Smart Stays, Verified PGs & Apartments Across NCR Cities"
             onError={e => { e.currentTarget.src = '/home1desktop.jpeg'; }}
             style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 50%' }} />
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.65) 100%)' }} />

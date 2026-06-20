@@ -55,12 +55,12 @@ const Home9 = () => {
       <meta property="og:url" content="https://www.ovikaliving.com/nightly-stays" />
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content="OvikaLiving" />
-      <meta property="og:image" content="https://www.ovikaliving.com/og-image.jpg" />
+      <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
       <meta property="og:locale" content="en_IN" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content="Nightly Stays Noida | Short-Term Rental | OvikaLiving" />
       <meta name="twitter:description" content="Best nightly & short-term stays in Noida & Greater Noida. Daily rate, verified, fully furnished. No brokerage. Book now!" />
-      <meta name="twitter:image" content="https://www.ovikaliving.com/og-image.jpg" />
+      <meta name="twitter:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
     </Helmet>
     <section className="nightly-stays">
       <div className="nightly-stays__header">

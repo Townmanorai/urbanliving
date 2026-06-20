@@ -179,7 +179,7 @@ export default function ROICalculator() {
       <meta property="og:description" content="See exactly how much your vacant flat can earn per month on OvikaLiving. Adjust nightly rate, occupancy & expenses — get instant net income & annual ROI." />
       <meta property="og:url" content="https://www.ovikaliving.com/roi-calculator" />
       <meta property="og:site_name" content="OvikaLiving" />
-      <meta property="og:image" content="https://www.ovikaliving.com/og-roi-calculator.jpg" />
+      <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:locale" content="en_IN" />
@@ -188,7 +188,7 @@ export default function ROICalculator() {
       <meta name="twitter:site" content="@OvikaLiving" />
       <meta name="twitter:title" content="Free Property ROI Calculator | How Much Can Your Flat Earn? | OvikaLiving" />
       <meta name="twitter:description" content="Use OvikaLiving's free ROI calculator to estimate monthly rental income from your vacant property in Noida, Greater Noida, Delhi & Gurugram." />
-      <meta name="twitter:image" content="https://www.ovikaliving.com/og-roi-calculator.jpg" />
+      <meta name="twitter:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
       {/* JSON-LD Structured Data */}
       <script type="application/ld+json">{JSON.stringify(roiJsonLd)}</script>
     </Helmet>

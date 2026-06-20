@@ -477,7 +477,7 @@ export default function OvikaLiving() {
           </div>
         </div>
         <div style={styles.heroImageWrap} className="rs-hero-img-wrap">
-          <img src="/colivingmodel.png" alt="OvikaLiving model" style={styles.heroImg} />
+          <img src="/colivingmodel.png" alt="Modern co-living space — OvikaLiving smart urban living in Noida & Delhi NCR" style={styles.heroImg} />
         </div>
       </section>
       </div>
@@ -487,7 +487,7 @@ export default function OvikaLiving() {
 
         {/* Left: image — alignSelf start to remove empty space below */}
         <div style={{ ...styles.featuresImgWrap, alignSelf: "start" }}>
-          <img src="/colivingspace.jpeg" alt="Co-living community" style={styles.featuresImg} className="rs-features-img" />
+          <img src="/colivingspace.jpeg" alt="Co-living community space with shared amenities — OvikaLiving Noida" style={styles.featuresImg} className="rs-features-img" loading="lazy" />
         </div>
 
         {/* Center: checklist */}
