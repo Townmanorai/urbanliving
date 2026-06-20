@@ -405,9 +405,7 @@ export default function Navbar() {
           {/* RIGHT-ALIGNED: Nav text links */}
           <nav style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: "auto" }}>
             {[
-              { label: "Nightly Stays",   path: "/nightly-stays" },
-              { label: "Monthly Rental",  path: "/monthly-rentals" },
-              { label: "List Property",   action: handleBecomeHostClick },
+                { label: "List Property",   action: handleBecomeHostClick },
               { label: "Signature Stays", path: "/properties?category=Signature+Stays", action: handleSignatureStaysClick },
             ].map(({ label, path, action }) => {
               const isLeads = label === "Buy Leads";
