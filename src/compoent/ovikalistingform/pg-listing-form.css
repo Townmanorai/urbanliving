@@ -674,13 +674,112 @@
   .form-grid, .room-grid-mini {
     grid-template-columns: 1fr;
   }
-  
   .form-main-card {
     padding: 25px;
   }
-  
   .header-content h1 {
     font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .tmx9pf-root {
+    padding: 12px 10px 32px;
+  }
+  .rental-form-container {
+    max-width: 100%;
+  }
+  .form-header-premium {
+    margin-bottom: 20px;
+  }
+  .header-content h1 {
+    font-size: 1.4rem;
+    margin-bottom: 6px;
+  }
+  .header-content p {
+    font-size: 0.88rem;
+  }
+  .stepper-horizontal {
+    gap: 6px;
+    margin-top: 16px;
+    padding: 6px 0;
+    justify-content: flex-start;
+  }
+  .step-item {
+    min-width: 64px;
+    gap: 5px;
+  }
+  .step-item .icon-box {
+    width: 32px;
+    height: 32px;
+  }
+  .step-item span {
+    font-size: 0.65rem;
+  }
+  .form-main-card {
+    padding: 16px 14px;
+    border-radius: 14px;
+    min-height: unset;
+  }
+  .step-title {
+    font-size: 1.2rem;
+    margin-bottom: 18px;
+    padding-bottom: 8px;
+  }
+  .category-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .category-card {
+    padding: 16px 14px;
+    gap: 14px;
+  }
+  .cat-icon {
+    width: 40px;
+    height: 40px;
+  }
+  .cat-info h3 {
+    font-size: 0.95rem;
+  }
+  .upload-zone {
+    padding: 24px 16px;
+    border-radius: 14px;
+  }
+  .upload-trigger p {
+    font-size: 0.9rem;
+  }
+  .form-footer-nav {
+    gap: 10px;
+  }
+  .btn-back, .btn-next, .btn-submit {
+    padding: 11px 22px;
+    font-size: 0.9rem;
+    border-radius: 22px;
+  }
+  .v-input-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .v-input-row button {
+    padding: 12px;
+    border-radius: 10px;
+  }
+  .room-detail-card {
+    padding: 16px 14px;
+  }
+  .bnb-stepper-row {
+    padding: 14px 14px;
+  }
+  .bnb-stepper-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+  .bnb-price-input-wrap {
+    max-width: 100%;
+  }
+  .bnb-price-input {
+    font-size: 20px !important;
   }
 }
 

@@ -426,10 +426,79 @@
   .tmx9pf-grid {
     grid-template-columns: 1fr;
   }
-  
   .tmx9pf-stepper {
     overflow-x: auto;
     padding-bottom: 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .tmx9pf-root {
+    padding: 12px 10px 32px;
+  }
+  .tmx9pf-paginated {
+    max-width: 100%;
+  }
+  .tmx9pf-title {
+    font-size: 1.3rem;
+  }
+  .tmx9pf-sub {
+    font-size: 0.8rem;
+    margin-bottom: 14px;
+  }
+  .tmx9pf-header {
+    margin-bottom: 16px;
+  }
+  .tmx9pf-stepper {
+    gap: 2px;
+    margin-bottom: 16px;
+  }
+  .tmx9pf-step-bullet {
+    width: 24px;
+    height: 24px;
+    font-size: 0.6rem;
+  }
+  .tmx9pf-step-title {
+    font-size: 0.55rem;
+  }
+  .tmx9pf-card {
+    padding: 18px 16px;
+    border-radius: 12px;
+  }
+  .tmx9pf-section-title {
+    font-size: 1.1rem;
+    margin-bottom: 14px;
+  }
+  .tmx9pf-grid {
+    gap: 14px;
+  }
+  .tmx9pf-nav {
+    margin-top: 16px;
+    gap: 10px;
+  }
+  .tmx9pf-nav-btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    border-radius: 8px;
+  }
+  .tmx9pf-nav-next {
+    padding: 10px 28px;
+  }
+  .tmx9pf-photo-previews {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .tmx9pf-amenity-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .bnb-stepper-row {
+    padding: 14px 14px;
+  }
+  .bnb-stepper-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
   }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
