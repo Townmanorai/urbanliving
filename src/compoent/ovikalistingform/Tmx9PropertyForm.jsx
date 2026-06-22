@@ -735,7 +735,8 @@ const Tmx9PropertyForm = () => {
   );
 
   return (
-    <form className="tmx9pf-root tmx9pf-paginated" onSubmit={handleSubmit} noValidate>
+    <div className="tmx9pf-root">
+    <form className="tmx9pf-paginated" onSubmit={handleSubmit} noValidate>
       <style>{`
         .tmx9pf-dynamic-row {
           display: flex;
@@ -778,7 +779,7 @@ const Tmx9PropertyForm = () => {
         </div>
       </header>
 
-      <div className="tmx9pf-card">
+      <div className="tmx9pf-card" style={{minHeight: 620, width: '100%', boxSizing: 'border-box', flexShrink: 0}}>
 
         {/* ── STEP 0: Your Space ── */}
         {step === 0 && (
@@ -829,13 +830,55 @@ const Tmx9PropertyForm = () => {
                 </div>
               </>
             ) : (
-              <div className="tmx9pf-grid">
-                <div className="tmx9pf-field">
-                  <label className="tmx9pf-label">Property Type</label>
-                  <select name="propertyType" value={form.propertyType} onChange={handleChange} className="tmx9pf-select">
-                    {PROPERTY_TYPES.map((p) => <option key={p} value={p}>{p}</option>)}
-                  </select>
-                </div>
+              <div style={{display:'flex', flexDirection:'column', gap:16}}>
+                {[
+                  { id: 'Entire place', icon: '🏨', label: 'Entire place', desc: 'Guests have the whole property to themselves — ideal for hotels, villas, and resorts.' },
+                  { id: 'Private room', icon: '🚪', label: 'Private room', desc: 'Guests have their own room with access to shared common areas and facilities.' },
+                ].map(pt => (
+                  <div
+                    key={pt.id}
+                    onClick={() => setForm(f => ({ ...f, propertyType: pt.id }))}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 20,
+                      padding: '22px 24px',
+                      border: `2px solid ${form.propertyType === pt.id ? '#c98429' : '#e5e7eb'}`,
+                      borderRadius: 16,
+                      cursor: 'pointer',
+                      background: form.propertyType === pt.id ? '#fffbf5' : '#fff',
+                      boxShadow: form.propertyType === pt.id ? '0 0 0 3px rgba(201,132,41,0.12)' : '0 1px 4px rgba(0,0,0,0.05)',
+                      transition: 'all 0.18s ease',
+                    }}
+                  >
+                    <div style={{
+                      width: 60, height: 60, borderRadius: 14, flexShrink: 0,
+                      background: form.propertyType === pt.id ? '#fef4e6' : '#f3f4f6',
+                      border: `1.5px solid ${form.propertyType === pt.id ? '#f0d8b0' : '#e5e7eb'}`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 28, transition: 'all 0.18s ease',
+                    }}>
+                      {pt.icon}
+                    </div>
+                    <div style={{flex: 1}}>
+                      <div style={{fontWeight: 600, fontSize: 16, color: '#1e293b', marginBottom: 4}}>{pt.label}</div>
+                      <div style={{fontSize: 13, color: '#6b7280', lineHeight: 1.5}}>{pt.desc}</div>
+                    </div>
+                    <div style={{
+                      width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                      border: `2px solid ${form.propertyType === pt.id ? '#c98429' : '#d1d5db'}`,
+                      background: form.propertyType === pt.id ? '#c98429' : '#fff',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'all 0.18s ease',
+                    }}>
+                      {form.propertyType === pt.id && (
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+                          <path d="M20 6L9 17l-5-5" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </section>
@@ -1029,7 +1072,9 @@ const Tmx9PropertyForm = () => {
         {step === 5 && (
           <section className="tmx9pf-section">
             <h2 className="tmx9pf-section-title">House Rules</h2>
-            <div className="tmx9pf-grid">
+
+            {/* Check-in / Check-out / Guests / Quiet Hours — 2-col grid */}
+            <div className="tmx9pf-grid" style={{marginBottom: 24}}>
               <div className="tmx9pf-field">
                 <label className="tmx9pf-label">Check-in Time *</label>
                 <TimePickerAMPM value={form.checkInTime} onChange={(val) => setForm(f => ({ ...f, checkInTime: val }))} className={`tmx9pf-input ${errors.checkInTime ? "tmx9pf-input--error" : ""}`} />
@@ -1049,38 +1094,29 @@ const Tmx9PropertyForm = () => {
                 <label className="tmx9pf-label">Quiet Hours</label>
                 <input name="quietHours" value={form.quietHours} onChange={handleChange} className="tmx9pf-input" />
               </div>
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Smoking Allowed</label>
-                <Toggle name="smokingAllowed" value={form.smokingAllowed} onChange={(v) => setForm((s) => ({ ...s, smokingAllowed: v }))} />
-              </div>
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Pets Allowed</label>
-                <Toggle name="petsAllowed" value={form.petsAllowed} onChange={(v) => setForm((s) => ({ ...s, petsAllowed: v }))} />
-              </div>
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Events / Parties Allowed</label>
-                <Toggle name="eventsAllowed" value={form.eventsAllowed} onChange={(v) => setForm((s) => ({ ...s, eventsAllowed: v }))} />
-              </div>
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Drinking Alcohol Allowed</label>
-                <Toggle name="drinkingAllowed" value={form.drinkingAllowed} onChange={(v) => setForm((s) => ({ ...s, drinkingAllowed: v }))} />
-              </div>
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Outside Guests Allowed</label>
-                <Toggle name="outsideGuestsAllowed" value={form.outsideGuestsAllowed} onChange={(v) => setForm((s) => ({ ...s, outsideGuestsAllowed: v }))} />
-              </div>
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Only Family Allowed</label>
-                <Toggle name="familyAllowed" value={form.familyAllowed} onChange={(v) => setForm((s) => ({ ...s, familyAllowed: v }))} />
-              </div>
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Unmarried Couple Allowed</label>
-                <Toggle name="unmarriedCoupleAllowed" value={form.unmarriedCoupleAllowed} onChange={(v) => setForm((s) => ({ ...s, unmarriedCoupleAllowed: v }))} />
-              </div>
-              <div className="tmx9pf-field">
-                <label className="tmx9pf-label">Bachelor Allowed</label>
-                <Toggle name="bachelorAllowed" value={form.bachelorAllowed} onChange={(v) => setForm((s) => ({ ...s, bachelorAllowed: v }))} />
-              </div>
+            </div>
+
+            {/* Rules — 3-col card grid */}
+            <div style={{fontSize:'0.78rem',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.06em',color:'#64748b',marginBottom:12}}>Guest Policies</div>
+            <div className="tmx9pf-rules-grid">
+              {[
+                { icon: '🚬', label: 'Smoking Allowed',         key: 'smokingAllowed',         cb: (v) => setForm(s => ({...s, smokingAllowed: v})) },
+                { icon: '🐾', label: 'Pets Allowed',            key: 'petsAllowed',            cb: (v) => setForm(s => ({...s, petsAllowed: v})) },
+                { icon: '🎉', label: 'Events / Parties',        key: 'eventsAllowed',          cb: (v) => setForm(s => ({...s, eventsAllowed: v})) },
+                { icon: '🍺', label: 'Drinking Allowed',        key: 'drinkingAllowed',        cb: (v) => setForm(s => ({...s, drinkingAllowed: v})) },
+                { icon: '👥', label: 'Outside Guests',          key: 'outsideGuestsAllowed',   cb: (v) => setForm(s => ({...s, outsideGuestsAllowed: v})) },
+                { icon: '👨‍👩‍👧', label: 'Family Only',           key: 'familyAllowed',          cb: (v) => setForm(s => ({...s, familyAllowed: v})) },
+                { icon: '💑', label: 'Unmarried Couple',        key: 'unmarriedCoupleAllowed', cb: (v) => setForm(s => ({...s, unmarriedCoupleAllowed: v})) },
+                { icon: '🎓', label: 'Bachelors Allowed',       key: 'bachelorAllowed',        cb: (v) => setForm(s => ({...s, bachelorAllowed: v})) },
+              ].map(({ icon, label, key, cb }) => (
+                <div key={key} className="tmx9pf-rule-card">
+                  <div className="tmx9pf-rule-label">
+                    <span className="tmx9pf-rule-icon">{icon}</span>
+                    {label}
+                  </div>
+                  <Toggle name={key} value={form[key]} onChange={cb} />
+                </div>
+              ))}
             </div>
           </section>
         )}
@@ -1089,28 +1125,49 @@ const Tmx9PropertyForm = () => {
         {step === 6 && (
           <section className="tmx9pf-section">
             <h2 className="tmx9pf-section-title">Nearby & Guest Tips</h2>
-            <p style={{color:'#6b7280',fontSize:14,marginBottom:20,marginTop:-8}}>Optional — help guests explore the neighbourhood.</p>
+            <p style={{color:'#6b7280',fontSize:14,marginBottom:24,marginTop:-10}}>Optional — help guests explore the neighbourhood.</p>
 
-            <div className="tmx9pf-guidebook-section" style={{marginTop:0,paddingTop:0,borderTop:'none'}}>
-              <h3 className="tmx9pf-guidebook-title">🚗 Transport & Travel Tips</h3>
-              <div className="tmx9pf-grid">
-                <div className="tmx9pf-field">
-                  <label className="tmx9pf-label">Taxi Services</label>
-                  <input value={form.transportTips.taxi} onChange={(e) => setForm(f => ({ ...f, transportTips: { ...f.transportTips, taxi: e.target.value } }))} className="tmx9pf-input" placeholder="e.g., Uber/Ola available" />
+            {/* Row 1: Transport + Essentials side by side */}
+            <div className="tmx9pf-guidebook-row">
+              <div>
+                <div className="tmx9pf-guidebook-title">🚗 Transport & Travel</div>
+                <div style={{display:'flex',flexDirection:'column',gap:12}}>
+                  <div className="tmx9pf-field">
+                    <label className="tmx9pf-label">Taxi / Cab Services</label>
+                    <input value={form.transportTips.taxi} onChange={(e) => setForm(f => ({ ...f, transportTips: { ...f.transportTips, taxi: e.target.value } }))} className="tmx9pf-input" placeholder="e.g., Uber/Ola available" />
+                  </div>
+                  <div className="tmx9pf-field">
+                    <label className="tmx9pf-label">Parking Info</label>
+                    <input value={form.transportTips.parking} onChange={(e) => setForm(f => ({ ...f, transportTips: { ...f.transportTips, parking: e.target.value } }))} className="tmx9pf-input" placeholder="e.g., Free street parking" />
+                  </div>
+                  <div className="tmx9pf-field">
+                    <label className="tmx9pf-label">Local Travel Tips</label>
+                    <input value={form.transportTips.localTravel} onChange={(e) => setForm(f => ({ ...f, transportTips: { ...f.transportTips, localTravel: e.target.value } }))} className="tmx9pf-input" placeholder="e.g., Auto easily available" />
+                  </div>
                 </div>
-                <div className="tmx9pf-field">
-                  <label className="tmx9pf-label">Parking Info</label>
-                  <input value={form.transportTips.parking} onChange={(e) => setForm(f => ({ ...f, transportTips: { ...f.transportTips, parking: e.target.value } }))} className="tmx9pf-input" placeholder="e.g., Free street parking" />
-                </div>
-                <div className="tmx9pf-field full">
-                  <label className="tmx9pf-label">Local Travel Tips</label>
-                  <input value={form.transportTips.localTravel} onChange={(e) => setForm(f => ({ ...f, transportTips: { ...f.transportTips, localTravel: e.target.value } }))} className="tmx9pf-input" placeholder="e.g., Auto easily available" />
+              </div>
+              <div>
+                <div className="tmx9pf-guidebook-title">🏪 Essentials Nearby</div>
+                <div style={{display:'flex',flexDirection:'column',gap:12}}>
+                  <div className="tmx9pf-field">
+                    <label className="tmx9pf-label">ATM</label>
+                    <input value={form.essentialsNearby.atm} onChange={(e) => setForm(f => ({ ...f, essentialsNearby: { ...f.essentialsNearby, atm: e.target.value } }))} className="tmx9pf-input" placeholder="e.g., HDFC ATM (100m)" />
+                  </div>
+                  <div className="tmx9pf-field">
+                    <label className="tmx9pf-label">Grocery Store</label>
+                    <input value={form.essentialsNearby.grocery} onChange={(e) => setForm(f => ({ ...f, essentialsNearby: { ...f.essentialsNearby, grocery: e.target.value } }))} className="tmx9pf-input" placeholder="e.g., Reliance Fresh (200m)" />
+                  </div>
+                  <div className="tmx9pf-field">
+                    <label className="tmx9pf-label">Medical / Pharmacy</label>
+                    <input value={form.essentialsNearby.medical} onChange={(e) => setForm(f => ({ ...f, essentialsNearby: { ...f.essentialsNearby, medical: e.target.value } }))} className="tmx9pf-input" placeholder="e.g., Apollo Pharmacy (300m)" />
+                  </div>
                 </div>
               </div>
             </div>
 
+            {/* Row 2: Cafes */}
             <div className="tmx9pf-guidebook-section">
-              <h3 className="tmx9pf-guidebook-title">🍽️ Nearby Cafes & Restaurants</h3>
+              <div className="tmx9pf-guidebook-title">🍽️ Nearby Cafes & Restaurants</div>
               <div className="tmx9pf-dynamic-list">
                 {form.cafesRestaurants.map((cafe, index) => (
                   <div key={cafe.id} className="tmx9pf-dynamic-row">
@@ -1121,56 +1178,40 @@ const Tmx9PropertyForm = () => {
                     )}
                   </div>
                 ))}
-                <button type="button" onClick={() => setForm(f => ({ ...f, cafesRestaurants: [...f.cafesRestaurants, { id: Date.now(), name: "", distanceM: "" }] }))} className="tmx9pf-small-btn" style={{ marginTop: "8px" }}>+ Add Restaurant</button>
+                <button type="button" onClick={() => setForm(f => ({ ...f, cafesRestaurants: [...f.cafesRestaurants, { id: Date.now(), name: "", distanceM: "" }] }))} className="tmx9pf-small-btn" style={{ marginTop: "6px" }}>+ Add Restaurant</button>
               </div>
             </div>
 
-            <div className="tmx9pf-guidebook-section">
-              <h3 className="tmx9pf-guidebook-title">🏪 Essentials Nearby</h3>
-              <div className="tmx9pf-grid">
-                <div className="tmx9pf-field">
-                  <label className="tmx9pf-label">ATM</label>
-                  <input value={form.essentialsNearby.atm} onChange={(e) => setForm(f => ({ ...f, essentialsNearby: { ...f.essentialsNearby, atm: e.target.value } }))} className="tmx9pf-input" placeholder="e.g., HDFC ATM" />
-                </div>
-                <div className="tmx9pf-field">
-                  <label className="tmx9pf-label">Grocery Store</label>
-                  <input value={form.essentialsNearby.grocery} onChange={(e) => setForm(f => ({ ...f, essentialsNearby: { ...f.essentialsNearby, grocery: e.target.value } }))} className="tmx9pf-input" placeholder="e.g., Reliance Fresh (200m)" />
-                </div>
-                <div className="tmx9pf-field">
-                  <label className="tmx9pf-label">Medical / Pharmacy</label>
-                  <input value={form.essentialsNearby.medical} onChange={(e) => setForm(f => ({ ...f, essentialsNearby: { ...f.essentialsNearby, medical: e.target.value } }))} className="tmx9pf-input" placeholder="e.g., Apollo Pharmacy (300m)" />
+            {/* Row 3: Must Visit + House Tips side by side */}
+            <div className="tmx9pf-guidebook-row" style={{marginTop:24, paddingTop:22, borderTop:'2px solid #f1f5f9'}}>
+              <div>
+                <div className="tmx9pf-guidebook-title">📍 Must Visit Places</div>
+                <div className="tmx9pf-dynamic-list">
+                  {form.mustVisitPlaces.map((place, index) => (
+                    <div key={place.id} className="tmx9pf-dynamic-row">
+                      <input placeholder="Place Name" value={place.place} onChange={(e) => { const newPlaces = [...form.mustVisitPlaces]; newPlaces[index].place = e.target.value; setForm(f => ({ ...f, mustVisitPlaces: newPlaces })); }} className="tmx9pf-input" style={{ flex: 2 }} />
+                      <input placeholder="Best Time" value={place.bestTime} onChange={(e) => { const newPlaces = [...form.mustVisitPlaces]; newPlaces[index].bestTime = e.target.value; setForm(f => ({ ...f, mustVisitPlaces: newPlaces })); }} className="tmx9pf-input" style={{ flex: 1 }} />
+                      {form.mustVisitPlaces.length > 1 && (
+                        <button type="button" onClick={() => { const newPlaces = form.mustVisitPlaces.filter((_, i) => i !== index); setForm(f => ({ ...f, mustVisitPlaces: newPlaces })); }} className="tmx9pf-small-btn danger">×</button>
+                      )}
+                    </div>
+                  ))}
+                  <button type="button" onClick={() => setForm(f => ({ ...f, mustVisitPlaces: [...f.mustVisitPlaces, { id: Date.now(), place: "", bestTime: "" }] }))} className="tmx9pf-small-btn" style={{ marginTop: "6px" }}>+ Add Place</button>
                 </div>
               </div>
-            </div>
-
-            <div className="tmx9pf-guidebook-section">
-              <h3 className="tmx9pf-guidebook-title">📍 Must Visit Places</h3>
-              <div className="tmx9pf-dynamic-list">
-                {form.mustVisitPlaces.map((place, index) => (
-                  <div key={place.id} className="tmx9pf-dynamic-row">
-                    <input placeholder="Place Name" value={place.place} onChange={(e) => { const newPlaces = [...form.mustVisitPlaces]; newPlaces[index].place = e.target.value; setForm(f => ({ ...f, mustVisitPlaces: newPlaces })); }} className="tmx9pf-input" style={{ flex: 2 }} />
-                    <input placeholder="Best Time" value={place.bestTime} onChange={(e) => { const newPlaces = [...form.mustVisitPlaces]; newPlaces[index].bestTime = e.target.value; setForm(f => ({ ...f, mustVisitPlaces: newPlaces })); }} className="tmx9pf-input" style={{ flex: 1 }} />
-                    {form.mustVisitPlaces.length > 1 && (
-                      <button type="button" onClick={() => { const newPlaces = form.mustVisitPlaces.filter((_, i) => i !== index); setForm(f => ({ ...f, mustVisitPlaces: newPlaces })); }} className="tmx9pf-small-btn danger">×</button>
-                    )}
-                  </div>
-                ))}
-                <button type="button" onClick={() => setForm(f => ({ ...f, mustVisitPlaces: [...f.mustVisitPlaces, { id: Date.now(), place: "", bestTime: "" }] }))} className="tmx9pf-small-btn" style={{ marginTop: "8px" }}>+ Add Place</button>
-              </div>
-            </div>
-
-            <div className="tmx9pf-guidebook-section">
-              <h3 className="tmx9pf-guidebook-title">💡 House-Specific Tips</h3>
-              <div className="tmx9pf-dynamic-list">
-                {form.houseSpecificTips.map((tip, index) => (
-                  <div key={index} className="tmx9pf-dynamic-row">
-                    <input placeholder="Add a helpful tip for guests" value={tip} onChange={(e) => { const newTips = [...form.houseSpecificTips]; newTips[index] = e.target.value; setForm(f => ({ ...f, houseSpecificTips: newTips })); }} className="tmx9pf-input" style={{ flex: 1 }} />
-                    {form.houseSpecificTips.length > 1 && (
-                      <button type="button" onClick={() => { const newTips = form.houseSpecificTips.filter((_, i) => i !== index); setForm(f => ({ ...f, houseSpecificTips: newTips })); }} className="tmx9pf-small-btn danger">×</button>
-                    )}
-                  </div>
-                ))}
-                <button type="button" onClick={() => setForm(f => ({ ...f, houseSpecificTips: [...f.houseSpecificTips, ""] }))} className="tmx9pf-small-btn" style={{ marginTop: "8px" }}>+ Add Tip</button>
+              <div>
+                <div className="tmx9pf-guidebook-title">💡 House-Specific Tips</div>
+                <div className="tmx9pf-dynamic-list">
+                  {form.houseSpecificTips.map((tip, index) => (
+                    <div key={index} className="tmx9pf-dynamic-row">
+                      <input placeholder="Add a helpful tip for guests" value={tip} onChange={(e) => { const newTips = [...form.houseSpecificTips]; newTips[index] = e.target.value; setForm(f => ({ ...f, houseSpecificTips: newTips })); }} className="tmx9pf-input" style={{ flex: 1 }} />
+                      {form.houseSpecificTips.length > 1 && (
+                        <button type="button" onClick={() => { const newTips = form.houseSpecificTips.filter((_, i) => i !== index); setForm(f => ({ ...f, houseSpecificTips: newTips })); }} className="tmx9pf-small-btn danger">×</button>
+                      )}
+                    </div>
+                  ))}
+                  <button type="button" onClick={() => setForm(f => ({ ...f, houseSpecificTips: [...f.houseSpecificTips, ""] }))} className="tmx9pf-small-btn" style={{ marginTop: "6px" }}>+ Add Tip</button>
+                </div>
               </div>
             </div>
           </section>
@@ -1414,6 +1455,7 @@ const Tmx9PropertyForm = () => {
         )}
       </div>
     </form>
+    </div>
   );
 };
 
