@@ -404,6 +404,91 @@ const SUGGESTIONS = [
   { label: 'Semi Furnished Flat Noida', type: 'Amenity' },
 ];
 
+const CITIES = ['Noida', 'Gurugram', 'Delhi', 'Ghaziabad', 'Faridabad', 'Greater Noida'];
+
+const CITY_TRENDING = {
+  Noida: {
+    signature: ['Sector 150', 'Golf Course Rd', 'Sector 137', 'Sector 18', 'Sector 76'],
+    hotels:    ['Sector 18', 'Sector 62', 'City Centre', 'Sector 135'],
+    homestay:  ['Sector 50', 'Sector 44', 'Sector 62', 'Sector 137'],
+    pg:        ['Sector 62', 'Sector 63', 'Knowledge Park', 'Sector 18'],
+    apt:       ['Sector 75', 'Sector 137', 'Noida Extension', 'Sector 150'],
+  },
+  Gurugram: {
+    signature: ['Golf Course Rd', 'DLF Phase 5', 'Sector 54', 'Sohna Rd'],
+    hotels:    ['MG Road', 'Cyber City', 'Sector 29', 'DLF Phase 1'],
+    homestay:  ['Sector 56', 'DLF Phase 4', 'South City', 'Palam Vihar'],
+    pg:        ['Cyber City', 'Sohna Road', 'Sector 14', 'Udyog Vihar'],
+    apt:       ['Golf Course Rd', 'DLF Phase 2', 'Sector 67', 'Vatika City'],
+  },
+  Delhi: {
+    signature: ['Hauz Khas', 'Defence Colony', 'Vasant Kunj', 'Connaught Place'],
+    hotels:    ['Connaught Place', 'Karol Bagh', 'Paharganj', 'Aerocity'],
+    homestay:  ['Saket', 'Greater Kailash', 'Lajpat Nagar', 'Dwarka'],
+    pg:        ['Laxmi Nagar', 'Dwarka', 'Uttam Nagar', 'Vikaspuri'],
+    apt:       ['Vasant Kunj', 'Dwarka', 'Rohini', 'Janakpuri'],
+  },
+  Ghaziabad: {
+    signature: ['Indirapuram', 'Vaishali', 'Raj Nagar Ext', 'Crossings Republik'],
+    hotels:    ['Indirapuram', 'Vaishali', 'Kaushambi', 'NH-58'],
+    homestay:  ['Indirapuram', 'Vaishali', 'Raj Nagar', 'Crossings Republik'],
+    pg:        ['Indirapuram', 'Vaishali', 'Kaushambi', 'Raj Nagar Ext'],
+    apt:       ['Indirapuram', 'Raj Nagar Ext', 'Crossings Republik', 'Vaishali'],
+  },
+  Faridabad: {
+    signature: ['Sector 15', 'NIT', 'Sector 21C', 'Surajkund'],
+    hotels:    ['Surajkund', 'NIT', 'Sector 28', 'Old Faridabad'],
+    homestay:  ['Sector 16A', 'NIT', 'Sector 15', 'Surajkund'],
+    pg:        ['NIT', 'Sector 15', 'Sector 16', 'Ballabhgarh'],
+    apt:       ['Sector 15', 'Sector 21', 'Surajkund', 'Sector 88'],
+  },
+  'Greater Noida': {
+    signature: ['Knowledge Park', 'Techzone', 'Omega', 'Pari Chowk'],
+    hotels:    ['Pari Chowk', 'Knowledge Park', 'Techzone IV', 'Omega'],
+    homestay:  ['Knowledge Park', 'Techzone', 'Alpha 1', 'Pari Chowk'],
+    pg:        ['Knowledge Park II', 'Techzone IV', 'Omega', 'Delta 1'],
+    apt:       ['Techzone IV', 'Omega', 'Alpha 1', 'Knowledge Park'],
+  },
+};
+
+const CATEGORIES = [
+  {
+    id: 'signature', icon: '☆', label: 'Signature Stays', shortLabel: 'Signature',
+    heading: 'Signature stays in', sub: '120+ handpicked premium homes · personally verified',
+    placeholder: 'Search by locality or property name...',
+    param: 'Signature Stays', rentalType: 'short', searchType: 'text',
+    bg: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=1600&q=80',
+  },
+  {
+    id: 'hotels', icon: '🛏️', label: 'Hotels', shortLabel: 'Hotels',
+    heading: 'Hotels in', sub: 'Best hotels with premium amenities · verified listings',
+    placeholder: 'Search hotels by locality or name...',
+    param: 'Hotel Stays', rentalType: 'short', searchType: 'hotel',
+    bg: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1600&q=80',
+  },
+  {
+    id: 'homestay', icon: '🏠', label: 'Homestays & BnB', shortLabel: 'Homestays',
+    heading: 'Homestays & BnB in', sub: 'Unique stays with warm local hosts · no brokerage',
+    placeholder: 'Search homestays by locality or name...',
+    param: 'Homestays & BnB', rentalType: 'short', searchType: 'hotel',
+    bg: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1600&q=80',
+  },
+  {
+    id: 'pg', icon: '👤', label: 'PG & Co-Living', shortLabel: 'PG',
+    heading: 'PG & Co-Living in', sub: '500+ verified PGs with no brokerage · meals included',
+    placeholder: 'Search PG by locality...',
+    param: 'PG & Co-Living', rentalType: 'long', searchType: 'pg',
+    bg: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1600&q=80',
+  },
+  {
+    id: 'apt', icon: '🏢', label: 'Apartments & Villas', shortLabel: 'Apartments',
+    heading: 'Apartments & Villas in', sub: 'Premium furnished apartments for every budget · zero brokerage',
+    placeholder: 'Search apartments by locality or name...',
+    param: 'Apartments & Villas', rentalType: 'short', searchType: 'text',
+    bg: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1600&q=80',
+  },
+];
+
 export default function HomePageNew1() {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState('');
@@ -412,7 +497,18 @@ export default function HomePageNew1() {
   const [shortRate, setShortRate] = useState(null);
   const [ratesLoading, setRatesLoading] = useState(true);
   const [locating, setLocating] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(0);
+  const [selectedCity, setSelectedCity] = useState('Noida');
+  const [showCityDrop, setShowCityDrop] = useState(false);
+  const [checkIn, setCheckIn] = useState('');
+  const [checkOut, setCheckOut] = useState('');
+  const [guests, setGuests] = useState(1);
+  const [pgType, setPgType] = useState('');
+  const [mobileSuggestPos, setMobileSuggestPos] = useState(null);
   const searchRef = useRef(null);
+  const mobileSearchRef = useRef(null);
+  const dropRef = useRef(null);
+  const cityDropRef = useRef(null);
 
   useEffect(() => {
     const onResize = () => setBp(getBreakpoint());
@@ -423,9 +519,12 @@ export default function HomePageNew1() {
   useEffect(() => {
     const handler = e => {
       if (searchRef.current && !searchRef.current.contains(e.target)) setShowSuggestions(false);
+      if (mobileSearchRef.current && !mobileSearchRef.current.contains(e.target)) { setShowSuggestions(false); setMobileSuggestPos(null); }
+      if (cityDropRef.current && !cityDropRef.current.contains(e.target)) setShowCityDrop(false);
     };
     document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener('touchstart', handler);
+    return () => { document.removeEventListener('mousedown', handler); document.removeEventListener('touchstart', handler); };
   }, []);
 
   useEffect(() => {
@@ -453,6 +552,9 @@ export default function HomePageNew1() {
     { label: 'Greater Noida', type: 'City' },
     { label: 'PG in Noida', type: 'Category' },
   ];
+  const cat = CATEGORIES[activeCategory];
+  const cityTrending = (CITY_TRENDING[selectedCity] || {})[cat.id] || [];
+
   const searchKeywords = searchText.toLowerCase().trim().split(/\s+/).filter(w => w.length > 1);
   const filteredSuggestions = searchKeywords.length > 0
     ? SUGGESTIONS.filter(s => {
@@ -566,156 +668,123 @@ export default function HomePageNew1() {
   /* ════════ MOBILE (≤640px) ════════ */
   if (bp === 'mobile') {
     return (
-      <div style={{ background: '#f5f0e8', fontFamily: "'Poppins',sans-serif", boxSizing: 'border-box' }}>
+      <div style={{ fontFamily:"'Poppins',sans-serif", boxSizing:'border-box', position:'relative', overflow:'hidden' }}>
 
-        <style>{`
-          @keyframes shimMob { 0%{transform:translateX(-100%)} 100%{transform:translateX(220%)} }
-          @keyframes bouncePin { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
-          @keyframes shadowPulse2 { 0%,100%{transform:scale(1);opacity:0.3} 50%{transform:scale(1.5);opacity:0.1} }
-        `}</style>
+        {/* Background images — crossfade per category */}
+        {CATEGORIES.map((c, i) => (
+          <div key={c.id} style={{ position:'absolute', inset:0, backgroundImage:`url(${c.bg})`, backgroundSize:'cover', backgroundPosition:'center', opacity:i===activeCategory?1:0, transition:'opacity 0.6s ease', zIndex:0 }} />
+        ))}
+        {/* Dark overlay */}
+        <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.58) 100%)', zIndex:1, pointerEvents:'none' }} />
+        {/* Glow */}
+        <div style={{ position:'absolute', top:-60, right:-60, width:300, height:300, background:'radial-gradient(circle, rgba(194,119,43,0.2) 0%, transparent 70%)', pointerEvents:'none', zIndex:1 }} />
 
         {/* Location overlay */}
         {locating && (
-          <div style={{ position:'fixed', inset:0, background:'rgba(245,240,232,0.88)', backdropFilter:'blur(6px)', zIndex:10000, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:14 }}>
-            <MapPin size={44} color="#c2772b" style={{ animation:'bouncePin 0.85s infinite ease-in-out' }} />
+          <div style={{ position:'fixed', inset:0, background:'rgba(26,8,0,0.88)', backdropFilter:'blur(6px)', zIndex:10000, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:14 }}>
+            <MapPin size={44} color="#f5a623" style={{ animation:'bouncePin 0.85s infinite ease-in-out' }} />
             <div style={{ textAlign:'center' }}>
-              <div style={{ fontSize:'1rem', fontWeight:700, color:'#1a1209' }}>Finding Your Location</div>
-              <div style={{ fontSize:'0.75rem', color:'#c2772b', marginTop:3 }}>Searching properties near you…</div>
+              <div style={{ fontSize:'1rem', fontWeight:700, color:'#fff' }}>Finding Your Location</div>
+              <div style={{ fontSize:'0.75rem', color:'#f5a623', marginTop:3 }}>Searching properties near you…</div>
             </div>
           </div>
         )}
 
-        {/* ── Top content ── */}
-        <div style={{ padding:'26px 20px 0' }}>
+        <style>{`@keyframes bouncePin{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}`}</style>
 
-          {/* Badge */}
-          <div style={{ marginBottom:14 }}>
-            <span style={{ fontSize:'0.56rem', color:'#c2772b', fontWeight:700, letterSpacing:2, textTransform:'uppercase' }}>✦ Smart Stay Platform</span>
-          </div>
+        <div style={{ padding:'22px 16px 32px', position:'relative', zIndex:2 }}>
 
-          {/* Heading */}
-          <h1 style={{ color:'#1a1209', fontSize:'2rem', fontWeight:800, lineHeight:1.08, margin:'0 0 10px', letterSpacing:-0.5 }}>
-            Find smart stays<br />
-            <span style={{ color:'#c2772b' }}>across NCR cities</span>
-          </h1>
-
-          {/* Subtitle */}
-          <p style={{ color:'#7a6858', fontSize:'0.78rem', margin:'0 0 18px', lineHeight:1.68, fontWeight:400 }}>
-            Verified PGs, serviced apartments and premium homes — book by the night or settle in by the month. Zero brokerage, always.
-          </p>
-
-          {/* City chips */}
-          <div style={{ display:'flex', gap:7, flexWrap:'wrap', paddingBottom:2, marginBottom:15 }}>
-            {[
-              { label:'Noida', city:'Noida', active:true },
-              { label:'Greater Noida', city:'Greater Noida' },
-              { label:'Delhi', city:'Delhi' },
-              { label:'Gurugram', city:'Gurugram' },
-              { label:'Faridabad', city:'Faridabad' },
-              { label:'Ghaziabad', city:'Ghaziabad' },
-            ].map(c => (
-              <button key={c.label}
-                onClick={e => { const p = new URLSearchParams(); p.set('city', c.city); navClick(e, `/properties?${p}`, navigate); }}
-                onAuxClick={e => { const p = new URLSearchParams(); p.set('city', c.city); auxNavClick(e, `/properties?${p}`); }}
-                style={{ background: c.active ? '#c2772b' : 'transparent', border:`1.5px solid ${c.active ? '#c2772b' : '#cdbfa6'}`, borderRadius:20, padding:'6px 16px', fontSize:'0.7rem', fontWeight:600, color: c.active ? '#fff' : '#6b5540', cursor:'pointer', fontFamily:"'Poppins',sans-serif", whiteSpace:'nowrap', outline:'none' }}>
-                {c.label}
+          {/* Category tabs — horizontal scroll */}
+          <div style={{ display:'flex', gap:6, overflowX:'auto', scrollbarWidth:'none', WebkitOverflowScrolling:'touch', marginBottom:20, paddingBottom:2 }}>
+            {CATEGORIES.map((c, i) => (
+              <button key={c.id}
+                onClick={() => { setActiveCategory(i); setSearchText(''); }}
+                style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 13px', borderRadius:100, border:`1.5px solid ${i===activeCategory?'#fff':'rgba(255,255,255,0.22)'}`, background:i===activeCategory?'#fff':'rgba(255,255,255,0.08)', color:i===activeCategory?'#2a0f05':'rgba(255,255,255,0.78)', fontSize:'12.5px', fontWeight:i===activeCategory?600:500, cursor:'pointer', whiteSpace:'nowrap', flexShrink:0, fontFamily:"'Poppins',sans-serif", outline:'none' }}>
+                <span>{c.icon}</span>
+                <span>{c.shortLabel}</span>
               </button>
             ))}
           </div>
 
-          {/* Search bar */}
-          <SearchBar compact={false} placeholder="Search city, locality, PG or flat…"
-            searchText={searchText} setSearchText={setSearchText}
-            showSuggestions={showSuggestions} setShowSuggestions={setShowSuggestions}
-            searchRef={searchRef} filteredSuggestions={filteredSuggestions}
-            handleSearch={handleSearch} handleNearMe={handleNearMe}
-            locating={locating} handleSuggestionClick={handleSuggestionClick}
-            handleKeyDown={handleKeyDown} />
+          {/* Heading */}
+          <h1 style={{ color:'#fff', fontSize:'clamp(1.15rem, 5vw, 1.5rem)', fontWeight:800, lineHeight:1.2, margin:'0 0 8px', letterSpacing:-0.2, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
+            {cat.heading} <span style={{ color:'#f5a623' }}>{selectedCity}</span>
+          </h1>
+          <p style={{ color:'rgba(255,255,255,0.68)', fontSize:'0.78rem', margin:'0 0 18px', lineHeight:1.6 }}>{cat.sub}</p>
 
-          {/* Popular chips */}
-          <div style={{ marginTop:16, marginBottom:22 }}>
-            <div style={{ fontSize:'0.56rem', color:'#b0987c', fontWeight:700, letterSpacing:1.5, textTransform:'uppercase', marginBottom:9 }}>Popular</div>
-            <div style={{ display:'flex', flexWrap:'wrap', gap:7 }}>
-              {QUICK_CHIPS.map(chip => (
-                <button key={chip.label}
-                  onClick={e => { sessionStorage.setItem('ovika_rental_type', chip.rentalType); navClick(e, chip.path(), navigate); }}
-                  onAuxClick={e => { sessionStorage.setItem('ovika_rental_type', chip.rentalType); auxNavClick(e, chip.path()); }}
-                  style={{ flexShrink:0, background:'transparent', border:'1.5px solid #cdbfa6', borderRadius:20, padding:'5px 14px', fontSize:'0.68rem', fontWeight:500, color:'#6b5540', cursor:'pointer', fontFamily:"'Poppins',sans-serif", whiteSpace:'nowrap', outline:'none' }}>
-                  {chip.label}
-                </button>
-              ))}
+          {/* Search bar (mobile) */}
+          <div ref={mobileSearchRef} style={{ position:'relative', marginBottom:16 }}>
+            <div style={{ display:'flex', alignItems:'center', background:'#fff', borderRadius:50, padding:'8px 8px 8px 16px', boxShadow:'0 4px 20px rgba(0,0,0,0.25)' }}>
+              <Search size={16} color="#9ca3af" style={{ flexShrink:0, marginRight:8 }} />
+              <input type="text" value={searchText}
+                onChange={e => { setSearchText(e.target.value); setShowSuggestions(true); }}
+                onFocus={() => {
+                  setShowSuggestions(true);
+                  if (mobileSearchRef.current) {
+                    const r = mobileSearchRef.current.getBoundingClientRect();
+                    setMobileSuggestPos({ top: r.bottom + 6, left: r.left, width: r.width });
+                  }
+                }}
+                onKeyDown={handleKeyDown}
+                placeholder={cat.placeholder}
+                style={{ flex:1, border:'none', outline:'none', fontSize:'13px', color:'#374151', background:'transparent', fontFamily:"'Poppins',sans-serif" }} />
+              <button onClick={() => handleSearch(cat.rentalType)}
+                style={{ width:38, height:38, borderRadius:'50%', background:'#c98429', border:'none', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', flexShrink:0 }}>
+                <Search size={16} />
+              </button>
             </div>
-          </div>
-        </div>
 
-        {/* ── Overlapping image cards (mirrors desktop layout) ── */}
-        <div style={{ position:'relative', height:310, margin:'0 20px 24px' }}>
-
-          {/* Large card — top-right (nightly) */}
-          <div onClick={() => handleSearch('short')}
-            style={{ position:'absolute', top:0, right:0, width:'88%', height:'72%', borderRadius:20, overflow:'hidden', boxShadow:'0 12px 36px rgba(0,0,0,0.18)', cursor:'pointer' }}>
-            <img
-              src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=700&q=85"
-              alt="Nightly Stay"
-              onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=700&q=80'; }}
-              style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}
-            />
-            <div style={{ position:'absolute', inset:0, background:'linear-gradient(to bottom, transparent 45%, rgba(0,0,0,0.3) 100%)' }} />
-            {/* White price badge */}
-            <div style={{ position:'absolute', top:14, left:14, background:'#fff', borderRadius:14, padding:'8px 14px', display:'flex', alignItems:'center', gap:10, boxShadow:'0 4px 16px rgba(0,0,0,0.14)' }}>
-              <div style={{ width:30, height:30, borderRadius:8, background:'#f5f0e8', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'0.9rem' }}>🏠</div>
-              <div>
-                <div style={{ fontSize:'0.44rem', color:'#a08060', lineHeight:1 }}>Starting</div>
-                <div style={{ fontSize:'0.9rem', fontWeight:700, color:'#1a1209', lineHeight:1.2 }}>{shortDisplay}</div>
+            {/* Suggestions — fixed overlay, never pushes content */}
+            {showSuggestions && filteredSuggestions.length > 0 && mobileSuggestPos && (
+              <div style={{
+                position:'fixed',
+                top: mobileSuggestPos.top,
+                left: mobileSuggestPos.left,
+                width: mobileSuggestPos.width,
+                background:'#fff',
+                borderRadius:16,
+                boxShadow:'0 12px 40px rgba(0,0,0,0.22)',
+                border:'1.5px solid #f0e8da',
+                zIndex:99999,
+                overflow:'hidden',
+                maxHeight: '55vh',
+                overflowY: 'auto',
+              }}>
+                {searchText.trim() === '' && (
+                  <div style={{ padding:'10px 14px 4px', fontSize:'10px', fontWeight:700, color:'#b8a080', textTransform:'uppercase', letterSpacing:1 }}>Popular near {selectedCity}</div>
+                )}
+                {filteredSuggestions.map((s, i) => (
+                  <div key={i} onClick={() => { handleSuggestionClick(s); setShowSuggestions(false); }}
+                    style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 14px', cursor:'pointer', borderBottom:i<filteredSuggestions.length-1?'1px solid #f8f0e4':'none' }}
+                    onTouchStart={e=>e.currentTarget.style.background='#fdf7ee'}
+                    onTouchEnd={e=>e.currentTarget.style.background='transparent'}>
+                    <div style={{ width:32, height:32, borderRadius:10, background:'rgba(194,119,43,0.1)', border:'1px solid rgba(194,119,43,0.18)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'14px', flexShrink:0 }}>
+                      {typeIcon[s.type]}
+                    </div>
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <div style={{ fontSize:'13px', fontWeight:600, color:'#1a1209', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{s.label}</div>
+                      <div style={{ fontSize:'11px', color:'#9ca3af', marginTop:1 }}>{s.type}</div>
+                    </div>
+                    <span style={{ fontSize:'11px', color:'#c2772b', background:'rgba(194,119,43,0.1)', padding:'2px 8px', borderRadius:10, fontWeight:600, flexShrink:0 }}>{s.type}</span>
+                  </div>
+                ))}
               </div>
-            </div>
-            {/* Nightly label bottom-right */}
-            <div style={{ position:'absolute', bottom:12, right:12 }}>
-              <span style={{ background:'rgba(194,119,43,0.9)', borderRadius:20, padding:'3px 11px', fontSize:'0.5rem', color:'#fff', fontWeight:700, letterSpacing:0.5, textTransform:'uppercase' }}>🌙 Explore Nightly</span>
-            </div>
+            )}
           </div>
 
-          {/* Small card — bottom-left (monthly), overlapping */}
-          <div onClick={() => handleSearch('long')}
-            style={{ position:'absolute', bottom:0, left:0, width:'56%', height:'58%', borderRadius:18, overflow:'hidden', boxShadow:'0 10px 28px rgba(0,0,0,0.2)', border:'3px solid #f5f0e8', cursor:'pointer' }}>
-            <img
-              src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=500&q=85"
-              alt="Monthly Rental"
-              onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=500&q=80'; }}
-              style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}
-            />
-            <div style={{ position:'absolute', inset:0, background:'linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.55) 100%)' }} />
-            {/* Monthly label */}
-            <div style={{ position:'absolute', top:10, right:10 }}>
-              <span style={{ background:'rgba(26,18,9,0.75)', borderRadius:20, padding:'2px 9px', fontSize:'0.46rem', color:'#f0c070', fontWeight:700, letterSpacing:0.5, textTransform:'uppercase' }}>🏠 Monthly</span>
-            </div>
-            {/* Monthly price */}
-            <div style={{ position:'absolute', bottom:12, left:12 }}>
-              <div style={{ fontSize:'0.42rem', color:'rgba(255,255,255,0.7)', fontWeight:500, marginBottom:2, textTransform:'uppercase', letterSpacing:0.8 }}>Monthly from</div>
-              <div style={{ fontSize:'0.95rem', fontWeight:700, color:'#fff', letterSpacing:-0.3 }}>{longDisplay}</div>
-            </div>
+          {/* Trending chips */}
+          <div style={{ display:'flex', alignItems:'center', gap:7, overflowX:'auto', scrollbarWidth:'none', paddingBottom:2 }}>
+            <span style={{ fontSize:'12px', fontWeight:700, color:'rgba(255,255,255,0.6)', flexShrink:0 }}>Trending</span>
+            {cityTrending.map(t => (
+              <button key={t}
+                onClick={() => { setSearchText(t); handleSearch(cat.rentalType); }}
+                style={{ padding:'5px 13px', borderRadius:100, background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.22)', color:'rgba(255,255,255,0.88)', fontSize:'12px', cursor:'pointer', flexShrink:0, fontFamily:"'Poppins',sans-serif", outline:'none' }}>
+                {t}
+              </button>
+            ))}
           </div>
 
         </div>
-
-        {/* ── Features — 2×2 grid ── */}
-        <div style={{ padding:'0 20px 32px', display:'flex', flexWrap:'wrap', gap:10 }}>
-          {[
-            { icon:'🏠', title:'Fully Furnished', sub:'Move in with zero hassle' },
-            { icon:'🛡', title:'Zero Brokerage', sub:'No hidden charges ever' },
-            { icon:'✔', title:'Verified Properties', sub:'100% physically verified' },
-            { icon:'⚡', title:'Instant Move-in', sub:'Same-day confirmation' },
-          ].map((f) => (
-            <div key={f.title} style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 10px', background:'rgba(194,119,43,0.06)', borderRadius:12, border:'1px solid #e8ddd0', width:'calc(50% - 5px)', boxSizing:'border-box' }}>
-              <div style={{ width:32, height:32, borderRadius:9, background:'rgba(194,119,43,0.13)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'0.9rem', flexShrink:0 }}>{f.icon}</div>
-              <div style={{ minWidth:0 }}>
-                <div style={{ fontSize:'0.72rem', fontWeight:700, color:'#1a1209', lineHeight:1.2 }}>{f.title}</div>
-                <div style={{ fontSize:'0.6rem', color:'#9a8878', marginTop:2, lineHeight:1.3 }}>{f.sub}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-
       </div>
     );
   }
@@ -818,207 +887,294 @@ export default function HomePageNew1() {
   }
 
 
-  /* ════════ DESKTOP OLD (commented out) ════════
-  return (
-    <div style={{ background: 'linear-gradient(160deg, #f5efe4 0%, #ede4cf 55%, #e2d5be 100%)', display: 'flex', alignItems: 'stretch', padding: '16px 20px', fontFamily: "'Poppins', sans-serif", boxSizing: 'border-box' }}>
-      ... old flip-card layout removed ...
-    </div>
-  );
-  ════════ END OLD ════════ */
-
-  /* ════════ DESKTOP NEW (>1024px) ════════ */
-  return (
-    <div style={{
-      background: '#f5f0e8',
-      display: 'flex', alignItems: 'center',
-      padding: 'clamp(32px, 4vh, 60px) clamp(40px, 5vw, 80px)',
-      fontFamily: "'Poppins', sans-serif", boxSizing: 'border-box',
-      minHeight: 'clamp(560px, 85vh, 750px)',
-    }}>
-
-      <style>{`
-        @keyframes kenBurnsD { 0% { transform: scale(1); } 100% { transform: scale(1.06) translateX(-6px); } }
-        .img-card-large:hover img { animation: kenBurnsD 6s ease forwards; }
-        .img-card-sm:hover img { animation: kenBurnsD 6s ease forwards; }
-        .city-chip-desk:hover { background: #fdf0e0 !important; border-color: #c2772b !important; color: #c2772b !important; }
-        .pop-chip-desk:hover { background: #fdf0e0 !important; border-color: #c2772b !important; color: #c2772b !important; }
-      `}</style>
-
-      {/* ── LEFT panel ── */}
-      <div style={{ flex: '0 0 44%', paddingRight: 'clamp(32px, 4vw, 60px)', display: 'flex', flexDirection: 'column' }}>
-
-        {/* Badge */}
-        <div style={{ marginBottom: 18 }}>
-          <span style={{ fontSize: '0.6rem', color: '#c2772b', fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase' }}>✦ Smart Stay Platform</span>
-        </div>
-
-        {/* Heading */}
-        <h1 style={{ color: '#1a1209', fontSize: 'clamp(1.9rem, 2.8vw, 3.2rem)', fontWeight: 800, lineHeight: 1.08, margin: '0 0 14px', letterSpacing: -0.5 }}>
-          Find smart stays<br />
-          <span style={{ color: '#c2772b' }}>across NCR cities</span>
-        </h1>
-
-        {/* Subtitle */}
-        <p style={{ color: '#7a6858', fontSize: '0.86rem', fontWeight: 400, margin: '0 0 22px', lineHeight: 1.72, maxWidth: 400 }}>
-          Verified PGs, serviced apartments and premium homes — book by the night or settle in by the month. Zero brokerage, always.
-        </p>
-
-        {/* City chips */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'nowrap', overflowX: 'auto', marginBottom: 18, scrollbarWidth: 'none', msOverflowStyle: 'none', paddingBottom: 2 }}>
-          {[
-            { label: 'Noida', city: 'Noida', active: true },
-            { label: 'Greater Noida', city: 'Greater Noida' },
-            { label: 'Delhi', city: 'Delhi' },
-            { label: 'Gurugram', city: 'Gurugram' },
-            { label: 'Faridabad', city: 'Faridabad' },
-            { label: 'Ghaziabad', city: 'Ghaziabad' },
-          ].map(c => (
-            <button key={c.label} className="city-chip-desk"
-              onClick={(e) => { const p = new URLSearchParams(); p.set('city', c.city); navClick(e, `/properties?${p}`, navigate); }}
-              onAuxClick={(e) => { const p = new URLSearchParams(); p.set('city', c.city); auxNavClick(e, `/properties?${p}`); }}
-              style={{
-                background: c.active ? '#c2772b' : 'transparent',
-                border: `1.5px solid ${c.active ? '#c2772b' : '#d0c0a8'}`,
-                borderRadius: 20, padding: '6px 18px',
-                fontSize: '0.72rem', fontWeight: 600,
-                color: c.active ? '#fff' : '#6b5540',
-                cursor: 'pointer', fontFamily: "'Poppins',sans-serif",
-                whiteSpace: 'nowrap', outline: 'none', transition: 'all 0.18s', flexShrink: 0,
-              }}>
-              {c.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Search bar */}
-        <SearchBar compact={false}
-          searchText={searchText} setSearchText={setSearchText}
-          showSuggestions={showSuggestions} setShowSuggestions={setShowSuggestions}
-          searchRef={searchRef} filteredSuggestions={filteredSuggestions}
-          handleSearch={handleSearch} handleNearMe={handleNearMe}
-          locating={locating} handleSuggestionClick={handleSuggestionClick}
-          handleKeyDown={handleKeyDown} />
-
-        {/* Popular chips */}
-        <div style={{ marginTop: 16 }}>
-          <div style={{ fontSize: '0.58rem', color: '#b8a080', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 9 }}>Popular</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {QUICK_CHIPS.map(chip => (
-              <span key={chip.label} className="pop-chip-desk"
-                onClick={(e) => { sessionStorage.setItem('ovika_rental_type', chip.rentalType); navClick(e, chip.path(), navigate); }}
-                onAuxClick={(e) => { sessionStorage.setItem('ovika_rental_type', chip.rentalType); auxNavClick(e, chip.path()); }}
-                style={{
-                  fontSize: '0.7rem', color: '#6b5540', background: 'transparent',
-                  border: '1.5px solid #d0c0a8', borderRadius: 20, padding: '5px 14px',
-                  fontWeight: 500, cursor: 'pointer', transition: 'all 0.18s',
-                }}>
-                {chip.label}
-              </span>
+  /* ════════ TABLET ════════ */
+  if (bp === 'tablet') {
+    return (
+      <div style={{ fontFamily:"'Poppins',sans-serif", boxSizing:'border-box', padding:'28px 24px 40px', position:'relative', overflow:'hidden' }}>
+        {/* Static background image */}
+        <div style={{ position:'absolute', inset:0, backgroundImage:`url(https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1600&q=80)`, backgroundSize:'cover', backgroundPosition:'center', zIndex:0 }} />
+        <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.55) 100%)', zIndex:1, pointerEvents:'none' }} />
+        <div style={{ position:'absolute', top:-60, right:-60, width:350, height:350, background:'radial-gradient(circle, rgba(194,119,43,0.18) 0%, transparent 70%)', pointerEvents:'none', zIndex:1 }} />
+        <div style={{ position:'relative', zIndex:2 }}>
+          {/* Tabs */}
+          <div style={{ display:'flex', gap:6, overflowX:'auto', scrollbarWidth:'none', marginBottom:24, paddingBottom:2 }}>
+            {CATEGORIES.map((c, i) => (
+              <button key={c.id} onClick={() => { setActiveCategory(i); setSearchText(''); }}
+                style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 14px', borderRadius:100, border:`1.5px solid ${i===activeCategory?'#fff':'rgba(255,255,255,0.22)'}`, background:i===activeCategory?'#fff':'rgba(255,255,255,0.08)', color:i===activeCategory?'#2a0f05':'rgba(255,255,255,0.78)', fontSize:'12px', fontWeight:i===activeCategory?600:500, cursor:'pointer', whiteSpace:'nowrap', flexShrink:0, fontFamily:"'Poppins',sans-serif", outline:'none' }}>
+                <span>{c.icon}</span><span>{c.label}</span>
+              </button>
+            ))}
+          </div>
+          <h1 style={{ color:'#fff', fontSize:'1.9rem', fontWeight:700, margin:'0 0 8px', letterSpacing:-0.3, lineHeight:1.15 }}>
+            {cat.heading} <span style={{ color:'#f5a623' }}>Noida</span>
+          </h1>
+          <p style={{ color:'rgba(255,255,255,0.7)', fontSize:'0.84rem', margin:'0 0 20px' }}>{cat.sub}</p>
+          <SearchBar compact={false} placeholder={cat.placeholder}
+            searchText={searchText} setSearchText={setSearchText}
+            showSuggestions={showSuggestions} setShowSuggestions={setShowSuggestions}
+            searchRef={searchRef} filteredSuggestions={filteredSuggestions}
+            handleSearch={() => handleSearch(cat.rentalType)} handleNearMe={handleNearMe}
+            locating={locating} handleSuggestionClick={handleSuggestionClick}
+            handleKeyDown={handleKeyDown} />
+          <div style={{ display:'flex', alignItems:'center', gap:7, marginTop:14, flexWrap:'wrap' }}>
+            <span style={{ fontSize:'12px', fontWeight:700, color:'rgba(255,255,255,0.6)' }}>Trending</span>
+            {cityTrending.map(t => (
+              <button key={t} onClick={() => { setSearchText(t); handleSearch(cat.rentalType); }}
+                style={{ padding:'5px 13px', borderRadius:100, background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.22)', color:'rgba(255,255,255,0.88)', fontSize:'12px', cursor:'pointer', fontFamily:"'Poppins',sans-serif", outline:'none' }}>
+                {t}
+              </button>
             ))}
           </div>
         </div>
+      </div>
+    );
+  }
 
-        {/* Feature grid */}
-        <div style={{ marginTop: 'auto', paddingTop: 20, borderTop: '1px solid #e0d4c0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
-          {[
-            { icon: '🏠', title: 'Fully Furnished', sub: 'Move in with zero hassle' },
-            { icon: '🛡', title: 'Zero Brokerage', sub: 'No hidden charges ever' },
-            { icon: '✔', title: 'Verified Properties', sub: '100% physically verified' },
-            { icon: '⚡', title: 'Instant Move-in', sub: 'Same day confirmation' },
-          ].map((f, i) => (
-            <div key={f.title} style={{
-              display: 'flex', alignItems: 'center', gap: 10,
-              padding: '10px 0',
-              paddingRight: i % 2 === 0 ? 16 : 0,
-              paddingLeft: i % 2 === 1 ? 16 : 0,
-              borderRight: i % 2 === 0 ? '1px solid #e0d4c0' : 'none',
-              borderBottom: i < 2 ? '1px solid #e0d4c0' : 'none',
-            }}>
-              <div style={{ width: 32, height: 32, borderRadius: 9, background: 'rgba(194,119,43,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', flexShrink: 0 }}>
-                {f.icon}
-              </div>
-              <div>
-                <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#1a1209', lineHeight: 1.2 }}>{f.title}</div>
-                <div style={{ fontSize: '0.55rem', color: '#a08060', marginTop: 1 }}>{f.sub}</div>
-              </div>
-            </div>
-          ))}
-        </div>
+  /* ════════ DESKTOP (>1024px) ════════ */
+  return (
+    <div style={{
+      position: 'relative', overflow: 'hidden',
+      padding: '48px 24px 72px',
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      minHeight: 560,
+      fontFamily: "'Poppins', sans-serif",
+      boxSizing: 'border-box',
+    }}>
+      <style>{`@keyframes hpFadeImg{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:scale(1)}}`}</style>
 
+      {/* Background images — crossfade per category */}
+      {CATEGORIES.map((c, i) => (
+        <div key={c.id} style={{
+          position: 'absolute', inset: 0,
+          backgroundImage: `url(${c.bg})`,
+          backgroundSize: 'cover', backgroundPosition: 'center',
+          opacity: i === activeCategory ? 1 : 0,
+          transition: 'opacity 0.6s ease',
+          animation: i === activeCategory ? 'hpFadeImg 0.7s ease' : 'none',
+          zIndex: 0,
+        }} />
+      ))}
+      <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.58) 100%)', zIndex:1, pointerEvents:'none' }} />
+      <div style={{ position:'absolute', top:-100, right:-100, width:600, height:600, background:'radial-gradient(circle, rgba(194,119,43,0.15) 0%, transparent 70%)', pointerEvents:'none', zIndex:1 }} />
+
+      {/* ── Category tabs ── */}
+      <div style={{ display:'flex', gap:8, marginBottom:42, zIndex:2, flexWrap:'wrap', justifyContent:'center', position:'relative' }}>
+        {CATEGORIES.map((c, i) => (
+          <button key={c.id}
+            onClick={() => { setActiveCategory(i); setSearchText(''); setShowSuggestions(false); setPgType(''); }}
+            style={{
+              display:'flex', alignItems:'center', gap:7,
+              padding:'9px 20px', borderRadius:100,
+              border:`2px solid ${i===activeCategory?'#fff':'rgba(255,255,255,0.55)'}`,
+              background: i===activeCategory ? '#fff' : 'rgba(255,255,255,0.18)',
+              color: i===activeCategory ? '#2a0f05' : '#fff',
+              backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+              fontSize:'13.5px', fontWeight: i===activeCategory ? 600 : 500,
+              cursor:'pointer', transition:'all 0.18s', whiteSpace:'nowrap',
+              fontFamily:"'Poppins',sans-serif", outline:'none',
+              textShadow: i===activeCategory ? 'none' : '0 1px 3px rgba(0,0,0,0.4)',
+            }}
+            onMouseEnter={e => { if(i!==activeCategory){ e.currentTarget.style.background='rgba(255,255,255,0.28)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.8)'; } }}
+            onMouseLeave={e => { if(i!==activeCategory){ e.currentTarget.style.background='rgba(255,255,255,0.18)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.55)'; } }}>
+            <span style={{ fontSize:15 }}>{c.icon}</span>
+            <span>{c.label}</span>
+          </button>
+        ))}
       </div>
 
-      {/* ── RIGHT panel — overlapping image cards ── */}
-      <div style={{ flex: 1, position: 'relative', height: 'clamp(420px, 65vh, 600px)' }}>
+      {/* ── Main content ── */}
+      <div style={{ textAlign:'center', zIndex:2, width:'100%', maxWidth:820, position:'relative' }}>
 
-        {/* Large card — top-right (nightly) */}
-        <div className="img-card-large"
-          onClick={() => handleSearch('short')}
-          style={{
-            position: 'absolute', top: 0, right: 0,
-            width: '87%', height: '78%',
-            borderRadius: 24, overflow: 'hidden',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.18)',
-            cursor: 'pointer',
-          }}>
-          <img
-            src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=900&q=85"
-            alt="Nightly Stay"
-            onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=900&q=80'; }}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.8s ease' }}
-          />
-          {/* Bottom gradient */}
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.28) 100%)' }} />
+        <h1 style={{ fontSize:'clamp(2.2rem, 3.2vw, 3rem)', fontWeight:700, color:'#fff', margin:'0 0 10px', letterSpacing:-0.5, lineHeight:1.18 }}>
+          {cat.heading} <span style={{ color:'#f5a623' }}>{selectedCity}</span>
+        </h1>
+        <p style={{ color:'rgba(255,255,255,0.72)', fontSize:'1rem', margin:'0 0 28px', lineHeight:1.55 }}>
+          {cat.sub}
+        </p>
 
-          {/* Price badge — white card style like screenshot */}
-          <div style={{
-            position: 'absolute', top: 20, left: 20,
-            background: '#fff', borderRadius: 16,
-            padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12,
-            boxShadow: '0 4px 20px rgba(0,0,0,0.14)',
-          }}>
-            <div style={{ width: 34, height: 34, borderRadius: 9, background: '#f5f0e8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>🏠</div>
-            <div>
-              <div style={{ fontSize: '0.55rem', color: '#a08060', fontWeight: 500, lineHeight: 1 }}>Starting</div>
-              <div style={{ fontSize: '1rem', fontWeight: 700, color: '#1a1209', lineHeight: 1.2, letterSpacing: -0.3 }}>{shortDisplay}</div>
+        {/* ── Search bar — varies by category ── */}
+        <div ref={searchRef} style={{ position:'relative', marginBottom:22 }}>
+
+          {/* Hotels & Homestays — Check-in / Check-out / Guests */}
+          {(cat.searchType === 'hotel') && (
+            <div style={{ display:'flex', alignItems:'stretch', background:'#fff', borderRadius:20, boxShadow:'0 6px 32px rgba(0,0,0,0.3)', maxWidth:780, margin:'0 auto', overflow:'hidden' }}>
+              {/* City selector */}
+              <div ref={cityDropRef} style={{ position:'relative', flexShrink:0 }}>
+                <div onClick={() => setShowCityDrop(v => !v)}
+                  style={{ display:'flex', flexDirection:'column', justifyContent:'center', padding:'14px 18px', cursor:'pointer', borderRight:'1px solid #f0ece6', minWidth:110 }}>
+                  <span style={{ fontSize:10, fontWeight:700, color:'#9ca3af', letterSpacing:'0.06em', textTransform:'uppercase', lineHeight:1, marginBottom:3 }}>CITY</span>
+                  <span style={{ fontSize:13, fontWeight:600, color:'#1e293b', display:'flex', alignItems:'center', gap:4 }}>{selectedCity} <span style={{ fontSize:10, color:'#c98429' }}>▾</span></span>
+                </div>
+                {showCityDrop && (
+                  <div style={{ position:'absolute', top:'calc(100% + 6px)', left:0, background:'#fff', borderRadius:12, boxShadow:'0 8px 32px rgba(0,0,0,0.16)', border:'1px solid #f0e8da', zIndex:99999, minWidth:160, overflow:'hidden' }}>
+                    {CITIES.map(city => (
+                      <div key={city} onClick={() => { setSelectedCity(city); setShowCityDrop(false); }}
+                        style={{ padding:'10px 16px', fontSize:'13px', fontWeight: city===selectedCity?700:500, color: city===selectedCity?'#c98429':'#374151', background: city===selectedCity?'#fdf7ee':'transparent', cursor:'pointer', transition:'background 0.12s' }}
+                        onMouseEnter={e=>e.currentTarget.style.background='#fdf7ee'}
+                        onMouseLeave={e=>e.currentTarget.style.background=city===selectedCity?'#fdf7ee':'transparent'}>
+                        {city}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {/* Check-in */}
+              <div style={{ display:'flex', flexDirection:'column', justifyContent:'center', padding:'14px 16px', borderRight:'1px solid #f0ece6', flexShrink:0 }}>
+                <span style={{ fontSize:10, fontWeight:700, color:'#9ca3af', letterSpacing:'0.06em', textTransform:'uppercase', lineHeight:1, marginBottom:3 }}>CHECK-IN</span>
+                <input type="date" value={checkIn} onChange={e=>setCheckIn(e.target.value)}
+                  style={{ border:'none', outline:'none', fontSize:'13px', fontWeight:600, color: checkIn?'#1e293b':'#9ca3af', background:'transparent', fontFamily:"'Poppins',sans-serif", cursor:'pointer', width:110 }} />
+              </div>
+              {/* Check-out */}
+              <div style={{ display:'flex', flexDirection:'column', justifyContent:'center', padding:'14px 16px', borderRight:'1px solid #f0ece6', flexShrink:0 }}>
+                <span style={{ fontSize:10, fontWeight:700, color:'#9ca3af', letterSpacing:'0.06em', textTransform:'uppercase', lineHeight:1, marginBottom:3 }}>CHECK-OUT</span>
+                <input type="date" value={checkOut} onChange={e=>setCheckOut(e.target.value)} min={checkIn}
+                  style={{ border:'none', outline:'none', fontSize:'13px', fontWeight:600, color: checkOut?'#1e293b':'#9ca3af', background:'transparent', fontFamily:"'Poppins',sans-serif", cursor:'pointer', width:110 }} />
+              </div>
+              {/* Guests */}
+              <div style={{ display:'flex', flexDirection:'column', justifyContent:'center', padding:'14px 16px', borderRight:'1px solid #f0ece6', flexShrink:0 }}>
+                <span style={{ fontSize:10, fontWeight:700, color:'#9ca3af', letterSpacing:'0.06em', textTransform:'uppercase', lineHeight:1, marginBottom:3 }}>GUESTS</span>
+                <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                  <button onClick={()=>setGuests(g=>Math.max(1,g-1))} style={{ width:22, height:22, borderRadius:'50%', border:'1.5px solid #e5e7eb', background:'transparent', cursor:'pointer', fontSize:14, display:'flex', alignItems:'center', justifyContent:'center', color:'#374151', lineHeight:1 }}>−</button>
+                  <span style={{ fontSize:13, fontWeight:600, color:'#1e293b', minWidth:12, textAlign:'center' }}>{guests}</span>
+                  <button onClick={()=>setGuests(g=>g+1)} style={{ width:22, height:22, borderRadius:'50%', border:'1.5px solid #e5e7eb', background:'transparent', cursor:'pointer', fontSize:14, display:'flex', alignItems:'center', justifyContent:'center', color:'#374151', lineHeight:1 }}>+</button>
+                </div>
+              </div>
+              {/* Search area */}
+              <input type="text" value={searchText}
+                onChange={e=>{ setSearchText(e.target.value); setShowSuggestions(true); }}
+                onFocus={()=>setShowSuggestions(true)}
+                onKeyDown={handleKeyDown}
+                placeholder={cat.placeholder}
+                style={{ flex:1, border:'none', outline:'none', fontSize:'14px', color:'#374151', background:'transparent', fontFamily:"'Poppins',sans-serif", padding:'0 14px' }} />
+              <button onClick={()=>handleSearch(cat.rentalType)}
+                style={{ margin:7, width:50, height:50, borderRadius:'50%', background:'#c98429', border:'none', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', flexShrink:0, transition:'background 0.18s' }}
+                onMouseEnter={e=>e.currentTarget.style.background='#a66d21'}
+                onMouseLeave={e=>e.currentTarget.style.background='#c98429'}>
+                <Search size={20} />
+              </button>
             </div>
-          </div>
+          )}
 
-          {/* Bottom-right label */}
-          <div style={{ position: 'absolute', bottom: 16, right: 16 }}>
-            <span style={{ background: 'rgba(194,119,43,0.9)', borderRadius: 20, padding: '4px 14px', fontSize: '0.56rem', color: '#fff', fontWeight: 600, letterSpacing: 0.8, textTransform: 'uppercase' }}>🌙 Explore Nightly</span>
-          </div>
+          {/* PG & Co-Living — Type selector + locality */}
+          {cat.searchType === 'pg' && (
+            <div style={{ display:'flex', alignItems:'stretch', background:'#fff', borderRadius:20, boxShadow:'0 6px 32px rgba(0,0,0,0.3)', maxWidth:780, margin:'0 auto', overflow:'hidden' }}>
+              {/* City selector */}
+              <div ref={cityDropRef} style={{ position:'relative', flexShrink:0 }}>
+                <div onClick={() => setShowCityDrop(v => !v)}
+                  style={{ display:'flex', flexDirection:'column', justifyContent:'center', padding:'14px 18px', cursor:'pointer', borderRight:'1px solid #f0ece6', minWidth:110 }}>
+                  <span style={{ fontSize:10, fontWeight:700, color:'#9ca3af', letterSpacing:'0.06em', textTransform:'uppercase', lineHeight:1, marginBottom:3 }}>CITY</span>
+                  <span style={{ fontSize:13, fontWeight:600, color:'#1e293b', display:'flex', alignItems:'center', gap:4 }}>{selectedCity} <span style={{ fontSize:10, color:'#c98429' }}>▾</span></span>
+                </div>
+                {showCityDrop && (
+                  <div style={{ position:'absolute', top:'calc(100% + 6px)', left:0, background:'#fff', borderRadius:12, boxShadow:'0 8px 32px rgba(0,0,0,0.16)', border:'1px solid #f0e8da', zIndex:99999, minWidth:160, overflow:'hidden' }}>
+                    {CITIES.map(city => (
+                      <div key={city} onClick={() => { setSelectedCity(city); setShowCityDrop(false); }}
+                        style={{ padding:'10px 16px', fontSize:'13px', fontWeight: city===selectedCity?700:500, color: city===selectedCity?'#c98429':'#374151', background: city===selectedCity?'#fdf7ee':'transparent', cursor:'pointer', transition:'background 0.12s' }}
+                        onMouseEnter={e=>e.currentTarget.style.background='#fdf7ee'}
+                        onMouseLeave={e=>e.currentTarget.style.background=city===selectedCity?'#fdf7ee':'transparent'}>
+                        {city}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {/* PG Type toggle */}
+              <div style={{ display:'flex', alignItems:'center', gap:4, padding:'0 14px', borderRight:'1px solid #f0ece6', flexShrink:0 }}>
+                {['Boys', 'Girls', 'Co-Living'].map(type => (
+                  <button key={type} onClick={()=>setPgType(t=>t===type?'':type)}
+                    style={{ padding:'6px 12px', borderRadius:100, border:`1.5px solid ${pgType===type?'#c98429':'#e5e7eb'}`, background:pgType===type?'#fdf7ee':'transparent', color:pgType===type?'#c98429':'#6b7280', fontSize:'12.5px', fontWeight:pgType===type?700:500, cursor:'pointer', transition:'all 0.15s', fontFamily:"'Poppins',sans-serif", whiteSpace:'nowrap' }}>
+                    {type}
+                  </button>
+                ))}
+              </div>
+              <input type="text" value={searchText}
+                onChange={e=>{ setSearchText(e.target.value); setShowSuggestions(true); }}
+                onFocus={()=>setShowSuggestions(true)}
+                onKeyDown={handleKeyDown}
+                placeholder={cat.placeholder}
+                style={{ flex:1, border:'none', outline:'none', fontSize:'14px', color:'#374151', background:'transparent', fontFamily:"'Poppins',sans-serif", padding:'0 14px' }} />
+              <button onClick={()=>handleSearch(cat.rentalType)}
+                style={{ margin:7, width:50, height:50, borderRadius:'50%', background:'#c98429', border:'none', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', flexShrink:0, transition:'background 0.18s' }}
+                onMouseEnter={e=>e.currentTarget.style.background='#a66d21'}
+                onMouseLeave={e=>e.currentTarget.style.background='#c98429'}>
+                <Search size={20} />
+              </button>
+            </div>
+          )}
+
+          {/* Signature / Apartments — Regular search */}
+          {cat.searchType === 'text' && (
+            <div style={{ display:'flex', alignItems:'center', background:'#fff', borderRadius:100, padding:'7px 7px 7px 0', boxShadow:'0 6px 32px rgba(0,0,0,0.3)', maxWidth:700, margin:'0 auto', overflow:'visible' }}>
+              {/* City selector */}
+              <div ref={cityDropRef} style={{ position:'relative', flexShrink:0 }}>
+                <div onClick={() => setShowCityDrop(v => !v)}
+                  style={{ display:'flex', flexDirection:'column', justifyContent:'center', padding:'0 18px', cursor:'pointer' }}>
+                  <span style={{ fontSize:10, fontWeight:700, color:'#9ca3af', letterSpacing:'0.06em', textTransform:'uppercase', lineHeight:1, marginBottom:2 }}>CITY</span>
+                  <span style={{ fontSize:13, fontWeight:600, color:'#1e293b', display:'flex', alignItems:'center', gap:4 }}>{selectedCity} <span style={{ fontSize:10, color:'#c98429' }}>▾</span></span>
+                </div>
+                {showCityDrop && (
+                  <div style={{ position:'absolute', top:'calc(100% + 10px)', left:0, background:'#fff', borderRadius:12, boxShadow:'0 8px 32px rgba(0,0,0,0.16)', border:'1px solid #f0e8da', zIndex:99999, minWidth:160, overflow:'hidden' }}>
+                    {CITIES.map(city => (
+                      <div key={city} onClick={() => { setSelectedCity(city); setShowCityDrop(false); }}
+                        style={{ padding:'10px 16px', fontSize:'13px', fontWeight: city===selectedCity?700:500, color: city===selectedCity?'#c98429':'#374151', background: city===selectedCity?'#fdf7ee':'transparent', cursor:'pointer', transition:'background 0.12s' }}
+                        onMouseEnter={e=>e.currentTarget.style.background='#fdf7ee'}
+                        onMouseLeave={e=>e.currentTarget.style.background=city===selectedCity?'#fdf7ee':'transparent'}>
+                        {city}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div style={{ width:1, height:28, background:'#e5e7eb', marginRight:14, flexShrink:0 }} />
+              <input type="text" value={searchText}
+                onChange={e=>{ setSearchText(e.target.value); setShowSuggestions(true); }}
+                onFocus={()=>setShowSuggestions(true)}
+                onKeyDown={handleKeyDown}
+                placeholder={cat.placeholder}
+                style={{ flex:1, border:'none', outline:'none', fontSize:'14px', color:'#374151', background:'transparent', fontFamily:"'Poppins',sans-serif" }} />
+              <button onClick={()=>handleSearch(cat.rentalType)}
+                style={{ width:46, height:46, borderRadius:'50%', background:'#c98429', border:'none', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', flexShrink:0, transition:'background 0.18s' }}
+                onMouseEnter={e=>e.currentTarget.style.background='#a66d21'}
+                onMouseLeave={e=>e.currentTarget.style.background='#c98429'}>
+                <Search size={20} />
+              </button>
+            </div>
+          )}
+
+          {/* Suggestions dropdown */}
+          {showSuggestions && filteredSuggestions.length > 0 && (
+            <div style={{ position:'absolute', top:'calc(100% + 8px)', left:'50%', transform:'translateX(-50%)', width:'min(700px, 90vw)', background:'#fff', borderRadius:14, boxShadow:'0 12px 44px rgba(0,0,0,0.18)', border:'1.5px solid #f0e8da', zIndex:99999, overflow:'hidden', textAlign:'left' }}>
+              {searchText.trim()==='' && (
+                <div style={{ padding:'8px 14px 4px', fontSize:'0.6rem', color:'#b8a080', fontWeight:700, textTransform:'uppercase', letterSpacing:1 }}>Popular Searches</div>
+              )}
+              {filteredSuggestions.map((s, idx) => (
+                <div key={idx} onClick={() => handleSuggestionClick(s)}
+                  style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 14px', cursor:'pointer', borderBottom:idx<filteredSuggestions.length-1?'1px solid #f8f0e4':'none', transition:'background 0.12s' }}
+                  onMouseEnter={e=>e.currentTarget.style.background='#fdf7ee'}
+                  onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+                  <div style={{ width:28, height:28, borderRadius:8, background:'rgba(194,119,43,0.1)', border:'1px solid rgba(194,119,43,0.2)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'0.8rem', flexShrink:0 }}>
+                    {typeIcon[s.type]}
+                  </div>
+                  <div style={{ flex:1, fontSize:'0.85rem', fontWeight:600, color:'#1a1209' }}>{s.label}</div>
+                  <span style={{ fontSize:'0.6rem', color:'#c2772b', background:'rgba(194,119,43,0.1)', padding:'2px 8px', borderRadius:10, fontWeight:600, flexShrink:0 }}>{s.type}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Small card — bottom-left (monthly), overlapping */}
-        <div className="img-card-sm"
-          onClick={() => handleSearch('long')}
-          style={{
-            position: 'absolute', bottom: 0, left: 0,
-            width: '54%', height: '55%',
-            borderRadius: 20, overflow: 'hidden',
-            boxShadow: '0 16px 40px rgba(0,0,0,0.2)',
-            border: '3px solid #f5f0e8',
-            cursor: 'pointer',
-          }}>
-          <img
-            src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=700&q=85"
-            alt="Monthly Rental"
-            onError={e => { e.currentTarget.src = 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=700&q=80'; }}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.8s ease' }}
-          />
-          {/* Gradient overlay */}
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 35%, rgba(0,0,0,0.55) 100%)' }} />
-
-          {/* Monthly price badge */}
-          <div style={{ position: 'absolute', bottom: 14, left: 14 }}>
-            <div style={{ fontSize: '0.48rem', color: 'rgba(255,255,255,0.75)', fontWeight: 500, marginBottom: 2, textTransform: 'uppercase', letterSpacing: 1 }}>Monthly from</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', lineHeight: 1, letterSpacing: -0.3 }}>{longDisplay}</div>
-          </div>
-
-          {/* Label */}
-          <div style={{ position: 'absolute', top: 12, right: 12 }}>
-            <span style={{ background: 'rgba(26,18,9,0.75)', borderRadius: 20, padding: '3px 11px', fontSize: '0.5rem', color: '#f0c070', fontWeight: 600, letterSpacing: 0.6, textTransform: 'uppercase' }}>🏠 Monthly</span>
-          </div>
+        {/* ── Trending chips — city specific ── */}
+        <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', justifyContent:'center' }}>
+          <span style={{ fontSize:'13px', fontWeight:700, color:'rgba(255,255,255,0.65)' }}>Trending</span>
+          {cityTrending.map(t => (
+            <button key={t}
+              onClick={() => { setSearchText(t); handleSearch(cat.rentalType); }}
+              style={{ padding:'6px 15px', borderRadius:100, background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.22)', color:'rgba(255,255,255,0.88)', fontSize:'13px', cursor:'pointer', fontFamily:"'Poppins',sans-serif", transition:'background 0.15s', outline:'none' }}
+              onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.2)'}
+              onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.1)'}>
+              {t}
+            </button>
+          ))}
         </div>
 
       </div>
