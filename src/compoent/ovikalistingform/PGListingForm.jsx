@@ -828,14 +828,6 @@ const PGListingForm = () => {
                   </div>
                 ) : null}
 
-                {/* ── Non-Homestay: title at top ── */}
-                {!isHomestay && (
-                  <div className="field-group full">
-                    <label>Property Title / Building Name *</label>
-                    <input name="title" value={form.title} onChange={handleChange} placeholder="e.g. Spacious 3BHK in DLF Phase 5" />
-                    {errors.title && <span className="error">{errors.title}</span>}
-                  </div>
-                )}
 
                 {/* ── Homestay: description highlights ── */}
                 {isHomestay && (
