@@ -1,6 +1,6 @@
 
 
-import { UserCircle2, LogOut } from "lucide-react";
+import { UserCircle2, LogOut, Home, Moon, CalendarDays, Star, Building2, TrendingUp, BarChart3, Shield, MessageCircle, Phone, Briefcase, CheckCircle, Map, MapPin, Zap, Hotel } from "lucide-react";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { AuthContext } from "../Login/AuthContext";
@@ -216,8 +216,8 @@ export default function Navbar() {
               </div>
               <div style={{ padding: "12px 12px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 {[
-                  { title: "Short Term Rental", desc: "Nightly stays & PG", emoji: "🏠", path: "/listed1" },
-                  { title: "Long Term Rental", desc: "Monthly rentals & PG", emoji: "🏢", path: "/list-pg" },
+                  { title: "Short Term Rental", desc: "Nightly stays & PG", emoji: <Moon size={22} color="#c2772b"/>, path: "/listed1" },
+                  { title: "Long Term Rental", desc: "Monthly rentals & PG", emoji: <CalendarDays size={22} color="#c2772b"/>, path: "/list-pg" },
                 ].map((item) => (
                   <div key={item.title}
                     style={{ border: "1.5px solid #e8d9c0", borderRadius: 12, padding: "12px 10px 10px", textAlign: "center", cursor: "pointer", background: "#fff", display: "flex", flexDirection: "column", alignItems: "center", gap: 7 }}
@@ -292,20 +292,20 @@ export default function Navbar() {
                   {/* Nav items — only when logged in */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 4, padding: "14px 20px 8px", flex: 1 }}>
                     {[
-                      { icon: "🏠", label: "Home", path: "/", action: (e) => { closeMobileMenu(); navClick(e, "/", navigate); } },
-                      { icon: "🌙", label: "Nightly Stays", path: "/nightly-stays", action: (e) => { closeMobileMenu(); navClick(e, "/nightly-stays", navigate); } },
-                      { icon: "📅", label: "Monthly Rental", path: "/monthly-rentals", action: (e) => { closeMobileMenu(); navClick(e, "/monthly-rentals", navigate); } },
-                      { icon: "✨", label: "Signature Stays", path: "/properties?category=Signature+Stays", action: (e) => { closeMobileMenu(); handleSignatureStaysClick(e); } },
-                      { icon: "🏘️", label: "List Property", path: "/list-category", action: (e) => { closeMobileMenu(); navClick(e, "/list-category", navigate); } },
-                      { icon: "📈", label: "ROI Calculator", path: "/roi-calculator", action: (e) => { closeMobileMenu(); navClick(e, "/roi-calculator", navigate); } },
-                      { icon: "📊", label: "Profile", path: "/dashboard", action: (e) => { closeMobileMenu(); navClick(e, "/dashboard", navigate); } },
-                      { icon: "🛡️", label: "Owner Dashboard", path: "/admindashboard", action: (e) => { closeMobileMenu(); navClick(e, "/admindashboard", navigate); } },
-                      { icon: "💬", label: "Buy Leads", path: "/buy-leads", action: (e) => { closeMobileMenu(); navClick(e, "/buy-leads", navigate); } },
-                      { icon: "📞", label: "Contact / Support", path: "/contactus", action: (e) => { closeMobileMenu(); navClick(e, "/contactus", navigate); } },
-                      { icon: "💼", label: "Career", path: "/career-support", action: (e) => { closeMobileMenu(); goCareer(e); } },
+                      { icon: <Home size={16} color="#c2772b"/>, label: "Home", path: "/", action: (e) => { closeMobileMenu(); navClick(e, "/", navigate); } },
+                      { icon: <Moon size={16} color="#c2772b"/>, label: "Nightly Stays", path: "/nightly-stays", action: (e) => { closeMobileMenu(); navClick(e, "/nightly-stays", navigate); } },
+                      { icon: <CalendarDays size={16} color="#c2772b"/>, label: "Monthly Rental", path: "/monthly-rentals", action: (e) => { closeMobileMenu(); navClick(e, "/monthly-rentals", navigate); } },
+                      { icon: <Star size={16} color="#c2772b"/>, label: "Signature Stays", path: "/properties?category=Signature+Stays", action: (e) => { closeMobileMenu(); handleSignatureStaysClick(e); } },
+                      { icon: <Building2 size={16} color="#c2772b"/>, label: "List Property", path: "/list-category", action: (e) => { closeMobileMenu(); navClick(e, "/list-category", navigate); } },
+                      { icon: <TrendingUp size={16} color="#c2772b"/>, label: "ROI Calculator", path: "/roi-calculator", action: (e) => { closeMobileMenu(); navClick(e, "/roi-calculator", navigate); } },
+                      { icon: <BarChart3 size={16} color="#c2772b"/>, label: "Profile", path: "/dashboard", action: (e) => { closeMobileMenu(); navClick(e, "/dashboard", navigate); } },
+                      { icon: <Shield size={16} color="#c2772b"/>, label: "Owner Dashboard", path: "/admindashboard", action: (e) => { closeMobileMenu(); navClick(e, "/admindashboard", navigate); } },
+                      { icon: <MessageCircle size={16} color="#c2772b"/>, label: "Buy Leads", path: "/buy-leads", action: (e) => { closeMobileMenu(); navClick(e, "/buy-leads", navigate); } },
+                      { icon: <Phone size={16} color="#c2772b"/>, label: "Contact / Support", path: "/contactus", action: (e) => { closeMobileMenu(); navClick(e, "/contactus", navigate); } },
+                      { icon: <Briefcase size={16} color="#c2772b"/>, label: "Career", path: "/career-support", action: (e) => { closeMobileMenu(); goCareer(e); } },
                       { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: 18, height: "auto" }} />, label: "OvikaLiving Verified", path: "/ovika-verified", action: (e) => { closeMobileMenu(); goOvikaVerified(e); } },
-                      { icon: "✅", label: "Self Verification", path: "/ovika-self-verified", action: (e) => { closeMobileMenu(); goSelfVerified(e); } },
-                      { icon: "🗺️", label: "Explore Townmanor", action: () => { closeMobileMenu(); window.open("https://www.townmanor.ai/", "_blank"); } },
+                      { icon: <CheckCircle size={16} color="#c2772b"/>, label: "Self Verification", path: "/ovika-self-verified", action: (e) => { closeMobileMenu(); goSelfVerified(e); } },
+                      { icon: <Map size={16} color="#c2772b"/>, label: "Explore Townmanor", action: () => { closeMobileMenu(); window.open("https://www.townmanor.ai/", "_blank"); } },
                     ].map((item) => (
                       <button key={item.label} onClick={(e) => item.action(e)}
                         onAuxClick={(e) => item.path ? auxNavClick(e, item.path) : null}
@@ -436,7 +436,7 @@ export default function Navbar() {
                     else { e.currentTarget.style.color = "#232323"; e.currentTarget.style.background = "transparent"; }
                   }}
                 >
-                  {isLeads ? "⚡ Buy Leads" : label}
+                  {isLeads ? <><Zap size={13}/> Buy Leads</> : label}
                 </button>
               );
             })}
@@ -481,8 +481,8 @@ export default function Navbar() {
             </div>
             <div style={{ padding: "16px 16px 18px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               {[
-                { title: "Short Term Rental", desc: "Nightly stays & PG", emoji: "🏠", path: "/listed1" },
-                { title: "Long Term Rental", desc: "Monthly rentals & PG", emoji: "🏢", path: "/list-pg" },
+                { title: "Short Term Rental", desc: "Nightly stays & PG", emoji: <Moon size={22} color="#c2772b"/>, path: "/listed1" },
+                { title: "Long Term Rental", desc: "Monthly rentals & PG", emoji: <CalendarDays size={22} color="#c2772b"/>, path: "/list-pg" },
               ].map((item) => (
                 <div key={item.title}
                   style={{ border: "1.5px solid #e8d9c0", borderRadius: 14, padding: "16px 12px 14px", textAlign: "center", cursor: "pointer", background: "#fff", display: "flex", flexDirection: "column", alignItems: "center", gap: 9 }}
@@ -513,20 +513,20 @@ export default function Navbar() {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
               {[
-                { icon: "🏠", label: "Home", path: "/", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/", navigate); } },
-                { icon: "🌙", label: "Nightly Stays", path: "/nightly-stays", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/nightly-stays", navigate); } },
-                { icon: "📅", label: "Monthly Rental", path: "/monthly-rentals", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/monthly-rentals", navigate); } },
-                { icon: "✨", label: "Signature Stays", path: "/properties?category=Signature+Stays", action: handleSignatureStaysClick },
-                { icon: "🏘️", label: "List Property", path: "/list-category", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/list-category", navigate); } },
-                { icon: "📈", label: "ROI Calculator", path: "/roi-calculator", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/roi-calculator", navigate); } },
-                { icon: "📊", label: "Profile", path: "/dashboard", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/dashboard", navigate); } },
-                { icon: "🛡️", label: "Owner Dashboard", path: "/admindashboard", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/admindashboard", navigate); } },
-                { icon: "💬", label: "Buy Leads", path: "/buy-leads", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/buy-leads", navigate); } },
-                { icon: "📞", label: "Contact / Support", path: "/contactus", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/contactus", navigate); } },
-                { icon: "💼", label: "Career", path: "/career-support", action: goCareer },
+                { icon: <Home size={14} color="#c2772b"/>, label: "Home", path: "/", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/", navigate); } },
+                { icon: <Moon size={14} color="#c2772b"/>, label: "Nightly Stays", path: "/nightly-stays", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/nightly-stays", navigate); } },
+                { icon: <CalendarDays size={14} color="#c2772b"/>, label: "Monthly Rental", path: "/monthly-rentals", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/monthly-rentals", navigate); } },
+                { icon: <Star size={14} color="#c2772b"/>, label: "Signature Stays", path: "/properties?category=Signature+Stays", action: handleSignatureStaysClick },
+                { icon: <Building2 size={14} color="#c2772b"/>, label: "List Property", path: "/list-category", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/list-category", navigate); } },
+                { icon: <TrendingUp size={14} color="#c2772b"/>, label: "ROI Calculator", path: "/roi-calculator", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/roi-calculator", navigate); } },
+                { icon: <BarChart3 size={14} color="#c2772b"/>, label: "Profile", path: "/dashboard", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/dashboard", navigate); } },
+                { icon: <Shield size={14} color="#c2772b"/>, label: "Owner Dashboard", path: "/admindashboard", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/admindashboard", navigate); } },
+                { icon: <MessageCircle size={14} color="#c2772b"/>, label: "Buy Leads", path: "/buy-leads", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/buy-leads", navigate); } },
+                { icon: <Phone size={14} color="#c2772b"/>, label: "Contact / Support", path: "/contactus", action: (e) => { setHamburgerMenuOpen(false); navClick(e, "/contactus", navigate); } },
+                { icon: <Briefcase size={14} color="#c2772b"/>, label: "Career", path: "/career-support", action: goCareer },
                 { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: '20px', height: 'auto' }} />, label: "OvikaLiving Verified", path: "/ovika-verified", action: goOvikaVerified },
-                { icon: "✅", label: "Property Self Verification", path: "/ovika-self-verified", action: goSelfVerified },
-                { icon: "🗺️", label: "Explore Townmanor", action: () => { setHamburgerMenuOpen(false); window.open("https://www.townmanor.ai/", "_blank"); } },
+                { icon: <CheckCircle size={14} color="#c2772b"/>, label: "Property Self Verification", path: "/ovika-self-verified", action: goSelfVerified },
+                { icon: <Map size={14} color="#c2772b"/>, label: "Explore Townmanor", action: () => { setHamburgerMenuOpen(false); window.open("https://www.townmanor.ai/", "_blank"); } },
               ].map((item) => (
                 <button key={item.label} onClick={(e) => item.action(e)} onAuxClick={(e) => item.path ? auxNavClick(e, item.path) : null} style={{ border: "none", background: "transparent", padding: "7px 4px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", width: "100%", borderRadius: 8, transition: "background 0.15s" }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = "#fef9f2"; }}
@@ -620,15 +620,15 @@ export default function Navbar() {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
               {[
-                { icon: "🏖️", label: "Book a Stay", path: "/properties", sub: "Browse and book properties", action: (e) => { setSideMenuOpen(false); navClick(e, "/properties", navigate); } },
-                { icon: "✨", label: "Signature Stays", path: "/properties?category=Signature+Stays", sub: "Our curated premium properties", action: handleSignatureStaysClick },
-                { icon: "🏘️", label: "Become a Host", sub: "List your property and earn", action: goListingPage },
-                { icon: "📈", label: "ROI Calculator", path: "/roi-calculator", sub: "See how much your flat can earn", action: (e) => { setSideMenuOpen(false); navClick(e, "/roi-calculator", navigate); } },
-                { icon: "📊", label: "Profile", path: "/dashboard", sub: "View your bookings & performance", action: goDashboard },
-                { icon: "🛡️", label: "Owner Dashboard", path: "/admindashboard", sub: "Access owner controls", action: goOwnerDashboard },
-                { icon: "💼", label: "Career", path: "/career-support", sub: "Join our growing team", action: goCareer },
+                { icon: <MapPin size={16} color="#c2772b"/>, label: "Book a Stay", path: "/properties", sub: "Browse and book properties", action: (e) => { setSideMenuOpen(false); navClick(e, "/properties", navigate); } },
+                { icon: <Star size={16} color="#c2772b"/>, label: "Signature Stays", path: "/properties?category=Signature+Stays", sub: "Our curated premium properties", action: handleSignatureStaysClick },
+                { icon: <Building2 size={16} color="#c2772b"/>, label: "Become a Host", sub: "List your property and earn", action: goListingPage },
+                { icon: <TrendingUp size={16} color="#c2772b"/>, label: "ROI Calculator", path: "/roi-calculator", sub: "See how much your flat can earn", action: (e) => { setSideMenuOpen(false); navClick(e, "/roi-calculator", navigate); } },
+                { icon: <BarChart3 size={16} color="#c2772b"/>, label: "Profile", path: "/dashboard", sub: "View your bookings & performance", action: goDashboard },
+                { icon: <Shield size={16} color="#c2772b"/>, label: "Owner Dashboard", path: "/admindashboard", sub: "Access owner controls", action: goOwnerDashboard },
+                { icon: <Briefcase size={16} color="#c2772b"/>, label: "Career", path: "/career-support", sub: "Join our growing team", action: goCareer },
                 { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: '20px', height: 'auto' }} />, label: "OvikaLiving Verified", path: "/ovika-verified", sub: "Know about our verification process", action: goOvikaVerified },
-                { icon: "✅", label: "Property Self Verification", path: "/ovika-self-verified", sub: "Verify your property yourself", action: goSelfVerified },
+                { icon: <CheckCircle size={16} color="#c2772b"/>, label: "Property Self Verification", path: "/ovika-self-verified", sub: "Verify your property yourself", action: goSelfVerified },
               ].map((item) => (
                 <button key={item.label} onClick={(e) => item.action(e)} onAuxClick={(e) => item.path ? auxNavClick(e, item.path) : null} style={panelButtonStyle}>
                   <span style={{
@@ -654,7 +654,7 @@ export default function Navbar() {
               </button>
               <hr style={{ border: "none", borderTop: "1px solid #eee", margin: "13px 0" }} />
               <button onClick={openLogoutConfirm} style={{ border: "none", background: "transparent", padding: "8px 4px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
-                <span style={{ width: 28, height: 28, borderRadius: 999, background: "#fdeceb", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, color: "#c23e3e" }}>⬅</span>
+                <span style={{ width: 28, height: 28, borderRadius: 999, background: "#fdeceb", display: "flex", alignItems: "center", justifyContent: "center", color: "#c23e3e" }}><LogOut size={14} color="#c23e3e"/></span>
                 <span style={{ fontSize: 14, fontWeight: 500, color: "#c23e3e" }}>Log out</span>
               </button>
             </div>

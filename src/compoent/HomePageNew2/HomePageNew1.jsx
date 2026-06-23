@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Search } from 'lucide-react';
+import { MapPin, Search, Star, Building2, Home, Users, Building, Moon, CalendarDays, TrendingUp } from 'lucide-react';
+import { FiMapPin, FiSearch, FiStar } from 'react-icons/fi';
 import { navClick, auxNavClick } from '../../utils/navClick';
 
 const API_BASE_URL = 'https://www.townmanor.ai/api/ovika';
@@ -23,7 +24,13 @@ function getBreakpoint() {
   return 'desktop';
 }
 
-const typeIcon = { City: '🏙', Locality: '📍', Category: '🔍', Near: '📌', Amenity: '✨' };
+const typeIcon = {
+  City: <FiMapPin size={13}/>,
+  Locality: <FiMapPin size={13}/>,
+  Category: <FiSearch size={13}/>,
+  Near: <FiMapPin size={13}/>,
+  Amenity: <FiStar size={13}/>,
+};
 
 /* ── Search Bar with Suggestions ── */
 function SearchBar({ searchText, setSearchText, showSuggestions, setShowSuggestions, searchRef, filteredSuggestions, handleSearch, handleNearMe, locating, handleSuggestionClick, handleKeyDown, compact, placeholder }) {
@@ -640,11 +647,11 @@ export default function HomePageNew1() {
   const [phIndex, setPhIndex] = useState(0);
 
   const PLACEHOLDERS = {
-    signature: ['🏨 Try "Sector 62 Noida"', '✨ "Premium stays near Metro"', '🌙 "Nightly stay in Noida"', '🏠 "Furnished room Sector 18"'],
-    hotels:    ['🏩 Try "Hotel near City Center"', '⭐ "Budget hotel Sector 18"', '🛎️ "AC rooms in Gurugram"', '📍 "Hotels near Expo Mart"'],
-    homestay:  ['🏡 Try "Homestay in Noida"', '☕ "BnB near Noida Expressway"', '🌿 "Cozy homestay Sector 50"', '🛋️ "Private room Greater Noida"'],
-    pg:        ['🏠 Try "PG in Sector 62"', '👦 "Boys PG near Metro"', '👧 "Girls PG with food"', '🤝 "Co-living Noida Extension"'],
-    apt:       ['🏢 Try "1BHK in Sector 137"', '🛋️ "Furnished flat Noida"', '🔑 "Studio apartment Gurugram"', '🏙️ "2BHK near Expressway"'],
+    signature: ['Try "Sector 62 Noida"', '"Premium stays near Metro"', '"Nightly stay in Noida"', '"Furnished room Sector 18"'],
+    hotels:    ['Try "Hotel near City Center"', '"Budget hotel Sector 18"', '"AC rooms in Gurugram"', '"Hotels near Expo Mart"'],
+    homestay:  ['Try "Homestay in Noida"', '"BnB near Noida Expressway"', '"Cozy homestay Sector 50"', '"Private room Greater Noida"'],
+    pg:        ['Try "PG in Sector 62"', '"Boys PG near Metro"', '"Girls PG with food"', '"Co-living Noida Extension"'],
+    apt:       ['Try "1BHK in Sector 137"', '"Furnished flat Noida"', '"Studio apartment Gurugram"', '"2BHK near Expressway"'],
   };
   const nominatimTimer = useRef(null);
   const searchRef = useRef(null);
@@ -738,44 +745,59 @@ export default function HomePageNew1() {
     const p = new URLSearchParams();
     const text = searchText.trim();
     const lowText = text.toLowerCase();
-    
-    // Check if we have stored coords from a previous "Detect" click
+    const cat = CATEGORIES[activeCategory];
+
+    // Stored coords from "Detect" click
     const storedLat = sessionStorage.getItem('ovika_user_lat');
     const storedLng = sessionStorage.getItem('ovika_user_lng');
     if (storedLat && storedLng && (lowText.includes('near') || lowText.includes('nearby') || lowText === 'nearby')) {
-        p.set('lat', storedLat);
-        p.set('lng', storedLng);
-        sessionStorage.removeItem('ovika_user_lat');
-        sessionStorage.removeItem('ovika_user_lng');
+      p.set('lat', storedLat); p.set('lng', storedLng);
+      sessionStorage.removeItem('ovika_user_lat'); sessionStorage.removeItem('ovika_user_lng');
     }
 
     const isNearbyQuery = lowText.includes('near me') || lowText.includes('nearby') || lowText.includes('near by') || lowText.includes('around me');
-
     if (isNearbyQuery) {
-      // Extract subject keywords (remove 'near me' phrases)
       const cleanSearch = text.replace(/near\s*me|nearby|near\s*by|around\s*me/gi, '').trim();
       handleNearMe(cleanSearch || 'Nearby', true);
       return;
     }
 
+    // ── Pass category ──
+    if (cat?.param) p.set('category', cat.param);
+
+    // ── Pass selected city ──
+    if (selectedCity) {
+      const cityMap = { 'Gr. Noida': 'Greater Noida' };
+      p.set('city', cityMap[selectedCity] || selectedCity);
+    }
+
+    // ── Pass search text ──
     if (text) {
       p.set('search', text);
-      p.set('city', text);
-
-      // detect rental type intent
       if (!rentalType) {
-        if (lowText.includes('nightly') || lowText.includes('short') || lowText.includes('day')) {
-          rentalType = 'short';
-        } else if (lowText.includes('monthly') || lowText.includes('long') || lowText.includes('month') || lowText.includes('rent')) {
-          rentalType = 'long';
-        }
+        if (lowText.includes('nightly') || lowText.includes('short') || lowText.includes('day')) rentalType = 'short';
+        else if (lowText.includes('monthly') || lowText.includes('long') || lowText.includes('month') || lowText.includes('rent')) rentalType = 'long';
       }
     }
 
+    // ── Pass rental type ──
     if (rentalType) {
       p.set('rentalType', rentalType);
       sessionStorage.setItem('ovika_rental_type', rentalType);
     }
+
+    // ── Pass PG sub-filter (Boys/Girls/Co-Living) ──
+    if (pgType && cat?.searchType === 'pg') {
+      const pgMap = { 'Boys': 'boys', 'Girls': 'girls', 'Co-Living': 'coliving' };
+      if (pgMap[pgType]) p.set('pgSubFilter', pgMap[pgType]);
+    }
+
+    // ── Pass stay type for Signature (Nightly/Long Stay) ──
+    if (pgType && cat?.id === 'signature') {
+      if (pgType === 'Long Stay') p.set('rentalType', 'long');
+      else if (pgType === 'Nightly') p.set('rentalType', 'short');
+    }
+
     navigate(`/properties?${p}`);
     setShowSuggestions(false);
   };
@@ -948,7 +970,7 @@ export default function HomePageNew1() {
                 {['Boys','Girls','Co-Living'].map(g => (
                   <button key={g} onClick={() => setPgType(pgType===g?'':g)}
                     style={{ flex:1, padding:'8px 4px', borderRadius:10, border:`1.5px solid ${pgType===g?'#c98429':'#d1d5db'}`, background:pgType===g?'#fef3e0':'#fff', color:pgType===g?'#c98429':'#1f2937', fontSize:'12px', fontWeight:pgType===g?700:600, cursor:'pointer', fontFamily:"'Poppins',sans-serif", outline:'none' }}>
-                    {g==='Boys'?'👦 ':g==='Girls'?'👧 ':'🤝 '}{g}
+                    {g}
                   </button>
                 ))}
               </div>
@@ -960,7 +982,7 @@ export default function HomePageNew1() {
                 {['Nightly','Long Stay'].map(m => (
                   <button key={m} onClick={() => setPgType(pgType===m?'':m)}
                     style={{ flex:1, padding:'8px 4px', borderRadius:10, border:`1.5px solid ${pgType===m?'#c98429':'#d1d5db'}`, background:pgType===m?'#fef3e0':'#fff', color:pgType===m?'#c98429':'#1f2937', fontSize:'12px', fontWeight:pgType===m?700:600, cursor:'pointer', fontFamily:"'Poppins',sans-serif", outline:'none' }}>
-                    {m==='Nightly'?'🌙 ':'📅 '}{m}
+                    {m==='Nightly'?<><Moon size={13}/> </>:<><CalendarDays size={13}/> </>}{m}
                   </button>
                 ))}
               </div>
@@ -975,7 +997,7 @@ export default function HomePageNew1() {
 
             {/* Trending */}
             <div style={{ display:'flex', alignItems:'center', gap:7, marginTop:14, overflowX:'auto', scrollbarWidth:'none' }}>
-              <span style={{ fontSize:'11px', color:'#374151', fontWeight:700, flexShrink:0 }}>🔥 Trending</span>
+              <span style={{ fontSize:'11px', color:'#374151', fontWeight:700, flexShrink:0, display:'flex', alignItems:'center', gap:4 }}><TrendingUp size={12}/>Trending</span>
               {cityTrending.map(t => (
                 <button key={t} onClick={() => { setSearchText(t); handleSearch(cat.rentalType); }}
                   style={{ padding:'4px 12px', borderRadius:100, background:'#f5f7fa', border:'1px solid #d1d5db', color:'#111827', fontSize:'11.5px', fontWeight:500, cursor:'pointer', flexShrink:0, fontFamily:"'Poppins',sans-serif", outline:'none', whiteSpace:'nowrap' }}>
@@ -987,7 +1009,7 @@ export default function HomePageNew1() {
             {/* Owner CTA */}
             <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:5, marginTop:14, paddingTop:12, borderTop:'1px solid #f3f4f6' }}>
               <span style={{ fontSize:'12px', color:'#9ca3af' }}>✦ Are you an owner?</span>
-              <a href="/list-property" style={{ fontSize:'12px', fontWeight:700, color:'#c98429', textDecoration:'none' }}>Post property for free ›</a>
+              <a href="/list-category" style={{ fontSize:'12px', fontWeight:700, color:'#c98429', textDecoration:'none' }}>Post property for free ›</a>
             </div>
 
           </div>
@@ -1016,7 +1038,7 @@ export default function HomePageNew1() {
                     <button key={city}
                       onClick={() => { setSelectedCity(city); setShowOverlayCityPick(false); }}
                       style={{ padding:'7px 16px', borderRadius:100, border:`1.5px solid ${city===selectedCity?'#c98429':'#e5e7eb'}`, background:city===selectedCity?'#fef3e0':'#f9fafb', color:city===selectedCity?'#c98429':'#374151', fontSize:'13px', fontWeight:city===selectedCity?700:500, cursor:'pointer', fontFamily:"'Poppins',sans-serif", outline:'none' }}>
-                      {city===selectedCity && '📍 '}{city}
+                      {city===selectedCity && <MapPin size={11} style={{marginRight:2}}/>}{city}
                     </button>
                   ))}
                 </div>
@@ -1074,7 +1096,7 @@ export default function HomePageNew1() {
 
                 {/* Hotspots */}
                 <div style={{ padding:'16px 16px 8px' }}>
-                  <div style={{ fontSize:'13px', fontWeight:700, color:'#374151', marginBottom:12 }}>🔥 Hotspots in {selectedCity}</div>
+                  <div style={{ fontSize:'13px', fontWeight:700, color:'#374151', marginBottom:12, display:'flex', alignItems:'center', gap:4 }}><TrendingUp size={12}/>Hotspots in {selectedCity}</div>
                   <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
                     {cityTrending.map(t => (
                       <div key={t} onClick={() => { setSearchText(t); closeMobSearch(); setTimeout(()=>handleSearch(cat.rentalType),320); }}
@@ -1146,7 +1168,7 @@ export default function HomePageNew1() {
                 onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.35) 100%)' }} />
               <div style={{ position: 'absolute', top: 12, left: 14, background: 'rgba(194,119,43,0.92)', borderRadius: 20, padding: '3px 12px' }}>
-                <span style={{ fontSize: '0.6rem', color: '#fff', fontWeight: 600, letterSpacing: 0.8, textTransform: 'uppercase' }}>🌙 Nightly Stays</span>
+                <span style={{ fontSize: '0.6rem', color: '#fff', fontWeight: 600, letterSpacing: 0.8, textTransform: 'uppercase', display:'inline-flex', alignItems:'center', gap:3 }}><Moon size={10}/>Nightly Stays</span>
               </div>
             </div>
             <div style={{ padding: '16px 18px 18px' }}>
@@ -1172,7 +1194,7 @@ export default function HomePageNew1() {
                 onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.35) 100%)' }} />
               <div style={{ position: 'absolute', top: 12, left: 14, background: 'rgba(26,18,9,0.85)', borderRadius: 20, padding: '3px 12px' }}>
-                <span style={{ fontSize: '0.6rem', color: '#f0c070', fontWeight: 600, letterSpacing: 0.8, textTransform: 'uppercase' }}>🏠 Monthly Rental</span>
+                <span style={{ fontSize: '0.6rem', color: '#f0c070', fontWeight: 600, letterSpacing: 0.8, textTransform: 'uppercase', display:'inline-flex', alignItems:'center', gap:3 }}><CalendarDays size={10}/>Monthly Rental</span>
               </div>
             </div>
             <div style={{ padding: '16px 18px 18px' }}>
@@ -1191,9 +1213,14 @@ export default function HomePageNew1() {
 
         {/* Badges */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 28, padding: '18px 24px 0' }}>
-          {[['✦', 'Fully Furnished'], ['⚡', 'Instant Move-in'], ['🛡', 'Zero Brokerage'], ['✔', '100% Verified']].map(([icon, label]) => (
+          {[
+            [<Home size={12}/>, 'Fully Furnished'],
+            [<TrendingUp size={12}/>, 'Instant Move-in'],
+            [<Star size={12}/>, 'Zero Brokerage'],
+            [<Building size={12}/>, '100% Verified'],
+          ].map(([icon, label]) => (
             <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <span style={{ color: '#c2772b', fontSize: '0.7rem' }}>{icon}</span>
+              <span style={{ color: '#c2772b', display:'flex' }}>{icon}</span>
               <span style={{ color: '#5a4a3a', fontSize: '0.72rem', fontWeight: 500 }}>{label}</span>
             </div>
           ))}
@@ -1401,7 +1428,7 @@ export default function HomePageNew1() {
               <div style={{ position:'absolute', top:'calc(100% + 8px)', left:0, right:0, background:'#fff', borderRadius:16, boxShadow:'0 12px 44px rgba(0,0,0,0.18)', border:'1.5px solid #f0e8da', zIndex:99999, overflow:'hidden', textAlign:'left' }}>
                 {liveResults.length > 0 && (
                   <>
-                    <div style={{ padding:'8px 16px 4px', fontSize:'10px', color:'#c98429', fontWeight:700, textTransform:'uppercase', letterSpacing:1 }}>📍 Locations</div>
+                    <div style={{ padding:'8px 16px 4px', fontSize:'10px', color:'#c98429', fontWeight:700, textTransform:'uppercase', letterSpacing:1, display:'flex', alignItems:'center', gap:4 }}><MapPin size={11}/>Locations</div>
                     {liveResults.map((r, idx) => (
                       <div key={idx} onClick={() => { setSearchText(r.label); setShowSuggestions(false); handleSearch(cat.rentalType); }}
                         style={{ display:'flex', alignItems:'center', gap:12, padding:'10px 16px', cursor:'pointer', borderBottom:'1px solid #f8f0e4', transition:'background 0.12s' }}

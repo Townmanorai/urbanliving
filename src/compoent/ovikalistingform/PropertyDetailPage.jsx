@@ -1358,6 +1358,7 @@ const PropertyDetailPage = () => {
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeImg, setActiveImg] = useState(0);
+  const [showMapModal, setShowMapModal] = useState(false);
   const [showImageViewer, setShowImageViewer] = useState(false);
   const [viewerImageIndex, setViewerImageIndex] = useState(0);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -3094,39 +3095,109 @@ const PropertyDetailPage = () => {
 
       <section className="image-gallery">
         {/* ── Airbnb-style gallery grid ── */}
-        <div className="gallery-airbnb">
+        {(() => {
+          const realPhotos = photos.filter(Boolean);
+          const count = realPhotos.length;
+          const imgStyle = { position:'absolute', top:0, left:0, right:0, bottom:0, width:'100%', height:'100%', objectFit:'cover', objectPosition:'center center', display:'block' };
+          const cellBase = { position:'relative', overflow:'hidden' };
 
-          {/* LEFT — big main image */}
-          <div className="gallery-main" style={{ position:'relative', overflow:'hidden' }} onClick={handleMainImageClick}>
-            <img src={getPhotoUrl(photos[0]) || 'https://via.placeholder.com/800x500'} alt="Main Property" style={{ position:'absolute', top:0, left:0, right:0, bottom:0, width:'100%', height:'100%', objectFit:'cover', objectPosition:'center center', display:'block' }} />
-          </div>
-
-          {/* RIGHT — 2×2 grid of 4 images */}
-          <div className="gallery-side gallery-side-grid">
-            {[1,2,3,4].map((idx, pos) => (
-              <div
-                key={idx}
-                className={`gallery-side-cell gallery-grid-cell gallery-grid-cell--${pos}`}
-                style={{ position:'relative', overflow:'hidden' }}
-                onClick={() => { if (photos[idx]) { setViewerImageIndex(idx); setShowImageViewer(true); } }}
-              >
-                {photos[idx]
-                  ? <img src={getPhotoUrl(photos[idx])} alt={`Property ${idx+1}`} style={{ position:'absolute', top:0, left:0, right:0, bottom:0, width:'100%', height:'100%', objectFit:'cover', objectPosition:'center center', display:'block' }} />
-                  : <div className="gallery-empty-cell" />}
+          // 1 photo — main full width, no side
+          if (count <= 1) return (
+            <div className="gallery-airbnb" style={{ display:'block' }}>
+              <div style={{ ...cellBase, width:'100%', borderRadius:12, aspectRatio:'16/7' }} onClick={handleMainImageClick}>
+                <img src={getPhotoUrl(realPhotos[0]) || 'https://via.placeholder.com/800x500'} alt="Main Property" style={imgStyle} />
               </div>
-            ))}
-          </div>
+              <button className="gallery-show-all-btn" onClick={() => setShowPhotoGallery(true)}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                <span className="gallery-show-all-text">Show all photos</span>
+              </button>
+            </div>
+          );
 
-          {/* "Show all photos" button — absolute on whole grid bottom-right */}
-          <button className="gallery-show-all-btn" onClick={() => setShowPhotoGallery(true)}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-              <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
-            </svg>
-            <span className="gallery-show-all-text">Show all photos</span>
-          </button>
+          // 2 photos — left big + right 1 full height
+          if (count === 2) return (
+            <div className="gallery-airbnb">
+              <div className="gallery-main" style={cellBase} onClick={handleMainImageClick}>
+                <img src={getPhotoUrl(realPhotos[0])} alt="Main Property" style={imgStyle} />
+              </div>
+              <div className="gallery-side" style={{ display:'block' }}>
+                <div style={{ ...cellBase, height:'100%', borderRadius:'0 12px 12px 0' }} onClick={() => { setViewerImageIndex(1); setShowImageViewer(true); }}>
+                  <img src={getPhotoUrl(realPhotos[1])} alt="Property 2" style={imgStyle} />
+                </div>
+              </div>
+              <button className="gallery-show-all-btn" onClick={() => setShowPhotoGallery(true)}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                <span className="gallery-show-all-text">Show all photos</span>
+              </button>
+            </div>
+          );
 
-        </div>
+          // 3 photos — main left + right 2 stacked in grid
+          if (count === 3) return (
+            <div className="gallery-airbnb">
+              <div className="gallery-main" style={cellBase} onClick={handleMainImageClick}>
+                <img src={getPhotoUrl(realPhotos[0])} alt="Main Property" style={imgStyle} />
+              </div>
+              <div className="gallery-side" style={{ display:'grid', gridTemplateColumns:'1fr', gridTemplateRows:'1fr 1fr', gap:4 }}>
+                {[1,2].map((i, pos) => (
+                  <div key={i} style={{ position:'relative', overflow:'hidden', borderRadius: pos===0 ? '0 12px 0 0' : '0 0 12px 0', cursor:'pointer' }} onClick={() => { setViewerImageIndex(i); setShowImageViewer(true); }}>
+                    <img src={getPhotoUrl(realPhotos[i])} alt={`Property ${i+1}`} style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover', objectPosition:'center 25%', display:'block' }} />
+                  </div>
+                ))}
+              </div>
+              <button className="gallery-show-all-btn" onClick={() => setShowPhotoGallery(true)}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                <span className="gallery-show-all-text">Show all photos</span>
+              </button>
+            </div>
+          );
+
+          // 4 photos — left big + right: top full-width, bottom 2 side by side
+          if (count === 4) return (
+            <div className="gallery-airbnb">
+              <div className="gallery-main" style={cellBase} onClick={handleMainImageClick}>
+                <img src={getPhotoUrl(realPhotos[0])} alt="Main Property" style={imgStyle} />
+              </div>
+              <div className="gallery-side" style={{ display:'flex', flexDirection:'column', gap:4 }}>
+                <div style={{ ...cellBase, flex:1, borderRadius:'0 12px 0 0' }} onClick={() => { setViewerImageIndex(1); setShowImageViewer(true); }}>
+                  <img src={getPhotoUrl(realPhotos[1])} alt="Property 2" style={imgStyle} />
+                </div>
+                <div style={{ flex:1, display:'flex', gap:4 }}>
+                  {[2,3].map((i, pos) => (
+                    <div key={i} style={{ ...cellBase, flex:1, borderRadius: pos===1 ? '0 0 12px 0' : undefined }} onClick={() => { setViewerImageIndex(i); setShowImageViewer(true); }}>
+                      <img src={getPhotoUrl(realPhotos[i])} alt={`Property ${i+1}`} style={imgStyle} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <button className="gallery-show-all-btn" onClick={() => setShowPhotoGallery(true)}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                <span className="gallery-show-all-text">Show all photos</span>
+              </button>
+            </div>
+          );
+
+          // 5+ photos — original airbnb 2×2 grid
+          return (
+            <div className="gallery-airbnb">
+              <div className="gallery-main" style={{ position:'relative', overflow:'hidden' }} onClick={handleMainImageClick}>
+                <img src={getPhotoUrl(realPhotos[0])} alt="Main Property" style={imgStyle} />
+              </div>
+              <div className="gallery-side gallery-side-grid">
+                {[1,2,3,4].map((idx, pos) => (
+                  <div key={idx} className={`gallery-side-cell gallery-grid-cell gallery-grid-cell--${pos}`} style={{ position:'relative', overflow:'hidden' }}
+                    onClick={() => { if (realPhotos[idx]) { setViewerImageIndex(idx); setShowImageViewer(true); } }}>
+                    <img src={getPhotoUrl(realPhotos[idx])} alt={`Property ${idx+1}`} style={imgStyle} />
+                  </div>
+                ))}
+              </div>
+              <button className="gallery-show-all-btn" onClick={() => setShowPhotoGallery(true)}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                <span className="gallery-show-all-text">Show all photos</span>
+              </button>
+            </div>
+          );
+        })()}
 
         {/* Mobile-only thumbnail strip */}
         <div className="thumbnail-strip">
@@ -3317,18 +3388,6 @@ const PropertyDetailPage = () => {
                         })()}
                       </strong>
                     </p>
-                  </div>
-                  <div className="rm-section-stats">
-                    <div className="rm-stat-box">
-                      <span className="rm-stat-num">{bedCount}</span>
-                      <span className="rm-stat-lbl">Types</span>
-                    </div>
-                    <div className="rm-stat-box rm-stat-box--gold">
-                      <span className="rm-stat-num" style={{ fontSize:'0.78rem' }}>
-                        {pricingMode === 'monthly' ? '/mo' : '/night'}
-                      </span>
-                      <span className="rm-stat-lbl">Rate</span>
-                    </div>
                   </div>
                 </div>
 
@@ -3848,7 +3907,7 @@ const PropertyDetailPage = () => {
           <div className="pdp-location-card">
             <h3 className="pdp-location-title">Location</h3>
             <p className="pdp-location-addr">{[property.city, property.address].filter(Boolean).join(', ')}</p>
-            <div className="pdp-map-wrap">
+            <div className="pdp-map-wrap" style={{ position: 'relative' }}>
               <iframe
                 title="Property Location"
                 src={
@@ -3863,21 +3922,48 @@ const PropertyDetailPage = () => {
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
               />
+              {/* Block all clicks on the iframe — prevents "Open in Maps" redirect */}
+              <div style={{ position: 'absolute', inset: 0, borderRadius: 10, cursor: 'default' }} onClick={() => setShowMapModal(true)} />
             </div>
-            <a
-              href={
-                property.latitude && property.longitude
-                  ? `https://maps.google.com/?q=${property.latitude},${property.longitude}`
-                  : `https://maps.google.com/?q=${encodeURIComponent([property.address, property.city, 'India'].filter(Boolean).join(', '))}`
-              }
-              target="_blank"
-              rel="noopener noreferrer"
-              className="pdp-map-btn"
-            >
+            <button onClick={() => setShowMapModal(true)} className="pdp-map-btn">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
               View on map
-            </a>
+            </button>
           </div>
+
+          {/* ── Map Modal (stays on OvikaLiving) ── */}
+          {showMapModal && (
+            <div style={{ position: 'fixed', inset: 0, zIndex: 999999, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }} onClick={() => setShowMapModal(false)}>
+              <div style={{ background: '#fff', borderRadius: 18, width: '100%', maxWidth: 640, overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.35)' }} onClick={e => e.stopPropagation()}>
+                {/* Header */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid #f0e8da' }}>
+                  <div>
+                    <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1a1209' }}>Location</div>
+                    <div style={{ fontSize: '0.78rem', color: '#9a8472', marginTop: 2 }}>{[property.city, property.address].filter(Boolean).join(', ')}</div>
+                  </div>
+                  <button onClick={() => setShowMapModal(false)} style={{ border: 'none', background: '#f3f0eb', width: 32, height: 32, borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: '#555' }}>✕</button>
+                </div>
+                {/* Map with overlay to block external links */}
+                <div style={{ position: 'relative' }}>
+                  <iframe
+                    title="Property Location Full"
+                    src={
+                      property.latitude && property.longitude
+                        ? `https://maps.google.com/maps?q=${property.latitude},${property.longitude}&z=16&output=embed`
+                        : `https://maps.google.com/maps?q=${encodeURIComponent([property.address, property.city, 'India'].filter(Boolean).join(', '))}&z=16&output=embed`
+                    }
+                    width="100%"
+                    height="420"
+                    style={{ border: 0, display: 'block' }}
+                    allowFullScreen=""
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                  <div style={{ position: 'absolute', inset: 0, cursor: 'default' }} />
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* ── Good to Know ── */}
           <div className="pdp-g2k-card">

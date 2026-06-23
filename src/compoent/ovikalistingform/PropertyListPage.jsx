@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { Helmet } from 'react-helmet';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { navClick, auxNavClick } from '../../utils/navClick';
-import { FiSearch, FiMapPin, FiHeart, FiPlus, FiStar, FiX, FiMoon, FiCalendar, FiTag, FiHome, FiTrendingUp, FiAward, FiClock, FiMap, FiList, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiSearch, FiMapPin, FiHeart, FiPlus, FiStar, FiX, FiMoon, FiCalendar, FiTag, FiHome, FiTrendingUp, FiAward, FiClock, FiMap, FiList, FiChevronLeft, FiChevronRight, FiUser, FiUsers, FiBriefcase, FiCoffee, FiFeather, FiShield, FiZap, FiCheckCircle, FiLayers } from 'react-icons/fi';
 import { BiBed, BiBath, BiArea } from 'react-icons/bi';
 import { GoogleMap, MarkerF, InfoWindowF } from '@react-google-maps/api';
 
@@ -370,11 +370,11 @@ const CATEGORIES = [
 ];
 
 const CategoryIcon = ({ id, size = 14, color = 'currentColor' }) => {
-  if (id === 'Signature Stays') return <span style={{ fontSize: size }}>✨</span>;
-  if (id === 'Hotel Stays')     return <span style={{ fontSize: size }}>🏨</span>;
-  if (id === 'Homestays & BnB')    return <span style={{ fontSize: size }}>🏡</span>;
-  if (id === 'Apartments & Villas') return <span style={{ fontSize: size }}>🏢</span>;
-  if (id === 'PG & Co-Living')      return <FiHome style={{ fontSize: size, color }} />;
+  if (id === 'Signature Stays')    return <FiStar size={size} color={color} />;
+  if (id === 'Hotel Stays')        return <FiHome size={size} color={color} />;
+  if (id === 'Homestays & BnB')    return <FiHome size={size} color={color} />;
+  if (id === 'Apartments & Villas') return <FiLayers size={size} color={color} />;
+  if (id === 'PG & Co-Living')     return <FiUsers size={size} color={color} />;
   return null;
 };
 
@@ -961,11 +961,11 @@ const SidebarContent = ({
         {sectionTitle('Tenant Preference')}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
           {[
-            { id: 'male', label: '👨 Male' },
-            { id: 'female', label: '👩 Female' },
-            { id: 'family', label: '👨‍👩‍👧 Family' },
-            { id: 'couple', label: '💑 Couple' },
-            { id: 'professionals', label: '💼 Professionals' },
+            { id: 'male', label: 'Male' },
+            { id: 'female', label: 'Female' },
+            { id: 'family', label: 'Family' },
+            { id: 'couple', label: 'Couple' },
+            { id: 'professionals', label: 'Professionals' },
           ].map(({ id, label }) => {
             const active = tenantFilter === id;
             return (
@@ -986,9 +986,9 @@ const SidebarContent = ({
       <div style={{ marginBottom: 22 }}>
         {sectionTitle('More Preferences')}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <ToggleRow label="🍽️ Food Available" value={foodFilter} onChange={setFoodFilter} />
-          <ToggleRow label="🐾 Pets Allowed" value={petsFilter} onChange={setPetsFilter} />
-          <ToggleRow label="💑 Couple Friendly" value={coupleFilter} onChange={setCoupleFilter} />
+          <ToggleRow label="Food Available" value={foodFilter} onChange={setFoodFilter} />
+          <ToggleRow label="Pets Allowed" value={petsFilter} onChange={setPetsFilter} />
+          <ToggleRow label="Couple Friendly" value={coupleFilter} onChange={setCoupleFilter} />
         </div>
       </div>
 
@@ -1033,6 +1033,7 @@ const PropertyListPage = () => {
 
   const [properties, setProperties] = useState([]);
   const [filtered, setFiltered] = useState([]);
+  const [isShowingRelated, setIsShowingRelated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState(_ss.search ?? '');
@@ -1758,7 +1759,23 @@ const PropertyListPage = () => {
           }
           return 0;
         });
-    setFiltered(sortedResults);
+    // ── No exact results → show related (relax city + category filters) ──
+    if (sortedResults.length === 0 && properties.length > 0) {
+      // Step 1: drop city filter, keep category + rentalType
+      let related = applyFilter(properties, activeCat, search, rentalType, userLat, userLng, '');
+      // Step 2: if still 0, drop category too — just rentalType
+      if (related.length === 0) {
+        related = applyFilter(properties, null, search, rentalType, userLat, userLng, '');
+      }
+      // Step 3: absolute fallback — all properties
+      if (related.length === 0) related = [...properties];
+      setFiltered(related.slice(0, 20));
+      setIsShowingRelated(true);
+    } else {
+      setFiltered(sortedResults);
+      setIsShowingRelated(false);
+    }
+
     if (skipPageResetRef.current > 0) {
       skipPageResetRef.current--;
     } else {
@@ -1799,7 +1816,6 @@ const PropertyListPage = () => {
     const cityParam  = (params.get('city')   || '').trim();
     const searchParam = (params.get('search') || '').trim();
     if (cityParam && KNOWN_CITY_NAMES.includes(cityParam.toLowerCase())) {
-      // City chip click — set as chip filter, not search bar
       setCityFilter(cityParam);
       setSearch('');
     } else {
@@ -1807,11 +1823,12 @@ const PropertyListPage = () => {
       if (q) setSearch(q);
     }
 
+    // pgSubFilter from homepage (Boys / Girls / Co-Living)
+    const pgSub = params.get('pgSubFilter');
+    if (pgSub) setPgSubFilter(pgSub);
+
     const g = params.get('guests');
-    if (g) {
-      setGuests(Number(g));
-      sessionStorage.setItem('ovika_search_guests', g);
-    }
+    if (g) { setGuests(Number(g)); sessionStorage.setItem('ovika_search_guests', g); }
 
     const cin = params.get('checkIn');
     if (cin) setCheckIn(cin);
@@ -2482,13 +2499,13 @@ const PropertyListPage = () => {
             }}>
               {[
                 {
-                  img: '🏠',
+                  img: <FiMoon size={24} color="#c98429"/>,
                   title: 'Short Term Rental',
                   desc: 'Nightly stays & PG',
                   path: '/listed1',
                 },
                 {
-                  img: '🏢',
+                  img: <FiCalendar size={24} color="#c98429"/>,
                   title: 'Long Term Rental',
                   desc: 'Monthly rentals & PG',
                   path: '/list-pg',
@@ -2709,15 +2726,15 @@ const PropertyListPage = () => {
                     const recentSearches = getRecentSearches();
                     const recentlyViewed = getRecentlyViewed();
                     const POPULAR_KEYWORDS = [
-                      { label: 'PG', icon: '🏠', type: 'keyword' },
-                      { label: 'Boys PG', icon: '🧑', type: 'keyword' },
-                      { label: 'Girls PG', icon: '👩', type: 'keyword' },
-                      { label: 'Co-Living', icon: '🤝', type: 'keyword' },
-                      { label: 'Noida', icon: '📍', type: 'city' },
-                      { label: 'Greater Noida', icon: '📍', type: 'city' },
-                      { label: 'Gurugram', icon: '📍', type: 'city' },
-                      { label: 'Delhi', icon: '📍', type: 'city' },
-                      { label: 'Ghaziabad', icon: '📍', type: 'city' },
+                      { label: 'PG', icon: 'home', type: 'keyword' },
+                      { label: 'Boys PG', icon: 'home', type: 'keyword' },
+                      { label: 'Girls PG', icon: 'home', type: 'keyword' },
+                      { label: 'Co-Living', icon: 'users', type: 'keyword' },
+                      { label: 'Noida', icon: 'city', type: 'city' },
+                      { label: 'Greater Noida', icon: 'city', type: 'city' },
+                      { label: 'Gurugram', icon: 'city', type: 'city' },
+                      { label: 'Delhi', icon: 'city', type: 'city' },
+                      { label: 'Ghaziabad', icon: 'city', type: 'city' },
                     ];
                     const ACTIVE_CITIES = ['Noida', 'Greater Noida', 'Gurugram', 'Delhi', 'Ghaziabad'];
 
@@ -2755,7 +2772,7 @@ const PropertyListPage = () => {
                                   onMouseEnter={e => e.currentTarget.style.background = '#fdf5ec'}
                                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                                 >
-                                  <span style={{ fontSize: 13 }}>🏨</span>
+                                  <FiHome size={13} color="#c98429" />
                                   <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</div>
                                     {p.city && <div style={{ fontSize: 11, color: '#b89a70' }}>{p.city}</div>}
@@ -2772,7 +2789,8 @@ const PropertyListPage = () => {
                               onMouseEnter={e => e.currentTarget.style.background = '#fdf5ec'}
                               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                             >
-                              <span>{item.icon}</span><span>{item.label}</span>
+                              {item.icon === 'city' ? <FiMapPin size={13} color="#c98429"/> : item.icon === 'users' ? <FiUsers size={13} color="#c98429"/> : <FiHome size={13} color="#c98429"/>}
+                              <span>{item.label}</span>
                             </div>
                           ))}
                         </div>
@@ -2780,8 +2798,8 @@ const PropertyListPage = () => {
                     }
 
                     // Typing state — show matching results
-                    const matchCities = ACTIVE_CITIES.filter(c => c.toLowerCase().includes(q)).map(c => ({ label: c, icon: '📍', type: 'city' }));
-                    const matchProps = properties.filter(p => (p.property_name || p.name || '').toLowerCase().includes(q)).slice(0, 4).map(p => ({ label: p.property_name || p.name, icon: '🏨', type: 'property' }));
+                    const matchCities = ACTIVE_CITIES.filter(c => c.toLowerCase().includes(q)).map(c => ({ label: c, icon: 'city', type: 'city' }));
+                    const matchProps = properties.filter(p => (p.property_name || p.name || '').toLowerCase().includes(q)).slice(0, 4).map(p => ({ label: p.property_name || p.name, icon: 'home', type: 'property' }));
                     const matchKw = POPULAR_KEYWORDS.filter(k => k.label.toLowerCase().includes(q));
                     const items = [...matchCities, ...matchKw, ...matchProps];
                     if (items.length === 0) return null;
@@ -2793,7 +2811,7 @@ const PropertyListPage = () => {
                             onMouseEnter={e => e.currentTarget.style.background = '#fdf5ec'}
                             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                           >
-                            <span>{item.icon}</span>
+                            {item.icon === 'city' ? <FiMapPin size={13} color="#c98429"/> : <FiHome size={13} color="#c98429"/>}
                             <span style={{ flex: 1 }}>{item.label}</span>
                             {item.type === 'property' && <span style={{ fontSize: 10, color: '#b89a70' }}>Property</span>}
                           </div>
@@ -3156,6 +3174,20 @@ const PropertyListPage = () => {
 
             return (
               <>
+                {/* Related results banner */}
+                {isShowingRelated && (
+                  <div style={{ background:'#fef9f0', border:'1px solid #f5d59a', borderRadius:12, padding:'12px 16px', marginBottom:16, display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
+                    <FiSearch size={28} color="#ccc" />
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontSize:14, fontWeight:700, color:'#92400e' }}>No exact matches found</div>
+                      <div style={{ fontSize:12, color:'#b45309', marginTop:2 }}>Showing similar properties you might like</div>
+                    </div>
+                    <button onClick={() => { setSearch(''); setCityFilter(''); setActiveCat(null); resetSidebar(); setIsShowingRelated(false); }}
+                      style={{ fontSize:12, color:'#c98429', fontWeight:600, background:'none', border:'1px solid #c98429', borderRadius:8, padding:'4px 12px', cursor:'pointer' }}>
+                      Clear filters
+                    </button>
+                  </div>
+                )}
                 <div className="plp-grid">
                   {pageItems.map(p => (
                     <PropertyCard key={p.id} property={p} rentalType={rentalType} />

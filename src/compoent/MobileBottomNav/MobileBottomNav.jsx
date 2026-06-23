@@ -59,7 +59,7 @@ export default function MobileBottomNav() {
           <span className="mbn-label">Explore</span>
         </button>
 
-        <button className="mbn-item mbn-item--list" onClick={() => navigate('/list-property')}>
+        <button className="mbn-item mbn-item--list" onClick={() => navigate('/list-category')}>
           <div className="mbn-plus-btn">
             <FiPlus size={26} strokeWidth={2.5} />
           </div>
@@ -137,7 +137,7 @@ export default function MobileBottomNav() {
                   <FiBell size={20} /> Notifications
                 </button>
               )}
-              <button className="mbn-drawer-item" onClick={() => go('/list-property')}>
+              <button className="mbn-drawer-item" onClick={() => go('/list-category')}>
                 <MdOutlineBedroomParent size={20} /> List Your Property
               </button>
               <button className="mbn-drawer-item" onClick={() => go('/roi-calculator')}>

@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles, Moon, Home, Star, Shield, Zap, CheckCircle, Building2, Building, Users } from 'lucide-react';
 import { navClick } from '../../utils/navClick';
 
 function getBreakpoint() {
@@ -14,7 +14,7 @@ const NIGHTLY = [
   {
     id: 'signature', title: 'Signature Stays', sub: 'Fully managed luxury villas & premium homes',
     badge: 'Nightly Rental', price: '₹2,599', unit: '/night', btnText: 'Explore Signature',
-    icon: '✨', tags: ['Luxury', 'Verified', 'Fully Furnished'], popular: false,
+    icon: <Sparkles size={16}/>, tags: ['Luxury', 'Verified', 'Fully Furnished'], popular: false,
     img: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=900&q=80&auto=format&fit=crop',
     imgFallback: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=600&q=80',
     rentalType: 'short', category: 'Signature Stays', color: '#7c4a1a',
@@ -22,7 +22,7 @@ const NIGHTLY = [
   {
     id: 'hotel', title: 'Hotel Stays', sub: 'Premium, Luxury & Boutique Hotels',
     badge: 'Nightly Rental', price: '₹1,499', unit: '/night', btnText: 'Explore Hotels',
-    icon: '🏨', tags: ['4★ & 5★', 'Breakfast', 'Instant Book'], popular: true,
+    icon: <Building2 size={16}/>, tags: ['4★ & 5★', 'Breakfast', 'Instant Book'], popular: true,
     img: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=700&q=80&auto=format&fit=crop',
     imgFallback: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80',
     rentalType: 'short', category: 'Hotel Stays', color: '#1a3a5c',
@@ -30,7 +30,7 @@ const NIGHTLY = [
   {
     id: 'homestay', title: 'Homestays & BnB', sub: 'Villas, Flats & Serviced Homes',
     badge: 'Nightly Rental', price: '₹2,499', unit: '/night', btnText: 'Explore Homestays',
-    icon: '🏡', tags: ['Homely', 'Kitchen', 'Private Space'], popular: false,
+    icon: <Home size={16}/>, tags: ['Homely', 'Kitchen', 'Private Space'], popular: false,
     img: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=700&q=80&auto=format&fit=crop',
     imgFallback: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80',
     rentalType: 'short', category: 'Homestays & BnB', color: '#1a4a2e',
@@ -41,7 +41,7 @@ const MONTHLY = [
   {
     id: 'signature', title: 'Signature Stays', sub: 'Fully managed luxury homes for long stays',
     badge: 'Monthly Rental', price: '₹25,999', unit: '/month', btnText: 'Explore Signature',
-    icon: '✨', tags: ['Luxury', 'Verified', 'Fully Furnished'], popular: false,
+    icon: <Sparkles size={16}/>, tags: ['Luxury', 'Verified', 'Fully Furnished'], popular: false,
     img: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=900&q=80&auto=format&fit=crop',
     imgFallback: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=600&q=80',
     rentalType: 'long', category: 'Signature Stays', color: '#7c4a1a',
@@ -49,7 +49,7 @@ const MONTHLY = [
   {
     id: 'apartments', title: 'Apartments & Villas', sub: 'Furnished, Semi-Furnished & Unfurnished',
     badge: 'Monthly Rental', price: '₹12,999', unit: '/month', btnText: 'Explore Apartments',
-    icon: '🏢', tags: ['No Brokerage', 'Flexible', 'Furnished'], popular: true,
+    icon: <Building size={16}/>, tags: ['No Brokerage', 'Flexible', 'Furnished'], popular: true,
     img: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=700&q=80&auto=format&fit=crop',
     imgFallback: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&q=80',
     rentalType: 'long', category: 'Apartments & Villas', color: '#1a3a5c',
@@ -57,7 +57,7 @@ const MONTHLY = [
   {
     id: 'pg', title: 'PG & Co-Living', sub: 'Boys, Girls & Community Living spaces',
     badge: 'Monthly Rental', price: '₹4,999', unit: '/month', btnText: 'Explore PG',
-    icon: '🤝', tags: ['Meals Included', 'Community', 'Zero Deposit'], popular: false,
+    icon: <Users size={16}/>, tags: ['Meals Included', 'Community', 'Zero Deposit'], popular: false,
     img: 'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?w=700&q=80&auto=format&fit=crop',
     imgFallback: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&q=80',
     rentalType: 'long', category: 'PG & Co-Living', color: '#2a1a5c',
@@ -105,14 +105,14 @@ export default function HomePageNew2() {
             </h2>
             {/* Tab pill with labels */}
             <div style={{ display: 'inline-flex', background: '#fff', borderRadius: 40, padding: 4, border: '1.5px solid #f0e8da', boxShadow: '0 2px 10px rgba(194,119,43,0.1)', flexShrink: 0 }}>
-              {[['nightly', '🌙', 'Nightly'], ['monthly', '🏠', 'Monthly']].map(([key, emoji, label]) => (
+              {[['nightly', <Moon size={14}/>, 'Nightly'], ['monthly', <Home size={14}/>, 'Monthly']].map(([key, icon, label]) => (
                 <button key={key} onClick={() => setActiveTab(key)} style={{
                   padding: '7px 12px', borderRadius: 40, border: 'none', cursor: 'pointer',
                   background: activeTab === key ? 'linear-gradient(135deg,#c2772b,#e09a4f)' : 'transparent',
                   transition: 'all 0.25s', display: 'flex', alignItems: 'center', gap: 5,
                   boxShadow: activeTab === key ? '0 3px 10px rgba(194,119,43,0.4)' : 'none',
                 }}>
-                  <span style={{ fontSize: '0.85rem' }}>{emoji}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', color: activeTab === key ? '#fff' : '#8a6a3a' }}>{icon}</span>
                   <span style={{ fontSize: '0.68rem', fontWeight: 700, color: activeTab === key ? '#fff' : '#8a6a3a', fontFamily: "'Poppins',sans-serif" }}>{label}</span>
                 </button>
               ))}
@@ -151,7 +151,7 @@ export default function HomePageNew2() {
                 </div>
                 {cat.popular && (
                   <div style={{ background: 'linear-gradient(135deg,#c2772b,#e09a4f)', borderRadius: 20, padding: '4px 10px', boxShadow: '0 3px 10px rgba(194,119,43,0.5)' }}>
-                    <span style={{ fontSize: '0.52rem', color: '#fff', fontWeight: 700 }}>⭐ TOP PICK</span>
+                    <span style={{ fontSize: '0.52rem', color: '#fff', fontWeight: 700 }}>TOP PICK</span>
                   </div>
                 )}
                 {i === 0 && !cat.popular && (
@@ -207,9 +207,9 @@ export default function HomePageNew2() {
         {/* ── TRUST BAR ── */}
         <div style={{ margin: '0 14px', background: '#fff', borderRadius: 18, padding: '14px 16px', border: '1px solid #f0e8da', boxShadow: '0 2px 12px rgba(194,119,43,0.08)' }}>
           <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-            {[['🛡️','Zero Brokerage','No hidden fees'],['⚡','Instant Move-in','Ready today'],['✅','Verified','All listings checked'],['🏠','1000+ Listings','Across NCR']].map(([ic,lb,desc]) => (
+            {[[<Shield size={15} color="#c98429"/>, 'Zero Brokerage','No hidden fees'],[<Zap size={15} color="#c98429"/>,'Instant Move-in','Ready today'],[<CheckCircle size={15} color="#c98429"/>,'Verified','All listings checked'],[<Home size={15} color="#c98429"/>,'1000+ Listings','Across NCR']].map(([ic,lb,desc]) => (
               <div key={lb} style={{ width: '50%', boxSizing: 'border-box', padding: '6px 8px 6px 0', display: 'flex', alignItems: 'center', gap: 7 }}>
-                <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>{ic}</span>
+                <span style={{ flexShrink: 0, display:'flex' }}>{ic}</span>
                 <div>
                   <div style={{ fontSize: '0.64rem', color: '#1a1209', fontWeight: 700, lineHeight: 1.2 }}>{lb}</div>
                   <div style={{ fontSize: '0.54rem', color: '#8a6a3a' }}>{desc}</div>
@@ -236,7 +236,7 @@ export default function HomePageNew2() {
             </h2>
           </div>
           <div style={{ display: 'inline-flex', background: '#fff', borderRadius: 40, padding: 4, border: '1.5px solid #f0e8da', boxShadow: '0 2px 12px rgba(194,119,43,0.12)' }}>
-            {[['nightly', '🌙 Nightly'], ['monthly', '🏠 Monthly']].map(([key, label]) => (
+            {[['nightly', <><Moon size={12}/> Nightly</>], ['monthly', <><Home size={12}/> Monthly</>]].map(([key, label]) => (
               <button key={key} onClick={() => setActiveTab(key)} style={{
                 padding: '8px 18px', borderRadius: 40, border: 'none', cursor: 'pointer',
                 fontSize: '0.76rem', fontWeight: 700, fontFamily: "'Poppins',sans-serif",
@@ -288,7 +288,7 @@ export default function HomePageNew2() {
                 style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s', transform: hovered === cat.id ? 'scale(1.06)' : 'scale(1)' }} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.1) 55%, transparent 100%)' }} />
               {cat.popular && (
-                <div style={{ position: 'absolute', top: 10, right: 10, background: '#c2772b', color: '#fff', fontSize: '0.52rem', fontWeight: 700, padding: '3px 10px', borderRadius: 20 }}>⭐ TOP PICK</div>
+                <div style={{ position: 'absolute', top: 10, right: 10, background: '#c2772b', color: '#fff', fontSize: '0.52rem', fontWeight: 700, padding: '3px 10px', borderRadius: 20 }}>TOP PICK</div>
               )}
               <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '12px 14px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
@@ -308,9 +308,9 @@ export default function HomePageNew2() {
 
         {/* Trust strip */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap', marginTop: 14 }}>
-          {[['🛡️','Zero Brokerage'],['⚡','Instant Move-in'],['✅','Verified Properties'],['🏠','1000+ Listings']].map(([ic,lb]) => (
+          {[[<Shield size={13} color="#c98429"/>,'Zero Brokerage'],[<Zap size={13} color="#c98429"/>,'Instant Move-in'],[<CheckCircle size={13} color="#c98429"/>,'Verified Properties'],[<Home size={13} color="#c98429"/>,'1000+ Listings']].map(([ic,lb]) => (
             <div key={lb} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.7)', border: '1px solid #f0e8da', borderRadius: 20, padding: '7px 14px', backdropFilter: 'blur(6px)' }}>
-              <span style={{ fontSize: '0.85rem' }}>{ic}</span>
+              <span style={{ display:'flex' }}>{ic}</span>
               <span style={{ fontSize: '0.65rem', color: '#5a4a3a', fontWeight: 600 }}>{lb}</span>
             </div>
           ))}
@@ -339,7 +339,7 @@ export default function HomePageNew2() {
 
         {/* Tab switcher */}
         <div style={{ display: 'inline-flex', background: '#fff', borderRadius: 50, padding: 5, border: '1.5px solid #f0e8da', boxShadow: '0 4px 18px rgba(194,119,43,0.12)', flexShrink: 0 }}>
-          {[['nightly', '🌙', 'Nightly Stay'], ['monthly', '🏠', 'Monthly Stay']].map(([key, emoji, label]) => (
+          {[['nightly', <Moon size={14}/>, 'Nightly Stay'], ['monthly', <Home size={14}/>, 'Monthly Stay']].map(([key, emoji, label]) => (
             <button key={key} onClick={() => setActiveTab(key)} style={{
               padding: '10px 26px', borderRadius: 50, border: 'none', cursor: 'pointer',
               fontSize: '0.84rem', fontWeight: 700, fontFamily: "'Poppins',sans-serif",
@@ -435,7 +435,7 @@ export default function HomePageNew2() {
               style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s', transform: hovered === cat.id ? 'scale(1.07)' : 'scale(1)', display: 'block' }} />
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.1) 55%, transparent 100%)' }} />
             {cat.popular && (
-              <div style={{ position: 'absolute', top: 12, right: 12, background: 'linear-gradient(135deg,#c2772b,#e09a4f)', color: '#fff', fontSize: '0.54rem', fontWeight: 700, padding: '4px 10px', borderRadius: 20, boxShadow: '0 3px 10px rgba(194,119,43,0.5)' }}>⭐ TOP PICK</div>
+              <div style={{ position: 'absolute', top: 12, right: 12, background: 'linear-gradient(135deg,#c2772b,#e09a4f)', color: '#fff', fontSize: '0.54rem', fontWeight: 700, padding: '4px 10px', borderRadius: 20, boxShadow: '0 3px 10px rgba(194,119,43,0.5)' }}>TOP PICK</div>
             )}
             <div style={{ position: 'absolute', top: 12, left: 14, background: 'rgba(0,0,0,0.45)', borderRadius: 20, padding: '3px 10px', backdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.1)' }}>
               <span style={{ fontSize: '0.54rem', color: 'rgba(255,255,255,0.85)', fontWeight: 600, letterSpacing: 0.5, textTransform: 'uppercase' }}>{cat.badge}</span>
@@ -464,9 +464,9 @@ export default function HomePageNew2() {
 
         {/* Bottom row — trust strip spans all 3 right cols */}
         <div style={{ gridColumn: '2 / 4', gridRow: '2', display: 'flex', alignItems: 'center', gap: 10 }}>
-          {[['🛡️','Zero Brokerage','No hidden charges, ever'],['⚡','Instant Move-in','Ready homes, move today'],['✅','Verified Properties','Every listing is checked'],['🏠','1000+ Listings','Across NCR & Noida']].map(([ic,lb,desc]) => (
+          {[[<Shield size={18} color="#c98429"/>,'Zero Brokerage','No hidden charges, ever'],[<Zap size={18} color="#c98429"/>,'Instant Move-in','Ready homes, move today'],[<CheckCircle size={18} color="#c98429"/>,'Verified Properties','Every listing is checked'],[<Home size={18} color="#c98429"/>,'1000+ Listings','Across NCR & Noida']].map(([ic,lb,desc]) => (
             <div key={lb} style={{ flex: 1, background: 'rgba(255,255,255,0.75)', border: '1px solid #f0e8da', borderRadius: 14, padding: '14px 14px', display: 'flex', alignItems: 'center', gap: 10, backdropFilter: 'blur(6px)' }}>
-              <span style={{ fontSize: '1.4rem', flexShrink: 0 }}>{ic}</span>
+              <span style={{ flexShrink: 0 }}>{ic}</span>
               <div>
                 <div style={{ fontSize: '0.72rem', color: '#1a1209', fontWeight: 700, marginBottom: 2 }}>{lb}</div>
                 <div style={{ fontSize: '0.6rem', color: '#8a6a3a', lineHeight: 1.3 }}>{desc}</div>
