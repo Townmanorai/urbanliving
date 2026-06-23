@@ -401,6 +401,204 @@
   box-shadow: 0 8px 24px rgba(245,166,35,0.6);
 }
 
+/* ══════════════════════════════════════════════════════════
+   UNIFIED SEARCH CARD  (Tabs + Search Bar)
+══════════════════════════════════════════════════════════ */
+.h1-unified-card {
+  position: absolute;
+  bottom: 5rem;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  width: 92%;
+  max-width: 860px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+  overflow: visible;
+  z-index: 100;
+  animation: ovika-slideIn 0.55s ease both;
+}
+
+/* Dark Tabs Row */
+.h1-tabs-row {
+  display: flex;
+  background: #1a2332;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+}
+
+.h1-tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 8px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: clamp(11px, 0.85vw, 13px);
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  transition: color 0.15s, background 0.15s;
+}
+
+.h1-tab-btn:hover {
+  color: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.h1-tab-btn--active {
+  color: #ffffff !important;
+  font-weight: 700;
+  border-bottom-color: #f5a623 !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* White Search Row */
+.h1-search-row {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 0 0 16px 16px;
+  padding: 10px 10px 10px 20px;
+  gap: 0;
+}
+
+/* City Dropdown Trigger */
+.h1-city-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  cursor: pointer;
+  padding-right: 4px;
+  user-select: none;
+}
+
+.h1-city-texts {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.h1-field-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #9ca3af;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+.h1-field-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1;
+}
+
+/* Separator */
+.h1-sep {
+  width: 1px;
+  height: 28px;
+  background: #e5e7eb;
+  flex-shrink: 0;
+  margin: 0 14px;
+}
+
+/* Locality Input */
+.h1-locality-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #374151;
+  background: transparent;
+  font-family: inherit;
+  min-width: 0;
+}
+
+.h1-locality-input::placeholder { color: #9ca3af; }
+
+/* Radio Toggle */
+.h1-toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.h1-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.h1-radio-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #d1d5db;
+  background: #fff;
+  flex-shrink: 0;
+  position: relative;
+  transition: border-color 0.15s;
+}
+
+.h1-radio-dot--on {
+  border-color: #7c3aed;
+  background: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+.h1-radio-dot--on::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.h1-radio-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  white-space: nowrap;
+}
+
+/* Search Button */
+.h1-search-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 20px;
+  height: 46px;
+  border-radius: 10px;
+  background: #22c55e;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: 12px;
+  transition: background 0.18s, transform 0.12s;
+  font-family: inherit;
+}
+
+.h1-search-btn:hover {
+  background: #16a34a;
+  transform: scale(1.03);
+}
+
 /* ── Calendar Popup ────────────────────────────────────── */
 .ovika-cal-popup {
   position: absolute;

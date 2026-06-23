@@ -1,7 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Calendar, Users, Search, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, Calendar, Users, Search, X, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 import './Home1.css';
+
+const TABS = [
+  { icon: '✨', label: 'Signature Stays', param: 'Signature Stays', toggleOptions: null },
+  { icon: '🏨', label: 'Hotel Stays',     param: 'Hotel Stays',     toggleOptions: null },
+  { icon: '🏡', label: 'Homestays & BnB', param: 'Homestays & BnB', toggleOptions: ['Book Now', 'Long Stay'] },
+  { icon: '🏢', label: 'Apartments',      param: 'Apartments & Villas', toggleOptions: ['Rent', 'Buy'] },
+  { icon: '🏠', label: 'PG & Co-Living',  param: 'PG & Co-Living',  toggleOptions: ['Boys', 'Girls', 'Co-Ed'] },
+];
 
 /* ─── Curated 30 Cities ─── */
 const CITIES = [
@@ -82,6 +90,9 @@ export default function Home1() {
   const [isLoadingSugs, setIsLoadingSugs] = useState(false);
   const [nearMeLoading, setNearMeLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [activeTabIdx, setActiveTabIdx] = useState(0);
+  const [toggleIdx, setToggleIdx] = useState(0);
+  const [locality, setLocality] = useState('');
   const guestRef = useRef(null);
   const debounceRef = useRef(null);
 
@@ -245,6 +256,16 @@ export default function Home1() {
   const todayStr = new Date().toISOString().split('T')[0];
   const closeAll = () => { setShowCity(false); setShowCheckInCal(false); setShowCheckOutCal(false); setShowGuests(false); setCitySearch(''); setSuggestions([]); };
 
+  const handleSearchDesktop = () => {
+    const tab = TABS[activeTabIdx];
+    const p = new URLSearchParams();
+    p.set('category', tab.param);
+    if (city) p.set('city', city);
+    if (locality.trim()) p.set('q', locality.trim());
+    if (tab.toggleOptions) p.set('type', tab.toggleOptions[toggleIdx]);
+    navigate(`/properties?${p}`);
+  };
+
   return (
     <div className="home1-root" style={{ marginTop: isMobile ? '-2px' : '-80px' }}>
 
@@ -351,15 +372,16 @@ export default function Home1() {
         ) : (
           /* ═══════════════ DESKTOP ═══════════════ */
           <>
+            <div className="home1-heading-block">
+              <h1 className="home1-heading">
+                <span style={{ color: '#f5a623' }}>OvikaLiving.com</span> – India's Smart Stay Marketplace For Flexible Urban Living
+              </h1>
+              <p className="home1-subheading">
+                Book Verified PG's, Apartments and Premium Homes across India — Nightly or Monthly
+              </p>
+            </div>
+
             <div className="home1-right-block">
-              <div className="home1-heading-block">
-                <h1 className="home1-heading">
-                  <span style={{ color: '#f5a623' }}>OvikaLiving.com</span> – India's Smart Stay Marketplace For Flexible Urban Living
-                </h1>
-                <p className="home1-subheading">
-                  Book Verified PG's, Apartments and Premium Homes across India — Nightly or Monthly
-                </p>
-              </div>
               <div className="home1-cards">
                 {cards.map((card, i) => (
                   <a key={i} href={buildHref(card.category)} className="home1-card">
@@ -374,52 +396,75 @@ export default function Home1() {
               </div>
             </div>
 
-            {/* Search bar */}
-            <div className="ovika-search-section">
-              <div className="ovika-search-title">
-                <MapPin className="pin-icon" size={16}/>
-                <span style={{ color: '#fff' }}>Where are you going?</span>
+            {/* ── Unified Search Card (Tabs + Search Bar) ── */}
+            <div className="h1-unified-card">
+
+              {/* Dark Tabs Header */}
+              <div className="h1-tabs-row">
+                {TABS.map((tab, i) => (
+                  <button
+                    key={tab.param}
+                    className={`h1-tab-btn${i === activeTabIdx ? ' h1-tab-btn--active' : ''}`}
+                    onClick={() => { setActiveTabIdx(i); setToggleIdx(0); setLocality(''); }}
+                  >
+                    <span>{tab.icon}</span>
+                    <span>{tab.label}</span>
+                  </button>
+                ))}
               </div>
-              <div className="ovika-search-bar-container">
-                <div className="ovika-search-field city-field" style={{ position: 'relative' }}
-                  onClick={() => { setShowCity(!showCity); setShowCheckInCal(false); setShowCheckOutCal(false); setShowGuests(false); }}>
-                  <div className="field-icon-box"><MapPin size={15} style={{ color: '#f5a623' }}/></div>
-                  <div className="field-text">
-                    <span className="field-label">Location</span>
-                    <span className="field-value">{city}</span>
+
+              {/* White Search Row */}
+              <div className="h1-search-row">
+
+                {/* City Dropdown */}
+                <div className="h1-city-wrap" style={{ position: 'relative' }}
+                  onClick={() => { const v = !showCity; closeAll(); setShowCity(v); }}>
+                  <MapPin size={15} style={{ color: '#c98429', flexShrink: 0 }}/>
+                  <div className="h1-city-texts">
+                    <span className="h1-field-label">CITY</span>
+                    <span className="h1-field-value">{city}</span>
                   </div>
-                  {showCity && renderCityDropdown({ top: 'calc(100% + 8px)', left: 0, width: '260px' })}
+                  <ChevronDown size={14} style={{ color: '#6b7280' }}/>
+                  {showCity && renderCityDropdown({ top: 'calc(100% + 8px)', left: 0, width: '240px' })}
                 </div>
-                <div className="field-divider"/>
-                <div className="ovika-search-field">
-                  <div className="field-icon-box"><Calendar size={15}/></div>
-                  <div className="field-text">
-                    <span className="field-label">Check-in</span>
-                    <input type="date" className="date-input" value={checkIn} onChange={e => setCheckIn(e.target.value)}/>
-                  </div>
-                </div>
-                <div className="field-divider"/>
-                <div className="ovika-search-field">
-                  <div className="field-icon-box"><Calendar size={15}/></div>
-                  <div className="field-text">
-                    <span className="field-label">Check-out</span>
-                    <input type="date" className="date-input" value={checkOut} onChange={e => setCheckOut(e.target.value)}/>
-                  </div>
-                </div>
-                <div className="field-divider"/>
-                <div className="ovika-search-field guests-field">
-                  <div className="field-icon-box"><Users size={15}/></div>
-                  <div className="field-text">
-                    <span className="field-label">Guests</span>
-                    <span className="field-value">{guests} Guest{guests > 1 ? 's' : ''}</span>
-                  </div>
-                  <div className="guest-controls">
-                    <button onClick={e => { e.stopPropagation(); setGuests(Math.max(1,guests-1)); }}>−</button>
-                    <button onClick={e => { e.stopPropagation(); setGuests(guests+1); }}>+</button>
-                  </div>
-                </div>
-                <button className="ovika-search-btn" onClick={handleSearch}>
-                  <Search size={15}/><span>Search</span>
+
+                <div className="h1-sep"/>
+
+                {/* Locality Search */}
+                <input
+                  className="h1-locality-input"
+                  placeholder={`Search ${TABS[activeTabIdx].label.toLowerCase()} by locality...`}
+                  value={locality}
+                  onChange={e => setLocality(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleSearchDesktop()}
+                />
+
+                {/* Toggle Options (Rent/Buy, Boys/Girls etc) */}
+                {TABS[activeTabIdx].toggleOptions && (
+                  <>
+                    <div className="h1-sep"/>
+                    <div className="h1-toggle-wrap">
+                      {TABS[activeTabIdx].toggleOptions.map((opt, i) => (
+                        <label key={opt} className="h1-radio-label">
+                          <input
+                            type="radio"
+                            name="h1-tab-toggle"
+                            checked={toggleIdx === i}
+                            onChange={() => setToggleIdx(i)}
+                            style={{ display: 'none' }}
+                          />
+                          <span className={`h1-radio-dot${toggleIdx === i ? ' h1-radio-dot--on' : ''}`}/>
+                          <span className="h1-radio-text">{opt}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {/* Search Button */}
+                <button className="h1-search-btn" onClick={handleSearchDesktop}>
+                  <Search size={16}/>
+                  <span>Search</span>
                 </button>
               </div>
             </div>

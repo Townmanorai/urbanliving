@@ -615,8 +615,37 @@ export default function HomePageNew1() {
   const [guests, setGuests] = useState(1);
   const [pgType, setPgType] = useState('');
   const [mobileSuggestPos, setMobileSuggestPos] = useState(null);
+  const [showMobCityDrop, setShowMobCityDrop] = useState(false);
+  const [showOverlayCityPick, setShowOverlayCityPick] = useState(false);
+  const mobCityRef = useRef(null);
+  const [showMobSearch, setShowMobSearch] = useState(false);
+  const [mobSearchAnim, setMobSearchAnim] = useState(false);
+  const mobOverlayInputRef = useRef(null);
+
+  const openMobSearch = () => {
+    setShowMobSearch(true);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setMobSearchAnim(true);
+        setTimeout(() => mobOverlayInputRef.current?.focus(), 320);
+      });
+    });
+  };
+  const closeMobSearch = () => {
+    setMobSearchAnim(false);
+    setTimeout(() => { setShowMobSearch(false); setSearchText(''); setShowSuggestions(false); }, 300);
+  };
   const [liveResults, setLiveResults] = useState([]);
   const [liveLoading, setLiveLoading] = useState(false);
+  const [phIndex, setPhIndex] = useState(0);
+
+  const PLACEHOLDERS = {
+    signature: ['🏨 Try "Sector 62 Noida"', '✨ "Premium stays near Metro"', '🌙 "Nightly stay in Noida"', '🏠 "Furnished room Sector 18"'],
+    hotels:    ['🏩 Try "Hotel near City Center"', '⭐ "Budget hotel Sector 18"', '🛎️ "AC rooms in Gurugram"', '📍 "Hotels near Expo Mart"'],
+    homestay:  ['🏡 Try "Homestay in Noida"', '☕ "BnB near Noida Expressway"', '🌿 "Cozy homestay Sector 50"', '🛋️ "Private room Greater Noida"'],
+    pg:        ['🏠 Try "PG in Sector 62"', '👦 "Boys PG near Metro"', '👧 "Girls PG with food"', '🤝 "Co-living Noida Extension"'],
+    apt:       ['🏢 Try "1BHK in Sector 137"', '🛋️ "Furnished flat Noida"', '🔑 "Studio apartment Gurugram"', '🏙️ "2BHK near Expressway"'],
+  };
   const nominatimTimer = useRef(null);
   const searchRef = useRef(null);
   const mobileSearchRef = useRef(null);
@@ -634,11 +663,23 @@ export default function HomePageNew1() {
       if (searchRef.current && !searchRef.current.contains(e.target)) setShowSuggestions(false);
       if (mobileSearchRef.current && !mobileSearchRef.current.contains(e.target)) { setShowSuggestions(false); setMobileSuggestPos(null); }
       if (cityDropRef.current && !cityDropRef.current.contains(e.target)) setShowCityDrop(false);
+      if (mobCityRef.current && !mobCityRef.current.contains(e.target)) setShowMobCityDrop(false);
     };
     document.addEventListener('mousedown', handler);
     document.addEventListener('touchstart', handler);
     return () => { document.removeEventListener('mousedown', handler); document.removeEventListener('touchstart', handler); };
   }, []);
+
+  /* ── Placeholder cycling every 2s ── */
+  useEffect(() => {
+    setPhIndex(0);
+    const t = setInterval(() => setPhIndex(p => {
+      const cat = CATEGORIES[activeCategory];
+      const list = PLACEHOLDERS[cat?.id] || [];
+      return (p + 1) % list.length;
+    }), 2000);
+    return () => clearInterval(t);
+  }, [activeCategory]);
 
   /* ── Local NCR locality search ── */
   useEffect(() => {
@@ -795,120 +836,271 @@ export default function HomePageNew1() {
   const shortDisplay = ratesLoading ? '—' : (shortRate ? `${fmt(shortRate)}/night` : '₹2,499/night');
   const longDisplay = '₹4,999/month';
 
-  /* ════════ MOBILE (≤640px) ════════ */
+  /* ════════ MOBILE (≤768px) ════════ */
   if (bp === 'mobile') {
+    const MOB_SHORT = { signature:'Signature', hotels:'Hotels', homestay:'Homestay', pg:'PG', apt:'Apts' };
+    const CITIES_MOB = ['Noida', 'Gr. Noida', 'Gurugram', 'Delhi', 'Faridabad', 'Ghaziabad'];
     return (
-      <div style={{ fontFamily:"'Poppins',sans-serif", boxSizing:'border-box', position:'relative', overflow:'hidden' }}>
+      <div style={{ fontFamily:"'Poppins',sans-serif", boxSizing:'border-box', display:'flex', flexDirection:'column', position:'relative' }}>
 
-        {/* Background images — crossfade per category */}
+        <style>{`
+          @keyframes bouncePin{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+          @keyframes mobFadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+          .mob-tab-btn{transition:color 0.2s,border-color 0.2s}
+          .mob-tab-btn:active{opacity:0.75}
+          .mob-city-btn:active{transform:scale(0.96)}
+          .mob-srch-inp::placeholder{color:#aab0bc}
+          *{-webkit-tap-highlight-color:transparent}
+        `}</style>
+
+        {/* ── Background crossfade — fixed height ── */}
         {CATEGORIES.map((c, i) => (
-          <div key={c.id} style={{ position:'absolute', inset:0, backgroundImage:`url(${c.bg})`, backgroundSize:'cover', backgroundPosition:'center', opacity:i===activeCategory?1:0, transition:'opacity 0.6s ease', zIndex:0 }} />
+          <div key={c.id} style={{ position:'absolute', top:0, left:0, right:0, height:270, backgroundImage:`url(${c.bg})`, backgroundSize:'cover', backgroundPosition:'center top', opacity:i===activeCategory?1:0, transition:'opacity 0.7s ease', zIndex:0 }} />
         ))}
-        {/* Dark overlay */}
-        <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.58) 100%)', zIndex:1, pointerEvents:'none' }} />
-        {/* Glow */}
-        <div style={{ position:'absolute', top:-60, right:-60, width:300, height:300, background:'radial-gradient(circle, rgba(194,119,43,0.2) 0%, transparent 70%)', pointerEvents:'none', zIndex:1 }} />
+        <div style={{ position:'absolute', top:0, left:0, right:0, height:270, background:'linear-gradient(175deg, rgba(12,16,28,0.5) 0%, rgba(12,16,28,0.7) 55%, rgba(12,16,28,0.98) 100%)', zIndex:1, pointerEvents:'none' }} />
 
-        {/* Location overlay */}
+        {/* Locating overlay */}
         {locating && (
-          <div style={{ position:'fixed', inset:0, background:'rgba(26,8,0,0.88)', backdropFilter:'blur(6px)', zIndex:10000, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:14 }}>
-            <MapPin size={44} color="#f5a623" style={{ animation:'bouncePin 0.85s infinite ease-in-out' }} />
+          <div style={{ position:'fixed', inset:0, background:'rgba(10,4,0,0.92)', backdropFilter:'blur(8px)', zIndex:10000, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:16 }}>
+            <MapPin size={48} color="#f5a623" style={{ animation:'bouncePin 0.85s infinite ease-in-out' }} />
             <div style={{ textAlign:'center' }}>
               <div style={{ fontSize:'1rem', fontWeight:700, color:'#fff' }}>Finding Your Location</div>
-              <div style={{ fontSize:'0.75rem', color:'#f5a623', marginTop:3 }}>Searching properties near you…</div>
+              <div style={{ fontSize:'0.75rem', color:'#f5a623', marginTop:4 }}>Searching properties near you…</div>
             </div>
           </div>
         )}
 
-        <style>{`@keyframes bouncePin{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}`}</style>
+        {/* ── Hero area ── */}
+        <div style={{ position:'relative', zIndex:2, display:'flex', flexDirection:'column', alignItems:'center', textAlign:'center', padding:'36px 20px 14px', animation:'mobFadeUp 0.5s ease both' }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:5, background:'rgba(201,132,41,0.82)', borderRadius:100, padding:'4px 14px', marginBottom:8 }}>
+            <span style={{ fontSize:'10px', color:'#fff', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase' }}>✦ Smart Stay Platform</span>
+          </div>
+          <h1 style={{ color:'#fff', fontSize:'clamp(1.3rem,5.5vw,1.7rem)', fontWeight:800, lineHeight:1.2, margin:'0 0 4px', letterSpacing:-0.3, textShadow:'0 2px 16px rgba(0,0,0,0.5)', whiteSpace:'nowrap' }}>
+            Properties in <span style={{ color:'#f5a623' }}>{selectedCity}</span>
+          </h1>
+          <p style={{ color:'rgba(255,255,255,0.62)', fontSize:'0.78rem', margin:0, lineHeight:1.6 }}>500+ verified stays · No brokerage</p>
+        </div>
 
-        <div style={{ padding:'22px 16px 32px', position:'relative', zIndex:2 }}>
+        {/* ── Search Card (Housing.com style) ── */}
+        <div style={{ position:'relative', zIndex:2, margin:'0 0 0', background:'#fff', borderRadius:'24px 24px 0 0', boxShadow:'0 -8px 40px rgba(0,0,0,0.3)', animation:'mobFadeUp 0.6s 0.1s ease both', animationFillMode:'both' }}>
 
-          {/* Category tabs — horizontal scroll */}
-          <div style={{ display:'flex', gap:6, overflowX:'auto', scrollbarWidth:'none', WebkitOverflowScrolling:'touch', marginBottom:20, paddingBottom:2 }}>
+          {/* Category tabs — ALL 5 equal width, no scroll */}
+          <div style={{ display:'flex', borderBottom:'1px solid #f0f0f0' }}>
             {CATEGORIES.map((c, i) => (
-              <button key={c.id}
+              <button key={c.id} className="mob-tab-btn"
                 onClick={() => { setActiveCategory(i); setSearchText(''); }}
-                style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 13px', borderRadius:100, border:`1.5px solid ${i===activeCategory?'#fff':'rgba(255,255,255,0.22)'}`, background:i===activeCategory?'#fff':'rgba(255,255,255,0.08)', color:i===activeCategory?'#2a0f05':'rgba(255,255,255,0.78)', fontSize:'12.5px', fontWeight:i===activeCategory?600:500, cursor:'pointer', whiteSpace:'nowrap', flexShrink:0, fontFamily:"'Poppins',sans-serif", outline:'none' }}>
-                {CAT_ICONS[c.id]?.(i === activeCategory)}
-                <span>{c.shortLabel}</span>
+                style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:3, padding:'12px 2px 10px', border:'none', background:'#fff', borderBottom:`2.5px solid ${i===activeCategory?'#c98429':'transparent'}`, color:i===activeCategory?'#c98429':'#9ca3af', fontSize:'10px', fontWeight:i===activeCategory?700:500, cursor:'pointer', fontFamily:"'Poppins',sans-serif", outline:'none', lineHeight:1.2 }}>
+                <span style={{ fontSize:'16px', lineHeight:1 }}>{CAT_ICONS[c.id]?.(i===activeCategory)}</span>
+                {MOB_SHORT[c.id]}
               </button>
             ))}
           </div>
 
-          {/* Heading */}
-          <h1 style={{ color:'#fff', fontSize:'clamp(1.15rem, 5vw, 1.5rem)', fontWeight:800, lineHeight:1.2, margin:'0 0 8px', letterSpacing:-0.2, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
-            {cat.heading} <span style={{ color:'#f5a623' }}>{selectedCity}</span>
-          </h1>
-          <p style={{ color:'rgba(255,255,255,0.68)', fontSize:'0.78rem', margin:'0 0 18px', lineHeight:1.6 }}>{cat.sub}</p>
+          {/* Search body */}
+          <div style={{ padding:'16px 16px 24px' }}>
 
-          {/* Search bar (mobile) */}
-          <div ref={mobileSearchRef} style={{ position:'relative', marginBottom:16 }}>
-            <div style={{ display:'flex', alignItems:'center', background:'#fff', borderRadius:50, padding:'8px 8px 8px 16px', boxShadow:'0 4px 20px rgba(0,0,0,0.25)' }}>
-              <Search size={16} color="#9ca3af" style={{ flexShrink:0, marginRight:8 }} />
-              <input type="text" value={searchText}
-                onChange={e => { setSearchText(e.target.value); setShowSuggestions(true); }}
-                onFocus={() => {
-                  setShowSuggestions(true);
-                  if (mobileSearchRef.current) {
-                    const r = mobileSearchRef.current.getBoundingClientRect();
-                    setMobileSuggestPos({ top: r.bottom + 6, left: r.left, width: r.width });
-                  }
-                }}
-                onKeyDown={handleKeyDown}
-                placeholder={cat.placeholder}
-                style={{ flex:1, border:'none', outline:'none', fontSize:'13px', color:'#374151', background:'transparent', fontFamily:"'Poppins',sans-serif" }} />
-              <button onClick={() => handleSearch(cat.rentalType)}
-                style={{ width:38, height:38, borderRadius:'50%', background:'#c98429', border:'none', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', flexShrink:0 }}>
-                <Search size={16} />
+            {/* Combined city + search input row */}
+            <div style={{ position:'relative', display:'flex', alignItems:'center', background:'#f5f7fa', borderRadius:14, marginBottom:12, overflow:'visible' }}>
+
+              {/* City selector — left side */}
+              <div ref={mobCityRef} style={{ position:'relative', flexShrink:0 }}>
+                <div onClick={() => setShowMobCityDrop(v => !v)}
+                  style={{ display:'flex', alignItems:'center', gap:4, padding:'10px 8px 10px 12px', cursor:'pointer', userSelect:'none' }}>
+                  <MapPin size={12} color="#c98429" style={{ flexShrink:0 }} />
+                  <div>
+                    <div style={{ fontSize:'8.5px', fontWeight:600, color:'#b0b7c3', letterSpacing:'0.05em', lineHeight:1 }}>CITY</div>
+                    <div style={{ fontSize:'12.5px', fontWeight:500, color:'#374151', lineHeight:1.3, whiteSpace:'nowrap' }}>{selectedCity}</div>
+                  </div>
+                  <span style={{ fontSize:'9px', color:'#b0b7c3', display:'inline-block', transform:showMobCityDrop?'rotate(180deg)':'rotate(0deg)', transition:'transform 0.2s' }}>▾</span>
+                </div>
+
+                {/* City dropdown */}
+                {showMobCityDrop && (
+                  <div style={{ position:'absolute', top:'calc(100% + 8px)', left:0, minWidth:180, background:'#fff', borderRadius:14, boxShadow:'0 8px 28px rgba(0,0,0,0.18)', border:'1px solid #e5e7eb', zIndex:99999, overflow:'hidden' }}>
+                    {CITIES_MOB.map(city => (
+                      <div key={city}
+                        onClick={() => { setSelectedCity(city); setShowMobCityDrop(false); }}
+                        style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 14px', cursor:'pointer', background:city===selectedCity?'#fef9f2':'#fff', borderBottom:'1px solid #f3f4f6' }}
+                        onTouchStart={e=>e.currentTarget.style.background='#fef3e0'}
+                        onTouchEnd={e=>e.currentTarget.style.background=city===selectedCity?'#fef9f2':'#fff'}>
+                        <MapPin size={13} color={city===selectedCity?'#c98429':'#9ca3af'} />
+                        <span style={{ fontSize:'13px', fontWeight:city===selectedCity?700:500, color:city===selectedCity?'#c98429':'#374151', flex:1 }}>{city}</span>
+                        {city===selectedCity && <span style={{ color:'#c98429', fontSize:'14px', fontWeight:700 }}>✓</span>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Search trigger — tap opens overlay */}
+              <div style={{ flex:1, display:'flex', alignItems:'center', gap:7, padding:'10px 10px', borderLeft:'1px solid #eaecf0' }}
+                onClick={openMobSearch}>
+                <Search size={13} color="#c0c7d0" style={{ flexShrink:0 }} />
+                <span style={{ fontSize:'12.5px', fontWeight:400, color:'#b0b7c3', fontFamily:"'Poppins',sans-serif", userSelect:'none', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                  {PLACEHOLDERS[cat.id]?.[phIndex] ?? cat.placeholder}
+                </span>
+              </div>
+            </div>{/* close combined row */}
+
+            {/* PG toggle */}
+            {cat.searchType === 'pg' && (
+              <div style={{ display:'flex', gap:7, marginBottom:12 }}>
+                {['Boys','Girls','Co-Living'].map(g => (
+                  <button key={g} onClick={() => setPgType(pgType===g?'':g)}
+                    style={{ flex:1, padding:'8px 4px', borderRadius:10, border:`1.5px solid ${pgType===g?'#c98429':'#e5e7eb'}`, background:pgType===g?'#fef3e0':'#f9fafb', color:pgType===g?'#c98429':'#6b7280', fontSize:'12px', fontWeight:pgType===g?700:500, cursor:'pointer', fontFamily:"'Poppins',sans-serif", outline:'none' }}>
+                    {g==='Boys'?'👦 ':g==='Girls'?'👧 ':'🤝 '}{g}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Nightly/Long Stay toggle */}
+            {cat.id === 'signature' && (
+              <div style={{ display:'flex', gap:7, marginBottom:12 }}>
+                {['Nightly','Long Stay'].map(m => (
+                  <button key={m} onClick={() => setPgType(pgType===m?'':m)}
+                    style={{ flex:1, padding:'8px 4px', borderRadius:10, border:`1.5px solid ${pgType===m?'#c98429':'#e5e7eb'}`, background:pgType===m?'#fef3e0':'#f9fafb', color:pgType===m?'#c98429':'#6b7280', fontSize:'12px', fontWeight:pgType===m?700:500, cursor:'pointer', fontFamily:"'Poppins',sans-serif", outline:'none' }}>
+                    {m==='Nightly'?'🌙 ':'📅 '}{m}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Search button */}
+            <button onClick={() => handleSearch(cat.rentalType)}
+              style={{ width:'100%', padding:'14px', borderRadius:12, background:'#22c55e', border:'none', color:'#fff', fontSize:'15px', fontWeight:700, cursor:'pointer', fontFamily:"'Poppins',sans-serif", display:'flex', alignItems:'center', justifyContent:'center', gap:8, boxShadow:'0 4px 16px rgba(34,197,94,0.35)', letterSpacing:0.2 }}>
+              <Search size={17} />
+              Search
+            </button>
+
+            {/* Trending */}
+            <div style={{ display:'flex', alignItems:'center', gap:7, marginTop:14, overflowX:'auto', scrollbarWidth:'none' }}>
+              <span style={{ fontSize:'11px', color:'#9ca3af', fontWeight:600, flexShrink:0 }}>🔥 Trending</span>
+              {cityTrending.map(t => (
+                <button key={t} onClick={() => { setSearchText(t); handleSearch(cat.rentalType); }}
+                  style={{ padding:'4px 12px', borderRadius:100, background:'#f5f7fa', border:'1px solid #e5e7eb', color:'#374151', fontSize:'11.5px', cursor:'pointer', flexShrink:0, fontFamily:"'Poppins',sans-serif", outline:'none', whiteSpace:'nowrap' }}>
+                  {t}
+                </button>
+              ))}
+            </div>
+
+            {/* Owner CTA */}
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:5, marginTop:14, paddingTop:12, borderTop:'1px solid #f3f4f6' }}>
+              <span style={{ fontSize:'12px', color:'#9ca3af' }}>✦ Are you an owner?</span>
+              <a href="/list-property" style={{ fontSize:'12px', fontWeight:700, color:'#c98429', textDecoration:'none' }}>Post property for free ›</a>
+            </div>
+
+          </div>
+        </div>
+
+        {/* ── Search Overlay (slide-up) ── */}
+        {showMobSearch && (
+          <div style={{ position:'fixed', inset:0, zIndex:100000, background:'#fff', transform:mobSearchAnim?'translateY(0)':'translateY(100%)', transition:'transform 0.32s cubic-bezier(0.32,0,0.15,1)', display:'flex', flexDirection:'column', fontFamily:"'Poppins',sans-serif" }}>
+
+            {/* Top bar */}
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'14px 16px 10px', borderBottom:'1px solid #f0f0f0' }}>
+              <button onClick={closeMobSearch} style={{ display:'flex', alignItems:'center', gap:6, border:'none', background:'none', cursor:'pointer', padding:0, color:'#374151' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              </button>
+              <span style={{ fontSize:'14px', fontWeight:600, color:'#1e293b' }}>Searching in <span style={{ color:'#c98429' }}>{selectedCity}</span></span>
+              <button onClick={() => setShowOverlayCityPick(v => !v)} style={{ border:'none', background:'none', cursor:'pointer', fontSize:'13px', color:'#c98429', fontWeight:600, fontFamily:"'Poppins',sans-serif", padding:0 }}>
+                Change city ›
               </button>
             </div>
 
-            {/* Suggestions — fixed overlay, max 4 items */}
-            {showSuggestions && filteredSuggestions.length > 0 && mobileSuggestPos && (
-              <div style={{
-                position:'fixed',
-                top: mobileSuggestPos.top,
-                left: mobileSuggestPos.left,
-                width: mobileSuggestPos.width,
-                background:'#fff',
-                borderRadius:14,
-                boxShadow:'0 8px 28px rgba(0,0,0,0.18)',
-                border:'1px solid #f0e8da',
-                zIndex:99999,
-                overflow:'hidden',
-              }}>
-                {filteredSuggestions.slice(0, 4).map((s, i, arr) => (
-                  <div key={i} onClick={() => { handleSuggestionClick(s); setShowSuggestions(false); setMobileSuggestPos(null); }}
-                    style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 14px', cursor:'pointer', borderBottom:i<arr.length-1?'1px solid #f8f0e4':'none', background:'#fff' }}
+            {/* City picker — inline dropdown inside overlay */}
+            {showOverlayCityPick && (
+              <div style={{ background:'#fff', borderBottom:'1px solid #f0f0f0' }}>
+                <div style={{ display:'flex', flexWrap:'wrap', gap:8, padding:'12px 16px' }}>
+                  {['Noida','Gr. Noida','Gurugram','Delhi','Faridabad','Ghaziabad'].map(city => (
+                    <button key={city}
+                      onClick={() => { setSelectedCity(city); setShowOverlayCityPick(false); }}
+                      style={{ padding:'7px 16px', borderRadius:100, border:`1.5px solid ${city===selectedCity?'#c98429':'#e5e7eb'}`, background:city===selectedCity?'#fef3e0':'#f9fafb', color:city===selectedCity?'#c98429':'#374151', fontSize:'13px', fontWeight:city===selectedCity?700:500, cursor:'pointer', fontFamily:"'Poppins',sans-serif", outline:'none' }}>
+                      {city===selectedCity && '📍 '}{city}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Category tabs */}
+            <div style={{ display:'flex', borderBottom:'1px solid #f0f0f0', background:'#fff' }}>
+              {CATEGORIES.map((c,i) => (
+                <button key={c.id} onClick={() => { setActiveCategory(i); setSearchText(''); }}
+                  style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:2, padding:'10px 2px 8px', border:'none', background:'#fff', borderBottom:`2.5px solid ${i===activeCategory?'#c98429':'transparent'}`, color:i===activeCategory?'#c98429':'#9ca3af', fontSize:'9.5px', fontWeight:i===activeCategory?700:500, cursor:'pointer', fontFamily:"'Poppins',sans-serif", outline:'none' }}>
+                  <span style={{ fontSize:'15px' }}>{CAT_ICONS[c.id]?.(i===activeCategory)}</span>
+                  {MOB_SHORT[c.id]}
+                </button>
+              ))}
+            </div>
+
+            {/* Search input */}
+            <div style={{ display:'flex', alignItems:'center', gap:10, margin:'14px 16px 0', background:'#f5f7fa', borderRadius:14, padding:'12px 14px', border:'1.5px solid #e8eaed' }}>
+              <Search size={16} color="#c98429" style={{ flexShrink:0 }} />
+              <input ref={mobOverlayInputRef} type="text" value={searchText}
+                onChange={e => { setSearchText(e.target.value); setShowSuggestions(true); }}
+                onKeyDown={e => { if(e.key==='Enter' && searchText.trim()) { closeMobSearch(); setTimeout(()=>handleSearch(cat.rentalType),320); } }}
+                placeholder={cat.placeholder}
+                style={{ flex:1, border:'none', outline:'none', fontSize:'14px', color:'#1e293b', background:'transparent', fontFamily:"'Poppins',sans-serif" }} />
+              {searchText && <button onClick={() => setSearchText('')} style={{ border:'none', background:'none', color:'#9ca3af', fontSize:20, cursor:'pointer', padding:0, lineHeight:1 }}>×</button>}
+            </div>
+
+            {/* Suggestions list */}
+            {showSuggestions && filteredSuggestions.length > 0 ? (
+              <div style={{ flex:1, overflowY:'auto', marginTop:8 }}>
+                {filteredSuggestions.map((s, i) => (
+                  <div key={i} onClick={() => { handleSuggestionClick(s); closeMobSearch(); }}
+                    style={{ display:'flex', alignItems:'center', gap:12, padding:'13px 20px', borderBottom:'1px solid #f5f5f5', cursor:'pointer' }}
                     onTouchStart={e=>e.currentTarget.style.background='#fdf7ee'}
                     onTouchEnd={e=>e.currentTarget.style.background='#fff'}>
-                    <div style={{ width:28, height:28, borderRadius:8, background:'rgba(194,119,43,0.1)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'13px', flexShrink:0 }}>
-                      {typeIcon[s.type]}
-                    </div>
-                    <div style={{ flex:1, minWidth:0 }}>
-                      <div style={{ fontSize:'13px', fontWeight:600, color:'#1a1209', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{s.label}</div>
-                      <div style={{ fontSize:'10px', color:'#9ca3af' }}>{s.type}</div>
+                    <div style={{ width:36, height:36, borderRadius:10, background:'#fef3e0', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'16px', flexShrink:0 }}>{typeIcon[s.type]}</div>
+                    <div>
+                      <div style={{ fontSize:'13px', fontWeight:600, color:'#1a1209' }}>{s.label}</div>
+                      <div style={{ fontSize:'11px', color:'#9ca3af', marginTop:1 }}>{s.type} · {selectedCity}</div>
                     </div>
                   </div>
                 ))}
               </div>
+            ) : (
+              <div style={{ flex:1, overflowY:'auto' }}>
+                {/* Use my location */}
+                <div onClick={() => { closeMobSearch(); }} style={{ display:'flex', alignItems:'center', gap:10, padding:'14px 20px', borderBottom:'1px solid #f0f0f0', cursor:'pointer' }}>
+                  <div style={{ width:36, height:36, borderRadius:10, background:'rgba(201,132,41,0.1)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                    <MapPin size={16} color="#c98429" />
+                  </div>
+                  <span style={{ fontSize:'13px', fontWeight:600, color:'#c98429' }}>Use my current location</span>
+                  <svg style={{ marginLeft:'auto' }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c98429" strokeWidth="2.5" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                </div>
+
+                {/* Hotspots */}
+                <div style={{ padding:'16px 16px 8px' }}>
+                  <div style={{ fontSize:'13px', fontWeight:700, color:'#374151', marginBottom:12 }}>🔥 Hotspots in {selectedCity}</div>
+                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+                    {cityTrending.map(t => (
+                      <div key={t} onClick={() => { setSearchText(t); closeMobSearch(); setTimeout(()=>handleSearch(cat.rentalType),320); }}
+                        style={{ background:'#f9fafb', borderRadius:12, padding:'12px 14px', border:'1px solid #f0f0f0', cursor:'pointer' }}
+                        onTouchStart={e=>e.currentTarget.style.background='#fef9f2'}
+                        onTouchEnd={e=>e.currentTarget.style.background='#f9fafb'}>
+                        <div style={{ fontSize:'13px', fontWeight:600, color:'#1e293b' }}>{t}</div>
+                        <div style={{ fontSize:'11px', color:'#9ca3af', marginTop:3 }}>{selectedCity}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             )}
-          </div>
 
-          {/* Trending chips */}
-          <div style={{ display:'flex', alignItems:'center', gap:7, overflowX:'auto', scrollbarWidth:'none', paddingBottom:2 }}>
-            <span style={{ fontSize:'12px', fontWeight:700, color:'rgba(255,255,255,0.6)', flexShrink:0 }}>Trending</span>
-            {cityTrending.map(t => (
-              <button key={t}
-                onClick={() => { setSearchText(t); handleSearch(cat.rentalType); }}
-                style={{ padding:'5px 13px', borderRadius:100, background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.22)', color:'rgba(255,255,255,0.88)', fontSize:'12px', cursor:'pointer', flexShrink:0, fontFamily:"'Poppins',sans-serif", outline:'none' }}>
-                {t}
+            {/* Search button */}
+            <div style={{ padding:'12px 16px', borderTop:'1px solid #f0f0f0', background:'#fff' }}>
+              <button onClick={() => { closeMobSearch(); setTimeout(()=>handleSearch(cat.rentalType),320); }}
+                style={{ width:'100%', padding:'14px', borderRadius:12, background:'#22c55e', border:'none', color:'#fff', fontSize:'15px', fontWeight:700, cursor:'pointer', fontFamily:"'Poppins',sans-serif", display:'flex', alignItems:'center', justifyContent:'center', gap:8, boxShadow:'0 4px 16px rgba(34,197,94,0.3)' }}>
+                <Search size={17} />
+                Search
               </button>
-            ))}
+            </div>
           </div>
+        )}
 
-        </div>
       </div>
     );
   }
@@ -1057,10 +1249,10 @@ export default function HomePageNew1() {
   /* ════════ DESKTOP (>1024px) ════════ */
   return (
     <div style={{
-      position: 'relative', overflow: 'hidden',
-      padding: '72px 24px 72px',
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
-      minHeight: 600,
+      position: 'relative', overflow: 'visible',
+      padding: '0 24px 56px',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end',
+      minHeight: 560,
       fontFamily: "'Poppins', sans-serif",
       boxSizing: 'border-box',
     }}>
@@ -1081,233 +1273,174 @@ export default function HomePageNew1() {
       <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.58) 100%)', zIndex:1, pointerEvents:'none' }} />
       <div style={{ position:'absolute', top:-100, right:-100, width:600, height:600, background:'radial-gradient(circle, rgba(194,119,43,0.15) 0%, transparent 70%)', pointerEvents:'none', zIndex:1 }} />
 
-      {/* ── Category tabs ── */}
-      <div style={{ display:'flex', gap:8, marginBottom:42, zIndex:2, flexWrap:'wrap', justifyContent:'center', position:'relative' }}>
-        {CATEGORIES.map((c, i) => (
-          <button key={c.id}
-            onClick={() => { setActiveCategory(i); setSearchText(''); setShowSuggestions(false); setPgType(''); }}
-            style={{
-              display:'flex', alignItems:'center', gap:7,
-              padding:'9px 20px', borderRadius:100,
-              border:`2px solid ${i===activeCategory?'#fff':'rgba(255,255,255,0.55)'}`,
-              background: i===activeCategory ? '#fff' : 'rgba(255,255,255,0.18)',
-              color: i===activeCategory ? '#2a0f05' : '#fff',
-              backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
-              fontSize:'13.5px', fontWeight: i===activeCategory ? 600 : 500,
-              cursor:'pointer', transition:'all 0.18s', whiteSpace:'nowrap',
-              fontFamily:"'Poppins',sans-serif", outline:'none',
-              textShadow: i===activeCategory ? 'none' : '0 1px 3px rgba(0,0,0,0.4)',
-            }}
-            onMouseEnter={e => { if(i!==activeCategory){ e.currentTarget.style.background='rgba(255,255,255,0.28)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.8)'; } }}
-            onMouseLeave={e => { if(i!==activeCategory){ e.currentTarget.style.background='rgba(255,255,255,0.18)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.55)'; } }}>
-            {CAT_ICONS[c.id]?.(i === activeCategory)}
-            <span>{c.label}</span>
-          </button>
-        ))}
-      </div>
 
       {/* ── Main content ── */}
-      <div style={{ textAlign:'center', zIndex:2, width:'100%', maxWidth:820, position:'relative' }}>
+      <div style={{ textAlign:'center', zIndex:2, width:'100%', maxWidth:860, position:'relative' }}>
 
-        <h1 style={{ fontSize:'clamp(2.2rem, 3.2vw, 3rem)', fontWeight:700, color:'#fff', margin:'0 0 10px', letterSpacing:-0.5, lineHeight:1.18 }}>
+        <h1 style={{ fontSize:'clamp(1.9rem, 2.8vw, 2.6rem)', fontWeight:700, color:'#fff', margin:'0 0 8px', letterSpacing:-0.5, lineHeight:1.18 }}>
           {cat.heading} <span style={{ color:'#f5a623' }}>{selectedCity}</span>
         </h1>
-        <p style={{ color:'rgba(255,255,255,0.72)', fontSize:'1rem', margin:'0 0 28px', lineHeight:1.55 }}>
+        <p style={{ color:'rgba(255,255,255,0.68)', fontSize:'0.92rem', margin:'0 0 20px', lineHeight:1.5 }}>
           {cat.sub}
         </p>
 
-        {/* ── Search bar — varies by category ── */}
-        <div ref={searchRef} style={{ position:'relative', marginBottom:22 }}>
+        {/* ── UNIFIED CARD: Tabs + Search Bar ── */}
+        <div style={{ marginBottom:22, borderRadius:16, overflow:'visible', boxShadow:'0 10px 40px rgba(0,0,0,0.35)' }}>
 
-          {/* Hotels & Homestays — Check-in / Check-out / Guests */}
-          {(cat.searchType === 'hotel') && (
-            <div style={{ display:'flex', alignItems:'stretch', background:'#fff', borderRadius:20, boxShadow:'0 6px 32px rgba(0,0,0,0.3)', maxWidth:780, margin:'0 auto', overflow:'hidden' }}>
-              {/* City selector */}
-              <div ref={cityDropRef} style={{ position:'relative', flexShrink:0 }}>
-                <div onClick={() => setShowCityDrop(v => !v)}
-                  style={{ display:'flex', alignItems:'center', gap:5, padding:'14px 18px', cursor:'pointer', borderRight:'1px solid #f0ece6', minWidth:100 }}>
-                  <span style={{ fontSize:14, fontWeight:600, color:'#1e293b' }}>{selectedCity}</span>
-                  <span style={{ fontSize:10, color:'#c98429' }}>▾</span>
-                </div>
-                {showCityDrop && (
-                  <div style={{ position:'absolute', top:'calc(100% + 6px)', left:0, background:'#fff', borderRadius:12, boxShadow:'0 8px 32px rgba(0,0,0,0.16)', border:'1px solid #f0e8da', zIndex:99999, minWidth:160, overflow:'hidden' }}>
+          {/* Dark Tabs Header */}
+          <div style={{ display:'flex', background:'#1a2332', borderRadius:'16px 16px 0 0', overflow:'hidden' }}>
+            {CATEGORIES.map((c, i) => (
+              <button key={c.id}
+                onClick={() => { setActiveCategory(i); setSearchText(''); setShowSuggestions(false); setPgType(''); }}
+                style={{
+                  flex:1, display:'flex', alignItems:'center', justifyContent:'center', gap:6,
+                  padding:'13px 6px',
+                  background:'transparent', border:'none',
+                  borderBottom: i===activeCategory ? '3px solid #f5a623' : '3px solid transparent',
+                  color: i===activeCategory ? '#fff' : 'rgba(255,255,255,0.52)',
+                  fontSize:'clamp(11px,0.85vw,13px)', fontWeight: i===activeCategory ? 700 : 500,
+                  cursor:'pointer', whiteSpace:'nowrap', fontFamily:"'Poppins',sans-serif",
+                  transition:'color 0.15s, background 0.15s', outline:'none',
+                }}
+                onMouseEnter={e=>{ if(i!==activeCategory){ e.currentTarget.style.color='rgba(255,255,255,0.88)'; e.currentTarget.style.background='rgba(255,255,255,0.06)'; } }}
+                onMouseLeave={e=>{ if(i!==activeCategory){ e.currentTarget.style.color='rgba(255,255,255,0.52)'; e.currentTarget.style.background='transparent'; } }}>
+                {CAT_ICONS[c.id]?.(i === activeCategory)}
+                <span>{c.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* White Search Row */}
+          <div ref={searchRef} style={{ display:'flex', alignItems:'center', background:'#fff', borderRadius:'0 0 16px 16px', padding:'10px 10px 10px 20px', position:'relative' }}>
+
+            {/* City Dropdown */}
+            <div ref={cityDropRef} style={{ display:'flex', alignItems:'center', gap:6, flexShrink:0, cursor:'pointer', paddingRight:4, position:'relative', userSelect:'none' }}
+              onClick={() => setShowCityDrop(v => !v)}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c98429" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <div style={{ display:'flex', flexDirection:'column', gap:1 }}>
+                <span style={{ fontSize:10, fontWeight:700, color:'#9ca3af', letterSpacing:'0.06em', lineHeight:1 }}>CITY</span>
+                <span style={{ fontSize:14, fontWeight:600, color:'#1e293b', lineHeight:1 }}>{selectedCity}</span>
+              </div>
+              <span style={{ fontSize:10, color:'#6b7280' }}>▾</span>
+              {showCityDrop && cityDropRef.current && (() => {
+                const r = cityDropRef.current.getBoundingClientRect();
+                return (
+                  <div style={{ position:'fixed', top: r.bottom + 8, left: r.left, background:'#fff', borderRadius:12, boxShadow:'0 8px 28px rgba(0,0,0,0.18)', border:'1px solid #e5e7eb', minWidth:180, zIndex:99999 }}
+                    onClick={e=>e.stopPropagation()}>
                     {CITIES.map(city => (
-                      <div key={city} onClick={() => { setSelectedCity(city); setShowCityDrop(false); }}
-                        style={{ padding:'10px 16px', fontSize:'13px', fontWeight: city===selectedCity?700:500, color: city===selectedCity?'#c98429':'#374151', background: city===selectedCity?'#fdf7ee':'transparent', cursor:'pointer', transition:'background 0.12s' }}
-                        onMouseEnter={e=>e.currentTarget.style.background='#fdf7ee'}
-                        onMouseLeave={e=>e.currentTarget.style.background=city===selectedCity?'#fdf7ee':'transparent'}>
+                      <div key={city}
+                        onClick={() => { setSelectedCity(city); setShowCityDrop(false); }}
+                        style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 14px', fontSize:'13px', fontWeight:city===selectedCity?700:500, color:city===selectedCity?'#c98429':'#374151', background:city===selectedCity?'#fef9f2':'transparent', cursor:'pointer' }}
+                        onMouseEnter={e=>e.currentTarget.style.background='#fef9f2'}
+                        onMouseLeave={e=>e.currentTarget.style.background=city===selectedCity?'#fef9f2':'transparent'}>
                         {city}
                       </div>
                     ))}
                   </div>
-                )}
-              </div>
-              {/* Check-in */}
-              <div style={{ display:'flex', flexDirection:'column', justifyContent:'center', padding:'14px 16px', borderRight:'1px solid #f0ece6', flexShrink:0 }}>
-                <span style={{ fontSize:10, fontWeight:700, color:'#9ca3af', letterSpacing:'0.06em', textTransform:'uppercase', lineHeight:1, marginBottom:3 }}>CHECK-IN</span>
-                <input type="date" value={checkIn} onChange={e=>setCheckIn(e.target.value)}
-                  style={{ border:'none', outline:'none', fontSize:'13px', fontWeight:600, color: checkIn?'#1e293b':'#9ca3af', background:'transparent', fontFamily:"'Poppins',sans-serif", cursor:'pointer', width:110 }} />
-              </div>
-              {/* Check-out */}
-              <div style={{ display:'flex', flexDirection:'column', justifyContent:'center', padding:'14px 16px', borderRight:'1px solid #f0ece6', flexShrink:0 }}>
-                <span style={{ fontSize:10, fontWeight:700, color:'#9ca3af', letterSpacing:'0.06em', textTransform:'uppercase', lineHeight:1, marginBottom:3 }}>CHECK-OUT</span>
-                <input type="date" value={checkOut} onChange={e=>setCheckOut(e.target.value)} min={checkIn}
-                  style={{ border:'none', outline:'none', fontSize:'13px', fontWeight:600, color: checkOut?'#1e293b':'#9ca3af', background:'transparent', fontFamily:"'Poppins',sans-serif", cursor:'pointer', width:110 }} />
-              </div>
-              {/* Guests */}
-              <div style={{ display:'flex', flexDirection:'column', justifyContent:'center', padding:'14px 16px', borderRight:'1px solid #f0ece6', flexShrink:0 }}>
-                <span style={{ fontSize:10, fontWeight:700, color:'#9ca3af', letterSpacing:'0.06em', textTransform:'uppercase', lineHeight:1, marginBottom:3 }}>GUESTS</span>
-                <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                  <button onClick={()=>setGuests(g=>Math.max(1,g-1))} style={{ width:22, height:22, borderRadius:'50%', border:'1.5px solid #e5e7eb', background:'transparent', cursor:'pointer', fontSize:14, display:'flex', alignItems:'center', justifyContent:'center', color:'#374151', lineHeight:1 }}>−</button>
-                  <span style={{ fontSize:13, fontWeight:600, color:'#1e293b', minWidth:12, textAlign:'center' }}>{guests}</span>
-                  <button onClick={()=>setGuests(g=>g+1)} style={{ width:22, height:22, borderRadius:'50%', border:'1.5px solid #e5e7eb', background:'transparent', cursor:'pointer', fontSize:14, display:'flex', alignItems:'center', justifyContent:'center', color:'#374151', lineHeight:1 }}>+</button>
-                </div>
-              </div>
-              {/* Search area */}
-              <input type="text" value={searchText}
-                onChange={e=>{ setSearchText(e.target.value); setShowSuggestions(true); }}
-                onFocus={()=>setShowSuggestions(true)}
-                onKeyDown={handleKeyDown}
-                placeholder={cat.placeholder}
-                style={{ flex:1, border:'none', outline:'none', fontSize:'14px', color:'#374151', background:'transparent', fontFamily:"'Poppins',sans-serif", padding:'0 14px' }} />
-              <button onClick={()=>handleSearch(cat.rentalType)}
-                style={{ margin:7, width:50, height:50, borderRadius:'50%', background:'#c98429', border:'none', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', flexShrink:0, transition:'background 0.18s' }}
-                onMouseEnter={e=>e.currentTarget.style.background='#a66d21'}
-                onMouseLeave={e=>e.currentTarget.style.background='#c98429'}>
-                <Search size={20} />
-              </button>
+                );
+              })()}
             </div>
-          )}
 
-          {/* PG & Co-Living — Type selector + locality */}
-          {cat.searchType === 'pg' && (
-            <div style={{ display:'flex', alignItems:'stretch', background:'#fff', borderRadius:20, boxShadow:'0 6px 32px rgba(0,0,0,0.3)', maxWidth:780, margin:'0 auto', overflow:'hidden' }}>
-              {/* City selector */}
-              <div ref={cityDropRef} style={{ position:'relative', flexShrink:0 }}>
-                <div onClick={() => setShowCityDrop(v => !v)}
-                  style={{ display:'flex', alignItems:'center', gap:5, padding:'14px 18px', cursor:'pointer', borderRight:'1px solid #f0ece6', minWidth:100 }}>
-                  <span style={{ fontSize:14, fontWeight:600, color:'#1e293b' }}>{selectedCity}</span>
-                  <span style={{ fontSize:10, color:'#c98429' }}>▾</span>
-                </div>
-                {showCityDrop && (
-                  <div style={{ position:'absolute', top:'calc(100% + 6px)', left:0, background:'#fff', borderRadius:12, boxShadow:'0 8px 32px rgba(0,0,0,0.16)', border:'1px solid #f0e8da', zIndex:99999, minWidth:160, overflow:'hidden' }}>
-                    {CITIES.map(city => (
-                      <div key={city} onClick={() => { setSelectedCity(city); setShowCityDrop(false); }}
-                        style={{ padding:'10px 16px', fontSize:'13px', fontWeight: city===selectedCity?700:500, color: city===selectedCity?'#c98429':'#374151', background: city===selectedCity?'#fdf7ee':'transparent', cursor:'pointer', transition:'background 0.12s' }}
-                        onMouseEnter={e=>e.currentTarget.style.background='#fdf7ee'}
-                        onMouseLeave={e=>e.currentTarget.style.background=city===selectedCity?'#fdf7ee':'transparent'}>
-                        {city}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              {/* PG Type toggle */}
-              <div style={{ display:'flex', alignItems:'center', gap:4, padding:'0 14px', borderRight:'1px solid #f0ece6', flexShrink:0 }}>
-                {['Boys', 'Girls', 'Co-Living'].map(type => (
-                  <button key={type} onClick={()=>setPgType(t=>t===type?'':type)}
-                    style={{ padding:'6px 12px', borderRadius:100, border:`1.5px solid ${pgType===type?'#c98429':'#e5e7eb'}`, background:pgType===type?'#fdf7ee':'transparent', color:pgType===type?'#c98429':'#6b7280', fontSize:'12.5px', fontWeight:pgType===type?700:500, cursor:'pointer', transition:'all 0.15s', fontFamily:"'Poppins',sans-serif", whiteSpace:'nowrap' }}>
-                    {type}
-                  </button>
-                ))}
-              </div>
-              <input type="text" value={searchText}
-                onChange={e=>{ setSearchText(e.target.value); setShowSuggestions(true); }}
-                onFocus={()=>setShowSuggestions(true)}
-                onKeyDown={handleKeyDown}
-                placeholder={cat.placeholder}
-                style={{ flex:1, border:'none', outline:'none', fontSize:'14px', color:'#374151', background:'transparent', fontFamily:"'Poppins',sans-serif", padding:'0 14px' }} />
-              <button onClick={()=>handleSearch(cat.rentalType)}
-                style={{ margin:7, width:50, height:50, borderRadius:'50%', background:'#c98429', border:'none', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', flexShrink:0, transition:'background 0.18s' }}
-                onMouseEnter={e=>e.currentTarget.style.background='#a66d21'}
-                onMouseLeave={e=>e.currentTarget.style.background='#c98429'}>
-                <Search size={20} />
-              </button>
-            </div>
-          )}
+            {/* Separator */}
+            <div style={{ width:1, height:28, background:'#e5e7eb', flexShrink:0, margin:'0 14px' }} />
 
-          {/* Signature / Apartments — Regular search */}
-          {cat.searchType === 'text' && (
-            <div style={{ display:'flex', alignItems:'center', background:'#fff', borderRadius:100, padding:'7px 7px 7px 0', boxShadow:'0 6px 32px rgba(0,0,0,0.3)', maxWidth:700, margin:'0 auto', overflow:'visible' }}>
-              {/* City selector */}
-              <div ref={cityDropRef} style={{ position:'relative', flexShrink:0 }}>
-                <div onClick={() => setShowCityDrop(v => !v)}
-                  style={{ display:'flex', alignItems:'center', gap:5, padding:'0 18px', cursor:'pointer' }}>
-                  <span style={{ fontSize:14, fontWeight:600, color:'#1e293b' }}>{selectedCity}</span>
-                  <span style={{ fontSize:10, color:'#c98429' }}>▾</span>
-                </div>
-                {showCityDrop && (
-                  <div style={{ position:'absolute', top:'calc(100% + 10px)', left:0, background:'#fff', borderRadius:12, boxShadow:'0 8px 32px rgba(0,0,0,0.16)', border:'1px solid #f0e8da', zIndex:99999, minWidth:160, overflow:'hidden' }}>
-                    {CITIES.map(city => (
-                      <div key={city} onClick={() => { setSelectedCity(city); setShowCityDrop(false); }}
-                        style={{ padding:'10px 16px', fontSize:'13px', fontWeight: city===selectedCity?700:500, color: city===selectedCity?'#c98429':'#374151', background: city===selectedCity?'#fdf7ee':'transparent', cursor:'pointer', transition:'background 0.12s' }}
-                        onMouseEnter={e=>e.currentTarget.style.background='#fdf7ee'}
-                        onMouseLeave={e=>e.currentTarget.style.background=city===selectedCity?'#fdf7ee':'transparent'}>
-                        {city}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div style={{ width:1, height:28, background:'#e5e7eb', marginRight:14, flexShrink:0 }} />
-              <input type="text" value={searchText}
-                onChange={e=>{ setSearchText(e.target.value); setShowSuggestions(true); }}
-                onFocus={()=>setShowSuggestions(true)}
-                onKeyDown={handleKeyDown}
-                placeholder={cat.placeholder}
-                style={{ flex:1, border:'none', outline:'none', fontSize:'14px', color:'#374151', background:'transparent', fontFamily:"'Poppins',sans-serif" }} />
-              <button onClick={()=>handleSearch(cat.rentalType)}
-                style={{ width:46, height:46, borderRadius:'50%', background:'#c98429', border:'none', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', flexShrink:0, transition:'background 0.18s' }}
-                onMouseEnter={e=>e.currentTarget.style.background='#a66d21'}
-                onMouseLeave={e=>e.currentTarget.style.background='#c98429'}>
-                <Search size={20} />
-              </button>
-            </div>
-          )}
+            {/* Search Input */}
+            <input type="text" value={searchText}
+              onChange={e=>{ setSearchText(e.target.value); setShowSuggestions(true); }}
+              onFocus={()=>setShowSuggestions(true)}
+              onKeyDown={e=>{ if(e.key==='Enter') handleSearch(cat.rentalType); }}
+              placeholder={PLACEHOLDERS[cat.id]?.[phIndex] ?? cat.placeholder}
+              style={{ flex:1, border:'none', outline:'none', fontSize:'14px', color:'#374151', background:'transparent', fontFamily:"'Poppins',sans-serif", minWidth:0 }} />
 
-          {/* Suggestions dropdown — live Nominatim + fallback */}
-          {showSuggestions && (liveResults.length > 0 || filteredSuggestions.length > 0) && (
-            <div style={{ position:'absolute', top:'calc(100% + 8px)', left:'50%', transform:'translateX(-50%)', width:'min(720px, 90vw)', background:'#fff', borderRadius:16, boxShadow:'0 12px 44px rgba(0,0,0,0.18)', border:'1.5px solid #f0e8da', zIndex:99999, overflow:'hidden', textAlign:'left' }}>
-              {liveResults.length > 0 && (
-                <>
-                  <div style={{ padding:'8px 16px 4px', fontSize:'10px', color:'#c98429', fontWeight:700, textTransform:'uppercase', letterSpacing:1 }}>📍 Locations</div>
-                  {liveResults.map((r, idx) => (
-                    <div key={idx} onClick={() => { setSearchText(r.label); setShowSuggestions(false); handleSearch(cat.rentalType); }}
-                      style={{ display:'flex', alignItems:'center', gap:12, padding:'10px 16px', cursor:'pointer', borderBottom:'1px solid #f8f0e4', transition:'background 0.12s' }}
-                      onMouseEnter={e=>e.currentTarget.style.background='#fdf7ee'}
-                      onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
-                      <div style={{ width:32, height:32, borderRadius:10, background:'#fdf3e3', border:'1px solid #f0ddb8', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c98429" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                      </div>
-                      <div style={{ flex:1, minWidth:0 }}>
-                        <div style={{ fontSize:'13.5px', fontWeight:600, color:'#1a1209', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{r.label}</div>
-                        {r.sublabel && <div style={{ fontSize:'11px', color:'#9ca3af', marginTop:1 }}>{r.sublabel}</div>}
-                      </div>
-                      <span style={{ fontSize:'10px', color:'#c2772b', background:'rgba(194,119,43,0.1)', padding:'2px 8px', borderRadius:10, fontWeight:600, flexShrink:0 }}>Area</span>
-                    </div>
+            {/* PG toggle: Boys / Girls / Co-Living */}
+            {cat.searchType === 'pg' && (
+              <>
+                <div style={{ width:1, height:28, background:'#e5e7eb', flexShrink:0, margin:'0 14px' }} />
+                <div style={{ display:'flex', alignItems:'center', gap:10, flexShrink:0 }}>
+                  {['Boys', 'Girls', 'Co-Living'].map(type => (
+                    <label key={type} style={{ display:'flex', alignItems:'center', gap:5, cursor:'pointer', userSelect:'none' }}>
+                      <span style={{ width:15, height:15, borderRadius:'50%', border:`2px solid ${pgType===type?'#7c3aed':'#d1d5db'}`, background:pgType===type?'#7c3aed':'#fff', display:'inline-block', flexShrink:0, position:'relative', transition:'all 0.15s', boxShadow:pgType===type?'0 0 0 3px rgba(124,58,237,0.15)':'none' }}
+                        onClick={()=>setPgType(t=>t===type?'':type)}>
+                        {pgType===type && <span style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:5, height:5, borderRadius:'50%', background:'#fff', display:'block' }}/>}
+                      </span>
+                      <span style={{ fontSize:13, fontWeight:500, color:'#374151', whiteSpace:'nowrap' }}>{type}</span>
+                    </label>
                   ))}
-                </>
-              )}
-              {filteredSuggestions.length > 0 && liveResults.length === 0 && (
-                <>
-                  <div style={{ padding:'8px 16px 4px', fontSize:'10px', color:'#b8a080', fontWeight:700, textTransform:'uppercase', letterSpacing:1 }}>{searchText.trim()===''?'Popular Searches':'Suggestions'}</div>
-                  {filteredSuggestions.map((s, idx) => (
-                <div key={idx} onClick={() => handleSuggestionClick(s)}
-                  style={{ display:'flex', alignItems:'center', gap:12, padding:'10px 16px', cursor:'pointer', borderBottom:idx<filteredSuggestions.length-1?'1px solid #f8f0e4':'none', transition:'background 0.12s' }}
-                  onMouseEnter={e=>e.currentTarget.style.background='#fdf7ee'}
-                  onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
-                  <div style={{ width:32, height:32, borderRadius:10, background:'rgba(194,119,43,0.08)', border:'1px solid rgba(194,119,43,0.18)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'14px', flexShrink:0 }}>
-                    {typeIcon[s.type]}
-                  </div>
-                  <div style={{ flex:1, fontSize:'13.5px', fontWeight:600, color:'#1a1209' }}>{s.label}</div>
-                  <span style={{ fontSize:'10px', color:'#c2772b', background:'rgba(194,119,43,0.1)', padding:'2px 8px', borderRadius:10, fontWeight:600, flexShrink:0 }}>{s.type}</span>
                 </div>
-              ))}
-                </>
-              )}
-            </div>
-          )}
+              </>
+            )}
+
+            {/* Signature toggle: Nightly / Long Stay */}
+            {cat.id === 'signature' && (
+              <>
+                <div style={{ width:1, height:28, background:'#e5e7eb', flexShrink:0, margin:'0 14px' }} />
+                <div style={{ display:'flex', alignItems:'center', gap:10, flexShrink:0 }}>
+                  {['Nightly', 'Long Stay'].map(opt => (
+                    <label key={opt} style={{ display:'flex', alignItems:'center', gap:5, cursor:'pointer', userSelect:'none' }}>
+                      <span style={{ width:15, height:15, borderRadius:'50%', border:`2px solid ${checkIn===opt?'#7c3aed':'#d1d5db'}`, background:checkIn===opt?'#7c3aed':'#fff', display:'inline-block', flexShrink:0, position:'relative', transition:'all 0.15s', boxShadow:checkIn===opt?'0 0 0 3px rgba(124,58,237,0.15)':'none' }}
+                        onClick={()=>setCheckIn(v=>v===opt?'':opt)}>
+                        {checkIn===opt && <span style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:5, height:5, borderRadius:'50%', background:'#fff', display:'block' }}/>}
+                      </span>
+                      <span style={{ fontSize:13, fontWeight:500, color:'#374151', whiteSpace:'nowrap' }}>{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* Green Search Button */}
+            <button onClick={()=>handleSearch(cat.rentalType)}
+              style={{ display:'flex', alignItems:'center', gap:7, padding:'0 22px', height:46, borderRadius:10, background:'#22c55e', border:'none', color:'#fff', fontSize:14, fontWeight:700, cursor:'pointer', flexShrink:0, marginLeft:12, transition:'background 0.18s, transform 0.12s', fontFamily:"'Poppins',sans-serif" }}
+              onMouseEnter={e=>{ e.currentTarget.style.background='#16a34a'; e.currentTarget.style.transform='scale(1.03)'; }}
+              onMouseLeave={e=>{ e.currentTarget.style.background='#22c55e'; e.currentTarget.style.transform='scale(1)'; }}>
+              <Search size={16}/><span>Search</span>
+            </button>
+
+            {/* Suggestions dropdown */}
+            {showSuggestions && (liveResults.length > 0 || filteredSuggestions.length > 0) && (
+              <div style={{ position:'absolute', top:'calc(100% + 8px)', left:0, right:0, background:'#fff', borderRadius:16, boxShadow:'0 12px 44px rgba(0,0,0,0.18)', border:'1.5px solid #f0e8da', zIndex:99999, overflow:'hidden', textAlign:'left' }}>
+                {liveResults.length > 0 && (
+                  <>
+                    <div style={{ padding:'8px 16px 4px', fontSize:'10px', color:'#c98429', fontWeight:700, textTransform:'uppercase', letterSpacing:1 }}>📍 Locations</div>
+                    {liveResults.map((r, idx) => (
+                      <div key={idx} onClick={() => { setSearchText(r.label); setShowSuggestions(false); handleSearch(cat.rentalType); }}
+                        style={{ display:'flex', alignItems:'center', gap:12, padding:'10px 16px', cursor:'pointer', borderBottom:'1px solid #f8f0e4', transition:'background 0.12s' }}
+                        onMouseEnter={e=>e.currentTarget.style.background='#fdf7ee'}
+                        onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+                        <div style={{ width:32, height:32, borderRadius:10, background:'#fdf3e3', border:'1px solid #f0ddb8', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c98429" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        </div>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div style={{ fontSize:'13.5px', fontWeight:600, color:'#1a1209' }}>{r.label}</div>
+                          {r.sublabel && <div style={{ fontSize:'11px', color:'#9ca3af', marginTop:1 }}>{r.sublabel}</div>}
+                        </div>
+                        <span style={{ fontSize:'10px', color:'#c2772b', background:'rgba(194,119,43,0.1)', padding:'2px 8px', borderRadius:10, fontWeight:600, flexShrink:0 }}>Area</span>
+                      </div>
+                    ))}
+                  </>
+                )}
+                {filteredSuggestions.length > 0 && liveResults.length === 0 && (
+                  <>
+                    <div style={{ padding:'8px 16px 4px', fontSize:'10px', color:'#b8a080', fontWeight:700, textTransform:'uppercase', letterSpacing:1 }}>{searchText.trim()===''?'Popular Searches':'Suggestions'}</div>
+                    {filteredSuggestions.map((s, idx) => (
+                      <div key={idx} onClick={() => handleSuggestionClick(s)}
+                        style={{ display:'flex', alignItems:'center', gap:12, padding:'10px 16px', cursor:'pointer', borderBottom:idx<filteredSuggestions.length-1?'1px solid #f8f0e4':'none', transition:'background 0.12s' }}
+                        onMouseEnter={e=>e.currentTarget.style.background='#fdf7ee'}
+                        onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+                        <div style={{ width:32, height:32, borderRadius:10, background:'rgba(194,119,43,0.08)', border:'1px solid rgba(194,119,43,0.18)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'14px', flexShrink:0 }}>
+                          {typeIcon[s.type]}
+                        </div>
+                        <div style={{ flex:1, fontSize:'13.5px', fontWeight:600, color:'#1a1209' }}>{s.label}</div>
+                        <span style={{ fontSize:'10px', color:'#c2772b', background:'rgba(194,119,43,0.1)', padding:'2px 8px', borderRadius:10, fontWeight:600, flexShrink:0 }}>{s.type}</span>
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </div>
+
 
         {/* ── Trending chips — city specific ── */}
         <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', justifyContent:'center' }}>
