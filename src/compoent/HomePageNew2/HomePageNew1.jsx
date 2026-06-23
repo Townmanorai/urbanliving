@@ -406,6 +406,87 @@ const SUGGESTIONS = [
 
 const CITIES = ['Noida', 'Gurugram', 'Delhi', 'Ghaziabad', 'Faridabad', 'Greater Noida'];
 
+const NCR_LOCALITIES = {
+  Noida: [
+    'Sector 1','Sector 2','Sector 3','Sector 4','Sector 5','Sector 6','Sector 7','Sector 8','Sector 9','Sector 10',
+    'Sector 11','Sector 12','Sector 14','Sector 15','Sector 15A','Sector 16','Sector 17','Sector 18','Sector 19','Sector 20',
+    'Sector 21','Sector 22','Sector 23','Sector 24','Sector 25','Sector 26','Sector 27','Sector 28','Sector 29','Sector 30',
+    'Sector 31','Sector 32','Sector 33','Sector 34','Sector 35','Sector 36','Sector 37','Sector 38','Sector 39','Sector 40',
+    'Sector 41','Sector 42','Sector 43','Sector 44','Sector 45','Sector 46','Sector 47','Sector 48','Sector 49','Sector 50',
+    'Sector 51','Sector 52','Sector 53','Sector 54','Sector 55','Sector 56','Sector 57','Sector 58','Sector 59','Sector 60',
+    'Sector 61','Sector 62','Sector 63','Sector 64','Sector 65','Sector 66','Sector 67','Sector 68','Sector 69','Sector 70',
+    'Sector 71','Sector 72','Sector 73','Sector 74','Sector 75','Sector 76','Sector 77','Sector 78','Sector 79','Sector 80',
+    'Sector 100','Sector 101','Sector 104','Sector 108','Sector 110','Sector 117','Sector 118','Sector 119','Sector 120',
+    'Sector 121','Sector 122','Sector 125','Sector 126','Sector 127','Sector 128','Sector 129','Sector 130','Sector 131',
+    'Sector 132','Sector 133','Sector 134','Sector 135','Sector 136','Sector 137','Sector 138','Sector 140','Sector 142',
+    'Sector 143','Sector 143B','Sector 144','Sector 145','Sector 146','Sector 147','Sector 148','Sector 149','Sector 150',
+    'Sector 151','Sector 152','Sector 153','Sector 154','Sector 155','Sector 156','Sector 157','Sector 158','Sector 159',
+    'Golf Course Road','Atta Market','City Centre','Expressway','Noida Extension','Film City',
+    'Botanical Garden','Indirapuram','Vaishali','Kaushambi','Mamura','Bhangel','Barola','Nithari',
+    'Sector 168','Sector 167','Sector 166','Sector 165','Sector 164','Sector 163','Sector 162',
+  ],
+  Gurugram: [
+    'Sector 1','Sector 2','Sector 4','Sector 5','Sector 7','Sector 9','Sector 10','Sector 11','Sector 12','Sector 13',
+    'Sector 14','Sector 15','Sector 17','Sector 18','Sector 21','Sector 22','Sector 23','Sector 27','Sector 28',
+    'Sector 29','Sector 31','Sector 37','Sector 39','Sector 40','Sector 42','Sector 43','Sector 44','Sector 45',
+    'Sector 46','Sector 47','Sector 48','Sector 49','Sector 50','Sector 51','Sector 52','Sector 53','Sector 54',
+    'Sector 55','Sector 56','Sector 57','Sector 58','Sector 59','Sector 62','Sector 63','Sector 65','Sector 66',
+    'Sector 67','Sector 67A','Sector 68','Sector 69','Sector 70','Sector 71','Sector 72','Sector 82','Sector 83',
+    'Sector 84','Sector 85','Sector 86','Sector 88','Sector 89','Sector 90','Sector 91','Sector 92','Sector 93',
+    'DLF Phase 1','DLF Phase 2','DLF Phase 3','DLF Phase 4','DLF Phase 5',
+    'Golf Course Road','Golf Course Extension','MG Road','Sohna Road','NH-48','Old Delhi Road',
+    'Cyber City','Cyber Hub','Udyog Vihar','Palam Vihar','South City 1','South City 2',
+    'Nirvana Country','Malibu Towne','Heritage City','Unitech Cyber Park','Manesar',
+    'Vatika City','Ardee City','Emaar Palm Hills','Signature Global','Mahavir Chowk',
+  ],
+  Delhi: [
+    'Connaught Place','Hauz Khas','Saket','Greater Kailash 1','Greater Kailash 2',
+    'Defence Colony','Lajpat Nagar','Karol Bagh','Paharganj','Aerocity',
+    'Dwarka Sector 1','Dwarka Sector 2','Dwarka Sector 3','Dwarka Sector 4','Dwarka Sector 5',
+    'Dwarka Sector 6','Dwarka Sector 7','Dwarka Sector 8','Dwarka Sector 10','Dwarka Sector 11',
+    'Dwarka Sector 12','Dwarka Sector 13','Dwarka Sector 14','Dwarka Sector 18','Dwarka Sector 21',
+    'Rohini Sector 1','Rohini Sector 2','Rohini Sector 3','Rohini Sector 4','Rohini Sector 5',
+    'Rohini Sector 6','Rohini Sector 7','Rohini Sector 8','Rohini Sector 9','Rohini Sector 11',
+    'Janakpuri','Vikaspuri','Uttam Nagar','Tilak Nagar','Rajouri Garden',
+    'Vasant Kunj','Vasant Vihar','Mehrauli','Malviya Nagar','Munirka',
+    'South Extension 1','South Extension 2','Andrews Ganj','Kalkaji','Govindpuri',
+    'Laxmi Nagar','Preet Vihar','Mayur Vihar Phase 1','Mayur Vihar Phase 2','Mayur Vihar Phase 3',
+    'Shahdara','Patparganj','IP Extension','Geeta Colony','Seelampur',
+    'Pitampura','Shalimar Bagh','Ashok Vihar','Model Town','Civil Lines',
+    'Kamla Nagar','Vijay Nagar','Hudson Line','GTB Nagar','Mukherjee Nagar',
+    'Chandni Chowk','Daryaganj','Sadar Bazar','Katwaria Sarai','Safdarjung',
+  ],
+  Ghaziabad: [
+    'Indirapuram','Vaishali Sector 1','Vaishali Sector 2','Vaishali Sector 3','Vaishali Sector 4',
+    'Vaishali Sector 5','Vaishali Sector 6','Kaushambi','Raj Nagar Extension','Crossings Republik',
+    'Sector 1 Vaishali','Sector 2 Vaishali','Ahinsa Khand 1','Ahinsa Khand 2',
+    'Nyay Khand 1','Nyay Khand 2','Niti Khand 1','Niti Khand 2','Niti Khand 3',
+    'Shakti Khand 1','Shakti Khand 2','Shakti Khand 3','Shakti Khand 4',
+    'NH-58','Lohia Nagar','Raj Nagar','Vasundhara','Govindpuram','Siddharth Vihar',
+    'Shastri Nagar','Gandhi Nagar','Vijay Nagar','Sahibabad','Modi Nagar',
+  ],
+  Faridabad: [
+    'Sector 1','Sector 2','Sector 3','Sector 4','Sector 5','Sector 6','Sector 7','Sector 8','Sector 9','Sector 10',
+    'Sector 11','Sector 12','Sector 14','Sector 15','Sector 16','Sector 16A','Sector 17','Sector 19','Sector 20',
+    'Sector 21','Sector 21C','Sector 22','Sector 23','Sector 24','Sector 25','Sector 26','Sector 27','Sector 28',
+    'Sector 29','Sector 30','Sector 31','Sector 37','Sector 46','Sector 55','Sector 56','Sector 58',
+    'Sector 65','Sector 66','Sector 67','Sector 78','Sector 79','Sector 82','Sector 83','Sector 84','Sector 85',
+    'Sector 86','Sector 87','Sector 88','Sector 89','Sector 90','Sector 91',
+    'NIT','Old Faridabad','Surajkund','Ballabhgarh','NHPC Colony','Pali','Tilpat',
+  ],
+  'Greater Noida': [
+    'Knowledge Park 1','Knowledge Park 2','Knowledge Park 3','Knowledge Park 4','Knowledge Park 5',
+    'Techzone 1','Techzone 2','Techzone 3','Techzone 4',
+    'Alpha 1','Alpha 2','Beta 1','Beta 2','Gamma 1','Gamma 2',
+    'Delta 1','Delta 2','Delta 3','Omega','Pari Chowk',
+    'Sector 1','Sector 2','Sector 3','Sector 4','Sector 10','Sector 12',
+    'Sector 27','Sector 36','Sector 37','Sector 39','Sector 41',
+    'Kasna','Surajpur','Bisrakh','Dadri','Ecotech 1','Ecotech 2','Ecotech 3',
+    'Jaypee Greens','Gaur City','Gaur City 2','Supertech Eco Village','Amrapali Dream Valley',
+    'Migsun Wynwood','Mahagun Moderne','ACE City','Eldeco Station 1',
+  ],
+};
+
 const CITY_TRENDING = {
   Noida: {
     signature: ['Sector 150', 'Golf Course Rd', 'Sector 137', 'Sector 18', 'Sector 76'],
@@ -451,37 +532,66 @@ const CITY_TRENDING = {
   },
 };
 
+/* ── Professional SVG icons for each category ── */
+const CAT_ICONS = {
+  signature: (active) => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill={active?'#c98429':'none'} stroke={active?'#c98429':'currentColor'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </svg>
+  ),
+  hotels: (active) => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={active?'#c98429':'currentColor'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+    </svg>
+  ),
+  homestay: (active) => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={active?'#c98429':'currentColor'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/>
+    </svg>
+  ),
+  pg: (active) => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={active?'#c98429':'currentColor'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg>
+  ),
+  apt: (active) => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={active?'#c98429':'currentColor'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="2" width="16" height="20" rx="2"/><line x1="9" y1="7" x2="9" y2="7.01"/><line x1="15" y1="7" x2="15" y2="7.01"/><line x1="9" y1="12" x2="9" y2="12.01"/><line x1="15" y1="12" x2="15" y2="12.01"/><line x1="9" y1="17" x2="9" y2="17.01"/><line x1="15" y1="17" x2="15" y2="17.01"/>
+    </svg>
+  ),
+};
+
 const CATEGORIES = [
   {
-    id: 'signature', icon: '☆', label: 'Signature Stays', shortLabel: 'Signature',
+    id: 'signature', label: 'Signature Stays', shortLabel: 'Signature',
     heading: 'Signature stays in', sub: '120+ handpicked premium homes · personally verified',
     placeholder: 'Search by locality or property name...',
     param: 'Signature Stays', rentalType: 'short', searchType: 'text',
     bg: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=1600&q=80',
   },
   {
-    id: 'hotels', icon: '🛏️', label: 'Hotels', shortLabel: 'Hotels',
+    id: 'hotels', label: 'Hotels', shortLabel: 'Hotels',
     heading: 'Hotels in', sub: 'Best hotels with premium amenities · verified listings',
     placeholder: 'Search hotels by locality or name...',
     param: 'Hotel Stays', rentalType: 'short', searchType: 'hotel',
     bg: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1600&q=80',
   },
   {
-    id: 'homestay', icon: '🏠', label: 'Homestays & BnB', shortLabel: 'Homestays',
+    id: 'homestay', label: 'Homestays & BnB', shortLabel: 'Homestays',
     heading: 'Homestays & BnB in', sub: 'Unique stays with warm local hosts · no brokerage',
     placeholder: 'Search homestays by locality or name...',
     param: 'Homestays & BnB', rentalType: 'short', searchType: 'hotel',
     bg: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1600&q=80',
   },
   {
-    id: 'pg', icon: '👤', label: 'PG & Co-Living', shortLabel: 'PG',
+    id: 'pg', label: 'PG & Co-Living', shortLabel: 'PG',
     heading: 'PG & Co-Living in', sub: '500+ verified PGs with no brokerage · meals included',
     placeholder: 'Search PG by locality...',
     param: 'PG & Co-Living', rentalType: 'long', searchType: 'pg',
     bg: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1600&q=80',
   },
   {
-    id: 'apt', icon: '🏢', label: 'Apartments & Villas', shortLabel: 'Apartments',
+    id: 'apt', label: 'Apartments & Villas', shortLabel: 'Apartments',
     heading: 'Apartments & Villas in', sub: 'Premium furnished apartments for every budget · zero brokerage',
     placeholder: 'Search apartments by locality or name...',
     param: 'Apartments & Villas', rentalType: 'short', searchType: 'text',
@@ -505,6 +615,9 @@ export default function HomePageNew1() {
   const [guests, setGuests] = useState(1);
   const [pgType, setPgType] = useState('');
   const [mobileSuggestPos, setMobileSuggestPos] = useState(null);
+  const [liveResults, setLiveResults] = useState([]);
+  const [liveLoading, setLiveLoading] = useState(false);
+  const nominatimTimer = useRef(null);
   const searchRef = useRef(null);
   const mobileSearchRef = useRef(null);
   const dropRef = useRef(null);
@@ -526,6 +639,23 @@ export default function HomePageNew1() {
     document.addEventListener('touchstart', handler);
     return () => { document.removeEventListener('mousedown', handler); document.removeEventListener('touchstart', handler); };
   }, []);
+
+  /* ── Local NCR locality search ── */
+  useEffect(() => {
+    if (nominatimTimer.current) clearTimeout(nominatimTimer.current);
+    const q = searchText.trim();
+    if (q.length < 2) { setLiveResults([]); return; }
+    nominatimTimer.current = setTimeout(() => {
+      const cityLocalities = NCR_LOCALITIES[selectedCity] || [];
+      const lower = q.toLowerCase();
+      const matches = cityLocalities
+        .filter(loc => loc.toLowerCase().includes(lower))
+        .slice(0, 6)
+        .map(loc => ({ label: loc, sublabel: selectedCity }));
+      setLiveResults(matches);
+    }, 120);
+    return () => clearTimeout(nominatimTimer.current);
+  }, [searchText, selectedCity]);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/properties`)
@@ -700,7 +830,7 @@ export default function HomePageNew1() {
               <button key={c.id}
                 onClick={() => { setActiveCategory(i); setSearchText(''); }}
                 style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 13px', borderRadius:100, border:`1.5px solid ${i===activeCategory?'#fff':'rgba(255,255,255,0.22)'}`, background:i===activeCategory?'#fff':'rgba(255,255,255,0.08)', color:i===activeCategory?'#2a0f05':'rgba(255,255,255,0.78)', fontSize:'12.5px', fontWeight:i===activeCategory?600:500, cursor:'pointer', whiteSpace:'nowrap', flexShrink:0, fontFamily:"'Poppins',sans-serif", outline:'none' }}>
-                <span>{c.icon}</span>
+                {CAT_ICONS[c.id]?.(i === activeCategory)}
                 <span>{c.shortLabel}</span>
               </button>
             ))}
@@ -734,7 +864,7 @@ export default function HomePageNew1() {
               </button>
             </div>
 
-            {/* Suggestions — fixed overlay, never pushes content */}
+            {/* Suggestions — fixed overlay, max 4 items */}
             {showSuggestions && filteredSuggestions.length > 0 && mobileSuggestPos && (
               <div style={{
                 position:'fixed',
@@ -742,30 +872,24 @@ export default function HomePageNew1() {
                 left: mobileSuggestPos.left,
                 width: mobileSuggestPos.width,
                 background:'#fff',
-                borderRadius:16,
-                boxShadow:'0 12px 40px rgba(0,0,0,0.22)',
-                border:'1.5px solid #f0e8da',
+                borderRadius:14,
+                boxShadow:'0 8px 28px rgba(0,0,0,0.18)',
+                border:'1px solid #f0e8da',
                 zIndex:99999,
                 overflow:'hidden',
-                maxHeight: '55vh',
-                overflowY: 'auto',
               }}>
-                {searchText.trim() === '' && (
-                  <div style={{ padding:'10px 14px 4px', fontSize:'10px', fontWeight:700, color:'#b8a080', textTransform:'uppercase', letterSpacing:1 }}>Popular near {selectedCity}</div>
-                )}
-                {filteredSuggestions.map((s, i) => (
-                  <div key={i} onClick={() => { handleSuggestionClick(s); setShowSuggestions(false); }}
-                    style={{ display:'flex', alignItems:'center', gap:10, padding:'12px 14px', cursor:'pointer', borderBottom:i<filteredSuggestions.length-1?'1px solid #f8f0e4':'none' }}
+                {filteredSuggestions.slice(0, 4).map((s, i, arr) => (
+                  <div key={i} onClick={() => { handleSuggestionClick(s); setShowSuggestions(false); setMobileSuggestPos(null); }}
+                    style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 14px', cursor:'pointer', borderBottom:i<arr.length-1?'1px solid #f8f0e4':'none', background:'#fff' }}
                     onTouchStart={e=>e.currentTarget.style.background='#fdf7ee'}
-                    onTouchEnd={e=>e.currentTarget.style.background='transparent'}>
-                    <div style={{ width:32, height:32, borderRadius:10, background:'rgba(194,119,43,0.1)', border:'1px solid rgba(194,119,43,0.18)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'14px', flexShrink:0 }}>
+                    onTouchEnd={e=>e.currentTarget.style.background='#fff'}>
+                    <div style={{ width:28, height:28, borderRadius:8, background:'rgba(194,119,43,0.1)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'13px', flexShrink:0 }}>
                       {typeIcon[s.type]}
                     </div>
                     <div style={{ flex:1, minWidth:0 }}>
                       <div style={{ fontSize:'13px', fontWeight:600, color:'#1a1209', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{s.label}</div>
-                      <div style={{ fontSize:'11px', color:'#9ca3af', marginTop:1 }}>{s.type}</div>
+                      <div style={{ fontSize:'10px', color:'#9ca3af' }}>{s.type}</div>
                     </div>
-                    <span style={{ fontSize:'11px', color:'#c2772b', background:'rgba(194,119,43,0.1)', padding:'2px 8px', borderRadius:10, fontWeight:600, flexShrink:0 }}>{s.type}</span>
                   </div>
                 ))}
               </div>
@@ -901,7 +1025,7 @@ export default function HomePageNew1() {
             {CATEGORIES.map((c, i) => (
               <button key={c.id} onClick={() => { setActiveCategory(i); setSearchText(''); }}
                 style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 14px', borderRadius:100, border:`1.5px solid ${i===activeCategory?'#fff':'rgba(255,255,255,0.22)'}`, background:i===activeCategory?'#fff':'rgba(255,255,255,0.08)', color:i===activeCategory?'#2a0f05':'rgba(255,255,255,0.78)', fontSize:'12px', fontWeight:i===activeCategory?600:500, cursor:'pointer', whiteSpace:'nowrap', flexShrink:0, fontFamily:"'Poppins',sans-serif", outline:'none' }}>
-                <span>{c.icon}</span><span>{c.label}</span>
+                {CAT_ICONS[c.id]?.(i === activeCategory)}<span>{c.label}</span>
               </button>
             ))}
           </div>
@@ -934,9 +1058,9 @@ export default function HomePageNew1() {
   return (
     <div style={{
       position: 'relative', overflow: 'hidden',
-      padding: '48px 24px 72px',
+      padding: '72px 24px 72px',
       display: 'flex', flexDirection: 'column', alignItems: 'center',
-      minHeight: 560,
+      minHeight: 600,
       fontFamily: "'Poppins', sans-serif",
       boxSizing: 'border-box',
     }}>
@@ -976,7 +1100,7 @@ export default function HomePageNew1() {
             }}
             onMouseEnter={e => { if(i!==activeCategory){ e.currentTarget.style.background='rgba(255,255,255,0.28)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.8)'; } }}
             onMouseLeave={e => { if(i!==activeCategory){ e.currentTarget.style.background='rgba(255,255,255,0.18)'; e.currentTarget.style.borderColor='rgba(255,255,255,0.55)'; } }}>
-            <span style={{ fontSize:15 }}>{c.icon}</span>
+            {CAT_ICONS[c.id]?.(i === activeCategory)}
             <span>{c.label}</span>
           </button>
         ))}
@@ -1001,9 +1125,9 @@ export default function HomePageNew1() {
               {/* City selector */}
               <div ref={cityDropRef} style={{ position:'relative', flexShrink:0 }}>
                 <div onClick={() => setShowCityDrop(v => !v)}
-                  style={{ display:'flex', flexDirection:'column', justifyContent:'center', padding:'14px 18px', cursor:'pointer', borderRight:'1px solid #f0ece6', minWidth:110 }}>
-                  <span style={{ fontSize:10, fontWeight:700, color:'#9ca3af', letterSpacing:'0.06em', textTransform:'uppercase', lineHeight:1, marginBottom:3 }}>CITY</span>
-                  <span style={{ fontSize:13, fontWeight:600, color:'#1e293b', display:'flex', alignItems:'center', gap:4 }}>{selectedCity} <span style={{ fontSize:10, color:'#c98429' }}>▾</span></span>
+                  style={{ display:'flex', alignItems:'center', gap:5, padding:'14px 18px', cursor:'pointer', borderRight:'1px solid #f0ece6', minWidth:100 }}>
+                  <span style={{ fontSize:14, fontWeight:600, color:'#1e293b' }}>{selectedCity}</span>
+                  <span style={{ fontSize:10, color:'#c98429' }}>▾</span>
                 </div>
                 {showCityDrop && (
                   <div style={{ position:'absolute', top:'calc(100% + 6px)', left:0, background:'#fff', borderRadius:12, boxShadow:'0 8px 32px rgba(0,0,0,0.16)', border:'1px solid #f0e8da', zIndex:99999, minWidth:160, overflow:'hidden' }}>
@@ -1061,9 +1185,9 @@ export default function HomePageNew1() {
               {/* City selector */}
               <div ref={cityDropRef} style={{ position:'relative', flexShrink:0 }}>
                 <div onClick={() => setShowCityDrop(v => !v)}
-                  style={{ display:'flex', flexDirection:'column', justifyContent:'center', padding:'14px 18px', cursor:'pointer', borderRight:'1px solid #f0ece6', minWidth:110 }}>
-                  <span style={{ fontSize:10, fontWeight:700, color:'#9ca3af', letterSpacing:'0.06em', textTransform:'uppercase', lineHeight:1, marginBottom:3 }}>CITY</span>
-                  <span style={{ fontSize:13, fontWeight:600, color:'#1e293b', display:'flex', alignItems:'center', gap:4 }}>{selectedCity} <span style={{ fontSize:10, color:'#c98429' }}>▾</span></span>
+                  style={{ display:'flex', alignItems:'center', gap:5, padding:'14px 18px', cursor:'pointer', borderRight:'1px solid #f0ece6', minWidth:100 }}>
+                  <span style={{ fontSize:14, fontWeight:600, color:'#1e293b' }}>{selectedCity}</span>
+                  <span style={{ fontSize:10, color:'#c98429' }}>▾</span>
                 </div>
                 {showCityDrop && (
                   <div style={{ position:'absolute', top:'calc(100% + 6px)', left:0, background:'#fff', borderRadius:12, boxShadow:'0 8px 32px rgba(0,0,0,0.16)', border:'1px solid #f0e8da', zIndex:99999, minWidth:160, overflow:'hidden' }}>
@@ -1108,9 +1232,9 @@ export default function HomePageNew1() {
               {/* City selector */}
               <div ref={cityDropRef} style={{ position:'relative', flexShrink:0 }}>
                 <div onClick={() => setShowCityDrop(v => !v)}
-                  style={{ display:'flex', flexDirection:'column', justifyContent:'center', padding:'0 18px', cursor:'pointer' }}>
-                  <span style={{ fontSize:10, fontWeight:700, color:'#9ca3af', letterSpacing:'0.06em', textTransform:'uppercase', lineHeight:1, marginBottom:2 }}>CITY</span>
-                  <span style={{ fontSize:13, fontWeight:600, color:'#1e293b', display:'flex', alignItems:'center', gap:4 }}>{selectedCity} <span style={{ fontSize:10, color:'#c98429' }}>▾</span></span>
+                  style={{ display:'flex', alignItems:'center', gap:5, padding:'0 18px', cursor:'pointer' }}>
+                  <span style={{ fontSize:14, fontWeight:600, color:'#1e293b' }}>{selectedCity}</span>
+                  <span style={{ fontSize:10, color:'#c98429' }}>▾</span>
                 </div>
                 {showCityDrop && (
                   <div style={{ position:'absolute', top:'calc(100% + 10px)', left:0, background:'#fff', borderRadius:12, boxShadow:'0 8px 32px rgba(0,0,0,0.16)', border:'1px solid #f0e8da', zIndex:99999, minWidth:160, overflow:'hidden' }}>
@@ -1141,24 +1265,46 @@ export default function HomePageNew1() {
             </div>
           )}
 
-          {/* Suggestions dropdown */}
-          {showSuggestions && filteredSuggestions.length > 0 && (
-            <div style={{ position:'absolute', top:'calc(100% + 8px)', left:'50%', transform:'translateX(-50%)', width:'min(700px, 90vw)', background:'#fff', borderRadius:14, boxShadow:'0 12px 44px rgba(0,0,0,0.18)', border:'1.5px solid #f0e8da', zIndex:99999, overflow:'hidden', textAlign:'left' }}>
-              {searchText.trim()==='' && (
-                <div style={{ padding:'8px 14px 4px', fontSize:'0.6rem', color:'#b8a080', fontWeight:700, textTransform:'uppercase', letterSpacing:1 }}>Popular Searches</div>
+          {/* Suggestions dropdown — live Nominatim + fallback */}
+          {showSuggestions && (liveResults.length > 0 || filteredSuggestions.length > 0) && (
+            <div style={{ position:'absolute', top:'calc(100% + 8px)', left:'50%', transform:'translateX(-50%)', width:'min(720px, 90vw)', background:'#fff', borderRadius:16, boxShadow:'0 12px 44px rgba(0,0,0,0.18)', border:'1.5px solid #f0e8da', zIndex:99999, overflow:'hidden', textAlign:'left' }}>
+              {liveResults.length > 0 && (
+                <>
+                  <div style={{ padding:'8px 16px 4px', fontSize:'10px', color:'#c98429', fontWeight:700, textTransform:'uppercase', letterSpacing:1 }}>📍 Locations</div>
+                  {liveResults.map((r, idx) => (
+                    <div key={idx} onClick={() => { setSearchText(r.label); setShowSuggestions(false); handleSearch(cat.rentalType); }}
+                      style={{ display:'flex', alignItems:'center', gap:12, padding:'10px 16px', cursor:'pointer', borderBottom:'1px solid #f8f0e4', transition:'background 0.12s' }}
+                      onMouseEnter={e=>e.currentTarget.style.background='#fdf7ee'}
+                      onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+                      <div style={{ width:32, height:32, borderRadius:10, background:'#fdf3e3', border:'1px solid #f0ddb8', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c98429" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                      </div>
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{ fontSize:'13.5px', fontWeight:600, color:'#1a1209', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{r.label}</div>
+                        {r.sublabel && <div style={{ fontSize:'11px', color:'#9ca3af', marginTop:1 }}>{r.sublabel}</div>}
+                      </div>
+                      <span style={{ fontSize:'10px', color:'#c2772b', background:'rgba(194,119,43,0.1)', padding:'2px 8px', borderRadius:10, fontWeight:600, flexShrink:0 }}>Area</span>
+                    </div>
+                  ))}
+                </>
               )}
-              {filteredSuggestions.map((s, idx) => (
+              {filteredSuggestions.length > 0 && liveResults.length === 0 && (
+                <>
+                  <div style={{ padding:'8px 16px 4px', fontSize:'10px', color:'#b8a080', fontWeight:700, textTransform:'uppercase', letterSpacing:1 }}>{searchText.trim()===''?'Popular Searches':'Suggestions'}</div>
+                  {filteredSuggestions.map((s, idx) => (
                 <div key={idx} onClick={() => handleSuggestionClick(s)}
-                  style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 14px', cursor:'pointer', borderBottom:idx<filteredSuggestions.length-1?'1px solid #f8f0e4':'none', transition:'background 0.12s' }}
+                  style={{ display:'flex', alignItems:'center', gap:12, padding:'10px 16px', cursor:'pointer', borderBottom:idx<filteredSuggestions.length-1?'1px solid #f8f0e4':'none', transition:'background 0.12s' }}
                   onMouseEnter={e=>e.currentTarget.style.background='#fdf7ee'}
                   onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
-                  <div style={{ width:28, height:28, borderRadius:8, background:'rgba(194,119,43,0.1)', border:'1px solid rgba(194,119,43,0.2)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'0.8rem', flexShrink:0 }}>
+                  <div style={{ width:32, height:32, borderRadius:10, background:'rgba(194,119,43,0.08)', border:'1px solid rgba(194,119,43,0.18)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'14px', flexShrink:0 }}>
                     {typeIcon[s.type]}
                   </div>
-                  <div style={{ flex:1, fontSize:'0.85rem', fontWeight:600, color:'#1a1209' }}>{s.label}</div>
-                  <span style={{ fontSize:'0.6rem', color:'#c2772b', background:'rgba(194,119,43,0.1)', padding:'2px 8px', borderRadius:10, fontWeight:600, flexShrink:0 }}>{s.type}</span>
+                  <div style={{ flex:1, fontSize:'13.5px', fontWeight:600, color:'#1a1209' }}>{s.label}</div>
+                  <span style={{ fontSize:'10px', color:'#c2772b', background:'rgba(194,119,43,0.1)', padding:'2px 8px', borderRadius:10, fontWeight:600, flexShrink:0 }}>{s.type}</span>
                 </div>
               ))}
+                </>
+              )}
             </div>
           )}
         </div>
