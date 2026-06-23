@@ -889,7 +889,7 @@ export default function HomePageNew1() {
             {CATEGORIES.map((c, i) => (
               <button key={c.id} className="mob-tab-btn"
                 onClick={() => { setActiveCategory(i); setSearchText(''); }}
-                style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:3, padding:'12px 2px 10px', border:'none', background:'#fff', borderBottom:`2.5px solid ${i===activeCategory?'#c98429':'transparent'}`, color:i===activeCategory?'#c98429':'#9ca3af', fontSize:'10px', fontWeight:i===activeCategory?700:500, cursor:'pointer', fontFamily:"'Poppins',sans-serif", outline:'none', lineHeight:1.2 }}>
+                style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:3, padding:'12px 2px 10px', border:'none', background:'#fff', borderBottom:`2.5px solid ${i===activeCategory?'#c98429':'transparent'}`, color:i===activeCategory?'#c98429':'#374151', fontSize:'10px', fontWeight:i===activeCategory?700:600, cursor:'pointer', fontFamily:"'Poppins',sans-serif", outline:'none', lineHeight:1.2 }}>
                 <span style={{ fontSize:'16px', lineHeight:1 }}>{CAT_ICONS[c.id]?.(i===activeCategory)}</span>
                 {MOB_SHORT[c.id]}
               </button>
@@ -908,10 +908,10 @@ export default function HomePageNew1() {
                   style={{ display:'flex', alignItems:'center', gap:4, padding:'10px 8px 10px 12px', cursor:'pointer', userSelect:'none' }}>
                   <MapPin size={12} color="#c98429" style={{ flexShrink:0 }} />
                   <div>
-                    <div style={{ fontSize:'8.5px', fontWeight:600, color:'#b0b7c3', letterSpacing:'0.05em', lineHeight:1 }}>CITY</div>
-                    <div style={{ fontSize:'12.5px', fontWeight:500, color:'#374151', lineHeight:1.3, whiteSpace:'nowrap' }}>{selectedCity}</div>
+                    <div style={{ fontSize:'8.5px', fontWeight:600, color:'#6b7280', letterSpacing:'0.05em', lineHeight:1 }}>CITY</div>
+                    <div style={{ fontSize:'13px', fontWeight:600, color:'#111827', lineHeight:1.3, whiteSpace:'nowrap' }}>{selectedCity}</div>
                   </div>
-                  <span style={{ fontSize:'9px', color:'#b0b7c3', display:'inline-block', transform:showMobCityDrop?'rotate(180deg)':'rotate(0deg)', transition:'transform 0.2s' }}>▾</span>
+                  <span style={{ fontSize:'9px', color:'#6b7280', display:'inline-block', transform:showMobCityDrop?'rotate(180deg)':'rotate(0deg)', transition:'transform 0.2s' }}>▾</span>
                 </div>
 
                 {/* City dropdown */}
@@ -935,8 +935,8 @@ export default function HomePageNew1() {
               {/* Search trigger — tap opens overlay */}
               <div style={{ flex:1, display:'flex', alignItems:'center', gap:7, padding:'10px 10px', borderLeft:'1px solid #eaecf0' }}
                 onClick={openMobSearch}>
-                <Search size={13} color="#c0c7d0" style={{ flexShrink:0 }} />
-                <span style={{ fontSize:'12.5px', fontWeight:400, color:'#b0b7c3', fontFamily:"'Poppins',sans-serif", userSelect:'none', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                <Search size={13} color="#6b7280" style={{ flexShrink:0 }} />
+                <span style={{ fontSize:'12.5px', fontWeight:400, color:'#9ca3af', fontFamily:"'Poppins',sans-serif", userSelect:'none', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                   {PLACEHOLDERS[cat.id]?.[phIndex] ?? cat.placeholder}
                 </span>
               </div>
@@ -947,7 +947,7 @@ export default function HomePageNew1() {
               <div style={{ display:'flex', gap:7, marginBottom:12 }}>
                 {['Boys','Girls','Co-Living'].map(g => (
                   <button key={g} onClick={() => setPgType(pgType===g?'':g)}
-                    style={{ flex:1, padding:'8px 4px', borderRadius:10, border:`1.5px solid ${pgType===g?'#c98429':'#e5e7eb'}`, background:pgType===g?'#fef3e0':'#f9fafb', color:pgType===g?'#c98429':'#6b7280', fontSize:'12px', fontWeight:pgType===g?700:500, cursor:'pointer', fontFamily:"'Poppins',sans-serif", outline:'none' }}>
+                    style={{ flex:1, padding:'8px 4px', borderRadius:10, border:`1.5px solid ${pgType===g?'#c98429':'#d1d5db'}`, background:pgType===g?'#fef3e0':'#fff', color:pgType===g?'#c98429':'#1f2937', fontSize:'12px', fontWeight:pgType===g?700:600, cursor:'pointer', fontFamily:"'Poppins',sans-serif", outline:'none' }}>
                     {g==='Boys'?'👦 ':g==='Girls'?'👧 ':'🤝 '}{g}
                   </button>
                 ))}
@@ -959,7 +959,7 @@ export default function HomePageNew1() {
               <div style={{ display:'flex', gap:7, marginBottom:12 }}>
                 {['Nightly','Long Stay'].map(m => (
                   <button key={m} onClick={() => setPgType(pgType===m?'':m)}
-                    style={{ flex:1, padding:'8px 4px', borderRadius:10, border:`1.5px solid ${pgType===m?'#c98429':'#e5e7eb'}`, background:pgType===m?'#fef3e0':'#f9fafb', color:pgType===m?'#c98429':'#6b7280', fontSize:'12px', fontWeight:pgType===m?700:500, cursor:'pointer', fontFamily:"'Poppins',sans-serif", outline:'none' }}>
+                    style={{ flex:1, padding:'8px 4px', borderRadius:10, border:`1.5px solid ${pgType===m?'#c98429':'#d1d5db'}`, background:pgType===m?'#fef3e0':'#fff', color:pgType===m?'#c98429':'#1f2937', fontSize:'12px', fontWeight:pgType===m?700:600, cursor:'pointer', fontFamily:"'Poppins',sans-serif", outline:'none' }}>
                     {m==='Nightly'?'🌙 ':'📅 '}{m}
                   </button>
                 ))}
@@ -975,10 +975,10 @@ export default function HomePageNew1() {
 
             {/* Trending */}
             <div style={{ display:'flex', alignItems:'center', gap:7, marginTop:14, overflowX:'auto', scrollbarWidth:'none' }}>
-              <span style={{ fontSize:'11px', color:'#9ca3af', fontWeight:600, flexShrink:0 }}>🔥 Trending</span>
+              <span style={{ fontSize:'11px', color:'#374151', fontWeight:700, flexShrink:0 }}>🔥 Trending</span>
               {cityTrending.map(t => (
                 <button key={t} onClick={() => { setSearchText(t); handleSearch(cat.rentalType); }}
-                  style={{ padding:'4px 12px', borderRadius:100, background:'#f5f7fa', border:'1px solid #e5e7eb', color:'#374151', fontSize:'11.5px', cursor:'pointer', flexShrink:0, fontFamily:"'Poppins',sans-serif", outline:'none', whiteSpace:'nowrap' }}>
+                  style={{ padding:'4px 12px', borderRadius:100, background:'#f5f7fa', border:'1px solid #d1d5db', color:'#111827', fontSize:'11.5px', fontWeight:500, cursor:'pointer', flexShrink:0, fontFamily:"'Poppins',sans-serif", outline:'none', whiteSpace:'nowrap' }}>
                   {t}
                 </button>
               ))}
