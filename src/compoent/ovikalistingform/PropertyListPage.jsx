@@ -802,6 +802,10 @@ const SidebarContent = ({
         <div style={{ display: 'flex', gap: 8 }}>
           {[{ id: 'short', label: 'Nightly', icon: <FiMoon style={{ fontSize: 12 }} /> },
             { id: 'long',  label: 'Monthly', icon: <FiCalendar style={{ fontSize: 12 }} /> }].map(({ id, label, icon }) => {
+            if (id === 'short' && activeCat?.id === 'PG & Co-Living')    return null;
+            if (id === 'long'  && activeCat?.id === 'Hotel Stays')       return null;
+            if (id === 'long'  && activeCat?.id === 'Homestays & BnB')   return null;
+            if (id === 'short' && activeCat?.id === 'Apartments & Villas') return null;
             const active = rentalType === id;
             return (
               <button key={id} onClick={() => { const val = rentalType === id ? null : id; setRentalType(val); sessionStorage.setItem('ovika_rental_type', val || id); }} style={{
@@ -827,7 +831,18 @@ const SidebarContent = ({
           {CATEGORIES.map(cat => {
             const isActive = activeCat?.id === cat.id;
             return (
-              <button key={cat.id} onClick={() => { setActiveCat(isActive ? null : cat); if (cat.id !== 'PG & Co-Living') setPgSubFilter?.(null); }} style={{
+              <button key={cat.id} onClick={() => {
+                const next = isActive ? null : cat;
+                setActiveCat(next);
+                if (cat.id !== 'PG & Co-Living') setPgSubFilter?.(null);
+                if (!lockedRental) {
+                  if (!isActive && cat.id === 'PG & Co-Living')      { setRentalType('long');  sessionStorage.setItem('ovika_rental_type', 'long'); }
+                  else if (!isActive && cat.id === 'Hotel Stays')     { setRentalType('short'); sessionStorage.setItem('ovika_rental_type', 'short'); }
+                  else if (!isActive && cat.id === 'Homestays & BnB') { setRentalType('short'); sessionStorage.setItem('ovika_rental_type', 'short'); }
+                  else if (!isActive && cat.id === 'Apartments & Villas') { setRentalType('long'); sessionStorage.setItem('ovika_rental_type', 'long'); }
+                  else if (isActive && ['PG & Co-Living','Hotel Stays','Homestays & BnB','Apartments & Villas'].includes(cat.id)) { setRentalType(null); sessionStorage.removeItem('ovika_rental_type'); }
+                }
+              }} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 7,
                 padding: '8px 12px', borderRadius: 9, textAlign: 'left',
                 border: `1.5px solid ${isActive ? '#C98B3E' : '#e8e8e8'}`,
@@ -1025,10 +1040,13 @@ const PropertyListPage = () => {
   if (initRef.current === null) {
     initRef.current = true;
     const isBack = sessionStorage.getItem('plp_back_expected') === 'true';
-    if (!isBack) { sessionStorage.removeItem('plp_filter_state'); sessionStorage.removeItem('plp_scroll_y'); }
-    if (isBack) { skipPageResetRef.current = 6; }
+    // Browser refresh (F5 / reload) — treat as fresh load, not back navigation
+    const isBrowserReload = (() => { try { return performance.getEntriesByType('navigation')[0]?.type === 'reload'; } catch { return false; } })();
+    const shouldRestore = isBack && !isBrowserReload;
+    if (!shouldRestore) { sessionStorage.removeItem('plp_filter_state'); sessionStorage.removeItem('plp_scroll_y'); }
+    if (shouldRestore) { skipPageResetRef.current = 6; }
   }
-  // ── Restore filter state from sessionStorage (back navigation) ──
+  // ── Restore filter state from sessionStorage (back navigation only, not on refresh) ──
   const _ss = (() => { try { return JSON.parse(sessionStorage.getItem('plp_filter_state') || '{}'); } catch { return {}; } })();
 
   const [properties, setProperties] = useState([]);
@@ -1352,8 +1370,12 @@ const PropertyListPage = () => {
             if (cat.id === 'Homestays & BnB') {
               if (isMonthly) return false;
               // PG nightly → show here
-              if (isPgProperty) return !isMonthly;
-              // Only show properties explicitly listed under this category
+              if (isPgProperty) return true;
+              // Nightly apartments/villas → also show here
+              const aptKw = ['apartment','villa','studio','serviced apartment','serviced residence','builder floor','flat','penthouse','duplex','independent house','farmhouse'];
+              const isAptVilla = pCat === 'apartments & villas' || aptKw.some(t => pCat.includes(t) || pType.includes(t));
+              if (isAptVilla) return true;
+              // Homestay / BnB category properties
               return pCat === 'homestays & bnb'
                 || pCat.includes('homestay') || pCat.includes('bnb') || pCat.includes('b&b')
                 || pType.includes('homestay') || pType.includes('bnb') || pType.includes('b&b')
@@ -1364,6 +1386,8 @@ const PropertyListPage = () => {
             if (isPgProperty) return false;
 
             if (cat.id === 'Apartments & Villas') {
+              // Only monthly data in Apartments & Villas
+              if (!isMonthly) return false;
               if (pCat === 'apartments & villas') return true;
               const catKw = ['apartment','villa','studio','serviced apartment','serviced residence','builder floor','flat','penthouse','duplex','independent house','farmhouse'];
               return catKw.some(t => pCat.includes(t) || pType.includes(t));
@@ -1537,6 +1561,15 @@ const PropertyListPage = () => {
       result = scored.map(({ p }) => p);
     }
 
+    // Deduplicate by property ID — prevent same property from appearing twice
+    const seen = new Set();
+    result = result.filter(p => {
+      const uid = String(p.id || p.property_id || '');
+      if (!uid || seen.has(uid)) return false;
+      seen.add(uid);
+      return true;
+    });
+
     return result;
   };
 
@@ -1546,7 +1579,18 @@ const PropertyListPage = () => {
       const res = await fetch(`${API_BASE_URL}/properties`);
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
-      const list = data?.data || [];
+      const raw = data?.data || [];
+      const seenIds = new Set();
+      const list = raw.filter(p => {
+        // Remove explicitly inactive properties — if field absent, treat as active
+        const isInactive = p.is_active === false || p.status === 'inactive' || p.status === 'Inactive';
+        if (isInactive) return false;
+        // Deduplicate by ID
+        const uid = String(p.id || p.property_id || '');
+        if (uid && seenIds.has(uid)) return false;
+        if (uid) seenIds.add(uid);
+        return true;
+      });
       setProperties(list);
       setFiltered(list);
     } catch (e) { setError(e.message); }
@@ -1785,6 +1829,16 @@ const PropertyListPage = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
+    const hasParams = [...params.keys()].length > 0;
+
+    // On browser refresh, ignore URL params and sessionStorage rental type — start clean
+    const isBrowserReload = (() => { try { return performance.getEntriesByType('navigation')[0]?.type === 'reload'; } catch { return false; } })();
+    if (isBrowserReload) {
+      if (!lockedRental) sessionStorage.removeItem('ovika_rental_type');
+      if (hasParams) navigate(location.pathname, { replace: true });
+      return;
+    }
+
     const cId = params.get('category');
     if (cId && properties.length > 0) {
       const match = CATEGORIES.find(c =>
@@ -1835,6 +1889,9 @@ const PropertyListPage = () => {
 
     const cout = params.get('checkOut');
     if (cout) setCheckOut(cout);
+
+    // Clear URL params after reading so refresh doesn't re-apply them
+    if (hasParams && !lockedRental) navigate(location.pathname, { replace: true });
   }, [location.search, location.pathname, properties]);
 
   // Geocode filtered properties that lack lat/lng when map view is active
@@ -2712,7 +2769,14 @@ const PropertyListPage = () => {
                   <FiSearch style={{ fontSize: 12, color: '#b89a70', flexShrink: 0 }} />
                   <input
                     type="text"
-                    placeholder="City, area, property..."
+                    placeholder={
+                      activeCat?.id === 'PG & Co-Living'    ? 'Search PG by locality, sector...' :
+                      activeCat?.id === 'Hotel Stays'        ? 'Search hotels by area or name...' :
+                      activeCat?.id === 'Homestays & BnB'    ? 'Search homestays by area or name...' :
+                      activeCat?.id === 'Apartments & Villas'? 'Search apartments by locality...' :
+                      activeCat?.id === 'Signature Stays'    ? 'Search by locality or property name...' :
+                      'City, area, property...'
+                    }
                     value={search}
                     onChange={e => { setSearch(e.target.value); setShowCitySug(true); setCurrentPage(1); }}
                     onFocus={() => setShowCitySug(true)}
@@ -2725,7 +2789,29 @@ const PropertyListPage = () => {
                     const q = search.trim().toLowerCase();
                     const recentSearches = getRecentSearches();
                     const recentlyViewed = getRecentlyViewed();
-                    const POPULAR_KEYWORDS = [
+                    const POPULAR_KEYWORDS = activeCat?.id === 'PG & Co-Living' ? [
+                      { label: 'Boys PG', icon: 'home', type: 'keyword' },
+                      { label: 'Girls PG', icon: 'home', type: 'keyword' },
+                      { label: 'Co-Living', icon: 'users', type: 'keyword' },
+                      { label: 'Noida', icon: 'city', type: 'city' },
+                      { label: 'Greater Noida', icon: 'city', type: 'city' },
+                      { label: 'Sector 62', icon: 'city', type: 'city' },
+                    ] : activeCat?.id === 'Hotel Stays' ? [
+                      { label: 'Noida', icon: 'city', type: 'city' },
+                      { label: 'Greater Noida', icon: 'city', type: 'city' },
+                      { label: 'Gurugram', icon: 'city', type: 'city' },
+                      { label: 'Delhi', icon: 'city', type: 'city' },
+                    ] : activeCat?.id === 'Homestays & BnB' ? [
+                      { label: 'Noida', icon: 'city', type: 'city' },
+                      { label: 'Greater Noida', icon: 'city', type: 'city' },
+                      { label: 'Gurugram', icon: 'city', type: 'city' },
+                      { label: 'Delhi', icon: 'city', type: 'city' },
+                    ] : activeCat?.id === 'Apartments & Villas' ? [
+                      { label: 'Noida', icon: 'city', type: 'city' },
+                      { label: 'Greater Noida', icon: 'city', type: 'city' },
+                      { label: 'Gurugram', icon: 'city', type: 'city' },
+                      { label: 'Delhi', icon: 'city', type: 'city' },
+                    ] : [
                       { label: 'PG', icon: 'home', type: 'keyword' },
                       { label: 'Boys PG', icon: 'home', type: 'keyword' },
                       { label: 'Girls PG', icon: 'home', type: 'keyword' },
@@ -2860,7 +2946,24 @@ const PropertyListPage = () => {
                   </div>
                 )}
 
-                {/* Guests */}
+                {/* PG Type toggles — only for PG & Co-Living category */}
+                {activeCat?.id === 'PG & Co-Living' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 8px', borderRight: '1px solid #e8d9c0', flexShrink: 0 }}>
+                    {[{ id: 'boys', label: 'Boys' }, { id: 'girls', label: 'Girls' }, { id: 'coliving', label: 'Co-Living' }].map(({ id, label }) => {
+                      const active = pgSubFilter === id;
+                      return (
+                        <button key={id} onMouseDown={e => { e.preventDefault(); setPgSubFilter(active ? null : id); setCurrentPage(1); }} style={{
+                          padding: '3px 9px', borderRadius: 20, border: `1.5px solid ${active ? '#C98B3E' : '#e8d9c0'}`,
+                          background: active ? '#FFF6EE' : '#fafafa', color: active ? '#C98B3E' : '#888',
+                          fontSize: 11, fontWeight: active ? 700 : 500, cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap',
+                        }}>{label}</button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Guests — only for nightly categories */}
+                {!isMonthly && activeCat?.id !== 'PG & Co-Living' && (
                 <div
                   onMouseDown={() => { setShowGuestsBox(v => !v); setShowCitySug(false); setShowCheckInCal(false); setShowCheckOutCal(false); }}
                   style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 8px', cursor: 'pointer', flexShrink: 0, position: 'relative', borderRight: '1px solid #e8d9c0' }}
@@ -2875,6 +2978,7 @@ const PropertyListPage = () => {
                     </div>
                   )}
                 </div>
+                )}
 
                 {/* Search button */}
                 <button

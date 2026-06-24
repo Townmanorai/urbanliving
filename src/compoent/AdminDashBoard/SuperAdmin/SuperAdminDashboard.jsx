@@ -1239,16 +1239,19 @@ export default function SuperAdminDashboard() {
                     const CITIES = ['Noida', 'Greater Noida', 'Gurugram', 'Delhi', 'Ghaziabad', 'Faridabad'];
                     const counts = {};
                     CITIES.forEach(c => { counts[c] = 0; });
-                    // Exact same logic as PropertyListPage applyFilter city chip matching
                     properties.forEach(p => {
                         const c = (p.city    || '').toLowerCase().trim();
                         const a = (p.address || '').toLowerCase();
-                        if (c.includes('greater noida') || a.includes('greater noida')) { counts['Greater Noida']++; }
-                        else if (c === 'noida' || (c.includes('noida') && !c.includes('greater'))) { counts['Noida']++; }
+                        // Round 1: city field + address (Greater Noida first to avoid Noida overlap)
+                        if      (c.includes('greater noida') || a.includes('greater noida'))                           { counts['Greater Noida']++; }
+                        else if (c === 'noida' || (c.includes('noida') && !c.includes('greater')))                     { counts['Noida']++; }
                         else if (c.includes('gurugram') || c.includes('gurgaon') || a.includes('gurugram') || a.includes('gurgaon')) { counts['Gurugram']++; }
-                        else if (c.includes('delhi') || a.includes('delhi')) { counts['Delhi']++; }
-                        else if (c.includes('ghaziabad') || a.includes('ghaziabad')) { counts['Ghaziabad']++; }
-                        else if (c.includes('faridabad') || a.includes('faridabad')) { counts['Faridabad']++; }
+                        else if (c.includes('delhi')      || a.includes('delhi'))                                      { counts['Delhi']++; }
+                        else if (c.includes('ghaziabad')  || a.includes('ghaziabad'))                                  { counts['Ghaziabad']++; }
+                        else if (c.includes('faridabad')  || a.includes('faridabad'))                                  { counts['Faridabad']++; }
+                        // Round 2: address-only fallback for Noida (blank city but address has sector/noida)
+                        else if (a.includes('noida') && !a.includes('greater noida'))                                  { counts['Noida']++; }
+                        // unmatched — silently ignored (genuinely blank data)
                     });
                     return (
                         <div style={{ display:'grid', gridTemplateColumns:'repeat(6,1fr)', gap:12, marginBottom:24 }}>
