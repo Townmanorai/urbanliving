@@ -15,24 +15,24 @@ const NIGHTLY = [
     id: 'signature', title: 'Signature Stays', sub: 'Fully managed luxury villas & premium homes',
     badge: 'Nightly Rental', price: '₹2,599', unit: '/night', btnText: 'Explore Signature',
     icon: <Sparkles size={16}/>, tags: ['Luxury', 'Verified', 'Fully Furnished'], popular: false,
-    img: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=900&q=80&auto=format&fit=crop',
-    imgFallback: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=600&q=80',
+    img: '/tmluxe1.jpeg',
+    imgFallback: '/signature1.png',
     rentalType: 'short', category: 'Signature Stays', color: '#7c4a1a',
   },
   {
     id: 'hotel', title: 'Hotel Stays', sub: 'Premium, Luxury & Boutique Hotels',
     badge: 'Nightly Rental', price: '₹1,499', unit: '/night', btnText: 'Explore Hotels',
     icon: <Building2 size={16}/>, tags: ['4★ & 5★', 'Breakfast', 'Instant Book'], popular: true,
-    img: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=700&q=80&auto=format&fit=crop',
-    imgFallback: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80',
+    img: '/p3.png',
+    imgFallback: '/apartment1.jpeg',
     rentalType: 'short', category: 'Hotel Stays', color: '#1a3a5c',
   },
   {
     id: 'homestay', title: 'Homestays & BnB', sub: 'Villas, Flats & Serviced Homes',
     badge: 'Nightly Rental', price: '₹2,499', unit: '/night', btnText: 'Explore Homestays',
     icon: <Home size={16}/>, tags: ['Homely', 'Kitchen', 'Private Space'], popular: false,
-    img: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=700&q=80&auto=format&fit=crop',
-    imgFallback: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80',
+    img: '/p1.png',
+    imgFallback: '/apartmnet2.png',
     rentalType: 'short', category: 'Homestays & BnB', color: '#1a4a2e',
   },
 ];
@@ -42,33 +42,51 @@ const MONTHLY = [
     id: 'signature', title: 'Signature Stays', sub: 'Fully managed luxury homes for long stays',
     badge: 'Monthly Rental', price: '₹25,999', unit: '/month', btnText: 'Explore Signature',
     icon: <Sparkles size={16}/>, tags: ['Luxury', 'Verified', 'Fully Furnished'], popular: false,
-    img: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=900&q=80&auto=format&fit=crop',
-    imgFallback: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?w=600&q=80',
+    img: '/tmluxe1.jpeg',
+    imgFallback: '/signature2.jpeg',
     rentalType: 'long', category: 'Signature Stays', color: '#7c4a1a',
   },
   {
     id: 'apartments', title: 'Apartments & Villas', sub: 'Furnished, Semi-Furnished & Unfurnished',
     badge: 'Monthly Rental', price: '₹12,999', unit: '/month', btnText: 'Explore Apartments',
     icon: <Building size={16}/>, tags: ['No Brokerage', 'Flexible', 'Furnished'], popular: true,
-    img: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=700&q=80&auto=format&fit=crop',
-    imgFallback: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&q=80',
+    img: '/p2.png',
+    imgFallback: '/apartmnet2.png',
     rentalType: 'long', category: 'Apartments & Villas', color: '#1a3a5c',
   },
   {
     id: 'pg', title: 'PG & Co-Living', sub: 'Boys, Girls & Community Living spaces',
     badge: 'Monthly Rental', price: '₹4,999', unit: '/month', btnText: 'Explore PG',
     icon: <Users size={16}/>, tags: ['Meals Included', 'Community', 'Zero Deposit'], popular: false,
-    img: 'https://images.unsplash.com/photo-1541123437800-1bb1317badc2?w=700&q=80&auto=format&fit=crop',
-    imgFallback: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&q=80',
+    img: '/pg1.jpeg',
+    imgFallback: '/colivingspace.jpeg',
     rentalType: 'long', category: 'PG & Co-Living', color: '#2a1a5c',
   },
 ];
+
+const API_BASE = 'https://www.townmanor.ai/api/ovika';
+const SIGNATURE_NIGHTLY_IDS = [77, 78, 79, 80, 81];
+const SIGNATURE_MONTHLY_IDS = [323, 315, 316, 317];
+
+function getPhotoUrl(photo) {
+  if (!photo) return null;
+  if (photo.startsWith('http')) return photo;
+  return `${API_BASE}${photo.startsWith('/') ? '' : '/'}${photo}`;
+}
+
+function getCoverPhoto(p) {
+  const photos = Array.isArray(p.photos) ? p.photos : [];
+  const idx = Number(p.cover_photo_index) || 0;
+  const cover = photos[idx] || photos[0];
+  return cover ? getPhotoUrl(cover) : null;
+}
 
 export default function HomePageNew2() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('nightly');
   const [bp, setBp] = useState(getBreakpoint());
   const [hovered, setHovered] = useState(null);
+  const [categoryImgs, setCategoryImgs] = useState({});
 
   useEffect(() => {
     const onResize = () => setBp(getBreakpoint());
@@ -76,8 +94,72 @@ export default function HomePageNew2() {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
+  useEffect(() => {
+    fetch(`${API_BASE}/properties`)
+      .then(r => r.json())
+      .then(data => {
+        const props = Array.isArray(data) ? data : (data.properties || []);
+        const imgs = {};
+
+        const sigN = props.find(p => SIGNATURE_NIGHTLY_IDS.includes(Number(p.id || p.property_id)));
+        if (sigN) imgs.sig_short = getCoverPhoto(sigN);
+
+        const sigM = props.find(p => SIGNATURE_MONTHLY_IDS.includes(Number(p.id || p.property_id)));
+        if (sigM) imgs.sig_long = getCoverPhoto(sigM);
+
+        const hotel = props.find(p => {
+          const id = Number(p.id || p.property_id);
+          if (SIGNATURE_NIGHTLY_IDS.includes(id) || SIGNATURE_MONTHLY_IDS.includes(id)) return false;
+          const cat = (p.property_category || '').toLowerCase();
+          const type = (p.property_type || '').toLowerCase();
+          const name = (p.property_name || '').toLowerCase();
+          return cat.includes('hotel') || type.includes('hotel') || name.includes('hotel');
+        });
+        if (hotel) imgs['Hotel Stays'] = getCoverPhoto(hotel);
+
+        const homestay = props.find(p => {
+          const id = Number(p.id || p.property_id);
+          if (SIGNATURE_NIGHTLY_IDS.includes(id) || SIGNATURE_MONTHLY_IDS.includes(id)) return false;
+          const cat = (p.property_category || '').toLowerCase();
+          const type = (p.property_type || '').toLowerCase();
+          return cat.includes('homestay') || cat.includes('bnb') || cat.includes('b&b')
+            || type.includes('homestay') || type.includes('bnb');
+        });
+        if (homestay) imgs['Homestays & BnB'] = getCoverPhoto(homestay);
+
+        const apartment = props.find(p => {
+          const id = Number(p.id || p.property_id);
+          if (SIGNATURE_NIGHTLY_IDS.includes(id) || SIGNATURE_MONTHLY_IDS.includes(id)) return false;
+          const cat = (p.property_category || '').toLowerCase();
+          const type = (p.property_type || '').toLowerCase();
+          if (cat.includes('hotel') || type.includes('hotel') || cat.includes('homestay')
+            || cat.includes('bnb') || cat.includes('pg') || type.includes('pg')) return false;
+          return cat.includes('apartment') || cat.includes('villa') || cat.includes('flat')
+            || type.includes('apartment') || type.includes('villa') || type.includes('flat');
+        });
+        if (apartment) imgs['Apartments & Villas'] = getCoverPhoto(apartment);
+
+        const pg = props.find(p => {
+          const cat = (p.property_category || '').toLowerCase();
+          const type = (p.property_type || '').toLowerCase();
+          return cat === 'pg' || cat.includes('co-living') || type.includes('pg');
+        });
+        if (pg) imgs['PG & Co-Living'] = getCoverPhoto(pg);
+
+        setCategoryImgs(imgs);
+      })
+      .catch(() => {});
+  }, []);
+
   const cats = activeTab === 'nightly' ? NIGHTLY : MONTHLY;
   const [hero, ...rest] = cats;
+
+  const getCatImg = (cat) => {
+    if (cat.id === 'signature') {
+      return categoryImgs[cat.rentalType === 'short' ? 'sig_short' : 'sig_long'] || cat.img;
+    }
+    return categoryImgs[cat.category] || cat.img;
+  };
 
   const handleNav = (e, cat) => {
     const p = new URLSearchParams();
@@ -138,7 +220,7 @@ export default function HomePageNew2() {
                 boxShadow: '0 12px 36px rgba(0,0,0,0.18)',
               }}>
               {/* Full image */}
-              <img src={cat.img} alt={cat.title} onError={e => { e.currentTarget.src = cat.imgFallback; }}
+              <img src={getCatImg(cat)} alt={cat.title} onError={e => { e.currentTarget.src = cat.imgFallback; }}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
 
               {/* Gradient overlay */}
@@ -252,7 +334,7 @@ export default function HomePageNew2() {
           {/* Hero */}
           <div onClick={(e) => handleNav(e, hero)} onMouseEnter={() => setHovered(hero.id)} onMouseLeave={() => setHovered(null)}
             style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', cursor: 'pointer', height: 380, gridRow: '1 / 3' }}>
-            <img src={hero.img} alt={hero.title} onError={e => { e.currentTarget.src = hero.imgFallback; }}
+            <img src={getCatImg(hero)} alt={hero.title} onError={e => { e.currentTarget.src = hero.imgFallback; }}
               style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s', transform: hovered === hero.id ? 'scale(1.05)' : 'scale(1)' }} />
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.15) 55%, transparent 100%)' }} />
             <div style={{ position: 'absolute', top: 14, left: 16, background: 'rgba(194,119,43,0.9)', borderRadius: 20, padding: '4px 12px' }}>
@@ -284,7 +366,7 @@ export default function HomePageNew2() {
           {rest.map((cat) => (
             <div key={cat.id} onClick={(e) => handleNav(e, cat)} onMouseEnter={() => setHovered(cat.id)} onMouseLeave={() => setHovered(null)}
               style={{ position: 'relative', borderRadius: 20, overflow: 'hidden', cursor: 'pointer', height: 185 }}>
-              <img src={cat.img} alt={cat.title} onError={e => { e.currentTarget.src = cat.imgFallback; }}
+              <img src={getCatImg(cat)} alt={cat.title} onError={e => { e.currentTarget.src = cat.imgFallback; }}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s', transform: hovered === cat.id ? 'scale(1.06)' : 'scale(1)' }} />
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.1) 55%, transparent 100%)' }} />
               {cat.popular && (
@@ -374,7 +456,7 @@ export default function HomePageNew2() {
             position: 'relative', borderRadius: 24, overflow: 'hidden', cursor: 'pointer',
           }}
         >
-          <img src={hero.img} alt={hero.title} onError={e => { e.currentTarget.src = hero.imgFallback; }}
+          <img src={getCatImg(hero)} alt={hero.title} onError={e => { e.currentTarget.src = hero.imgFallback; }}
             style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.55s', transform: hovered === hero.id ? 'scale(1.06)' : 'scale(1)', display: 'block' }} />
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.3) 45%, transparent 100%)' }} />
 
@@ -431,7 +513,7 @@ export default function HomePageNew2() {
               position: 'relative', borderRadius: 20, overflow: 'hidden', cursor: 'pointer',
             }}
           >
-            <img src={cat.img} alt={cat.title} onError={e => { e.currentTarget.src = cat.imgFallback; }}
+            <img src={getCatImg(cat)} alt={cat.title} onError={e => { e.currentTarget.src = cat.imgFallback; }}
               style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s', transform: hovered === cat.id ? 'scale(1.07)' : 'scale(1)', display: 'block' }} />
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.1) 55%, transparent 100%)' }} />
             {cat.popular && (

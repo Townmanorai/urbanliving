@@ -1759,11 +1759,11 @@ const PropertyListPage = () => {
           }
           return 0;
         });
-    // ── No exact results → show related (relax city + category filters) ──
+    // ── No exact results → show related (relax filters gradually) ──
     if (sortedResults.length === 0 && properties.length > 0) {
-      // Step 1: drop city filter, keep category + rentalType
-      let related = applyFilter(properties, activeCat, search, rentalType, userLat, userLng, '');
-      // Step 2: if still 0, drop category too — just rentalType
+      // Step 1: keep city, drop category → show same city different categories
+      let related = applyFilter(properties, null, search, rentalType, userLat, userLng, cityFilter);
+      // Step 2: if still 0 (no properties in that city), drop city too → any city same rentalType
       if (related.length === 0) {
         related = applyFilter(properties, null, search, rentalType, userLat, userLng, '');
       }

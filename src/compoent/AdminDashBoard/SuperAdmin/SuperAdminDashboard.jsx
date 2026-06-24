@@ -1239,12 +1239,16 @@ export default function SuperAdminDashboard() {
                     const CITIES = ['Noida', 'Greater Noida', 'Gurugram', 'Delhi', 'Ghaziabad', 'Faridabad'];
                     const counts = {};
                     CITIES.forEach(c => { counts[c] = 0; });
-                    // Check longer/specific names first to avoid "Noida" matching "Greater Noida"
-                    const MATCH_ORDER = ['Greater Noida', 'Noida', 'Gurugram', 'Delhi', 'Ghaziabad', 'Faridabad'];
+                    // Exact same logic as PropertyListPage applyFilter city chip matching
                     properties.forEach(p => {
-                        const city = (p.city || '').trim().toLowerCase();
-                        const matched = MATCH_ORDER.find(c => city.includes(c.toLowerCase()));
-                        if (matched) counts[matched]++;
+                        const c = (p.city    || '').toLowerCase().trim();
+                        const a = (p.address || '').toLowerCase();
+                        if (c.includes('greater noida') || a.includes('greater noida')) { counts['Greater Noida']++; }
+                        else if (c === 'noida' || (c.includes('noida') && !c.includes('greater'))) { counts['Noida']++; }
+                        else if (c.includes('gurugram') || c.includes('gurgaon') || a.includes('gurugram') || a.includes('gurgaon')) { counts['Gurugram']++; }
+                        else if (c.includes('delhi') || a.includes('delhi')) { counts['Delhi']++; }
+                        else if (c.includes('ghaziabad') || a.includes('ghaziabad')) { counts['Ghaziabad']++; }
+                        else if (c.includes('faridabad') || a.includes('faridabad')) { counts['Faridabad']++; }
                     });
                     return (
                         <div style={{ display:'grid', gridTemplateColumns:'repeat(6,1fr)', gap:12, marginBottom:24 }}>
