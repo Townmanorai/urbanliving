@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import styles from "./Dashboard.module.css";
 import { AuthContext } from "../../Login/AuthContext";
-import { Home, Plus, Loader, Moon, Calendar } from "lucide-react";
+import { Home, Plus, Loader, Moon, Calendar, Building } from "lucide-react";
 import PGUpdateForm from "../../ovikalistingform/PGUpdateForm";
 import ImageClassificationModal from "../SuperAdmin/ImageClassificationModal";
 
@@ -873,16 +873,16 @@ function EmptyState({ type, onAdd }) {
     }}>
       <div style={{ background: '#fff', padding: '36px 40px', borderRadius: '20px', boxShadow: '0 10px 25px rgba(0,0,0,0.08)', maxWidth: '480px', width: '100%', textAlign: 'center' }}>
         <div style={{ background: '#c2772b', width: '80px', height: '80px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-          {isMonthly ? <Calendar size={38} style={{ color: '#fff' }} /> : <Moon size={38} style={{ color: '#fff' }} />}
+          <Building size={38} style={{ color: '#fff' }} />
         </div>
         <h2 style={{ fontSize: '20px', fontWeight: '700', color: '#111827', marginBottom: '10px' }}>
-          No {isMonthly ? 'Monthly Rental' : 'Nightly Rental'} Properties Listed
+          No Properties Listed Yet
         </h2>
         <p style={{ fontSize: '14px', color: '#6b7280', lineHeight: '1.6', marginBottom: '24px' }}>
-          {isMonthly ? 'You have no monthly rental / PG properties listed yet.' : 'You have no nightly rental properties listed yet.'}
+          You have not listed any properties yet. Click below to add your first listing.
         </p>
         <button type="button" onClick={onAdd} style={{ background: '#c2772b', color: '#fff', padding: '12px 28px', borderRadius: '10px', border: 'none', fontSize: '15px', fontWeight: '600', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-          <Plus size={18} /> List {isMonthly ? 'Monthly Rental' : 'Nightly Rental'}
+          <Plus size={18} /> Add Listing
         </button>
       </div>
     </div>
@@ -959,6 +959,7 @@ export default function DashBoardAdmin() {
   const [editingProperty, setEditingProperty] = useState(null);
   const [editingMonthlyProperty, setEditingMonthlyProperty] = useState(null);
   const [activeTab, setActiveTab] = useState("monthly");
+  const [activeCatTab, setActiveCatTab] = useState("all");
   const [classifyProperty, setClassifyProperty] = useState(null);
 
   useEffect(() => {
@@ -1070,6 +1071,36 @@ export default function DashBoardAdmin() {
   const monthlyProperties = properties.filter(isMonthlyProperty);
   const nightlyProperties = properties.filter(isNightlyProperty);
   const displayedProperties = activeTab === "monthly" ? monthlyProperties : nightlyProperties;
+  const allProperties = properties; // show all properties without tab separation
+
+  // Detect which display category a property belongs to
+  const getPropertyCategory = (p) => {
+    const cat  = (p.property_category || '').toLowerCase().trim();
+    const type = (p.property_type || '').toLowerCase().trim();
+    const name = (p.property_name || p.name || '').toLowerCase();
+    const meta = (() => { try { return typeof p.meta === 'object' ? p.meta : JSON.parse(p.meta || '{}'); } catch { return {}; } })();
+    const metaCat = (meta.propertyCategory || '').toLowerCase().trim();
+
+    if (name.includes('signature') || name.includes('ovika')) return 'Signature Stays';
+    if (cat.includes('hotel') || type.includes('hotel') || name.includes('hotel')) return 'Hotel Stays';
+    if (cat === 'pg & co-living' || cat === 'pg' || cat.includes('pg') || cat.includes('co-living') || cat.includes('coliving') || type.includes('pg') || metaCat.includes('pg')) return 'PG & Co-Living';
+    if (cat === 'homestays & bnb' || cat.includes('homestay') || cat.includes('bnb') || type.includes('homestay') || type.includes('bnb') || type.includes('bed & breakfast') || type.includes('vacation rental') || type.includes('guesthouse')) return 'Homestays & BnB';
+    if (cat === 'apartments & villas' || cat.includes('apartment') || cat.includes('villa') || cat.includes('studio') || cat.includes('flat') || type.includes('apartment') || type.includes('villa') || type.includes('studio')) return 'Apartments & Villas';
+    return 'Other';
+  };
+
+  const OWNER_CATS = [
+    { id: 'all',               label: 'All' },
+    { id: 'Signature Stays',   label: 'Signature' },
+    { id: 'Hotel Stays',       label: 'Hotels' },
+    { id: 'Homestays & BnB',   label: 'Homestays' },
+    { id: 'Apartments & Villas', label: 'Apartments' },
+    { id: 'PG & Co-Living',    label: 'PG & Co-Living' },
+  ];
+
+  const catFilteredProperties = activeCatTab === 'all'
+    ? allProperties
+    : allProperties.filter(p => getPropertyCategory(p) === activeCatTab);
 
   const renderPropertyCard = (prop) => {
     const name = prop.property_name || prop.name || "Untitled Property";
@@ -1163,21 +1194,50 @@ export default function DashBoardAdmin() {
               <button type="button" onClick={() => navigate('/admindashboard/calendar')} style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', background: '#fff', color: '#c2772b', padding: '9px 18px', borderRadius: '8px', border: '1.5px solid #c2772b', fontSize: '14px', fontWeight: '600', cursor: 'pointer', flexShrink: 0, transition: 'background 0.2s ease' }}>
                 <Calendar size={16} /> Calendar Blocking
               </button>
-              <button type="button" onClick={() => navigate(activeTab === 'monthly' ? '/list-pg' : '/listed1')} style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', background: '#c2772b', color: '#fff', padding: '9px 18px', borderRadius: '8px', border: 'none', fontSize: '14px', fontWeight: '600', cursor: 'pointer', flexShrink: 0, transition: 'background 0.2s ease' }}>
-                <Plus size={16} /> {activeTab === 'monthly' ? 'Add Monthly Rental' : 'Add Nightly Rental'}
+              <button type="button" onClick={() => navigate('/list-category')} style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', background: '#c2772b', color: '#fff', padding: '9px 18px', borderRadius: '8px', border: 'none', fontSize: '14px', fontWeight: '600', cursor: 'pointer', flexShrink: 0, transition: 'background 0.2s ease' }}>
+                <Plus size={16} /> Add Listing
               </button>
             </div>
           </div>
 
           {error && <p style={{ color: "red", marginBottom: '12px' }}>{error}</p>}
 
-          <RentalTabs activeTab={activeTab} onChange={setActiveTab} monthlyCount={monthlyProperties.length} nightlyCount={nightlyProperties.length} />
+          {/* Category Tabs */}
+          {allProperties.length > 0 && (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
+              {OWNER_CATS.map(cat => {
+                const count = cat.id === 'all' ? allProperties.length : allProperties.filter(p => getPropertyCategory(p) === cat.id).length;
+                const active = activeCatTab === cat.id;
+                return (
+                  <button key={cat.id} type="button" onClick={() => setActiveCatTab(cat.id)} style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    padding: '7px 14px', borderRadius: 20,
+                    border: `1.5px solid ${active ? '#c2772b' : '#e5e7eb'}`,
+                    background: active ? '#c2772b' : '#fff',
+                    color: active ? '#fff' : '#374151',
+                    fontSize: 13, fontWeight: active ? 700 : 500,
+                    cursor: 'pointer', transition: 'all 0.18s ease',
+                  }}>
+                    {cat.label}
+                    <span style={{ background: active ? 'rgba(255,255,255,0.25)' : '#f3f4f6', color: active ? '#fff' : '#6b7280', borderRadius: 999, fontSize: 11, fontWeight: 700, padding: '1px 7px', minWidth: 20, textAlign: 'center' }}>{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
-          {displayedProperties.length === 0 ? (
-            <EmptyState type={activeTab} onAdd={() => navigate(activeTab === 'monthly' ? '/list-pg' : '/listed1')} />
+          {allProperties.length === 0 ? (
+            <EmptyState type="monthly" onAdd={() => navigate('/list-category')} />
+          ) : catFilteredProperties.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px 20px', color: '#6b7280' }}>
+              <p style={{ fontSize: 15, marginBottom: 12 }}>No properties in this category yet.</p>
+              <button type="button" onClick={() => navigate('/list-category')} style={{ background: '#c2772b', color: '#fff', padding: '10px 24px', borderRadius: 8, border: 'none', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                <Plus size={15} style={{ verticalAlign: 'middle', marginRight: 6 }} />Add Listing
+              </button>
+            </div>
           ) : (
             <div className={styles.properties}>
-              {displayedProperties.map(renderPropertyCard)}
+              {catFilteredProperties.map(renderPropertyCard)}
             </div>
           )}
         </section>

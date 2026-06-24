@@ -387,7 +387,7 @@ export default function CalendarBlocking() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [ownerId, setOwnerId] = useState(null);
-  const [rentalTab, setRentalTab] = useState('nightly'); // 'nightly' | 'monthly'
+  const [activeCatTab, setActiveCatTab] = useState('all');
 
   const resolveOwnerId = useCallback(() => {
     const fromCtx = extractOwnerId(user);
@@ -454,21 +454,52 @@ export default function CalendarBlocking() {
       </section>
 
       <div className="cb-body">
-        {/* Nightly / Monthly Tab Toggle */}
-        <div className="cb-tab-toggle">
-          <button
-            className={`cb-tab-btn ${rentalTab === 'nightly' ? 'cb-tab-btn--active' : ''}`}
-            onClick={() => setRentalTab('nightly')}
-          >
-            🌙 Nightly Stays
-          </button>
-          <button
-            className={`cb-tab-btn ${rentalTab === 'monthly' ? 'cb-tab-btn--active' : ''}`}
-            onClick={() => setRentalTab('monthly')}
-          >
-            📅 Monthly Rentals
-          </button>
-        </div>
+        {/* Category Tabs */}
+        {properties.length > 0 && (() => {
+          const getPropertyCategory = (p) => {
+            const cat  = (p.property_category || '').toLowerCase().trim();
+            const type = (p.property_type || '').toLowerCase().trim();
+            const name = (p.property_name || p.name || '').toLowerCase();
+            const meta = (() => { try { return typeof p.meta === 'object' ? p.meta : JSON.parse(p.meta || '{}'); } catch { return {}; } })();
+            const metaCat = (meta.propertyCategory || '').toLowerCase().trim();
+            if (name.includes('signature') || name.includes('ovika')) return 'Signature Stays';
+            if (cat.includes('hotel') || type.includes('hotel') || name.includes('hotel')) return 'Hotel Stays';
+            if (cat === 'pg & co-living' || cat === 'pg' || cat.includes('pg') || cat.includes('co-living') || cat.includes('coliving') || type.includes('pg') || metaCat.includes('pg')) return 'PG & Co-Living';
+            if (cat === 'homestays & bnb' || cat.includes('homestay') || cat.includes('bnb') || type.includes('homestay') || type.includes('bnb')) return 'Homestays & BnB';
+            if (cat === 'apartments & villas' || cat.includes('apartment') || cat.includes('villa') || cat.includes('studio') || cat.includes('flat') || type.includes('apartment') || type.includes('villa')) return 'Apartments & Villas';
+            return 'Other';
+          };
+          const CATS = [
+            { id: 'all',                 label: 'All' },
+            { id: 'Signature Stays',     label: 'Signature' },
+            { id: 'Hotel Stays',         label: 'Hotels' },
+            { id: 'Homestays & BnB',     label: 'Homestays' },
+            { id: 'Apartments & Villas', label: 'Apartments' },
+            { id: 'PG & Co-Living',      label: 'PG & Co-Living' },
+          ];
+          return (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
+              {CATS.map(cat => {
+                const count = cat.id === 'all' ? properties.length : properties.filter(p => getPropertyCategory(p) === cat.id).length;
+                const active = activeCatTab === cat.id;
+                return (
+                  <button key={cat.id} type="button" onClick={() => setActiveCatTab(cat.id)} style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    padding: '7px 14px', borderRadius: 20,
+                    border: `1.5px solid ${active ? '#c2772b' : '#e5e7eb'}`,
+                    background: active ? '#c2772b' : '#fff',
+                    color: active ? '#fff' : '#374151',
+                    fontSize: 13, fontWeight: active ? 700 : 500,
+                    cursor: 'pointer', transition: 'all 0.18s ease',
+                  }}>
+                    {cat.label}
+                    <span style={{ background: active ? 'rgba(255,255,255,0.25)' : '#f3f4f6', color: active ? '#fff' : '#6b7280', borderRadius: 999, fontSize: 11, fontWeight: 700, padding: '1px 7px', minWidth: 20, textAlign: 'center' }}>{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+          );
+        })()}
 
         {/* Instructions */}
         <div className="cb-instructions">
@@ -500,12 +531,23 @@ export default function CalendarBlocking() {
             <p>No properties found under your account.</p>
           </div>
         ) : (() => {
-          const filtered = properties.filter((p) =>
-            rentalTab === 'monthly' ? isMonthlyProperty(p) : !isMonthlyProperty(p)
-          );
+          const getPropertyCategory = (p) => {
+            const cat  = (p.property_category || '').toLowerCase().trim();
+            const type = (p.property_type || '').toLowerCase().trim();
+            const name = (p.property_name || p.name || '').toLowerCase();
+            const meta = (() => { try { return typeof p.meta === 'object' ? p.meta : JSON.parse(p.meta || '{}'); } catch { return {}; } })();
+            const metaCat = (meta.propertyCategory || '').toLowerCase().trim();
+            if (name.includes('signature') || name.includes('ovika')) return 'Signature Stays';
+            if (cat.includes('hotel') || type.includes('hotel') || name.includes('hotel')) return 'Hotel Stays';
+            if (cat === 'pg & co-living' || cat === 'pg' || cat.includes('pg') || cat.includes('co-living') || cat.includes('coliving') || type.includes('pg') || metaCat.includes('pg')) return 'PG & Co-Living';
+            if (cat === 'homestays & bnb' || cat.includes('homestay') || cat.includes('bnb') || type.includes('homestay') || type.includes('bnb')) return 'Homestays & BnB';
+            if (cat === 'apartments & villas' || cat.includes('apartment') || cat.includes('villa') || cat.includes('studio') || cat.includes('flat') || type.includes('apartment') || type.includes('villa')) return 'Apartments & Villas';
+            return 'Other';
+          };
+          const filtered = activeCatTab === 'all' ? properties : properties.filter(p => getPropertyCategory(p) === activeCatTab);
           return filtered.length === 0 ? (
             <div className="cb-empty">
-              <p>No {rentalTab === 'monthly' ? 'monthly rental' : 'nightly stay'} properties found.</p>
+              <p>No properties found in this category.</p>
             </div>
           ) : (
             <div className="cb-props-list">
