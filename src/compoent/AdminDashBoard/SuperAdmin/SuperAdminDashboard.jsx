@@ -1232,15 +1232,31 @@ export default function SuperAdminDashboard() {
                         <div className="sa-stat-title">Total Asset Value</div>
                         <div className="sa-stat-val">₹{stats.totalVal.toLocaleString()}</div>
                     </div>
-                    <div className="sa-stat-card">
-                        <div className="sa-stat-title">Active Owners</div>
-                        <div className="sa-stat-val">{stats.activeUsers}</div>
-                    </div>
-                    <div className="sa-stat-card">
-                        <div className="sa-stat-title">Total Bookings</div>
-                        <div className="sa-stat-val">{stats.totalBookings}</div>
-                    </div>
                 </div>
+
+                {/* City-wise Listings */}
+                {(() => {
+                    const CITIES = ['Noida', 'Greater Noida', 'Gurugram', 'Delhi', 'Ghaziabad', 'Faridabad'];
+                    const counts = {};
+                    CITIES.forEach(c => { counts[c] = 0; });
+                    // Check longer/specific names first to avoid "Noida" matching "Greater Noida"
+                    const MATCH_ORDER = ['Greater Noida', 'Noida', 'Gurugram', 'Delhi', 'Ghaziabad', 'Faridabad'];
+                    properties.forEach(p => {
+                        const city = (p.city || '').trim().toLowerCase();
+                        const matched = MATCH_ORDER.find(c => city.includes(c.toLowerCase()));
+                        if (matched) counts[matched]++;
+                    });
+                    return (
+                        <div style={{ display:'grid', gridTemplateColumns:'repeat(6,1fr)', gap:12, marginBottom:24 }}>
+                            {CITIES.map(city => (
+                                <div key={city} className="sa-stat-card" style={{ textAlign:'center', padding:'16px 10px' }}>
+                                    <div className="sa-stat-val" style={{ fontSize:'1.6rem' }}>{counts[city]}</div>
+                                    <div className="sa-stat-title" style={{ marginTop:4 }}>{city}</div>
+                                </div>
+                            ))}
+                        </div>
+                    );
+                })()}
 
                 <div className="sa-charts">
                     <div className="sa-chart-box">
