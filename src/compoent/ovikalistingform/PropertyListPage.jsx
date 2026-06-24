@@ -1840,7 +1840,7 @@ const PropertyListPage = () => {
     }
 
     const cId = params.get('category');
-    if (cId && properties.length > 0) {
+    if (cId) {
       const match = CATEGORIES.find(c =>
         c.id.toLowerCase() === cId.toLowerCase() || c.title.toLowerCase() === cId.toLowerCase()
       );
@@ -1867,11 +1867,12 @@ const PropertyListPage = () => {
     if (params.get('nearme') === '1' && lat && lng) setSortBy('distance');
 
     const KNOWN_CITY_NAMES = ['noida','greater noida','noida extension','delhi','gurugram','gurgaon','faridabad','ghaziabad'];
-    const cityParam  = (params.get('city')   || '').trim();
+    const cityParam   = (params.get('city')   || '').trim();
     const searchParam = (params.get('search') || '').trim();
     if (cityParam && KNOWN_CITY_NAMES.includes(cityParam.toLowerCase())) {
       setCityFilter(cityParam);
-      setSearch('');
+      // Apply search text separately — don't wipe it
+      if (searchParam) setSearch(searchParam);
     } else {
       const q = searchParam || cityParam;
       if (q) setSearch(q);
@@ -1892,7 +1893,7 @@ const PropertyListPage = () => {
 
     // Clear URL params after reading so refresh doesn't re-apply them
     if (hasParams && !lockedRental) navigate(location.pathname, { replace: true });
-  }, [location.search, location.pathname, properties]);
+  }, [location.search, location.pathname]);
 
   // Geocode filtered properties that lack lat/lng when map view is active
   useEffect(() => {
