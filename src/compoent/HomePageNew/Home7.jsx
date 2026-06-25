@@ -42,6 +42,7 @@ const SAMPLE_VIDEOS = [
     bookingUrlShort: "/property/80",
     bookingUrlLong: "/property/316",
     availableInLong: true,
+    availableInNightly: false,
   },
   {
     id: 5,
@@ -52,6 +53,7 @@ const SAMPLE_VIDEOS = [
     bookingUrlShort: "/property/81",
     bookingUrlLong: "/property/317",
     availableInLong: true,
+    availableInNightly: false,
   },
 ];
 
@@ -468,10 +470,10 @@ const [activeIdx, setActiveIdx] = useState(0);
 
   const isMonthly = rentalType === 'long';
 
-  // Monthly mode me unavailable videos filter out karo
+  // Monthly / Nightly mode me unavailable videos filter out karo
   const filteredVideos = isMonthly
     ? videos.filter(v => v.availableInLong !== false)
-    : videos;
+    : videos.filter(v => v.availableInNightly !== false);
 
   // Agar activeIdx out of bounds ho jaye filtered list me
   useEffect(() => {

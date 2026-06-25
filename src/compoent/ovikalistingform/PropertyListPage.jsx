@@ -1133,7 +1133,7 @@ const PropertyListPage = () => {
     try { return JSON.parse(p.meta); } catch { return {}; }
   };
 
-  const MONTHLY_ONLY_IDS = [1105];
+  const MONTHLY_ONLY_IDS = [1105, 80, 81]; // 80 & 81 = Signature Stay 4 & 5 (temporarily hidden from nightly)
 
   const isLongTermProperty = (p) => {
     // 0. Manual overrides — force specific property IDs to monthly
