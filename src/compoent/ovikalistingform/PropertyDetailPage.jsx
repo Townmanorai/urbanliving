@@ -363,12 +363,11 @@ const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookN
     <div className="rm-table-outer">
       <table className="rm-table" style={{ tableLayout:'fixed', width:'100%' }}>
         <colgroup>
-          <col style={{ width: showDeposit ? '30%' : '34%' }}/>
-          <col style={{ width: showDeposit ? '13%' : '16%' }}/>
-          <col style={{ width: showDeposit ? '10%' : '13%' }}/>
-          <col style={{ width: showDeposit ? '13%' : '15%' }}/>
-          {showDeposit && <col style={{ width:'18%' }}/>}
-          <col style={{ width: showDeposit ? '10%' : '12%' }}/>
+          <col style={{ width:'32%' }}/>
+          <col style={{ width:'14%' }}/>
+          <col style={{ width:'12%' }}/>
+          <col style={{ width:'22%' }}/>
+          <col style={{ width:'10%' }}/>
           <col style={{ width:'10%' }}/>
         </colgroup>
         <thead>
@@ -377,7 +376,6 @@ const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookN
             <th className="rm-th rm-col--bath">Bathroom</th>
             <th className="rm-th rm-col--area">Area</th>
             <th className="rm-th rm-th--price">Price / {priceUnit}</th>
-            {showDeposit && <th className="rm-th rm-col--deposit">Security Deposit</th>}
             <th className="rm-th rm-col--avail">Available</th>
             <th className="rm-th rm-th--action"></th>
           </tr>
@@ -427,13 +425,12 @@ const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookN
                         <span style={{ display:'block', background:'#dcfce7', color:'#166534', padding:'1px 6px', borderRadius:'20px', fontSize:'0.64rem', fontWeight:'600', marginTop:'2px', width:'fit-content' }}>1 Month · Refundable</span>
                       </div>
                     )}
-                  </td>
-                )}
-                {isFirst && showDeposit && (
-                  <td className="rm-td rm-col--deposit" rowSpan={rowCount} style={{ verticalAlign:'middle' }}>
-                    <div style={{ fontSize:'0.8rem', fontWeight:'600', color:'#8b0000' }}>₹{formatCurrency(depositAmount)}</div>
-                    <div style={{ fontSize:'0.7rem', color:'#64748b' }}>1 night</div>
-                    <span style={{ display:'inline-block', marginTop:'3px', background:'#dcfce7', color:'#166534', padding:'1px 7px', borderRadius:'20px', fontSize:'0.68rem', fontWeight:'600' }}>Refundable</span>
+                    {showDeposit && depositAmount && (
+                      <div style={{ marginTop:'5px', fontSize:'0.69rem', lineHeight:'1.4', color:'#8b0000', fontWeight:'600' }}>
+                        +₹{formatCurrency(depositAmount)} Deposit
+                        <span style={{ display:'block', background:'#dcfce7', color:'#166534', padding:'1px 6px', borderRadius:'20px', fontSize:'0.64rem', fontWeight:'600', marginTop:'2px', width:'fit-content' }}>1 Night · Refundable</span>
+                      </div>
+                    )}
                   </td>
                 )}
                 {isFirst && (

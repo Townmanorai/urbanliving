@@ -1763,11 +1763,9 @@ table {
 
 .rm-price-cell {
   display: flex;
-  flex-direction: row;
-  align-items: baseline;
-  gap: 3px;
-  flex-wrap: nowrap;
-  white-space: nowrap;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
 }
 
 .rm-price-main {

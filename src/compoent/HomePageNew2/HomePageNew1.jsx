@@ -898,9 +898,9 @@ export default function HomePageNew1() {
             <span style={{ fontSize:'10px', color:'#fff', fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase' }}>✦ Smart Stay Platform</span>
           </div>
           <h1 style={{ color:'#fff', fontSize:'clamp(1.3rem,5.5vw,1.7rem)', fontWeight:800, lineHeight:1.2, margin:'0 0 4px', letterSpacing:-0.3, textShadow:'0 2px 16px rgba(0,0,0,0.5)', whiteSpace:'nowrap' }}>
-            Properties in <span style={{ color:'#f5a623' }}>{selectedCity}</span>
+            {CATEGORIES[activeCategory]?.heading || 'Properties in'} <span style={{ color:'#f5a623' }}>{selectedCity}</span>
           </h1>
-          <p style={{ color:'rgba(255,255,255,0.62)', fontSize:'0.78rem', margin:0, lineHeight:1.6 }}>500+ verified stays · No brokerage</p>
+          <p style={{ color:'rgba(255,255,255,0.62)', fontSize:'0.78rem', margin:0, lineHeight:1.6 }}>{CATEGORIES[activeCategory]?.sub || '500+ verified stays · No brokerage'}</p>
         </div>
 
         {/* ── Search Card (Housing.com style) ── */}
