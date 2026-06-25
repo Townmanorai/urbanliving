@@ -14,14 +14,14 @@ import {
   FiInfo, FiLock, FiZap, FiWind, FiCompass
 } from 'react-icons/fi';
 import { BiBed, BiBath, BiArea } from 'react-icons/bi';
-import { 
-  CheckCircle, 
-  XCircle, 
-  UploadCloud, 
-  Loader, 
-  ChevronLeft, 
+import {
+  CheckCircle,
+  XCircle,
+  UploadCloud,
+  Loader,
+  ChevronLeft,
   ChevronRight,
-  Car, 
+  Car,
   Building,
   CreditCard,
   ParkingCircle,
@@ -30,13 +30,51 @@ import {
   Landmark,
   ShoppingBasket,
   HeartPulse,
-  Lightbulb, 
-  Clock, 
-  Train, 
+  Lightbulb,
+  Clock,
+  Train,
   ShoppingBag,
   Dumbbell,
   Pill,
-  MapPin as MapPinIcon
+  MapPin as MapPinIcon,
+  Camera,
+  Wifi,
+  Snowflake,
+  Droplets,
+  BatteryCharging,
+  Waves,
+  BookOpen,
+  Flame,
+  Bell,
+  DoorOpen,
+  Fingerprint,
+  Tv,
+  Lock,
+  Sun,
+  Trash2,
+  Archive,
+  Shirt,
+  Cpu,
+  Shield,
+  ArrowUpDown,
+  PhoneCall,
+  Home,
+  Sofa,
+  TreePine,
+  Zap,
+  Wind,
+  Bike,
+  AirVent,
+  Cigarette,
+  PawPrint,
+  PartyPopper,
+  Wine,
+  Users,
+  Heart,
+  Moon,
+  User,
+  Utensils,
+  UserCheck
 } from 'lucide-react';
 import { MdCurrencyRupee, MdOutlineCurrencyRupee } from 'react-icons/md';
 import { Helmet } from 'react-helmet';
@@ -46,6 +84,98 @@ import Cookies from 'js-cookie';
 import { format } from 'date-fns';
 import './PropertyDetailPage.css';
 import { AuthContext } from '../Login/AuthContext';
+
+// ─── AMENITY ICONS MAP ────────────────────────────────────────────────────────
+const AMENITY_ICONS = {
+  // Safety & Security
+  'CCTV': Camera,
+  'Security Guard': Shield,
+  'Fire Extinguisher': Flame,
+  'Intercom': PhoneCall,
+  'Biometric Entry': Fingerprint,
+  'Gated Community': Shield,
+  'Fire Alarm': Bell,
+  'Sprinklers': Droplets,
+  'Sprinkler': Droplets,
+  'Smoke Detectors': Bell,
+  'Emergency Exit': DoorOpen,
+  'Electronic Entry Lock': Lock,
+  'Electronic Bedroom Lock': Lock,
+  // Modern Living
+  'Lift': ArrowUpDown,
+  'Power Backup': BatteryCharging,
+  'Wi-Fi': Wifi,
+  'Swimming Pool': Waves,
+  'Gym': Dumbbell,
+  'Clubhouse': Building,
+  'Modular Kitchen': UtensilsCrossed,
+  'Chimney': AirVent,
+  'Central AC': Snowflake,
+  'Smart Home Tech': Cpu,
+  'EV Charging Point': Zap,
+  'Vending Machine': ShoppingBag,
+  // Basic Utilities
+  'Water Supply 24/7': Droplets,
+  'Borewell': Droplets,
+  'Corporation Water': Droplets,
+  'Gas Pipeline': Flame,
+  'Solar Water': Sun,
+  'Reserved Parking': ParkingCircle,
+  'Visitor Parking': ParkingCircle,
+  'STP Plant': Trash2,
+  'Waste Management': Trash2,
+  // Indoor Features
+  'Air Conditioner': Snowflake,
+  'Geyser': Droplets,
+  'RO Water': Droplets,
+  'Washing Machine': Wind,
+  'Refrigerator': Archive,
+  'Inverter': BatteryCharging,
+  'Wardrobe': Archive,
+  'Study Table': BookOpen,
+  'Smart TV': Tv,
+  'Google TV': Tv,
+  'Gas Stove': Flame,
+  'Dishwasher': Droplets,
+  'Microwave': Cpu,
+  'Iron & Board': Shirt,
+  // Bathroom
+  'Bath Towels': Shirt,
+  'Soap & Shampoo': Droplets,
+  // Other
+  'Balcony': Home,
+  'Garden': TreePine,
+  'Terrace': Home,
+  'Sofa': Sofa,
+  'Bicycle': Bike,
+};
+
+const getAmenityIcon = (name) => {
+  const Icon = AMENITY_ICONS[name];
+  return Icon
+    ? <Icon size={16} style={{ color: '#c98b3e', flexShrink: 0 }} />
+    : <Lightbulb size={16} style={{ color: '#c98b3e', flexShrink: 0 }} />;
+};
+
+const RULE_ICON_MAP = {
+  'Smoking':         Cigarette,
+  'Pets':            PawPrint,
+  'Events':          PartyPopper,
+  'Alcohol':         Wine,
+  'Family':          Users,
+  'Couples':         Heart,
+  'Late Entry':      Moon,
+  'Visitors/Friends': Users,
+  'Food':            Utensils,
+  'Preferred Tenants': UserCheck,
+  'Bachelor':        User,
+  'Unmarried Couples': Heart,
+};
+
+const getRuleIcon = (label, isAllowed) => {
+  const Icon = RULE_ICON_MAP[label] || Shield;
+  return <Icon size={17} style={{ color: isAllowed ? '#16a34a' : '#dc2626', flexShrink: 0 }} />;
+};
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
@@ -1946,6 +2076,7 @@ const PropertyDetailPage = () => {
     if (typeof raw === 'string') { try { return JSON.parse(raw); } catch { return {}; } }
     return raw;
   })();
+  const pgHouseRules = Array.isArray(property?.meta?.houseRules) ? property.meta.houseRules : [];
   const preferredTenants = (() => {
     const parseAny = (raw) => {
       if (!raw) return null;
@@ -3595,7 +3726,7 @@ const PropertyDetailPage = () => {
                 <div className="pdp-checklist">
                   {Object.values(groupedAmenities).flat().map((am, i) => (
                     <div key={i} className="pdp-checklist-item">
-                      <FiCheck className="pdp-check-icon" />
+                      {getAmenityIcon(am)}
                       <span>{am}</span>
                     </div>
                   ))}
@@ -3612,12 +3743,26 @@ const PropertyDetailPage = () => {
             <div className="text-section" style={{ marginBottom: 0 }}>
               <h3>House rules &amp; policies</h3>
               <div className="pdp-rules-grid2">
-                <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{(property.smoking_allowed || property.smokingAllowed || property.meta?.smokingAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Smoking</span><span className="pdp-rule-val2">{(property.smoking_allowed || property.smokingAllowed || property.meta?.smokingAllowed) ? 'Allowed' : 'Not allowed'}</span></div></div>
-                <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{(property.pets_allowed || property.petsAllowed || property.meta?.petsAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Pets</span><span className="pdp-rule-val2">{(property.pets_allowed || property.petsAllowed || property.meta?.petsAllowed) ? 'Allowed' : 'Not allowed'}</span></div></div>
-                <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{(property.events_allowed || property.eventsAllowed || property.meta?.eventsAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Events</span><span className="pdp-rule-val2">{(property.events_allowed || property.eventsAllowed || property.meta?.eventsAllowed) ? 'Allowed' : 'Not allowed'}</span></div></div>
-                <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{(property.drinking_alcohol || property.drinking_allowed || property.drinkingAllowed || property.meta?.drinkingAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Alcohol</span><span className="pdp-rule-val2">{(property.drinking_alcohol || property.drinking_allowed || property.drinkingAllowed || property.meta?.drinkingAllowed) ? 'Allowed' : 'Not allowed'}</span></div></div>
-                {!isPG && <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{guestPolicy.family_allowed ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Family</span><span className="pdp-rule-val2">{guestPolicy.family_allowed ? 'Allowed' : 'Not allowed'}</span></div></div>}
-                <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{guestPolicy.unmarried_couple_allowed ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Couples</span><span className="pdp-rule-val2">{guestPolicy.unmarried_couple_allowed ? 'Allowed' : 'Not allowed'}</span></div></div>
+                {(() => { const v = !!(property.smoking_allowed || property.smokingAllowed || property.meta?.smokingAllowed || pgHouseRules.includes('Smoking Allowed')); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Smoking', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Smoking</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
+                {(() => { const v = !!(property.pets_allowed || property.petsAllowed || property.meta?.petsAllowed || pgHouseRules.includes('Pets Allowed')); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Pets', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Pets</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
+                {(() => { const v = !!(property.events_allowed || property.eventsAllowed || property.meta?.eventsAllowed || pgHouseRules.includes('Events Allowed')); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Events', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Events</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
+                {(() => { const v = !!(property.drinking_alcohol || property.drinking_allowed || property.drinkingAllowed || property.meta?.drinkingAllowed || pgHouseRules.includes('Drinking Allowed')); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Alcohol', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Alcohol</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
+                {!isPG && (() => { const v = !!guestPolicy.family_allowed; return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Family', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Family</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
+                {(() => { const v = !!(guestPolicy.unmarried_couple_allowed || pgHouseRules.includes('Couple Friendly') || pgHouseRules.includes('Girlfriend/Boyfriend Entry Allowed')); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Couples', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Couples</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
+                {(() => { const v = pgHouseRules.includes('Late Entry Allowed'); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Late Entry', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Late Entry</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
+                {(() => { const v = pgHouseRules.includes('Friends Allowed'); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Visitors/Friends', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Visitors/Friends</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
+                {(pgHouseRules.includes('Veg Only') || pgHouseRules.includes('Non-Veg Allowed')) && (
+                  <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Food', true)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Food</span><span className="pdp-rule-val2">{pgHouseRules.includes('Veg Only') ? 'Veg Only' : 'Non-Veg Allowed'}</span></div></div>
+                )}
+                {preferredTenants.filter(t => t !== 'No Preference').map((t, i) => (
+                  <div key={i} className="pdp-rule-card2">
+                    <div className="pdp-rule-icon2">{getRuleIcon('Preferred Tenants', true)}</div>
+                    <div className="pdp-rule-info2">
+                      <span className="pdp-rule-lbl2">Preferred Tenants</span>
+                      <span className="pdp-rule-val2">{t}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
               {((property.cancellation_policy && property.cancellation_policy !== 'undefined') || guestPolicy.cancellationPolicy) && (
                 <div style={{ marginTop: '10px', padding: '8px 12px', background: '#fffbf5', borderRadius: '8px', border: '1px solid #ddd0c0', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -3627,7 +3772,8 @@ const PropertyDetailPage = () => {
               )}
             </div>
 
-            {/* Right: Local Guide */}
+            {/* Local Guide */}
+            <div className="divider"></div>
             <div className="text-section" style={{ marginBottom: 0 }}>
               {(() => {
                 let gb = property?.guidebook;
@@ -4090,12 +4236,17 @@ const PropertyDetailPage = () => {
         <div className="amenities-rules-col">
           <h3>House Rules & Policies</h3>
           <div className="rules-grid">
-            <div className="amenity-card rule-card"><div className="rule-icon">{(property.smoking_allowed || property.smokingAllowed || property.meta?.smokingAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Smoking</span><strong>{(property.smoking_allowed || property.smokingAllowed || property.meta?.smokingAllowed) ? 'Allowed' : 'Not allowed'}</strong></div></div>
-            <div className="amenity-card rule-card"><div className="rule-icon">{(property.pets_allowed || property.petsAllowed || property.meta?.petsAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Pets</span><strong>{(property.pets_allowed || property.petsAllowed || property.meta?.petsAllowed) ? 'Allowed' : 'Not allowed'}</strong></div></div>
-            <div className="amenity-card rule-card"><div className="rule-icon">{(property.events_allowed || property.eventsAllowed || property.meta?.eventsAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Events</span><strong>{(property.events_allowed || property.eventsAllowed || property.meta?.eventsAllowed) ? 'Allowed' : 'Not allowed'}</strong></div></div>
-            <div className="amenity-card rule-card"><div className="rule-icon">{(property.drinking_alcohol || property.drinking_allowed || property.drinkingAllowed || property.meta?.drinkingAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Alcohol</span><strong>{(property.drinking_alcohol || property.drinking_allowed || property.drinkingAllowed || property.meta?.drinkingAllowed) ? 'Allowed' : 'Not allowed'}</strong></div></div>
+            <div className="amenity-card rule-card"><div className="rule-icon">{(property.smoking_allowed || property.smokingAllowed || property.meta?.smokingAllowed || pgHouseRules.includes('Smoking Allowed')) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Smoking</span><strong>{(property.smoking_allowed || property.smokingAllowed || property.meta?.smokingAllowed || pgHouseRules.includes('Smoking Allowed')) ? 'Allowed' : 'Not allowed'}</strong></div></div>
+            <div className="amenity-card rule-card"><div className="rule-icon">{(property.pets_allowed || property.petsAllowed || property.meta?.petsAllowed || pgHouseRules.includes('Pets Allowed')) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Pets</span><strong>{(property.pets_allowed || property.petsAllowed || property.meta?.petsAllowed || pgHouseRules.includes('Pets Allowed')) ? 'Allowed' : 'Not allowed'}</strong></div></div>
+            <div className="amenity-card rule-card"><div className="rule-icon">{(property.events_allowed || property.eventsAllowed || property.meta?.eventsAllowed || pgHouseRules.includes('Events Allowed')) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Events</span><strong>{(property.events_allowed || property.eventsAllowed || property.meta?.eventsAllowed || pgHouseRules.includes('Events Allowed')) ? 'Allowed' : 'Not allowed'}</strong></div></div>
+            <div className="amenity-card rule-card"><div className="rule-icon">{(property.drinking_alcohol || property.drinking_allowed || property.drinkingAllowed || property.meta?.drinkingAllowed || pgHouseRules.includes('Drinking Allowed')) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Alcohol</span><strong>{(property.drinking_alcohol || property.drinking_allowed || property.drinkingAllowed || property.meta?.drinkingAllowed || pgHouseRules.includes('Drinking Allowed')) ? 'Allowed' : 'Not allowed'}</strong></div></div>
             {!isPG && <div className="amenity-card rule-card"><div className="rule-icon">{guestPolicy.family_allowed ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Family</span><strong>{guestPolicy.family_allowed ? 'Allowed' : 'Not allowed'}</strong></div></div>}
-            <div className="amenity-card rule-card"><div className="rule-icon">{guestPolicy.unmarried_couple_allowed ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Unmarried Couples</span><strong>{guestPolicy.unmarried_couple_allowed ? 'Allowed' : 'Not allowed'}</strong></div></div>
+            <div className="amenity-card rule-card"><div className="rule-icon">{(guestPolicy.unmarried_couple_allowed || pgHouseRules.includes('Couple Friendly') || pgHouseRules.includes('Girlfriend/Boyfriend Entry Allowed')) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Couples</span><strong>{(guestPolicy.unmarried_couple_allowed || pgHouseRules.includes('Couple Friendly') || pgHouseRules.includes('Girlfriend/Boyfriend Entry Allowed')) ? 'Allowed' : 'Not allowed'}</strong></div></div>
+            <div className="amenity-card rule-card"><div className="rule-icon">{pgHouseRules.includes('Late Entry Allowed') ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Late Entry</span><strong>{pgHouseRules.includes('Late Entry Allowed') ? 'Allowed' : 'Not allowed'}</strong></div></div>
+            <div className="amenity-card rule-card"><div className="rule-icon">{pgHouseRules.includes('Friends Allowed') ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Visitors/Friends</span><strong>{pgHouseRules.includes('Friends Allowed') ? 'Allowed' : 'Not allowed'}</strong></div></div>
+            {(pgHouseRules.includes('Veg Only') || pgHouseRules.includes('Non-Veg Allowed')) && (
+              <div className="amenity-card rule-card"><div className="rule-icon"><FiCheck className="text-green" /></div><div className="rule-info"><span className="rule-label">Food</span><strong>{pgHouseRules.includes('Veg Only') ? 'Veg Only' : 'Non-Veg Allowed'}</strong></div></div>
+            )}
             {isPG && !preferredTenants.some(t => t.includes('Bachelors (Female') || t.includes('Bachelors (Male')) && (guestPolicy.bachelors_allowed != null || guestPolicy.Bechelors != null || property.meta?.bachelorAllowed != null) && (
               <div className="amenity-card rule-card"><div className="rule-icon">{(guestPolicy.bachelors_allowed || guestPolicy.Bechelors || property.meta?.bachelorAllowed) ? <FiCheck className="text-green" /> : <FiXCircle className="text-red" />}</div><div className="rule-info"><span className="rule-label">Bachelor</span><strong>{(guestPolicy.bachelors_allowed || guestPolicy.Bechelors || property.meta?.bachelorAllowed) ? 'Bachelors (Any)' : 'Not allowed'}</strong></div></div>
             )}
