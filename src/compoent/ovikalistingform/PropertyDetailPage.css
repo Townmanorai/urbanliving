@@ -1351,14 +1351,14 @@ table {
 .gbSubTitle { margin: 0; font-size: 0.8rem; color: #6b7280; }
 
 .gbGrid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
   width: 100%;
 }
 
-/* wide cards (tables / tip lists) span 2 columns */
-.gbCardWide { grid-column: span 2; }
+/* all cards full width */
+.gbCardWide { width: 100%; }
 
 .gbCard {
   background: #fff;
@@ -1393,37 +1393,37 @@ table {
 .gbCardTitle { font-size: 0.78rem; font-weight: 600; color: #111827; margin: 0; }
 .gbCardMeta { font-size: 0.65rem; color: #9ca3af; font-weight: 500; margin: 0.05rem 0 0; }
 
-/* rows inside object-type cards — flex-wrap horizontal */
+/* rows inside object-type cards — stacked vertical */
 .gbRows {
-  padding: 0.4rem 0.65rem;
+  padding: 0.2rem 0.65rem 0.5rem;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
+  flex-direction: column;
+  gap: 0;
 }
 
 .gbRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.4rem;
-  padding: 0.28rem 0.5rem;
-  border-radius: 5px;
-  background: #fff;
-  flex: 1 0 auto;
-  min-width: 110px;
+  gap: 0.5rem;
+  padding: 0.38rem 0;
+  border-bottom: 1px solid #f1f5f9;
+  width: 100%;
 }
+.gbRow:last-child { border-bottom: none; }
 
-.gbRowLeft { display: flex; align-items: center; gap: 0.3rem; flex: 1; min-width: 0; }
-.gbRowLabel { font-weight: 500; color: #374151; font-size: 0.7rem; white-space: nowrap; }
-.gbRowValue { font-weight: 500; color: #111827; font-size: 0.7rem; text-align: right; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gbRowLeft { display: flex; align-items: center; gap: 0.3rem; flex-shrink: 0; }
+.gbRowLabel { font-weight: 600; color: #374151; font-size: 0.72rem; white-space: nowrap; }
+.gbRowValue { font-weight: 500; color: #4b5563; font-size: 0.72rem; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 65%; }
 
-.gbTableWrap { width: 100%; overflow-x: auto; padding: 0.4rem 0.65rem; }
+.gbTableWrap { width: 100%; padding: 0.2rem 0.65rem 0.5rem; }
 
-.gbTable { width: 100%; border-collapse: collapse; min-width: 200px; }
-.gbTable thead th { padding: 0.3rem 0.5rem; font-size: 0.65rem; font-weight: 600; color: #6b7280; border-bottom: 1.5px solid #e5e7eb; background: #f9fafb; text-align: left; }
-.gbTable tbody td { padding: 0.35rem 0.5rem; border-bottom: 1px solid #f3f4f6; color: #4b5563; font-size: 0.72rem; }
-.gbTdName { font-weight: 600; color: #111827; }
-.gbThRight, .gbTdRight { text-align: right !important; white-space: nowrap; }
+.gbTable { width: 100%; border-collapse: collapse; }
+.gbTable thead th { padding: 0.3rem 0; font-size: 0.65rem; font-weight: 600; color: #6b7280; border-bottom: 1.5px solid #e5e7eb; text-align: left; }
+.gbTable tbody td { padding: 0.38rem 0; border-bottom: 1px solid #f1f5f9; color: #4b5563; font-size: 0.72rem; }
+.gbTable tbody tr:last-child td { border-bottom: none; }
+.gbTdName { font-weight: 600; color: #374151; width: 35%; }
+.gbThRight, .gbTdRight { text-align: right !important; white-space: nowrap; color: #4b5563; }
 
 .gbList { padding: 0.4rem 0.65rem; display: grid; gap: 0.3rem; }
 .gbListItem { border: 1px solid #e5e7eb; border-radius: 6px; padding: 0.4rem 0.65rem; background: #fff; }
@@ -2424,11 +2424,11 @@ table {
   }
 
   .gbGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex-direction: column;
   }
 
   .gbCardWide {
-    grid-column: span 2;
+    width: 100%;
   }
 }
 
@@ -2612,12 +2612,12 @@ table {
   }
 
   .gbGrid {
-    grid-template-columns: 1fr 1fr;
+    flex-direction: column;
     gap: 0.5rem;
   }
 
   .gbCardWide {
-    grid-column: 1 / -1;
+    width: 100%;
   }
 
   .gbCard {
