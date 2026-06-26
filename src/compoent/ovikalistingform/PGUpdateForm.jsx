@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useContext } from "react";
+import { Helmet } from 'react-helmet';
 import "./pg-listing-form.css";
 import { AuthContext } from "../Login/AuthContext";
 import { useStepBackNav } from "../../utils/useStepBackNav";
@@ -687,6 +688,11 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
 
   return (
     <div className="tmx9pf-root">
+      <Helmet>
+        <title>Update Your Property Listing | OvikaLiving</title>
+        <meta name="description" content="Update your PG or property listing details on OvikaLiving. Edit photos, pricing, amenities and rules." />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="rental-form-container">
         <div className="form-header-premium">
           <div className="header-content">

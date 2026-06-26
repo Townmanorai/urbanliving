@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { AuthContext } from "../../Login/AuthContext";
 import axios from "axios";
 import "./OwnerLeads.css";
@@ -288,6 +289,10 @@ export default function OwnerLeads() {
 
   return (
     <div className="ol-wrapper">
+      <Helmet>
+        <title>My Leads | OvikaLiving Dashboard</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
 
       {/* ── Header ── */}
       <div className="ol-header">

@@ -75,14 +75,29 @@ const CategorySelectPage = () => {
       <Helmet>
         <title>List Your Property — Choose Category | OvikaLiving</title>
         <meta name="description" content="List your property on OvikaLiving. Choose from Signature Stays, Hotel Stays, Homestays, Apartments & Villas, or PG & Co-Living. Start listing in minutes — no brokerage." />
+        <meta name="keywords" content="list property OvikaLiving, property type selection, list PG Noida, list hotel Noida, list apartment Noida, list homestay, signature stay listing, co-living listing, property category OvikaLiving" />
+        <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://www.ovikaliving.com/list-category" />
+        <meta name="author" content="OvikaLiving" />
+        <meta name="language" content="en" />
+        <meta name="geo.region" content="IN-UP" />
+        <meta name="geo.placename" content="Noida" />
+        <meta name="geo.position" content="28.5355;77.3910" />
+        <meta name="ICBM" content="28.5355, 77.3910" />
+        <meta property="og:type" content="website" />
         <meta property="og:title" content="List Your Property — Choose Category | OvikaLiving" />
         <meta property="og:description" content="List your property on OvikaLiving. 5 categories — nightly stays, apartments, PG & co-living. Start listing in minutes." />
         <meta property="og:url" content="https://www.ovikaliving.com/list-category" />
+        <meta property="og:site_name" content="OvikaLiving" />
         <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:locale" content="en_IN" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@OvikaLiving" />
         <meta name="twitter:title" content="List Your Property — Choose Category | OvikaLiving" />
         <meta name="twitter:description" content="List your property on OvikaLiving. 5 categories — nightly stays, apartments, PG & co-living." />
-        <meta name="robots" content="index, follow" />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
       </Helmet>
 
       <div className="csp-header">

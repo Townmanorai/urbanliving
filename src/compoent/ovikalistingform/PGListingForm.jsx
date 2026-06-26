@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
+import { Helmet } from 'react-helmet';
 import { useSearchParams } from "react-router-dom";
 import "./pg-listing-form.css";
 import { AuthContext } from "../Login/AuthContext";
@@ -736,6 +737,11 @@ const PGListingForm = () => {
 
   return (
     <div className="tmx9pf-root">
+      <Helmet>
+        <title>List Your PG / Property | OvikaLiving</title>
+        <meta name="description" content="Complete your property listing on OvikaLiving. Add details, photos, pricing and amenities to attract tenants in Noida & Greater Noida." />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="rental-form-container">
         <div className="form-header-premium">
           <div className="header-content">

@@ -63,8 +63,31 @@ const SignatureContactPage = () => {
   return (
     <>
       <Helmet>
-        <title>List on Signature Stays — Contact Us | OvikaLiving</title>
-        <meta name="description" content="Want to list your luxury villa or premium suite on OvikaLiving? Contact our Signature Stays team." />
+        <title>List on Signature Stays — Premium Property Listing | OvikaLiving</title>
+        <meta name="description" content="List your luxury villa, premium suite or high-end property on OvikaLiving Signature Stays. Get premium placement, dedicated listing manager & priority onboarding. Contact our Signature Stays team today." />
+        <meta name="keywords" content="signature stay listing, list luxury villa Noida, premium property listing OvikaLiving, luxury rental Noida, high-end stay listing, OvikaLiving signature, list villa Delhi NCR, premium suite listing" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.ovikaliving.com/signature-listing" />
+        <meta name="author" content="OvikaLiving" />
+        <meta name="language" content="en" />
+        <meta name="geo.region" content="IN-UP" />
+        <meta name="geo.placename" content="Noida" />
+        <meta name="geo.position" content="28.5355;77.3910" />
+        <meta name="ICBM" content="28.5355, 77.3910" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="List on Signature Stays — Premium Property | OvikaLiving" />
+        <meta property="og:description" content="List your luxury villa or premium property on OvikaLiving Signature Stays. Premium placement, dedicated support & priority onboarding." />
+        <meta property="og:url" content="https://www.ovikaliving.com/signature-listing" />
+        <meta property="og:site_name" content="OvikaLiving" />
+        <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:locale" content="en_IN" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@OvikaLiving" />
+        <meta name="twitter:title" content="List on Signature Stays | OvikaLiving" />
+        <meta name="twitter:description" content="List your luxury villa or premium property on OvikaLiving Signature Stays. Premium placement & dedicated support." />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
       </Helmet>
 
       <style>{`

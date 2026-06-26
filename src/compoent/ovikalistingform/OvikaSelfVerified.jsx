@@ -60,16 +60,31 @@ export default function OvikaSelfVerified({ onOpenForm }) {
   return (
     <div className="svp-root">
       <Helmet>
-        <title>Property Self-Verification | List Your Property on OvikaLiving</title>
-        <meta name="description" content="Get your property Property Self-Verified on OvikaLiving. Display the Property Self-Verified badge on your listing and attract more tenants in Noida & Greater Noida. Start your property self-verification today." />
-        <meta name="keywords" content="property self verification noida, list property noida, ovika self verified, verified listing noida, pg listing noida, co living listing noida, property verification badge noida, list your pg noida, ovikaliving property self verified, property owner noida" />
+        <title>Self-Verify Your Property | Get OvikaLiving Self-Verified Badge | OvikaLiving</title>
+        <meta name="description" content="Self-verify your PG, flat or co-living space on OvikaLiving in minutes. Earn the OvikaLiving Self-Verified badge, rank higher in search results and attract more tenants in Noida & Greater Noida. No physical inspection needed." />
+        <meta name="keywords" content="property self verification Noida, ovika self verified, self verify PG Noida, verified listing Noida, self verify flat Noida, co-living self verification, property verification badge Noida, list PG OvikaLiving, property owner Noida, tenant attraction Noida" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://www.ovikaliving.com/ovika-self-verified" />
-        <meta property="og:title" content="Property Self-Verification | OvikaLiving" />
-        <meta property="og:description" content="Get your property Self-Verified on OvikaLiving. Display the badge & attract more tenants in Noida." />
+        <meta name="author" content="OvikaLiving" />
+        <meta name="language" content="en" />
+        <meta name="geo.region" content="IN-UP" />
+        <meta name="geo.placename" content="Noida" />
+        <meta name="geo.position" content="28.5355;77.3910" />
+        <meta name="ICBM" content="28.5355, 77.3910" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Self-Verify Your Property | OvikaLiving Self-Verified Badge" />
+        <meta property="og:description" content="Get your PG or flat Self-Verified on OvikaLiving. Display the badge, rank higher & attract more genuine tenants in Noida & Greater Noida." />
         <meta property="og:url" content="https://www.ovikaliving.com/ovika-self-verified" />
+        <meta property="og:site_name" content="OvikaLiving" />
+        <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:locale" content="en_IN" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Property Self-Verification | OvikaLiving" />
+        <meta name="twitter:site" content="@OvikaLiving" />
+        <meta name="twitter:title" content="Self-Verify Your Property | OvikaLiving" />
+        <meta name="twitter:description" content="Get the OvikaLiving Self-Verified badge for your PG or flat in Noida. Rank higher, attract more tenants. No inspection needed." />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
       </Helmet>
 
       {/* ══════════════════════════════════════════════

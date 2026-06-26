@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
 import axios from "axios";
+import { Helmet } from "react-helmet";
 import { AuthContext } from "../Login/AuthContext";
 import "./CalendarBlocking.css";
 
@@ -443,6 +444,10 @@ export default function CalendarBlocking() {
 
   return (
     <div className="cb-page">
+      <Helmet>
+        <title>Calendar Blocking | OvikaLiving Dashboard</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       {/* Hero */}
       <section className="cb-hero">
         <img className="cb-hero-bg" src="/Group 89.png" alt="" />

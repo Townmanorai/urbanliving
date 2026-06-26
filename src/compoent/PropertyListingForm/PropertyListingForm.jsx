@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import './PropertyListingForm.css';
 
 const PropertyListingForm = () => {
@@ -860,6 +861,10 @@ const PropertyListingForm = () => {
 
     return (
         <div className="property-listing-container">
+            <Helmet>
+              <title>List Your PG Property | OvikaLiving</title>
+              <meta name="robots" content="noindex, nofollow" />
+            </Helmet>
             <div className="form-header">
                 <h1>List Your PG Property</h1>
                 <p>Reach thousands of potential tenants with our platform</p>

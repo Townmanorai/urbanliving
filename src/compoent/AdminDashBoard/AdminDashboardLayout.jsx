@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { FaBars } from "react-icons/fa";
 import Sidebar from "./Sidebar/Sidebar";
 import "./AdminDashboardLayout.css";
@@ -16,6 +17,10 @@ const AdminDashboardLayout = () => {
 
   return (
     <div className="admin-dashboard-layout">
+      <Helmet>
+        <title>Dashboard | OvikaLiving</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
 
       {/* Mobile Topbar */}
       <div className="mobile-topbar">

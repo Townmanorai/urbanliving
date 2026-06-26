@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Helmet } from 'react-helmet';
 import './SuperAdmin.css';
 import ImageClassificationModal from './ImageClassificationModal';
 import { Line, Doughnut } from 'react-chartjs-2';
@@ -1136,6 +1137,10 @@ export default function SuperAdminDashboard() {
 
   return (
     <div className="sa-container">
+      <Helmet>
+        <title>Admin Control Panel | OvikaLiving</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       {/* Sidebar */}
       <aside className="sa-sidebar">
         <div>

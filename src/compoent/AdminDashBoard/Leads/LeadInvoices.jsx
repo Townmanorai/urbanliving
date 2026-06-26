@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Helmet } from "react-helmet";
 import "./LeadInvoices.css";
 
 /* ── jsPDF loader ── */
@@ -180,6 +181,10 @@ export default function LeadInvoices() {
 
   return (
     <div className="li-wrapper">
+      <Helmet>
+        <title>Lead Invoices | OvikaLiving Dashboard</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       {/* ── Header ── */}
       <div className="li-header">
         <div className="li-header-left">

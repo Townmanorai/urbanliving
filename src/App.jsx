@@ -57,6 +57,7 @@ import { HomePageNewMain } from "./compoent/HomePageNew2/HomePageNewMain";
 import LegalInformation from "./compoent/LegalInformation/LegalInformation";
 import ROICalculator from "./compoent/ROICalculator/ROICalculator";
 import CalendarBlocking from "./compoent/CalendarBlocking/CalendarBlocking";
+import SeoManager from "./compoent/SEO/SeoManager";
 import BankDetails from "./compoent/AccountDetails/BankDetails";
 import OwnerLeads from "./compoent/AdminDashBoard/Leads/OwnerLeads";
 import LeadInvoices from "./compoent/AdminDashBoard/Leads/LeadInvoices";
@@ -145,6 +146,7 @@ function App() {
       <Router>
         <ScrollRestoration />
         <AnalyticsTracker />
+        <SeoManager />
         <Navbar />
         <div className="app-routes-wrapper">
         <Routes>

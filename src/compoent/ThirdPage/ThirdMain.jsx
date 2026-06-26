@@ -176,17 +176,27 @@ function ThirdMain() {
         <meta name="description" content={seoDescription} />
         <meta name="keywords" content={seoKeywords} />
         <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={`https://www.ovikaliving.com/tmluxespecific/${id}`} />
+        <meta name="author" content="OvikaLiving" />
+        <meta name="language" content="en" />
+        <meta name="geo.region" content="IN-UP" />
+        <meta name="geo.placename" content="Noida" />
+        <meta name="geo.position" content="28.5355;77.3910" />
+        <meta name="ICBM" content="28.5355, 77.3910" />
         <meta property="og:type" content="website" />
         <meta property="og:title" content={`${name} | Premium Co-Living in Noida`} />
         <meta property="og:description" content={seoDescription} />
-        <meta property="og:image" content={images[0] || '/ovikalivinglogonew.png'} />
-        <meta property="og:url" content={window.location.href} />
-        <meta property="og:site_name" content="Town Manor" />
+        <meta property="og:url" content={`https://www.ovikaliving.com/tmluxespecific/${id}`} />
+        <meta property="og:site_name" content="OvikaLiving" />
+        <meta property="og:image" content={images[0] || 'https://www.ovikaliving.com/ovikalivinglogonew.png'} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:locale" content="en_IN" />
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@OvikaLiving" />
         <meta name="twitter:title" content={`${name} | Premium Co-Living in Noida`} />
         <meta name="twitter:description" content={seoDescription} />
-        <meta name="twitter:image" content={images[0] || '/default-twitter-image.jpg'} />
-        <link rel="canonical" href={`https://www.townmanor.ai/property/${id}`} />
+        <meta name="twitter:image" content={images[0] || 'https://www.ovikaliving.com/ovikalivinglogonew.png'} />
       </Helmet>
 
       <TranquilPerch

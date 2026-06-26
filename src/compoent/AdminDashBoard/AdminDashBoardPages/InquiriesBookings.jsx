@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState, useContext, useCallback } from "react";
 import axios from "axios";
+import { Helmet } from "react-helmet";
 import { Loader, Calendar, MapPin, User, Inbox } from "lucide-react";
 import { AuthContext } from "../../Login/AuthContext";
 
@@ -162,6 +163,10 @@ const InquiriesBookings = () => {
 
   return (
     <div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
+      <Helmet>
+        <title>My Enquiries | OvikaLiving Dashboard</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <h1 style={{ fontSize: "28px", fontWeight: 700, marginBottom: "24px", color: "#111827" }}>
         My Property Enquiries
       </h1>

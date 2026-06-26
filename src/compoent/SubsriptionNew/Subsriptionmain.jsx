@@ -14,16 +14,31 @@ export const Subsriptionmain = () => {
       fontFamily: "'Poppins', sans-serif"
     }}>
       <Helmet>
-        <title>Buy Leads | OvikaLiving – Get Tenant Enquiries for Your Property</title>
-        <meta name="description" content="Buy verified tenant leads for your property in Noida & Greater Noida. Get direct enquiries from genuine tenants looking for PG, flats, villas and more." />
-        <meta name="keywords" content="buy tenant leads noida, property owner leads, ovikaliving leads, tenant enquiries noida, rental property leads, pg flat villa leads noida" />
+        <title>Buy Tenant Leads | Get Verified Enquiries for Your Property | OvikaLiving</title>
+        <meta name="description" content="Buy verified tenant leads for your PG, flat, villa or co-living space in Noida & Greater Noida. Get direct enquiries from genuine tenants actively looking for accommodation. Pay per lead — no subscription needed." />
+        <meta name="keywords" content="buy tenant leads Noida, property owner leads, OvikaLiving leads, tenant enquiries Noida, rental property leads, PG leads Noida, flat leads Greater Noida, verified tenant leads, lead purchase OvikaLiving" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://www.ovikaliving.com/buy-leads" />
-        <meta property="og:title" content="Buy Leads | OvikaLiving – Tenant Enquiries for Property Owners" />
-        <meta property="og:description" content="Get direct tenant leads for your property. Choose a plan and start receiving verified enquiries today." />
+        <meta name="author" content="OvikaLiving" />
+        <meta name="language" content="en" />
+        <meta name="geo.region" content="IN-UP" />
+        <meta name="geo.placename" content="Noida" />
+        <meta name="geo.position" content="28.5355;77.3910" />
+        <meta name="ICBM" content="28.5355, 77.3910" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Buy Tenant Leads | Verified Enquiries for Property Owners | OvikaLiving" />
+        <meta property="og:description" content="Get direct, verified tenant leads for your PG or flat in Noida. Pay per lead. Start connecting with genuine tenants today on OvikaLiving." />
         <meta property="og:url" content="https://www.ovikaliving.com/buy-leads" />
+        <meta property="og:site_name" content="OvikaLiving" />
+        <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:locale" content="en_IN" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Buy Leads | OvikaLiving" />
+        <meta name="twitter:site" content="@OvikaLiving" />
+        <meta name="twitter:title" content="Buy Tenant Leads | OvikaLiving" />
+        <meta name="twitter:description" content="Get verified tenant leads for your property in Noida. Pay per lead. No subscription." />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
       </Helmet>
 
       {/* ── Hero ── */}

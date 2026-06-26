@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useContext, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import styles from "./Dashboard.module.css";
 import { AuthContext } from "../../Login/AuthContext";
 import { Home, Plus, Loader, Moon, Calendar, Building } from "lucide-react";
@@ -1176,6 +1177,10 @@ export default function DashBoardAdmin() {
 
   return (
     <div className={styles.page}>
+      <Helmet>
+        <title>Owner Dashboard | OvikaLiving</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className={styles.topbar}></div>
       <section style={{ marginTop: "-3px" }} className={styles.hero}>
         <img className={styles.heroBg} src="/Group 89.png" alt="hero background" />

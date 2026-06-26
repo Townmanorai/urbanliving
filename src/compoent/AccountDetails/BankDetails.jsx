@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { Helmet } from 'react-helmet';
 import { AuthContext } from '../Login/AuthContext';
 import './BankDetails.css';
 
@@ -459,6 +460,10 @@ export default function BankDetails({ standalone = false }) {
 
   return (
     <div className="bd-wrapper" style={wrapperStyle}>
+      <Helmet>
+        <title>Bank Details | OvikaLiving Dashboard</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="bd-section-heading">{heading}</div>
       <p className="bd-section-sub">{subText}</p>
 

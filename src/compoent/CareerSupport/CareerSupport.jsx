@@ -132,15 +132,29 @@ export default function CareerSupport() {
       <Helmet>
         <title>Careers at OvikaLiving — Join Our Team | Townmanor Technologies</title>
         <meta name="description" content="Explore career opportunities at OvikaLiving by Townmanor Technologies. Join our team of innovators building India's smartest rental and co-living platform. Apply for tech, sales, operations & more roles." />
+        <meta name="keywords" content="ovikaliving careers, jobs at ovikaliving, townmanor technologies careers, proptech jobs noida, software intern noida, marketing intern noida, real estate tech jobs, co-living platform jobs, startup jobs noida, apply ovikaliving, rental platform careers india" />
+        <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://www.ovikaliving.com/career-support" />
+        <meta name="author" content="OvikaLiving" />
+        <meta name="language" content="en" />
+        <meta name="geo.region" content="IN-UP" />
+        <meta name="geo.placename" content="Noida" />
+        <meta name="geo.position" content="28.5355;77.3910" />
+        <meta name="ICBM" content="28.5355, 77.3910" />
+        <meta property="og:type" content="website" />
         <meta property="og:title" content="Careers at OvikaLiving | Townmanor Technologies" />
         <meta property="og:description" content="Join OvikaLiving — India's smartest rental platform. Open roles in tech, sales, operations and more. Apply today." />
         <meta property="og:url" content="https://www.ovikaliving.com/career-support" />
+        <meta property="og:site_name" content="OvikaLiving" />
         <meta property="og:image" content="https://www.ovikaliving.com/careerdesktop.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:locale" content="en_IN" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@OvikaLiving" />
         <meta name="twitter:title" content="Careers at OvikaLiving | Townmanor Technologies" />
         <meta name="twitter:description" content="Join OvikaLiving — open roles in tech, sales & operations. Apply today." />
         <meta name="twitter:image" content="https://www.ovikaliving.com/careerdesktop.png" />
-        <meta name="robots" content="index, follow" />
       </Helmet>
 
       {/* ═══ HERO ═══════════════════════════════════════════ */}

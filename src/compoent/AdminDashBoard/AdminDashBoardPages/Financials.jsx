@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import axios from 'axios';
+import { Helmet } from 'react-helmet';
 import { AuthContext } from "../../Login/AuthContext";
 import { Loader } from "lucide-react";
 
@@ -157,6 +158,10 @@ const Financials = () => {
 
   return (
     <div style={styles.container}>
+      <Helmet>
+        <title>Financials | OvikaLiving Dashboard</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       {/* Header */}
       <div style={styles.header}>
         <h1 style={styles.title}>Financial Dashboard</h1>
