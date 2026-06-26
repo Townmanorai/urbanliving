@@ -123,6 +123,25 @@ const homeJsonLd = {
       "@id": "https://www.ovikaliving.com/#organization",
       "name": "OvikaLiving",
       "legalName": "Townmanor Technologies Pvt. Ltd.",
+      "alternateName": [
+        "Ovika Living",
+        "Ovika",
+        "Ovika Stays",
+        "OvikaLiving Noida",
+        "Ovika PG",
+        "Ovika Co Living",
+        "ovikaliving",
+        "ovikaling",
+        "ovika lving",
+        "ovika lvng",
+        "ovikaiving",
+        "ovika livng",
+        "ovika livig",
+        "ovika lviing",
+        "ovika lving noida",
+        "ovika living noida",
+        "ovika noida"
+      ],
       "url": "https://www.ovikaliving.com/",
       "logo": { "@type": "ImageObject", "url": "https://www.ovikaliving.com/ovikaliving_logo_clean.png", "width": 300, "height": 60 },
       "contactPoint": { "@type": "ContactPoint", "contactType": "customer support", "areaServed": "IN", "availableLanguage": ["en", "hi"] },
@@ -160,7 +179,7 @@ export const HomePageNewMain = () => {
       <Helmet>
         <title>OvikaLiving — Smart Stays, PG & Co-Living in Noida, Greater Noida, Delhi | Book Now</title>
         <meta name="description" content="Find verified PG, co-living spaces, furnished apartments & nightly stays across NCR on OvikaLiving. Best short-term rentals in Noida, Greater Noida, Delhi & Gurugram. No brokerage. Instant booking. Flexible stays for working professionals, students & corporates." />
-        <meta name="keywords" content="ovikaliving, short term rental noida, pg noida, co living noida, furnished apartment noida, nightly stays noida, smart stays noida, premium pg noida, furnished flat noida, monthly rental noida, co living greater noida, pg greater noida, signature stays noida, hotel noida, serviced apartment noida, working professional pg noida, pg for students noida, pg with wifi noida, pg with food noida, pg with ac noida, co living spaces noida, short stay noida, nightly rental noida, urban living noida, flexible rental noida, no brokerage pg noida, verified pg noida, ovika signature stays, luxury apartment noida, premium apartment noida, economy stay noida, pg sector 62 noida, pg sector 63 noida, pg sector 18 noida, ovikaliving signature, townmanor technologies, short stay greater noida, furnished apartment greater noida, monthly rentals noida, pg under 10000 noida, pg under 15000 noida, pg under 20000, affordable pg noida, best pg noida 2024, top co living spaces noida, noida short term accommodation, paying guest noida, single occupancy noida, double occupancy noida, pg near metro noida, nightly pg noida, hybrid rental noida, student accommodation noida, corporate housing noida, serviced flat noida, नोएडा में पीजी, को लिविंग नोएडा, किराये का कमरा नोएडा, शॉर्ट स्टे नोएडा, फर्निश्ड फ्लैट नोएडा" />
+        <meta name="keywords" content="ovikaliving, ovika living, ovika, ovika stays, ovika noida, ovika pg, ovika co living, ovikaling, ovika lving, ovika lvng, ovikaiving, ovika livng, ovika livig, ovika lviing, short term rental noida, pg noida, co living noida, furnished apartment noida, nightly stays noida, smart stays noida, premium pg noida, furnished flat noida, monthly rental noida, co living greater noida, pg greater noida, signature stays noida, hotel noida, serviced apartment noida, working professional pg noida, pg for students noida, pg with wifi noida, pg with food noida, pg with ac noida, co living spaces noida, short stay noida, nightly rental noida, urban living noida, flexible rental noida, no brokerage pg noida, verified pg noida, ovika signature stays, luxury apartment noida, premium apartment noida, economy stay noida, pg sector 62 noida, pg sector 63 noida, pg sector 18 noida, ovikaliving signature, townmanor technologies, short stay greater noida, furnished apartment greater noida, monthly rentals noida, pg under 10000 noida, pg under 15000 noida, pg under 20000, affordable pg noida, best pg noida 2024, top co living spaces noida, noida short term accommodation, paying guest noida, single occupancy noida, double occupancy noida, pg near metro noida, nightly pg noida, hybrid rental noida, student accommodation noida, corporate housing noida, serviced flat noida, नोएडा में पीजी, को लिविंग नोएडा, किराये का कमरा नोएडा, शॉर्ट स्टे नोएडा, फर्निश्ड फ्लैट नोएडा" />
         <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
         <link rel="canonical" href="https://www.ovikaliving.com/" />
         <meta name="author" content="OvikaLiving — Townmanor Technologies Pvt. Ltd." />

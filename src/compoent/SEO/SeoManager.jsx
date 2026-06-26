@@ -10,7 +10,7 @@ const SEO_ROUTES = {
   '/': {
     title: 'OvikaLiving — Verified PG, Co-Living, Apartments & Nightly Stays in Noida, Delhi NCR',
     description: 'Find verified PG, co-living spaces, furnished apartments, homestays & premium nightly stays in Noida, Greater Noida, Gurugram & Delhi. No brokerage. Instant booking. Flexible stays for working professionals, students & corporates.',
-    keywords: 'PG in Noida, co-living Noida, furnished apartments Noida, nightly stays Noida, short term rental Delhi NCR, OvikaLiving, PG near me, working professional PG, girls PG Noida, boys PG Noida',
+    keywords: 'OvikaLiving, ovika living, ovika, ovika stays, ovika noida, ovikaling, ovika lving, ovika lvng, ovikaiving, ovika livng, ovika lviing, PG in Noida, co-living Noida, furnished apartments Noida, nightly stays Noida, short term rental Delhi NCR, PG near me, working professional PG, girls PG Noida, boys PG Noida',
     og: { type: 'website', image: DEFAULT_IMG },
     schema: {
       '@type': 'Organization',
