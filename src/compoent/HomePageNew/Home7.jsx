@@ -41,7 +41,7 @@ const SAMPLE_VIDEOS = [
     videoUrl: "/tm4newvideo.mp4",
     bookingUrlShort: "/property/80",
     bookingUrlLong: "/property/316",
-    availableInLong: true,
+    availableInLong: false,
     availableInNightly: false,
   },
   {
@@ -52,7 +52,7 @@ const SAMPLE_VIDEOS = [
     videoUrl: "/tm5newvideo.mp4",
     bookingUrlShort: "/property/81",
     bookingUrlLong: "/property/317",
-    availableInLong: true,
+    availableInLong: false,
     availableInNightly: false,
   },
 ];

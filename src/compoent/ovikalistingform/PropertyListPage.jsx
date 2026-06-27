@@ -1133,7 +1133,8 @@ const PropertyListPage = () => {
     try { return JSON.parse(p.meta); } catch { return {}; }
   };
 
-  const MONTHLY_ONLY_IDS = [1105, 80, 81]; // 80 & 81 = Signature Stay 4 & 5 (temporarily hidden from nightly)
+  const MONTHLY_ONLY_IDS = [1105];
+  const HIDDEN_FROM_ALL_IDS = [80, 81, 316, 317]; // Signature Stay 4 & 5 — hidden from both nightly and monthly
 
   const isLongTermProperty = (p) => {
     // 0. Manual overrides — force specific property IDs to monthly
@@ -1298,7 +1299,7 @@ const PropertyListPage = () => {
 
     // Signature Stays property IDs (Home7 se liye hain)
     const SIGNATURE_NIGHTLY_IDS = [77, 78, 79, 80, 81];
-    const SIGNATURE_MONTHLY_IDS = [323, 315, 316, 317]; // 78 monthly mein available nahi
+    const SIGNATURE_MONTHLY_IDS = [323, 315]; // 78, 316, 317 monthly mein available nahi
 
     const isSignatureProperty = (p) => {
       const id = Number(p.id || p.property_id);
@@ -1311,19 +1312,22 @@ const PropertyListPage = () => {
 
     if (isMonthly) {
       result = result.filter(p => {
+        if (HIDDEN_FROM_ALL_IDS.includes(Number(p.id || p.property_id))) return false; // Signature 4 & 5 hidden from monthly too
         if (SIGNATURE_MONTHLY_IDS.includes(Number(p.id || p.property_id))) return true;
         if (p.rental_type === 'short') return false; // explicitly nightly → exclude from monthly
         return p.property_category === 'PG' || isLongTermProperty(p);
       });
     } else {
       result = result.filter(p => {
-        if (MONTHLY_ONLY_IDS.includes(Number(p.id || p.property_id))) return false; // force exclude from nightly
+        if (HIDDEN_FROM_ALL_IDS.includes(Number(p.id || p.property_id))) return false; // force exclude from nightly
+        if (MONTHLY_ONLY_IDS.includes(Number(p.id || p.property_id))) return false;
         if (SIGNATURE_NIGHTLY_IDS.includes(Number(p.id || p.property_id))) return true;
         if (p.rental_type === 'long') return false; // explicitly monthly → exclude from nightly
         return p.property_category === 'PG' || !isLongTermProperty(p);
       });
 
       result = result.filter(p => {
+        if (HIDDEN_FROM_ALL_IDS.includes(Number(p.id || p.property_id))) return false;
         if (MONTHLY_ONLY_IDS.includes(Number(p.id || p.property_id))) return false;
         if (p.property_category !== 'PG') return true;
         // Monthly PG properties (no nightly price) should NOT appear in nightly
