@@ -3186,41 +3186,6 @@ const PropertyDetailPage = () => {
         </div>
       </div>
 
-      <section className="title-section">
-        {/* title + rating on same row */}
-        <div className="pdp-title-row">
-          <h1 className="pdp-title-h1" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', margin: 0 }}>
-            {property.property_name}
-            {(() => {
-              const m = property.meta && typeof property.meta === 'object' ? property.meta : (() => { try { return JSON.parse(property.meta || '{}'); } catch { return {}; } })();
-              const isGreenVerified = Number(property.verified_badge) === 1 || !!m.verified_badge;
-              const isGoldVerified  = Number(property.self_verified_badge) === 1 || !!m.self_verified_badge;
-              return (
-                <>
-                  {isGreenVerified && <img src="/ovikaver.png" alt="Ovika Verified" style={{ height: 44, width: 'auto', pointerEvents: 'none' }} />}
-                  {isGoldVerified  && <img src="/SelfVerified.jpeg" alt="Self Verified" style={{ height: 44, width: 'auto', pointerEvents: 'none', borderRadius: 4 }} />}
-                </>
-              );
-            })()}
-          </h1>
-          <div className="pdp-rating-pill">
-            <span className="rp-star">★</span>
-            {(() => {
-              const FIVE_STAR_IDS = [77, 78, 79, 80, 81, 315, 316, 317, 323];
-              if (FIVE_STAR_IDS.includes(Number(id))) return '5.0';
-              return (4.1 + ((Number(id) * 13 + 7) % 9) / 10).toFixed(1);
-            })()}
-            <span className="rp-sep">·</span>
-            {4 + (Number(id) % 20)} reviews
-          </div>
-        </div>
-        {/* address below */}
-        <div className="location-row">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#c2772b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span>{[property.city, property.address].filter(Boolean).join(', ')}</span>
-        </div>
-      </section>
-
       <section className="image-gallery">
         {/* ── Airbnb-style gallery grid ── */}
         {(() => {
@@ -3338,6 +3303,41 @@ const PropertyDetailPage = () => {
               <img src={getPhotoUrl(p)} alt={`Thumb ${idx}`} />
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="title-section">
+        {/* title + rating on same row */}
+        <div className="pdp-title-row">
+          <h1 className="pdp-title-h1" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', margin: 0 }}>
+            {property.property_name}
+            {(() => {
+              const m = property.meta && typeof property.meta === 'object' ? property.meta : (() => { try { return JSON.parse(property.meta || '{}'); } catch { return {}; } })();
+              const isGreenVerified = Number(property.verified_badge) === 1 || !!m.verified_badge;
+              const isGoldVerified  = Number(property.self_verified_badge) === 1 || !!m.self_verified_badge;
+              return (
+                <>
+                  {isGreenVerified && <img src="/ovikaver.png" alt="Ovika Verified" style={{ height: 44, width: 'auto', pointerEvents: 'none' }} />}
+                  {isGoldVerified  && <img src="/SelfVerified.jpeg" alt="Self Verified" style={{ height: 44, width: 'auto', pointerEvents: 'none', borderRadius: 4 }} />}
+                </>
+              );
+            })()}
+          </h1>
+          <div className="pdp-rating-pill">
+            <span className="rp-star">★</span>
+            {(() => {
+              const FIVE_STAR_IDS = [77, 78, 79, 80, 81, 315, 316, 317, 323];
+              if (FIVE_STAR_IDS.includes(Number(id))) return '5.0';
+              return (4.1 + ((Number(id) * 13 + 7) % 9) / 10).toFixed(1);
+            })()}
+            <span className="rp-sep">·</span>
+            {4 + (Number(id) % 20)} reviews
+          </div>
+        </div>
+        {/* address below */}
+        <div className="location-row">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#c2772b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>{[property.city, property.address].filter(Boolean).join(', ')}</span>
         </div>
       </section>
 

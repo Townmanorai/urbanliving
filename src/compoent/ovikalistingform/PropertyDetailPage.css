@@ -3890,7 +3890,6 @@ table {
   }
 
   .image-gallery {
-    order: 1;
     margin: 0;
     border-radius: 0;
   }
@@ -3899,7 +3898,6 @@ table {
     height: 260px;
   }
   .title-section {
-    order: 2;
     padding: 14px 14px 6px;
     background: #fff;
   }
@@ -3920,7 +3918,6 @@ table {
   /* Title on mobile */
   .title-section {
     padding: 12px 14px 8px;
-    order: 2;
     background: #fff;
     gap: 5px;
   }
