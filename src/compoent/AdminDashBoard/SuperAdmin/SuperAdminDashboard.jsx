@@ -96,6 +96,9 @@ export default function SuperAdminDashboard() {
   const [ownersSearch, setOwnersSearch] = useState('');
   const [ownersExpanded, setOwnersExpanded] = useState(null);
   const [ownersTab, setOwnersTab] = useState('all'); // 'all' | 'nightly' | 'monthly'
+  const [ldTab, setLdTab] = useState('category'); // 'category' | 'city' | 'area' | 'cross'
+  const [selectedCat, setSelectedCat] = useState(null);
+  const [manualCatOverrides, setManualCatOverrides] = useState({}); // { [propId]: 'Category Label' }
 
   // ── Self Verification states ──
   const [svList, setSvList] = useState([]);
@@ -1193,6 +1196,9 @@ export default function SuperAdminDashboard() {
                 <button className={view === 'owners' ? 'active' : ''} onClick={() => setView('owners')} style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '4px', paddingTop: '12px' }}>
                     <span className="sa-nav-icon">👤</span> Owner Details
                 </button>
+                <button className={view === 'listings-data' ? 'active' : ''} onClick={() => setView('listings-data')}>
+                    <span className="sa-nav-icon">📊</span> Listings Data
+                </button>
             </nav>
         </div>
         <div style={{ marginTop: 'auto', color: '#6b7280', fontSize: '12px' }}>
@@ -1217,6 +1223,7 @@ export default function SuperAdminDashboard() {
                 {view === 'self-verification' && 'Self Verification Submissions'}
                 {view === 'lead-purchases' && 'Lead Purchases'}
                 {view === 'booking-inquiries' && 'Booking Inquiries'}
+                {view === 'listings-data' && 'Listings Data'}
             </h2>
             <div className="sa-user-controls">
                 <span className="sa-admin-tag">Super Admin</span>
@@ -4259,6 +4266,450 @@ export default function SuperAdminDashboard() {
                     </div>
                 </div>
             )}
+            {/* VIEW: LISTINGS DATA */}
+            {view === 'listings-data' && (() => {
+        const allProps = properties || [];
+
+        const CAT_RULES = [
+          { label: 'PG & Co-Living',      rental: 'Monthly',           color: '#6366f1', bg: '#eef2ff', keywords: ['pg','co-living','coliving','co living','paying guest'] },
+          { label: 'Apartments & Villas', rental: 'Monthly',           color: '#0ea5e9', bg: '#e0f2fe', keywords: ['apartment','villa','flat','apartments & villas','apartments and villas'] },
+          { label: 'Homestays & BnB',     rental: 'Nightly',           color: '#f59e0b', bg: '#fef3c7', keywords: ['homestay','bnb','b&b','bed and breakfast','homestays','bed & breakfast'] },
+          { label: 'Signature Stays',     rental: 'Nightly + Monthly', color: '#c2772b', bg: '#fdf3e7', keywords: ['signature'] },
+          { label: 'Hotels',              rental: 'Nightly',           color: '#10b981', bg: '#d1fae5', keywords: ['hotel'] },
+        ];
+
+        // Force specific properties into correct category by name (case-insensitive substring)
+        const NAME_OVERRIDES = [
+          { match: 'byke express',        label: 'Hotels' },
+          { match: 'rm serenity heaven',  label: 'Apartments & Villas' },
+          { match: 'office space',        label: 'Apartments & Villas' },
+        ];
+
+        const getPropId = (p) => String(p.id || p.property_id || p.property_name || p.name || '');
+
+        const classifyProp = (p) => {
+          // 1. Manual drag-override (user moved it via UI)
+          const pid = getPropId(p);
+          if (manualCatOverrides[pid]) {
+            const rule = CAT_RULES.find(r => r.label === manualCatOverrides[pid]);
+            if (rule) return rule;
+          }
+          const nameRaw = (p.property_name || p.name || p.title || '').toLowerCase().trim();
+          // 2. Hard-coded name overrides
+          for (const ov of NAME_OVERRIDES) {
+            if (nameRaw.includes(ov.match)) {
+              const rule = CAT_RULES.find(r => r.label === ov.label);
+              if (rule) return rule;
+            }
+          }
+          // 3. property_category / property_type field
+          const raw = (p.property_category || p.property_type || '').toLowerCase().trim();
+          for (const rule of CAT_RULES) {
+            if (rule.keywords.some(k => raw.includes(k))) return rule;
+          }
+          // 4. Fallback: property name keywords
+          for (const rule of CAT_RULES) {
+            if (rule.keywords.some(k => nameRaw.includes(k))) return rule;
+          }
+          return { label: 'Other', rental: '—', color: '#94a3b8', bg: '#f8fafc', keywords: [] };
+        };
+
+        const extractLocality = (p) => {
+          const addr = (p.address || '').trim();
+          if (!addr) return null;
+          const sectorMatch = addr.match(/sector[\s\-]*(\d+[A-Za-z]?)/i);
+          if (sectorMatch) return `Sector ${sectorMatch[1]}`;
+          const firstPart = addr.split(',')[0].trim();
+          if (/^\d+$/.test(firstPart)) {
+            const secondPart = (addr.split(',')[1] || '').trim();
+            if (secondPart && !/^\d+$/.test(secondPart)) return secondPart;
+            return null;
+          }
+          return firstPart.length > 2 ? firstPart : null;
+        };
+
+        // Auto-move first 30 hotels → Homestays & BnB (display only)
+        const autoBnBIds = new Set();
+        let hotelCount = 0;
+        for (const p of allProps) {
+          if (hotelCount >= 30) break;
+          const pid = getPropId(p);
+          if (!manualCatOverrides[pid]) {
+            const rule = classifyProp(p);
+            if (rule.label === 'Hotels') {
+              autoBnBIds.add(pid);
+              hotelCount++;
+            }
+          }
+        }
+
+        const classifyPropFinal = (p) => {
+          const pid = getPropId(p);
+          if (autoBnBIds.has(pid)) return CAT_RULES.find(r => r.label === 'Homestays & BnB');
+          return classifyProp(p);
+        };
+
+        const catMap = {}, cityMap = {}, areaMap = {}, cityCatMap = {}, areaCityMap = {};
+        allProps.forEach(p => {
+          const rule = classifyPropFinal(p);
+          const rawCity = (p.city || 'Unknown').trim();
+          const normalised = rawCity.toLowerCase().replace(/\s+/g, ' ');
+          const city = /new\s*delhi/.test(normalised) ? 'Delhi'
+            : /^greater\s*noida$/.test(normalised) ? 'Greater Noida'
+            : /^noida$/.test(normalised) ? 'Noida'
+            : /^gurugram$/.test(normalised) ? 'Gurugram'
+            : /^gurgaon$/.test(normalised) ? 'Gurugram'
+            : /^ghaziabad$/.test(normalised) ? 'Ghaziabad'
+            : /^faridabad$/.test(normalised) ? 'Faridabad'
+            : rawCity.charAt(0).toUpperCase() + rawCity.slice(1);
+          const area = extractLocality(p);
+          catMap[rule.label] = (catMap[rule.label] || 0) + 1;
+          cityMap[city] = (cityMap[city] || 0) + 1;
+          if (area) {
+            areaMap[area] = (areaMap[area] || 0) + 1;
+            if (!areaCityMap[area]) areaCityMap[area] = {};
+            areaCityMap[area][city] = (areaCityMap[area][city] || 0) + 1;
+          }
+          if (!cityCatMap[city]) cityCatMap[city] = {};
+          cityCatMap[city][rule.label] = (cityCatMap[city][rule.label] || 0) + 1;
+        });
+
+        const sortedCities = Object.entries(cityMap).sort((a,b) => b[1]-a[1]);
+        const sortedAreas  = Object.entries(areaMap).sort((a,b) => b[1]-a[1]);
+        const catOrder     = CAT_RULES.map(r => r.label).concat(['Other']);
+
+        const cardStyle = (bg, border) => ({
+          background: bg, border: `1.5px solid ${border}`, borderRadius: 14,
+          padding: '20px 24px', flex: '1 1 190px', minWidth: 190,
+        });
+
+        const TABS = [
+          { key: 'category', label: 'Category-wise',  icon: '🏷️' },
+          { key: 'city',     label: 'City-wise',       icon: '🏙️' },
+          { key: 'area',     label: 'Area-wise',       icon: '📍' },
+          { key: 'cross',    label: 'City × Category', icon: '🗺️' },
+        ];
+
+        const maxCity = sortedCities[0]?.[1] || 1;
+        const maxArea = sortedAreas[0]?.[1]  || 1;
+
+        const thStyle = {
+          padding: '11px 18px',
+          textAlign: 'left',
+          color: '#92400e',
+          fontWeight: 700,
+          fontSize: 11,
+          textTransform: 'uppercase',
+          letterSpacing: 0.8,
+          background: '#fef9f0',
+          borderBottom: '2px solid #fde8c8',
+        };
+
+        return (
+          <div style={{ padding: '0 0 40px', background: 'transparent' }}>
+
+            {/* ── Header ── */}
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom: 20 }}>
+              <div>
+                <h2 style={{ margin:0, fontSize:19, color:'#1c1c1c', fontWeight:800 }}>Listings Data</h2>
+                <p style={{ margin:'3px 0 0', color:'#aaa', fontSize:12 }}>
+                  {allProps.length} total properties across all categories
+                </p>
+              </div>
+              <div style={{ background:'#c2772b', color:'#fff', borderRadius:20, padding:'7px 18px', fontSize:13, fontWeight:700, letterSpacing:0.3 }}>
+                {allProps.length} listings
+              </div>
+            </div>
+
+            {/* ── Tab Bar ── */}
+            <div style={{ display:'flex', gap:4, marginBottom:20, background:'#fff', borderRadius:12, padding:5, boxShadow:'0 1px 4px rgba(0,0,0,0.07)', width:'fit-content', border:'1px solid #f0e6d8' }}>
+              {TABS.map(t => (
+                <button key={t.key} onClick={() => setLdTab(t.key)} style={{
+                  padding:'7px 18px', borderRadius:9, fontSize:13, cursor:'pointer', border:'none',
+                  fontWeight: ldTab === t.key ? 700 : 500,
+                  background: ldTab === t.key ? '#c2772b' : 'transparent',
+                  color: ldTab === t.key ? '#fff' : '#888',
+                  transition:'all 0.15s', display:'flex', alignItems:'center', gap:5,
+                  boxShadow: ldTab === t.key ? '0 2px 8px rgba(194,119,43,0.25)' : 'none',
+                }}>
+                  <span style={{ fontSize:14 }}>{t.icon}</span> {t.label}
+                </button>
+              ))}
+            </div>
+
+            {/* ── TAB 1: CATEGORY-WISE ── */}
+            {ldTab === 'category' && (() => {
+              const allCatRules = [...CAT_RULES];
+              const catPropsMap = {};
+              allCatRules.forEach(r => { catPropsMap[r.label] = []; });
+              allProps.forEach(p => {
+                const rule = classifyPropFinal(p);
+                if (catPropsMap[rule.label]) catPropsMap[rule.label].push(p);
+                else if (catPropsMap['Other']) catPropsMap['Other'].push(p);
+              });
+
+              return (
+                <div>
+                  {/* Cards row */}
+                  <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(210px,1fr))', gap:14, marginBottom: selectedCat ? 20 : 0 }}>
+                    {allCatRules.map(rule => {
+                      const count = catMap[rule.label] || 0;
+                      const pct = allProps.length ? ((count/allProps.length)*100).toFixed(1) : 0;
+                      const isActive = selectedCat === rule.label;
+                      return (
+                        <div key={rule.label}
+                          onClick={() => setSelectedCat(isActive ? null : rule.label)}
+                          style={{ background:'#fff', borderRadius:14, padding:'20px 22px', boxShadow: isActive ? `0 0 0 2px ${rule.color}` : '0 1px 5px rgba(0,0,0,0.05)', border: isActive ? `1px solid ${rule.color}` : '1px solid #f0e6d8', borderTop:`3px solid ${rule.color}`, cursor:'pointer', transition:'all 0.15s' }}>
+                          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
+                            <div style={{ fontSize:32, fontWeight:900, color:'#1c1c1c', lineHeight:1 }}>{count}</div>
+                            {isActive && <span style={{ fontSize:11, color:rule.color, fontWeight:700, background:rule.bg, borderRadius:10, padding:'2px 8px' }}>✓ Selected</span>}
+                          </div>
+                          <div style={{ fontSize:13, fontWeight:700, color:'#333', marginTop:8 }}>{rule.label}</div>
+                          <div style={{ background:rule.bg, color:rule.color, fontSize:10, fontWeight:700, borderRadius:20, padding:'2px 10px', display:'inline-block', marginTop:6 }}>
+                            {rule.rental}
+                          </div>
+                          <div style={{ marginTop:12, height:4, borderRadius:4, background:'#f5ede0' }}>
+                            <div style={{ height:'100%', borderRadius:4, background:rule.color, width:`${pct}%` }} />
+                          </div>
+                          <div style={{ fontSize:11, color:'#bbb', marginTop:5 }}>{pct}% of total • Click to view</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Detail table when a card is selected */}
+                  {selectedCat && (() => {
+                    const rule = allCatRules.find(r => r.label === selectedCat) || {};
+                    const props = catPropsMap[selectedCat] || [];
+                    return (
+                      <div style={{ background:'#fff', borderRadius:14, border:`1px solid ${rule.color}33`, overflow:'hidden', boxShadow:'0 2px 10px rgba(0,0,0,0.06)' }}>
+                        {/* Table header bar */}
+                        <div style={{ padding:'14px 20px', background:rule.bg || '#fef9f0', borderBottom:`1px solid ${rule.color}33`, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                          <div>
+                            <span style={{ fontWeight:800, fontSize:15, color:'#1c1c1c' }}>{selectedCat}</span>
+                            <span style={{ marginLeft:10, color:'#999', fontSize:13 }}>{props.length} properties</span>
+                          </div>
+                          <button onClick={() => setSelectedCat(null)} style={{ border:'none', background:'transparent', cursor:'pointer', color:'#aaa', fontSize:18, lineHeight:1 }}>✕</button>
+                        </div>
+                        <div style={{ overflowX:'auto' }}>
+                          <table style={{ width:'100%', borderCollapse:'collapse', fontSize:13 }}>
+                            <thead>
+                              <tr style={{ background:'#fafafa', borderBottom:'1px solid #f0e6d8' }}>
+                                <th style={{ padding:'10px 16px', textAlign:'left', color:'#92400e', fontWeight:700, fontSize:11, textTransform:'uppercase', letterSpacing:0.6 }}>#</th>
+                                <th style={{ padding:'10px 16px', textAlign:'left', color:'#92400e', fontWeight:700, fontSize:11, textTransform:'uppercase', letterSpacing:0.6 }}>Property Name</th>
+                                <th style={{ padding:'10px 16px', textAlign:'left', color:'#92400e', fontWeight:700, fontSize:11, textTransform:'uppercase', letterSpacing:0.6 }}>City</th>
+                                <th style={{ padding:'10px 16px', textAlign:'left', color:'#92400e', fontWeight:700, fontSize:11, textTransform:'uppercase', letterSpacing:0.6 }}>Area / Sector</th>
+                                <th style={{ padding:'10px 16px', textAlign:'right', color:'#92400e', fontWeight:700, fontSize:11, textTransform:'uppercase', letterSpacing:0.6 }}>Price</th>
+                                <th style={{ padding:'10px 16px', textAlign:'left', color:'#92400e', fontWeight:700, fontSize:11, textTransform:'uppercase', letterSpacing:0.6 }}>Owner</th>
+                                <th style={{ padding:'10px 16px', textAlign:'left', color:'#92400e', fontWeight:700, fontSize:11, textTransform:'uppercase', letterSpacing:0.6 }}>Status</th>
+                                <th style={{ padding:'10px 16px', textAlign:'left', color:'#92400e', fontWeight:700, fontSize:11, textTransform:'uppercase', letterSpacing:0.6 }}>Move To</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {props.map((p, idx) => {
+                                const rawCity2 = (p.city || 'Unknown').trim();
+                                const norm2 = rawCity2.toLowerCase().replace(/\s+/g, ' ');
+                                const city2 = /new\s*delhi/.test(norm2) ? 'Delhi'
+                                  : /^greater\s*noida$/.test(norm2) ? 'Greater Noida'
+                                  : /^noida$/.test(norm2) ? 'Noida'
+                                  : /^gurugram$/.test(norm2) ? 'Gurugram'
+                                  : /^gurgaon$/.test(norm2) ? 'Gurugram'
+                                  : /^ghaziabad$/.test(norm2) ? 'Ghaziabad'
+                                  : /^faridabad$/.test(norm2) ? 'Faridabad'
+                                  : rawCity2.charAt(0).toUpperCase() + rawCity2.slice(1);
+                                const area2 = extractLocality(p);
+                                const price = p.monthly_rent || p.nightly_rate || p.price || p.rent || '—';
+                                const owner = p.owner_name || p.host_name || p.listed_by || '—';
+                                const status = p.status || p.is_active;
+                                const statusLabel = status === true || status === 1 || status === 'active' ? 'Active' : status === false || status === 0 || status === 'inactive' ? 'Inactive' : String(status || '—');
+                                const isActive2 = statusLabel === 'Active';
+                                const pid = getPropId(p);
+                                return (
+                                  <tr key={p.id || p.property_id || idx} style={{ borderBottom:'1px solid #faf5ef' }}>
+                                    <td style={{ padding:'10px 16px', color:'#ccc', fontWeight:700, fontSize:12 }}>{idx+1}</td>
+                                    <td style={{ padding:'10px 16px', fontWeight:600, color:'#1c1c1c', maxWidth:220 }}>
+                                      {p.property_name || p.name || p.title || `Property #${p.id || p.property_id}`}
+                                    </td>
+                                    <td style={{ padding:'10px 16px', color:'#555' }}>{city2}</td>
+                                    <td style={{ padding:'10px 16px', color:'#777' }}>{area2 || '—'}</td>
+                                    <td style={{ padding:'10px 16px', textAlign:'right', fontWeight:700, color:'#c2772b' }}>
+                                      {price !== '—' ? `₹${Number(price).toLocaleString()}` : '—'}
+                                    </td>
+                                    <td style={{ padding:'10px 16px', color:'#555' }}>{owner}</td>
+                                    <td style={{ padding:'10px 16px' }}>
+                                      <span style={{ background: isActive2 ? '#d1fae5' : '#fee2e2', color: isActive2 ? '#065f46' : '#991b1b', fontWeight:700, fontSize:11, borderRadius:20, padding:'2px 10px' }}>
+                                        {statusLabel}
+                                      </span>
+                                    </td>
+                                    <td style={{ padding:'10px 16px' }}>
+                                      <select
+                                        value={manualCatOverrides[pid] || selectedCat}
+                                        onChange={e => {
+                                          const val = e.target.value;
+                                          if (val === selectedCat) {
+                                            const next = { ...manualCatOverrides };
+                                            delete next[pid];
+                                            setManualCatOverrides(next);
+                                          } else {
+                                            setManualCatOverrides(prev => ({ ...prev, [pid]: val }));
+                                          }
+                                        }}
+                                        style={{ fontSize:12, padding:'4px 8px', borderRadius:8, border:'1px solid #f0e6d8', background:'#fef9f0', color:'#c2772b', fontWeight:600, cursor:'pointer', outline:'none' }}
+                                      >
+                                        {CAT_RULES.map(r => (
+                                          <option key={r.label} value={r.label}>{r.label}</option>
+                                        ))}
+                                      </select>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              );
+            })()}
+
+            {/* ── TAB 2: CITY-WISE ── */}
+            {ldTab === 'city' && (
+              <div style={{ background:'#fff', borderRadius:14, overflow:'hidden', boxShadow:'0 1px 5px rgba(0,0,0,0.05)', border:'1px solid #f0e6d8' }}>
+                <table style={{ width:'100%', borderCollapse:'collapse', fontSize:13 }}>
+                  <thead>
+                    <tr>
+                      <th style={{ ...thStyle, width:40 }}>#</th>
+                      <th style={thStyle}>City</th>
+                      <th style={{ ...thStyle, textAlign:'right' }}>Listings</th>
+                      <th style={{ ...thStyle, textAlign:'right' }}>Share</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sortedCities.map(([city, count], i) => {
+                      const pct = ((count/allProps.length)*100).toFixed(1);
+                      return (
+                        <tr key={city} style={{ borderBottom:'1px solid #faf5ef' }}>
+                          <td style={{ padding:'12px 18px', color:'#ccc', fontWeight:700, fontSize:12 }}>{i+1}</td>
+                          <td style={{ padding:'12px 18px' }}>
+                            <span style={{ fontWeight:600, color:'#222', fontSize:13 }}>{city}</span>
+                          </td>
+                          <td style={{ padding:'12px 18px', textAlign:'right', fontWeight:800, color:'#c2772b', fontSize:15 }}>{count}</td>
+                          <td style={{ padding:'12px 18px', textAlign:'right', color:'#999', fontSize:12 }}>{pct}%</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* ── TAB 3: AREA-WISE ── */}
+            {ldTab === 'area' && (
+              sortedAreas.length === 0
+                ? <div style={{ background:'#fff', borderRadius:14, padding:40, textAlign:'center', color:'#aaa', border:'1px solid #f0e6d8' }}>No sector/locality data found in property addresses.</div>
+                : <div style={{ background:'#fff', borderRadius:14, overflow:'hidden', boxShadow:'0 1px 5px rgba(0,0,0,0.05)', border:'1px solid #f0e6d8' }}>
+                    <table style={{ width:'100%', borderCollapse:'collapse', fontSize:13 }}>
+                      <thead>
+                        <tr>
+                          <th style={{ ...thStyle, width:40 }}>#</th>
+                          <th style={thStyle}>Area / Sector</th>
+                          <th style={thStyle}>City</th>
+                          <th style={{ ...thStyle, textAlign:'right' }}>Listings</th>
+                          <th style={{ ...thStyle, textAlign:'right' }}>Share</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sortedAreas.map(([area, count], i) => {
+                          const pct = allProps.length ? ((count/allProps.length)*100).toFixed(1) : 0;
+                          const cityEntries = Object.entries(areaCityMap[area] || {}).sort((a,b) => b[1]-a[1]);
+                          const primaryCity = cityEntries[0]?.[0] || '—';
+                          const hasMultiple = cityEntries.length > 1;
+                          return (
+                            <tr key={area} style={{ borderBottom:'1px solid #faf5ef' }}>
+                              <td style={{ padding:'12px 18px', color:'#ccc', fontWeight:700, fontSize:12 }}>{i+1}</td>
+                              <td style={{ padding:'12px 18px', fontWeight:600, color:'#222', fontSize:13 }}>{area}</td>
+                              <td style={{ padding:'12px 18px', fontSize:13 }}>
+                                <span style={{ color:'#555', fontWeight:500 }}>{primaryCity}</span>
+                                {hasMultiple && (
+                                  <span style={{ marginLeft:6, background:'#fdf0e0', color:'#c2772b', fontSize:10, fontWeight:700, borderRadius:10, padding:'1px 7px' }}>
+                                    +{cityEntries.length - 1} more
+                                  </span>
+                                )}
+                              </td>
+                              <td style={{ padding:'12px 18px', textAlign:'right', fontWeight:800, color:'#c2772b', fontSize:14 }}>{count}</td>
+                              <td style={{ padding:'12px 18px', textAlign:'right', color:'#999', fontSize:12 }}>{pct}%</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+            )}
+
+            {/* ── TAB 4: CITY × CATEGORY ── */}
+            {ldTab === 'cross' && (
+              <div style={{ background:'#fff', borderRadius:14, overflow:'auto', boxShadow:'0 1px 5px rgba(0,0,0,0.05)', border:'1px solid #f0e6d8' }}>
+                <table style={{ width:'100%', borderCollapse:'collapse', fontSize:13, minWidth:640 }}>
+                  <thead>
+                    <tr>
+                      <th style={{ ...thStyle, whiteSpace:'nowrap', textAlign:'left' }}>City</th>
+                      {catOrder.filter(l => catMap[l] > 0).map(label => {
+                        const rule = CAT_RULES.find(r => r.label === label);
+                        return (
+                          <th key={label} style={{ ...thStyle, textAlign:'center', color: rule?.color || '#92400e', whiteSpace:'nowrap' }}>
+                            {label}
+                          </th>
+                        );
+                      })}
+                      <th style={{ ...thStyle, textAlign:'center' }}>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sortedCities.map(([city, total], i) => {
+                      const catData = cityCatMap[city] || {};
+                      return (
+                        <tr key={city} style={{ borderBottom:'1px solid #faf5ef' }}>
+                          <td style={{ padding:'12px 18px', fontWeight:700, color:'#222', whiteSpace:'nowrap', fontSize:13 }}>{city}</td>
+                          {catOrder.filter(l => catMap[l] > 0).map(label => {
+                            const rule = CAT_RULES.find(r => r.label === label);
+                            const v = catData[label] || 0;
+                            return (
+                              <td key={label} style={{ padding:'12px 16px', textAlign:'center' }}>
+                                {v > 0
+                                  ? <span style={{ background:rule?.bg||'#fef9f0', color:rule?.color||'#c2772b', fontWeight:700, borderRadius:6, padding:'3px 12px', fontSize:13, display:'inline-block', minWidth:32, border:`1px solid ${rule?.color||'#c2772b'}22` }}>{v}</span>
+                                  : <span style={{ color:'#e5e5e5' }}>—</span>
+                                }
+                              </td>
+                            );
+                          })}
+                          <td style={{ padding:'12px 16px', textAlign:'center' }}>
+                            <span style={{ background:'#fef3e2', color:'#c2772b', fontWeight:800, borderRadius:6, padding:'3px 14px', fontSize:13, display:'inline-block', border:'1px solid #f3d5a0' }}>{total}</span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    <tr style={{ background:'#fef9f0', borderTop:'2px solid #fde8c8' }}>
+                      <td style={{ padding:'12px 18px', fontWeight:800, color:'#92400e', fontSize:12, textTransform:'uppercase', letterSpacing:0.5 }}>Total</td>
+                      {catOrder.filter(l => catMap[l] > 0).map(label => {
+                        const rule = CAT_RULES.find(r => r.label === label);
+                        return (
+                          <td key={label} style={{ padding:'12px 16px', textAlign:'center', fontWeight:800, color:rule?.color||'#c2772b', fontSize:14 }}>
+                            {catMap[label] || 0}
+                          </td>
+                        );
+                      })}
+                      <td style={{ padding:'12px 16px', textAlign:'center', fontWeight:900, color:'#c2772b', fontSize:16 }}>{allProps.length}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+          </div>
+        );
+            })()}
         </div>
       </div>
 
