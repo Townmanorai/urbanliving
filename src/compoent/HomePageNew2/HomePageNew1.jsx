@@ -1469,19 +1469,6 @@ export default function HomePageNew1() {
         </div>
 
 
-        {/* ── Trending chips — city specific ── */}
-        <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', justifyContent:'center' }}>
-          <span style={{ fontSize:'13px', fontWeight:700, color:'rgba(255,255,255,0.65)' }}>Trending</span>
-          {cityTrending.map(t => (
-            <button key={t}
-              onClick={() => { setSearchText(t); handleSearch(cat.rentalType); }}
-              style={{ padding:'6px 15px', borderRadius:100, background:'rgba(255,255,255,0.1)', border:'1px solid rgba(255,255,255,0.22)', color:'rgba(255,255,255,0.88)', fontSize:'13px', cursor:'pointer', fontFamily:"'Poppins',sans-serif", transition:'background 0.15s', outline:'none' }}
-              onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.2)'}
-              onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,0.1)'}>
-              {t}
-            </button>
-          ))}
-        </div>
 
       </div>
     </div>

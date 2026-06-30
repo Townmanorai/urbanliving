@@ -238,15 +238,6 @@ function Banner() {
           </div>
         </div>
 
-        {/* ── Trending ── */}
-        <div className="nb-trending">
-          <span className="nb-trending-label">Trending:</span>
-          {cat.trending.map(t => (
-            <button key={t} className="nb-chip" onClick={() => handleTrend(t)}>
-              {t}
-            </button>
-          ))}
-        </div>
       </div>
     </div>
   );
