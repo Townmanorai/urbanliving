@@ -98,6 +98,7 @@ export default function SuperAdminDashboard() {
   const [ownersTab, setOwnersTab] = useState('all'); // 'all' | 'nightly' | 'monthly'
   const [ldTab, setLdTab] = useState('category'); // 'category' | 'city' | 'area' | 'cross'
   const [selectedCat, setSelectedCat] = useState(null);
+  const [selectedArea, setSelectedArea] = useState(null);
   const [manualCatOverrides, setManualCatOverrides] = useState({}); // { [propId]: 'Category Label' }
 
   // ── Self Verification states ──
@@ -4626,21 +4627,127 @@ export default function SuperAdminDashboard() {
                           const cityEntries = Object.entries(areaCityMap[area] || {}).sort((a,b) => b[1]-a[1]);
                           const primaryCity = cityEntries[0]?.[0] || '—';
                           const hasMultiple = cityEntries.length > 1;
+                          const isSelectedArea = selectedArea === area;
+                          const areaProps = isSelectedArea ? allProps.filter(p => extractLocality(p) === area) : [];
                           return (
-                            <tr key={area} style={{ borderBottom:'1px solid #faf5ef' }}>
-                              <td style={{ padding:'12px 18px', color:'#ccc', fontWeight:700, fontSize:12 }}>{i+1}</td>
-                              <td style={{ padding:'12px 18px', fontWeight:600, color:'#222', fontSize:13 }}>{area}</td>
-                              <td style={{ padding:'12px 18px', fontSize:13 }}>
-                                <span style={{ color:'#555', fontWeight:500 }}>{primaryCity}</span>
-                                {hasMultiple && (
-                                  <span style={{ marginLeft:6, background:'#fdf0e0', color:'#c2772b', fontSize:10, fontWeight:700, borderRadius:10, padding:'1px 7px' }}>
-                                    +{cityEntries.length - 1} more
+                            <React.Fragment key={area}>
+                              <tr
+                                onClick={() => setSelectedArea(isSelectedArea ? null : area)}
+                                style={{ borderBottom: isSelectedArea ? 'none' : '1px solid #faf5ef', cursor:'pointer', background: isSelectedArea ? '#fff8f0' : 'transparent', transition:'background 0.12s' }}
+                                onMouseEnter={e => { if (!isSelectedArea) e.currentTarget.style.background = '#fdf5ec'; }}
+                                onMouseLeave={e => { if (!isSelectedArea) e.currentTarget.style.background = 'transparent'; }}
+                              >
+                                <td style={{ padding:'12px 18px', color:'#ccc', fontWeight:700, fontSize:12 }}>{i+1}</td>
+                                <td style={{ padding:'12px 18px', fontWeight:700, color: isSelectedArea ? '#c2772b' : '#222', fontSize:13 }}>
+                                  <span style={{ display:'flex', alignItems:'center', gap:6 }}>
+                                    <span style={{ fontSize:13 }}>{isSelectedArea ? '▼' : '▶'}</span>
+                                    <span>{area}</span>
+                                    {isSelectedArea && <span style={{ fontSize:10, background:'#c2772b', color:'#fff', borderRadius:10, padding:'1px 8px', fontWeight:700 }}>Viewing</span>}
                                   </span>
-                                )}
-                              </td>
-                              <td style={{ padding:'12px 18px', textAlign:'right', fontWeight:800, color:'#c2772b', fontSize:14 }}>{count}</td>
-                              <td style={{ padding:'12px 18px', textAlign:'right', color:'#999', fontSize:12 }}>{pct}%</td>
-                            </tr>
+                                </td>
+                                <td style={{ padding:'12px 18px', fontSize:13 }}>
+                                  <span style={{ color:'#555', fontWeight:500 }}>{primaryCity}</span>
+                                  {hasMultiple && (
+                                    <span style={{ marginLeft:6, background:'#fdf0e0', color:'#c2772b', fontSize:10, fontWeight:700, borderRadius:10, padding:'1px 7px' }}>
+                                      +{cityEntries.length - 1} more
+                                    </span>
+                                  )}
+                                </td>
+                                <td style={{ padding:'12px 18px', textAlign:'right', fontWeight:800, color:'#c2772b', fontSize:14 }}>{count}</td>
+                                <td style={{ padding:'12px 18px', textAlign:'right', color:'#999', fontSize:12 }}>{pct}%</td>
+                              </tr>
+                              {isSelectedArea && (
+                                <tr>
+                                  <td colSpan={5} style={{ padding:0, background:'#fef9f0', borderBottom:'2px solid #fde8c8' }}>
+                                    {/* ── Inline detail panel ── */}
+                                    <div style={{ padding:'0 0 12px 0' }}>
+                                      <div style={{ padding:'10px 18px 8px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                                        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                                          <span style={{ fontWeight:800, fontSize:14, color:'#c2772b' }}>📍 {area}</span>
+                                          <span style={{ color:'#999', fontSize:13 }}>{areaProps.length} {areaProps.length === 1 ? 'property' : 'properties'}</span>
+                                          {areaProps.length >= 2 && (
+                                            <span style={{ background:'#fde8c8', color:'#c2772b', fontSize:11, fontWeight:700, borderRadius:10, padding:'2px 10px' }}>
+                                              ⚠️ Check for duplicates
+                                            </span>
+                                          )}
+                                        </div>
+                                        <button onClick={(e) => { e.stopPropagation(); setSelectedArea(null); }} style={{ border:'none', background:'transparent', cursor:'pointer', color:'#aaa', fontSize:16, lineHeight:1, padding:'4px 8px' }}>✕</button>
+                                      </div>
+                                      <div style={{ overflowX:'auto', margin:'0 12px', background:'#fff', borderRadius:10, border:'1px solid #fde8c8' }}>
+                                        <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12 }}>
+                                          <thead>
+                                            <tr style={{ background:'#fafafa', borderBottom:'1px solid #f0e6d8' }}>
+                                              <th style={{ padding:'8px 14px', textAlign:'left', color:'#92400e', fontWeight:700, fontSize:11, textTransform:'uppercase', letterSpacing:0.5 }}>#</th>
+                                              <th style={{ padding:'8px 14px', textAlign:'left', color:'#92400e', fontWeight:700, fontSize:11, textTransform:'uppercase', letterSpacing:0.5 }}>Property Name</th>
+                                              <th style={{ padding:'8px 14px', textAlign:'left', color:'#92400e', fontWeight:700, fontSize:11, textTransform:'uppercase', letterSpacing:0.5 }}>City</th>
+                                              <th style={{ padding:'8px 14px', textAlign:'left', color:'#92400e', fontWeight:700, fontSize:11, textTransform:'uppercase', letterSpacing:0.5 }}>Category</th>
+                                              <th style={{ padding:'8px 14px', textAlign:'right', color:'#92400e', fontWeight:700, fontSize:11, textTransform:'uppercase', letterSpacing:0.5 }}>Price</th>
+                                              <th style={{ padding:'8px 14px', textAlign:'left', color:'#92400e', fontWeight:700, fontSize:11, textTransform:'uppercase', letterSpacing:0.5 }}>Owner</th>
+                                              <th style={{ padding:'8px 14px', textAlign:'left', color:'#92400e', fontWeight:700, fontSize:11, textTransform:'uppercase', letterSpacing:0.5 }}>Status</th>
+                                              <th style={{ padding:'8px 14px', textAlign:'left', color:'#92400e', fontWeight:700, fontSize:11, textTransform:'uppercase', letterSpacing:0.5 }}>ID</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            {areaProps.length === 0
+                                              ? <tr><td colSpan={8} style={{ padding:'20px', textAlign:'center', color:'#bbb', fontSize:13 }}>No properties found for this area.</td></tr>
+                                              : areaProps.map((p, idx) => {
+                                                const rawCityA = (p.city || 'Unknown').trim();
+                                                const normA = rawCityA.toLowerCase().replace(/\s+/g, ' ');
+                                                const cityA = /new\s*delhi/.test(normA) ? 'Delhi'
+                                                  : /^greater\s*noida$/.test(normA) ? 'Greater Noida'
+                                                  : /^noida$/.test(normA) ? 'Noida'
+                                                  : /^gurugram$/.test(normA) ? 'Gurugram'
+                                                  : /^gurgaon$/.test(normA) ? 'Gurugram'
+                                                  : /^ghaziabad$/.test(normA) ? 'Ghaziabad'
+                                                  : /^faridabad$/.test(normA) ? 'Faridabad'
+                                                  : rawCityA.charAt(0).toUpperCase() + rawCityA.slice(1);
+                                                const catP = classifyPropFinal(p);
+                                                const price = p.monthly_rent || p.nightly_rate || p.price || p.rent || '—';
+                                                const owner = p.owner_name || p.host_name || p.listed_by || '—';
+                                                const status = p.status || p.is_active;
+                                                const statusLabel = status === true || status === 1 || status === 'active' ? 'Active'
+                                                  : status === false || status === 0 || status === 'inactive' ? 'Inactive'
+                                                  : String(status || '—');
+                                                const isActiveP = statusLabel === 'Active';
+                                                const propId = p.id || p.property_id || '—';
+                                                return (
+                                                  <tr key={p.id || p.property_id || idx} style={{ borderBottom:'1px solid #faf5ef', background: idx % 2 === 0 ? '#fff' : '#fffdf9' }}>
+                                                    <td style={{ padding:'9px 14px', color:'#ccc', fontWeight:700, fontSize:11 }}>{idx+1}</td>
+                                                    <td style={{ padding:'9px 14px', fontWeight:600, color:'#1c1c1c', maxWidth:200 }}>
+                                                      <a href={`/property/${propId}`} target="_blank" rel="noreferrer" style={{ color:'#1c1c1c', textDecoration:'none' }}
+                                                        onMouseEnter={e => e.currentTarget.style.color='#c2772b'}
+                                                        onMouseLeave={e => e.currentTarget.style.color='#1c1c1c'}>
+                                                        {p.property_name || p.name || p.title || `Property #${propId}`}
+                                                      </a>
+                                                    </td>
+                                                    <td style={{ padding:'9px 14px', color:'#555' }}>{cityA}</td>
+                                                    <td style={{ padding:'9px 14px' }}>
+                                                      <span style={{ background: catP.bg || '#fef9f0', color: catP.color || '#c2772b', fontWeight:700, fontSize:10, borderRadius:20, padding:'2px 9px', whiteSpace:'nowrap' }}>
+                                                        {catP.label}
+                                                      </span>
+                                                    </td>
+                                                    <td style={{ padding:'9px 14px', textAlign:'right', fontWeight:700, color:'#c2772b' }}>
+                                                      {price !== '—' ? `₹${Number(price).toLocaleString()}` : '—'}
+                                                    </td>
+                                                    <td style={{ padding:'9px 14px', color:'#555' }}>{owner}</td>
+                                                    <td style={{ padding:'9px 14px' }}>
+                                                      <span style={{ background: isActiveP ? '#d1fae5' : '#fee2e2', color: isActiveP ? '#065f46' : '#991b1b', fontWeight:700, fontSize:10, borderRadius:20, padding:'2px 9px' }}>
+                                                        {statusLabel}
+                                                      </span>
+                                                    </td>
+                                                    <td style={{ padding:'9px 14px', color:'#bbb', fontSize:11, fontFamily:'monospace' }}>#{propId}</td>
+                                                  </tr>
+                                                );
+                                              })
+                                            }
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                    </div>
+                                  </td>
+                                </tr>
+                              )}
+                            </React.Fragment>
                           );
                         })}
                       </tbody>
