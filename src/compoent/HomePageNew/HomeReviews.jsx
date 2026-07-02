@@ -101,6 +101,36 @@ const REVIEWS = [
     initials: "V",
     color: "#9b2063",
   },
+  {
+    id: 11,
+    name: "Prashant Raghu",
+    location: "New Delhi, India",
+    date: "July 2026",
+    rating: 5,
+    text: "I had a great three-week stay at OvikaLiving Signature Stay 1, Knowledge Park, Greater Noida. The apartment was clean, comfortable, and well-maintained throughout my stay. Everything was smooth, and I didn't face any issues. The host was helpful and responsive, making the overall experience hassle-free. I would definitely recommend OvikaLiving to anyone looking for a comfortable stay in Greater Noida.",
+    initials: "PR",
+    color: "#5a7a3a",
+  },
+  {
+    id: 12,
+    name: "Ms. Siddhi Kapoor",
+    location: "Ayodhya, India",
+    date: "July 2026",
+    rating: 5,
+    text: "I stayed at OvikaLiving Signature Stay 3 with my parents and younger brother during my BBA admission at IILM, Greater Noida. The apartment was clean, comfortable, and very convenient. The stay was smooth and hassle-free. Highly recommended!",
+    initials: "SK",
+    color: "#3a6a8a",
+  },
+  {
+    id: 13,
+    name: "Mr. Sachin",
+    location: "Jammu, India",
+    date: "July 2026",
+    rating: 5,
+    text: "We stayed for three nights at OvikaLiving Signature Stay 2 during our road trip from Jammu to Vadodara. It was the perfect break on our journey. The private room was clean, comfortable, and peaceful, and the hosts were very welcoming. A great place for families to relax before continuing their trip.",
+    initials: "S",
+    color: "#7a3a6a",
+  },
 ];
 
 const allReviews = [...REVIEWS, ...REVIEWS];
