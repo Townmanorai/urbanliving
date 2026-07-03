@@ -36,6 +36,34 @@ function LuxeMain() {
       <meta name="twitter:title" content="OvikaLiving Signature Stays | Noida" />
       <meta name="twitter:description" content="Luxury nightly stays in Noida. Verified, fully furnished, self check-in. Book now!" />
       <meta name="twitter:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
+      <script type="application/ld+json">{JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "CollectionPage",
+            "@id": "https://www.ovikaliving.com/tmluxe",
+            "url": "https://www.ovikaliving.com/tmluxe",
+            "name": "OvikaLiving Signature Stays | Luxury Nightly Rentals in Noida & Greater Noida",
+            "description": "Premium luxury nightly stays in Noida & Greater Noida. Fully furnished, verified, self check-in apartments.",
+            "isPartOf": { "@id": "https://www.ovikaliving.com/#website" },
+            "inLanguage": "en-IN",
+            "breadcrumb": {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.ovikaliving.com/" },
+                { "@type": "ListItem", "position": 2, "name": "Signature Stays", "item": "https://www.ovikaliving.com/tmluxe" }
+              ]
+            }
+          },
+          {
+            "@type": "ItemList",
+            "name": "OvikaLiving Signature Stays — Noida & Greater Noida",
+            "description": "Curated premium nightly rental properties with hotel-quality amenities in Noida and Greater Noida.",
+            "url": "https://www.ovikaliving.com/tmluxe",
+            "itemListOrder": "https://schema.org/ItemListOrderDescending"
+          }
+        ]
+      })}</script>
     </Helmet>
     <LuxeHeroTM/>
     <TMLuxeWhyChoose/>

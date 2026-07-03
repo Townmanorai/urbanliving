@@ -22,11 +22,24 @@ const PrivacyPolicy = () => {
         <meta name="keywords" content="ovikaliving privacy policy, ovika data privacy, pg booking privacy noida, ovika user data, personal data protection noida, गोपनीयता नीति ओविका, ओविका प्राइवेसी पॉलिसी, पर्सनल डेटा सुरक्षा नोएडा, ओविका लिविंग प्राइवेसी" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://www.ovikaliving.com/privacy-policy" />
+        <meta property="og:type" content="website" />
         <meta property="og:title" content="Privacy Policy | OvikaLiving" />
         <meta property="og:description" content="OvikaLiving's Privacy Policy for PG and co-living platform users in Noida & Greater Noida." />
         <meta property="og:url" content="https://www.ovikaliving.com/privacy-policy" />
+        <meta property="og:site_name" content="OvikaLiving" />
+        <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
+        <meta property="og:locale" content="en_IN" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Privacy Policy | OvikaLiving" />
+        <meta name="twitter:description" content="OvikaLiving's Privacy Policy for PG and co-living platform users in Noida & Greater Noida." />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "Privacy Policy | OvikaLiving",
+          "url": "https://www.ovikaliving.com/privacy-policy",
+          "isPartOf": { "@id": "https://www.ovikaliving.com/#website" }
+        })}</script>
       </Helmet>
       {/* Hero Header */}
       <div style={{

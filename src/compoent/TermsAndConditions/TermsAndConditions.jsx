@@ -12,11 +12,24 @@ const TermsAndConditions = () => {
         <meta name="keywords" content="ovikaliving terms and conditions, ovika terms of service, pg booking terms noida, co-living terms noida, rental agreement noida, ovika user agreement, नियम और शर्तें ओविका, पीजी बुकिंग नियम नोएडा, किराया नियम नोएडा, ओविका लिविंग नियम" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://www.ovikaliving.com/terms-and-conditions" />
+        <meta property="og:type" content="website" />
         <meta property="og:title" content="Terms & Conditions | OvikaLiving Noida" />
         <meta property="og:description" content="OvikaLiving Terms and Conditions for PG, co-living and rental bookings in Noida & Greater Noida." />
         <meta property="og:url" content="https://www.ovikaliving.com/terms-and-conditions" />
+        <meta property="og:site_name" content="OvikaLiving" />
+        <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
+        <meta property="og:locale" content="en_IN" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Terms & Conditions | OvikaLiving" />
+        <meta name="twitter:description" content="OvikaLiving Terms and Conditions for PG, co-living and rental bookings in Noida & Greater Noida." />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "Terms & Conditions | OvikaLiving",
+          "url": "https://www.ovikaliving.com/terms-and-conditions",
+          "isPartOf": { "@id": "https://www.ovikaliving.com/#website" }
+        })}</script>
       </Helmet>
       <h1 className="page-title">
         Terms and Conditions

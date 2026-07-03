@@ -52,6 +52,33 @@ const FAQ = () => {
         <meta name="twitter:title" content="FAQ | OvikaLiving PG & Co-Living Help Center Noida" />
         <meta name="twitter:description" content="All answers about OvikaLiving PG, co-living & flexible stays in Noida. Booking, cancellation, amenities, policies & more." />
         <meta name="twitter:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            { "@type": "Question", "name": "What is OvikaLiving.com?", "acceptedAnswer": { "@type": "Answer", "text": "OvikaLiving.com is a technology-driven marketplace that connects guests with property owners offering short-term stays, PGs, co-living spaces, and rental accommodations across India." } },
+            { "@type": "Question", "name": "Who operates OvikaLiving.com?", "acceptedAnswer": { "@type": "Answer", "text": "OvikaLiving.com is a flagship brand operated under Townmanor Technologies Pvt. Ltd." } },
+            { "@type": "Question", "name": "Is OvikaLiving.com available outside India?", "acceptedAnswer": { "@type": "Answer", "text": "Currently, OvikaLiving.com operates only within India, and all transactions are processed in Indian Rupees (INR)." } },
+            { "@type": "Question", "name": "How do I book a property on OvikaLiving.com?", "acceptedAnswer": { "@type": "Answer", "text": "Guests can search for properties, review listings, and make bookings directly through the OvikaLiving.com platform." } },
+            { "@type": "Question", "name": "How are payments handled?", "acceptedAnswer": { "@type": "Answer", "text": "All payments are processed securely through authorized payment gateways. OvikaLiving.com does not store your card or banking details." } },
+            { "@type": "Question", "name": "What is the cancellation and refund policy?", "acceptedAnswer": { "@type": "Answer", "text": "Cancellation and refund eligibility depends on the timing of cancellation and the applicable policy shown during booking. Refer to the Refund & Cancellation Policy for details." } },
+            { "@type": "Question", "name": "What happens if a host cancels my booking?", "acceptedAnswer": { "@type": "Answer", "text": "If a host cancels a confirmed booking, you are eligible for a full refund. OvikaLiving.com may also assist in finding alternative accommodation, subject to availability." } },
+            { "@type": "Question", "name": "Are properties verified?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Property owners are required to submit identity documents, and listings are reviewed before being published." } },
+            { "@type": "Question", "name": "What if I face an issue during my stay?", "acceptedAnswer": { "@type": "Answer", "text": "Guests can contact OvikaLiving.com support for assistance. However, the stay itself is managed directly between the guest and the property owner." } },
+            { "@type": "Question", "name": "How do I list my property on OvikaLiving.com?", "acceptedAnswer": { "@type": "Answer", "text": "You can list your property by filling out the property onboarding form on our website. Alternatively, you can choose assisted listing through our team." } },
+            { "@type": "Question", "name": "Does OvikaLiving.com charge any commission?", "acceptedAnswer": { "@type": "Answer", "text": "No, OvikaLiving.com does not charge commission on bookings." } },
+            { "@type": "Question", "name": "Who decides house rules and guest eligibility?", "acceptedAnswer": { "@type": "Answer", "text": "Property owners set their own house rules, check-in policies, and guest limits." } },
+            { "@type": "Question", "name": "How do I receive payments?", "acceptedAnswer": { "@type": "Answer", "text": "Payment flow details are communicated during booking. Owners receive payments as per the agreed process without commission deductions." } },
+            { "@type": "Question", "name": "Can OvikaLiving.com remove my listing?", "acceptedAnswer": { "@type": "Answer", "text": "Listings may be suspended or removed if they violate platform policies, contain misleading information, or fail verification checks." } },
+            { "@type": "Question", "name": "Does OvikaLiving.com own or manage the listed properties?", "acceptedAnswer": { "@type": "Answer", "text": "No. OvikaLiving.com acts as a technology intermediary and does not own or manage most properties listed on the platform." } },
+            { "@type": "Question", "name": "How is my personal data protected?", "acceptedAnswer": { "@type": "Answer", "text": "OvikaLiving.com follows applicable Indian data protection laws and implements security measures to protect user data. Refer to the Privacy Policy for details." } },
+            { "@type": "Question", "name": "Is my ID safe with OvikaLiving.com?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Identity documents are used only for verification and compliance purposes and are stored securely by OvikaLiving.com." } },
+            { "@type": "Question", "name": "Does OvikaLiving.com share my data with third parties?", "acceptedAnswer": { "@type": "Answer", "text": "Personal data is shared only with trusted service providers where necessary (e.g., payment processing) or when required by law." } },
+            { "@type": "Question", "name": "What laws govern OvikaLiving.com?", "acceptedAnswer": { "@type": "Answer", "text": "All services are governed by the laws of India, as outlined in the Terms & Conditions." } },
+            { "@type": "Question", "name": "Can OvikaLiving.com change its policies?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. OvikaLiving.com may update its policies from time to time. Updated versions will be published on the platform." } },
+            { "@type": "Question", "name": "How can I contact OvikaLiving support?", "acceptedAnswer": { "@type": "Answer", "text": "You can contact OvikaLiving at enquiry@ovikaLiving.com or support@townmanor.ai" } }
+          ]
+        })}</script>
       </Helmet>
       <div className="faq-page-header-unique">
         <h1>Frequently Asked Questions</h1>

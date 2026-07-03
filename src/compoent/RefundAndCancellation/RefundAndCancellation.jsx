@@ -13,11 +13,24 @@ const RefundAndCancellation = () => {
         <meta name="keywords" content="ovikaliving refund policy, cancellation policy pg noida, refund pg booking noida, ovika cancellation, co-living cancellation policy, rental refund noida, ovika money back, रिफंड नीति नोएडा, पीजी बुकिंग कैंसिलेशन नोएडा, ओविका रिफंड पॉलिसी, पैसे वापसी पीजी नोएडा, किराया रद्द नोएडा" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://www.ovikaliving.com/refund-cancellation-policy" />
+        <meta property="og:type" content="website" />
         <meta property="og:title" content="Refund & Cancellation Policy | OvikaLiving" />
         <meta property="og:description" content="OvikaLiving's refund and cancellation policy for PG and co-living bookings in Noida & Greater Noida." />
         <meta property="og:url" content="https://www.ovikaliving.com/refund-cancellation-policy" />
+        <meta property="og:site_name" content="OvikaLiving" />
+        <meta property="og:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
+        <meta property="og:locale" content="en_IN" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Refund & Cancellation Policy | OvikaLiving" />
+        <meta name="twitter:description" content="OvikaLiving's refund and cancellation policy for PG and co-living bookings in Noida & Greater Noida." />
+        <meta name="twitter:image" content="https://www.ovikaliving.com/ovikalivinglogonew.png" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "Refund & Cancellation Policy | OvikaLiving",
+          "url": "https://www.ovikaliving.com/refund-cancellation-policy",
+          "isPartOf": { "@id": "https://www.ovikaliving.com/#website" }
+        })}</script>
       </Helmet>
       {/* Hero Header */}
       <div className="refund-hero-section-unique">

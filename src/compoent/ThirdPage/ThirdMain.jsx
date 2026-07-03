@@ -197,6 +197,45 @@ function ThirdMain() {
         <meta name="twitter:title" content={`${name} | Premium Co-Living in Noida`} />
         <meta name="twitter:description" content={seoDescription} />
         <meta name="twitter:image" content={images[0] || 'https://www.ovikaliving.com/ovikalivinglogonew.png'} />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "LodgingBusiness",
+              "@id": `https://www.ovikaliving.com/tmluxespecific/${id}`,
+              "name": name || "OvikaLiving Signature Stay",
+              "description": (description || seoDescription).substring(0, 300),
+              "url": `https://www.ovikaliving.com/tmluxespecific/${id}`,
+              "image": images.length > 0
+                ? images.slice(0, 6).map((url, i) => ({
+                    "@type": "ImageObject",
+                    "url": url,
+                    "name": `${name || 'Property'} — Photo ${i + 1}`,
+                    "representativeOfPage": i === 0
+                  }))
+                : [{ "@type": "ImageObject", "url": "https://www.ovikaliving.com/ovikalivinglogonew.png" }],
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": address || "",
+                "addressLocality": "Noida",
+                "addressRegion": "Uttar Pradesh",
+                "addressCountry": "IN"
+              },
+              ...(latitude && longitude ? { "geo": { "@type": "GeoCoordinates", "latitude": latitude, "longitude": longitude } } : {}),
+              "priceRange": pricePerNight ? `₹${Number(pricePerNight).toLocaleString('en-IN')}` : "₹₹",
+              "amenityFeature": amenities.slice(0, 10).map(a => ({ "@type": "LocationFeatureSpecification", "name": typeof a === 'string' ? a : (a?.name ?? a?.label ?? ''), "value": true })),
+              "brand": { "@type": "Brand", "name": "OvikaLiving" }
+            },
+            {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.ovikaliving.com/" },
+                { "@type": "ListItem", "position": 2, "name": "Signature Stays", "item": "https://www.ovikaliving.com/tmluxe" },
+                { "@type": "ListItem", "position": 3, "name": name || "Property", "item": `https://www.ovikaliving.com/tmluxespecific/${id}` }
+              ]
+            }
+          ]
+        })}</script>
       </Helmet>
 
       <TranquilPerch
