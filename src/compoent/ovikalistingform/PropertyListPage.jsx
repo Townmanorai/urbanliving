@@ -640,14 +640,6 @@ const PropertyCard = ({ property, rentalType }) => {
           </div>
         </div>
 
-        {/* Address below heading — Signature nightly only */}
-        {isSignatureProp && !isMonthly && (displayCity || displayAddress) && (
-          <div style={{ fontSize: 12, color: '#666', marginTop: 2, marginBottom: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
-            <FiMapPin style={{ fontSize: 11, color: '#C98B3E', flexShrink: 0 }} />
-            <span>{[displayCity, displayAddress].filter(Boolean).join(', ')}</span>
-          </div>
-        )}
-
         {/* Location */}
         <div className="plp-hcard-loc">
           <FiMapPin style={{ fontSize: 11, color: '#C98B3E', flexShrink: 0 }} />
