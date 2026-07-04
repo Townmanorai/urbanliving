@@ -1093,6 +1093,7 @@ const PropertyListPage = () => {
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
+  const [mobSearchExpanded, setMobSearchExpanded] = useState(false);
   const [geocodedCoords, setGeocodedCoords] = useState({});
   const geocodeQueueRef = useRef(null);
   const [showCitySug, setShowCitySug] = useState(false);
@@ -2754,15 +2755,62 @@ const PropertyListPage = () => {
             )}
 
             {/* ── Enhanced Search Bar ── */}
+            {isMobile && !mobSearchExpanded ? (
+              <div
+                className="plp-topbar-search"
+                onClick={() => setMobSearchExpanded(true)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 7,
+                  background: '#fff', border: '1.5px solid #e8d9c0',
+                  borderRadius: 11, padding: '10px 12px', cursor: 'pointer',
+                  boxShadow: '0 1px 4px rgba(201,139,62,0.08)',
+                }}
+              >
+                <FiSearch style={{ fontSize: 13, color: '#b89a70', flexShrink: 0 }} />
+                <span style={{
+                  flex: 1, fontSize: 12.5, color: search ? '#1a1a1a' : '#9c8563',
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: search ? 600 : 400,
+                }}>
+                  {search || (
+                    activeCat?.id === 'PG & Co-Living'    ? 'Search PG by locality, sector...' :
+                    activeCat?.id === 'Hotel Stays'        ? 'Search hotels by area or name...' :
+                    activeCat?.id === 'Homestays & BnB'    ? 'Search homestays by area or name...' :
+                    activeCat?.id === 'Apartments & Villas'? 'Search apartments by locality...' :
+                    activeCat?.id === 'Signature Stays'    ? 'Search by locality or property name...' :
+                    'City, area, property...'
+                  )}
+                </span>
+                {(checkIn || checkOut) && (
+                  <span style={{ fontSize: 11, color: '#C98B3E', fontWeight: 600, flexShrink: 0, whiteSpace: 'nowrap' }}>
+                    {checkIn ? fmtDate(checkIn) : ''}{checkOut ? ` – ${fmtDate(checkOut)}` : ''}
+                  </span>
+                )}
+              </div>
+            ) : (
             <div className="plp-topbar-search" ref={searchBoxRef} style={{ position: 'relative' }}>
+              {isMobile && (
+                <button
+                  onClick={() => setMobSearchExpanded(false)}
+                  style={{
+                    position: 'absolute', top: -10, right: -6, zIndex: 5,
+                    width: 26, height: 26, borderRadius: '50%', border: '1.5px solid #e8d9c0',
+                    background: '#fff', color: '#8B5E2A', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                  }}
+                  aria-label="Collapse search"
+                >
+                  <FiX style={{ fontSize: 13 }} />
+                </button>
+              )}
               <div style={{
-                display: 'flex', alignItems: 'center', gap: 0,
+                display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', gap: 0,
                 background: '#fff', border: '1.5px solid #e8d9c0',
                 borderRadius: 11, overflow: 'visible',
                 boxShadow: '0 1px 4px rgba(201,139,62,0.08)',
               }}>
                 {/* City / keyword search */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 8px', flex: 1, minWidth: 0, borderRight: '1px solid #e8d9c0', position: 'relative' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '8px 10px', flex: 1, minWidth: 0, borderRight: isMobile ? 'none' : '1px solid #e8d9c0', borderBottom: isMobile ? '1px solid #e8d9c0' : 'none', position: 'relative' }}>
                   <FiSearch style={{ fontSize: 12, color: '#b89a70', flexShrink: 0 }} />
                   <input
                     type="text"
@@ -2908,7 +2956,7 @@ const PropertyListPage = () => {
                 {!isMonthly && (
                   <div
                     onMouseDown={() => { setShowCheckInCal(v => !v); setShowCheckOutCal(false); setShowCitySug(false); setShowGuestsBox(false); }}
-                    style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 8px', cursor: 'pointer', borderRight: '1px solid #e8d9c0', flexShrink: 0, position: 'relative' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '8px 10px', cursor: 'pointer', borderRight: isMobile ? 'none' : '1px solid #e8d9c0', borderBottom: isMobile ? '1px solid #e8d9c0' : 'none', flexShrink: 0, position: 'relative' }}
                   >
                     <FiCalendar style={{ fontSize: 12, color: '#b89a70' }} />
                     <span style={{ fontSize: 12, whiteSpace: 'nowrap', color: (checkIn || checkOut) ? '#1a1a1a' : '#b89a70' }}>
@@ -2945,7 +2993,7 @@ const PropertyListPage = () => {
 
                 {/* PG Type toggles — only for PG & Co-Living category */}
                 {activeCat?.id === 'PG & Co-Living' && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 8px', borderRight: '1px solid #e8d9c0', flexShrink: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: isMobile ? '8px 10px' : '4px 8px', borderRight: isMobile ? 'none' : '1px solid #e8d9c0', borderBottom: isMobile ? '1px solid #e8d9c0' : 'none', flexShrink: 0, flexWrap: isMobile ? 'wrap' : 'nowrap' }}>
                     {[{ id: 'boys', label: 'Boys' }, { id: 'girls', label: 'Girls' }, { id: 'coliving', label: 'Co-Living' }].map(({ id, label }) => {
                       const active = pgSubFilter === id;
                       return (
@@ -2963,7 +3011,7 @@ const PropertyListPage = () => {
                 {!isMonthly && activeCat?.id !== 'PG & Co-Living' && (
                 <div
                   onMouseDown={() => { setShowGuestsBox(v => !v); setShowCitySug(false); setShowCheckInCal(false); setShowCheckOutCal(false); }}
-                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 8px', cursor: 'pointer', flexShrink: 0, position: 'relative', borderRight: '1px solid #e8d9c0' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '8px 10px', cursor: 'pointer', flexShrink: 0, position: 'relative', borderRight: isMobile ? 'none' : '1px solid #e8d9c0' }}
                 >
                   <FiHeart style={{ fontSize: 12, color: '#b89a70' }} />
                   <span style={{ fontSize: 12, color: '#1a1a1a', whiteSpace: 'nowrap' }}>{guests} Guest{guests !== 1 ? 's' : ''}</span>
@@ -2979,13 +3027,22 @@ const PropertyListPage = () => {
 
                 {/* Search button */}
                 <button
-                  onMouseDown={handleSearchSubmit}
-                  style={{ padding: '5px 12px', background: '#C98B3E', color: '#fff', border: 'none', borderRadius: '0 9px 9px 0', fontWeight: 700, fontSize: 12, cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 5 }}
+                  onMouseDown={() => { handleSearchSubmit(); if (isMobile) setMobSearchExpanded(false); }}
+                  style={{
+                    padding: isMobile ? '10px 12px' : '5px 12px',
+                    background: '#C98B3E', color: '#fff', border: 'none',
+                    borderRadius: isMobile ? 9 : '0 9px 9px 0',
+                    fontWeight: 700, fontSize: 12, cursor: 'pointer', fontFamily: 'inherit', flexShrink: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                    width: isMobile ? '100%' : 'auto',
+                  }}
                 >
                   <FiSearch style={{ fontSize: 13 }} />
+                  {isMobile && <span>Search</span>}
                 </button>
               </div>
             </div>
+            )}
 
             {/* Right: Near me + Sort + List Property */}
             <div className="plp-topbar-right">
