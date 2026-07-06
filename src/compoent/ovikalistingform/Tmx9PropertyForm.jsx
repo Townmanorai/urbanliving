@@ -97,7 +97,8 @@ function useFilePreviews() {
     });
   };
   const clear = () => setPreviews([]);
-  return { previews, update, clear };
+  const remove = (index) => setPreviews(prev => prev.filter((_, i) => i !== index));
+  return { previews, update, clear, remove };
 }
 
 const ACCEPTED_MIME = ["application/pdf", "image/avif"];
@@ -352,9 +353,7 @@ const Tmx9PropertyForm = () => {
   };
 
   const removePhoto = (index) => {
-    const updated = photoPreviews.previews.filter((_, i) => i !== index);
-    photoPreviews.update([]);
-    setTimeout(() => photoPreviews.update(updated.map((p) => p.file)), 0);
+    photoPreviews.remove(index);
     if (coverIndex === index) setCoverIndex(null);
     else if (coverIndex > index) setCoverIndex((c) => c - 1);
   };
