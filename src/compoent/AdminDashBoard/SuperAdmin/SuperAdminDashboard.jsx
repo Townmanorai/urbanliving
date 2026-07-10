@@ -148,7 +148,7 @@ export default function SuperAdminDashboard() {
   const [userForm, setUserForm] = useState({ username: '', email: '', phone_number: '', role: 'user', password: '' });
   const [searchTerm, setSearchTerm] = useState("");
   const [userSearch, setUserSearch] = useState(""); // Search for Users
-  const [userPropertyIdSearch, setUserPropertyIdSearch] = useState(""); // Search for Users by Property ID
+  const [propertyIdSearch, setPropertyIdSearch] = useState(""); // Search Users by Property ID only
   const [bookingFilter, setBookingFilter] = useState("ALL");
   const [filterType, setFilterType] = useState("ALL");
   const [propertyTypes, setPropertyTypes] = useState([
@@ -1481,20 +1481,24 @@ export default function SuperAdminDashboard() {
                         const filteredUsers = usersList.filter(u => {
                             const uid = String(u.id || u._id || '');
 
-                            if (userPropertyIdSearch) {
-                                const pid = userPropertyIdSearch.toLowerCase();
-                                const matchesPropertyId = (properties||[]).some(p =>
-                                    String(p.id || p._id || '').toLowerCase().includes(pid) &&
+                            if(propertyIdSearch) {
+                                const pid = propertyIdSearch.toLowerCase();
+                                return (properties||[]).some(p =>
+                                    String(p.id || p._id || '').toLowerCase() === pid &&
                                     String(p.owner_id || '') === uid
                                 );
-                                if (!matchesPropertyId) return false;
                             }
 
-                            if (!userSearch) return true;
+                            if(!userSearch) return true;
                             const s = userSearch.toLowerCase();
-                            return (u.username||'').toLowerCase().includes(s) ||
+                            const matchesDirect = (u.username||'').toLowerCase().includes(s) ||
                                    (u.email||'').toLowerCase().includes(s) ||
                                    (u.phone_number||'').toString().includes(s);
+                            const matchesPropertyId = (properties||[]).some(p =>
+                                String(p.id || p._id || '').toLowerCase().includes(s) &&
+                                String(p.owner_id || '') === uid
+                            );
+                            return matchesDirect || matchesPropertyId;
                         });
                         
                         const totalUserPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
@@ -1510,24 +1514,46 @@ export default function SuperAdminDashboard() {
                                     <div style={{display: 'flex', gap: '10px'}}>
                                         <input
                                             type="text"
-                                            placeholder="Search by property ID..."
+                                            placeholder="Search by name, email, phone..."
                                             className="sa-search-input"
-                                            value={userPropertyIdSearch}
+                                            value={userSearch}
                                             onChange={(e) => {
-                                                setUserPropertyIdSearch(e.target.value);
+                                                setUserSearch(e.target.value);
+                                                if(e.target.value) setPropertyIdSearch("");
                                                 setUserPage(1); // Reset to page 1 on search
                                             }}
                                         />
                                         <input
                                             type="text"
-                                            placeholder="Search by name, email, ph..."
+                                            placeholder="Property ID..."
                                             className="sa-search-input"
-                                            value={userSearch}
-                                            onChange={(e) => {
-                                                setUserSearch(e.target.value);
-                                                setUserPage(1); // Reset to page 1 on search
+                                            style={{maxWidth: '140px'}}
+                                            value={propertyIdSearch}
+                                            onChange={(e) => setPropertyIdSearch(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if(e.key === 'Enter') {
+                                                    if(propertyIdSearch) setUserSearch("");
+                                                    setUserPage(1);
+                                                }
                                             }}
                                         />
+                                        <button
+                                            className="sa-btn-primary"
+                                            onClick={() => {
+                                                if(propertyIdSearch) setUserSearch("");
+                                                setUserPage(1);
+                                            }}
+                                        >
+                                            Search
+                                        </button>
+                                        {propertyIdSearch && (
+                                            <button
+                                                className="sa-btn-secondary"
+                                                onClick={() => { setPropertyIdSearch(""); setUserPage(1); }}
+                                            >
+                                                Clear
+                                            </button>
+                                        )}
                                         <button className="sa-btn-primary" onClick={() => openUserModal()}>+ Add User</button>
                                     </div>
                                 </div>
@@ -1537,7 +1563,7 @@ export default function SuperAdminDashboard() {
                                             <th>ID</th>
                                             <th>User Profile</th>
                                             <th>Contact Info</th>
-                                            <th>Property ID(s)</th>
+                                            <th>Property ID</th>
                                             <th>Status</th>
                                             <th>Joined</th>
                                             <th>Actions</th>
@@ -1568,14 +1594,12 @@ export default function SuperAdminDashboard() {
                                                 </td>
                                                 <td>
                                                     {ownedPropertyIds.length > 0 ? (
-                                                        <div style={{display:'flex', flexWrap:'wrap', gap:'4px', maxWidth:'160px'}}>
+                                                        <div style={{display:'flex', flexWrap:'wrap', gap:'4px'}}>
                                                             {ownedPropertyIds.map(pid => (
-                                                                <span key={pid} style={{fontSize:'10px', fontFamily:'monospace', background:'#eff6ff', color:'#3b82f6', padding:'2px 6px', borderRadius:'4px', whiteSpace:'nowrap'}}>
-                                                                    #{pid}
-                                                                </span>
+                                                                <span key={pid} style={{fontSize:'11px', fontFamily:'monospace', background:'#eff6ff', color:'#3b82f6', padding:'2px 6px', borderRadius:'4px'}}>#{pid}</span>
                                                             ))}
                                                         </div>
-                                                    ) : <span style={{fontSize:'11px', color:'#94a3b8'}}>—</span>}
+                                                    ) : <span style={{fontSize:'11px', color:'#cbd5e1'}}>—</span>}
                                                 </td>
                                                 <td>
                                                     <div style={{display:'flex', gap:'4px'}}>
