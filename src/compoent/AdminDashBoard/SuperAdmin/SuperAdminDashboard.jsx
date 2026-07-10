@@ -148,6 +148,7 @@ export default function SuperAdminDashboard() {
   const [userForm, setUserForm] = useState({ username: '', email: '', phone_number: '', role: 'user', password: '' });
   const [searchTerm, setSearchTerm] = useState("");
   const [userSearch, setUserSearch] = useState(""); // Search for Users
+  const [userPropertyIdSearch, setUserPropertyIdSearch] = useState(""); // Search for Users by Property ID
   const [bookingFilter, setBookingFilter] = useState("ALL");
   const [filterType, setFilterType] = useState("ALL");
   const [propertyTypes, setPropertyTypes] = useState([
@@ -1478,10 +1479,21 @@ export default function SuperAdminDashboard() {
                     {/* PRIMARY USER TABLE (REAL API) */}
                     {(() => {
                         const filteredUsers = usersList.filter(u => {
-                            if(!userSearch) return true;
+                            const uid = String(u.id || u._id || '');
+
+                            if (userPropertyIdSearch) {
+                                const pid = userPropertyIdSearch.toLowerCase();
+                                const matchesPropertyId = (properties||[]).some(p =>
+                                    String(p.id || p._id || '').toLowerCase().includes(pid) &&
+                                    String(p.owner_id || '') === uid
+                                );
+                                if (!matchesPropertyId) return false;
+                            }
+
+                            if (!userSearch) return true;
                             const s = userSearch.toLowerCase();
-                            return (u.username||'').toLowerCase().includes(s) || 
-                                   (u.email||'').toLowerCase().includes(s) || 
+                            return (u.username||'').toLowerCase().includes(s) ||
+                                   (u.email||'').toLowerCase().includes(s) ||
                                    (u.phone_number||'').toString().includes(s);
                         });
                         
@@ -1496,9 +1508,19 @@ export default function SuperAdminDashboard() {
                                         <div className="sa-badge" style={{background:'#eff6ff', color:'#3b82f6', border:'none'}}>{filteredUsers.length} Total</div>
                                     </div>
                                     <div style={{display: 'flex', gap: '10px'}}>
-                                        <input 
-                                            type="text" 
-                                            placeholder="Search users..." 
+                                        <input
+                                            type="text"
+                                            placeholder="Search by property ID..."
+                                            className="sa-search-input"
+                                            value={userPropertyIdSearch}
+                                            onChange={(e) => {
+                                                setUserPropertyIdSearch(e.target.value);
+                                                setUserPage(1); // Reset to page 1 on search
+                                            }}
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Search by name, email, ph..."
                                             className="sa-search-input"
                                             value={userSearch}
                                             onChange={(e) => {
@@ -1515,20 +1537,26 @@ export default function SuperAdminDashboard() {
                                             <th>ID</th>
                                             <th>User Profile</th>
                                             <th>Contact Info</th>
+                                            <th>Property ID(s)</th>
                                             <th>Status</th>
                                             <th>Joined</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {displayUsers.map(u => (
+                                        {displayUsers.map(u => {
+                                            const uid = String(u.id || u._id || '');
+                                            const ownedPropertyIds = (properties||[])
+                                                .filter(p => String(p.owner_id || '') === uid)
+                                                .map(p => p.id || p._id);
+                                            return (
                                             <tr key={u.id || u._id}>
                                                 <td style={{fontFamily:'monospace', color:'#64748b'}}>#{(u.id||u._id || '').toString().slice(-4)}</td>
                                                 <td>
                                                     <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
-                                                        <img 
-                                                            src={u.profile_photo || 'https://via.placeholder.com/40'} 
-                                                            alt="av" 
+                                                        <img
+                                                            src={u.profile_photo || 'https://via.placeholder.com/40'}
+                                                            alt="av"
                                                             style={{width:'36px', height:'36px', borderRadius:'50%', objectFit:'cover', border:'1px solid #e2e8f0'}}
                                                         />
                                                         <div style={{fontWeight:'600', color:'#1e293b'}}>{u.username || "No Name"}</div>
@@ -1537,6 +1565,17 @@ export default function SuperAdminDashboard() {
                                                 <td>
                                                     <div style={{fontSize:'13px', fontWeight:'500'}}>{u.email}</div>
                                                     <div style={{fontSize:'11px', color:'#64748b'}}>{u.phone_number || u.phone || "N/A"}</div>
+                                                </td>
+                                                <td>
+                                                    {ownedPropertyIds.length > 0 ? (
+                                                        <div style={{display:'flex', flexWrap:'wrap', gap:'4px', maxWidth:'160px'}}>
+                                                            {ownedPropertyIds.map(pid => (
+                                                                <span key={pid} style={{fontSize:'10px', fontFamily:'monospace', background:'#eff6ff', color:'#3b82f6', padding:'2px 6px', borderRadius:'4px', whiteSpace:'nowrap'}}>
+                                                                    #{pid}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    ) : <span style={{fontSize:'11px', color:'#94a3b8'}}>—</span>}
                                                 </td>
                                                 <td>
                                                     <div style={{display:'flex', gap:'4px'}}>
@@ -1563,9 +1602,10 @@ export default function SuperAdminDashboard() {
                                                     </div>
                                                 </td>
                                             </tr>
-                                        ))}
+                                            );
+                                        })}
                                         {displayUsers.length === 0 && (
-                                            <tr><td colSpan="6" className="sa-empty">No registered users found.</td></tr>
+                                            <tr><td colSpan="7" className="sa-empty">No registered users found.</td></tr>
                                         )}
                                     </tbody>
                                 </table>
@@ -3359,7 +3399,7 @@ export default function SuperAdminDashboard() {
                               rejected:  { bg: '#fee2e2', color: '#991b1b' },
                             }[status] || { bg: '#f3f4f6', color: '#374151' };
 
-                            const amount   = Number(b.total_price || b.total_amount || b.amount || 0);
+                            const amount   = calculateBookingAmount(b);
                             const subtotal = Number(b.subtotal || 0);
                             const disc     = Number(b.discount_amount || 0);
                             const gst      = Number(b.gst_amount || 0);

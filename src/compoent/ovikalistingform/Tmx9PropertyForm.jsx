@@ -125,6 +125,7 @@ const Tmx9PropertyForm = () => {
     : DEFAULT_PROPERTY_CATEGORIES[0];
 
   const isHomestay = initCategory === "Homestays & BnB";
+  const isHotel = initCategory === "Hotel Stays";
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -147,6 +148,7 @@ const Tmx9PropertyForm = () => {
     longitude: "",
     bedroomDetails: [{ id: 0, type: "King Bed", count: 1 }],
     bathroomDetails: [{ id: 0, type: "Attached", count: 1 }],
+    hotelRoomTypes: [{ id: 0, roomType: "Standard Room", numberOfRooms: 1, bedType: "King Bed", maxOccupancy: 2, areaSqFt: "", pricePerNight: "" }],
     beds: 1,
     area: "",
     amenities: {},
@@ -256,7 +258,14 @@ const Tmx9PropertyForm = () => {
       }
     }
 
-    if (s === 3 && !isHomestay) {
+    if (s === 3 && isHotel) {
+      const totalRooms = form.hotelRoomTypes.reduce((sum, item) => sum + (Number(item.numberOfRooms) || 0), 0);
+      if (totalRooms <= 0) newErrors.hotelRoomTypes = "At least one room type with a room count is required";
+      if (form.hotelRoomTypes.some(r => !r.roomType)) newErrors.hotelRoomTypes = "Please select a room category for all room types";
+      if (form.hotelRoomTypes.some(r => !r.pricePerNight || Number(r.pricePerNight) <= 0)) newErrors.hotelRoomTypes = "Please enter a valid price per night for all room types";
+    }
+
+    if (s === 3 && !isHomestay && !isHotel) {
       const totalBedrooms = form.bedroomDetails.reduce((sum, item) => sum + (Number(item.count) || 0), 0);
       const totalBathrooms = form.bathroomDetails.reduce((sum, item) => sum + (Number(item.count) || 0), 0);
       if (totalBedrooms <= 0) newErrors.bedrooms = "At least one bedroom is required";
@@ -618,6 +627,14 @@ const Tmx9PropertyForm = () => {
         beds: form.beds,
         bathrooms: form.bathroomDetails.map(d => ({ type: d.type, count: d.count })),
         area: form.area,
+        hotelRoomTypes: isHotel ? form.hotelRoomTypes.map(r => ({
+          roomType: r.roomType,
+          numberOfRooms: Number(r.numberOfRooms) || 0,
+          bedType: r.bedType,
+          maxOccupancy: Number(r.maxOccupancy) || 0,
+          areaSqFt: r.areaSqFt,
+          pricePerNight: Number(r.pricePerNight) || 0,
+        })) : undefined,
         amenities: Object.keys(form.amenities || {}).filter((k) => form.amenities[k]),
         checkInTime: form.checkInTime,
         checkOutTime: form.checkOutTime,
@@ -959,10 +976,73 @@ const Tmx9PropertyForm = () => {
         {/* ── STEP 3: Rooms / Basics ── */}
         {step === 3 && (
           <section className="tmx9pf-section">
-            <h2 className="tmx9pf-section-title">{isHomestay ? "Share some basics" : "Room Details"}</h2>
+            <h2 className="tmx9pf-section-title">{isHomestay ? "Share some basics" : isHotel ? "Room Arrangement" : "Room Details"}</h2>
             {isHomestay && <p style={{color:'#6b7280',fontSize:14,marginBottom:20,marginTop:-8}}>You can always update these later.</p>}
+            {isHotel && <p style={{color:'#6b7280',fontSize:14,marginBottom:20,marginTop:-8}}>Add every room category your hotel offers, with how many rooms of each type and their nightly price.</p>}
             <div className="tmx9pf-grid">
-              {isHomestay ? (
+              {isHotel ? (
+                <div className="tmx9pf-field full">
+                  <label className="tmx9pf-label">Room Categories *</label>
+                  <div className="tmx9pf-dynamic-list">
+                    {form.hotelRoomTypes.map((item, index) => (
+                      <div key={item.id} className="tmx9pf-dynamic-row" style={{ flexWrap: 'wrap' }}>
+                        <select
+                          value={item.roomType}
+                          onChange={(e) => { const list = [...form.hotelRoomTypes]; list[index].roomType = e.target.value; setForm(f => ({ ...f, hotelRoomTypes: list })); }}
+                          className="tmx9pf-select" style={{ flex: 2, minWidth: 150 }}
+                        >
+                          <option value="">Select Room Category</option>
+                          {["Standard Room", "Deluxe Room", "Suite", "Executive Room", "Family Room", "Presidential Suite"].map(opt => (
+                            <option key={opt} value={opt}>{opt}</option>
+                          ))}
+                        </select>
+                        <input
+                          type="number" min="1" placeholder="No. of Rooms"
+                          value={item.numberOfRooms}
+                          onChange={(e) => { const list = [...form.hotelRoomTypes]; list[index].numberOfRooms = Number(e.target.value); setForm(f => ({ ...f, hotelRoomTypes: list })); }}
+                          className="tmx9pf-input" style={{ flex: 1, minWidth: 110 }}
+                        />
+                        <select
+                          value={item.bedType}
+                          onChange={(e) => { const list = [...form.hotelRoomTypes]; list[index].bedType = e.target.value; setForm(f => ({ ...f, hotelRoomTypes: list })); }}
+                          className="tmx9pf-select" style={{ flex: 1, minWidth: 130 }}
+                        >
+                          {["King Bed", "Queen Bed", "Twin Beds", "Double Bed", "Single Bed"].map(opt => (
+                            <option key={opt} value={opt}>{opt}</option>
+                          ))}
+                        </select>
+                        <input
+                          type="number" min="1" placeholder="Max Occupancy"
+                          value={item.maxOccupancy}
+                          onChange={(e) => { const list = [...form.hotelRoomTypes]; list[index].maxOccupancy = Number(e.target.value); setForm(f => ({ ...f, hotelRoomTypes: list })); }}
+                          className="tmx9pf-input" style={{ flex: 1, minWidth: 110 }}
+                        />
+                        <input
+                          placeholder="Area (sq ft)"
+                          value={item.areaSqFt}
+                          onChange={(e) => { const list = [...form.hotelRoomTypes]; list[index].areaSqFt = e.target.value; setForm(f => ({ ...f, hotelRoomTypes: list })); }}
+                          className="tmx9pf-input" style={{ flex: 1, minWidth: 110 }}
+                        />
+                        <input
+                          type="number" min="0" placeholder="Price / Night (₹)"
+                          value={item.pricePerNight}
+                          onChange={(e) => { const list = [...form.hotelRoomTypes]; list[index].pricePerNight = e.target.value; setForm(f => ({ ...f, hotelRoomTypes: list })); }}
+                          className="tmx9pf-input" style={{ flex: 1, minWidth: 130 }}
+                        />
+                        {form.hotelRoomTypes.length > 1 && (
+                          <button type="button" onClick={() => { const list = form.hotelRoomTypes.filter((_, i) => i !== index); setForm(f => ({ ...f, hotelRoomTypes: list })); }} className="tmx9pf-small-btn danger">×</button>
+                        )}
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => setForm(f => ({ ...f, hotelRoomTypes: [...f.hotelRoomTypes, { id: Date.now(), roomType: "Standard Room", numberOfRooms: 1, bedType: "King Bed", maxOccupancy: 2, areaSqFt: "", pricePerNight: "" }] }))}
+                      className="tmx9pf-small-btn" style={{ marginTop: "8px" }}
+                    >+ Add Room Category</button>
+                  </div>
+                  {renderError("hotelRoomTypes")}
+                </div>
+              ) : isHomestay ? (
                 <div className="tmx9pf-field full">
                   <div className="bnb-stepper-list">
                     {[
