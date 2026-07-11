@@ -1482,9 +1482,10 @@ export default function SuperAdminDashboard() {
                             const uid = String(u.id || u._id || '');
 
                             if(propertyIdSearch) {
-                                const pid = propertyIdSearch.toLowerCase();
+                                const pid = propertyIdSearch.trim().toLowerCase().replace(/^#/, '');
+                                if(!pid) return true;
                                 return (properties||[]).some(p =>
-                                    String(p.id || p._id || '').toLowerCase() === pid &&
+                                    String(p.id || p._id || '').toLowerCase().includes(pid) &&
                                     String(p.owner_id || '') === uid
                                 );
                             }

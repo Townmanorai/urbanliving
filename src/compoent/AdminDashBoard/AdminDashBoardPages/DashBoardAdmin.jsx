@@ -1115,13 +1115,13 @@ export default function DashBoardAdmin() {
     if (bathroomCount > 0) detailsPieces.push(`${bathroomCount} BA`);
     if (prop.max_guests !== undefined && prop.max_guests !== null) detailsPieces.push(`Up to ${prop.max_guests} guests`);
     const details = detailsPieces.join(" • ");
+    const isMonthly = isMonthlyProperty(prop);
     const priceText = prop.price
-      ? activeTab === "monthly"
+      ? isMonthly
         ? `₹${Number(prop.price).toLocaleString("en-IN")} / month`
         : `₹${Number(prop.price).toLocaleString("en-IN")} / night`
       : "";
     const photoUrl = getPropertyPhoto(prop);
-    const isMonthly = isMonthlyProperty(prop);
     return (
       <PropertyCard
         key={prop.id || prop._id || Math.random()}

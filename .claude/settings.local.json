@@ -14,7 +14,11 @@
       "Bash(grep -n \"p\\\\.verified\\\\|p\\\\.is_verified\\\\|p\\\\.badge\" \"c:\\\\\\\\Users\\\\\\\\user\\\\\\\\Desktop\\\\\\\\urbahn living\\\\\\\\urbanliving\\\\\\\\src\\\\\\\\compoent\\\\\\\\AdminDashBoard\\\\\\\\SuperAdmin\\\\\\\\SuperAdminDashboard.jsx\")",
       "Bash(grep -n \"property_name\\\\|property_type\\\\|property_category\" \"c:\\\\\\\\Users\\\\\\\\user\\\\\\\\Desktop\\\\\\\\urbahn living\\\\\\\\urbanliving\\\\\\\\src\\\\\\\\compoent\\\\\\\\AdminDashBoard\\\\\\\\SuperAdmin\\\\\\\\SuperAdminDashboard.jsx\")",
       "Bash(ls -la \"c:\\\\\\\\Users\\\\\\\\user\\\\\\\\Desktop\\\\\\\\urbahn living\\\\\\\\urbanliving\\\\\\\\src\\\\\\\\compoent\\\\\\\\AdminDashBoard\\\\\\\\SuperAdmin\\\\\\\\\")",
-      "Bash(xargs find -type f -name \"*.jsx\")"
+      "Bash(xargs find -type f -name \"*.jsx\")",
+      "Bash(curl -s \"https://www.townmanor.ai/api/ovika/properties/1773\")",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{try{const j=JSON.parse\\(d\\);console.log\\(JSON.stringify\\(j,null,2\\)\\)}catch\\(e\\){console.log\\('err',e.message,d.slice\\(0,500\\)\\)}}\\)\")",
+      "Bash(curl -s \"https://www.townmanor.ai/api/ovika/properties\")",
+      "Bash(node -e ' *)"
     ]
   }
 }

@@ -684,7 +684,7 @@ const RoomTablePerRoom = ({ rooms, pricingMode, propertyPrice, propertyArea, onB
         <tbody>
           {rooms.map((room, i) => {
             const isLast = i === rooms.length - 1;
-            const nightlyP = Number(propertyPrice) || 0;
+            const nightlyP = Number(room.price) || Number(propertyPrice) || 0;
             const monthlyP = Number(room.price) || Number(propertyPrice) || 0;
             const displayP = pricingMode === 'monthly' ? monthlyP : nightlyP;
             const area = room.areaSqFt ? `${room.areaSqFt} sqft` : (propertyArea ? `${propertyArea} sqft` : '—');
@@ -732,7 +732,7 @@ const RoomTablePerRoomMobile = ({ rooms, pricingMode, propertyPrice, onBookNow, 
   return (
     <div className="rm-mob-wrap">
       {rooms.map((room, i) => {
-        const nightlyP = Number(propertyPrice) || 0;
+        const nightlyP = Number(room.price) || Number(propertyPrice) || 0;
         const monthlyP = Number(room.price) || Number(propertyPrice) || 0;
         const displayP = pricingMode === 'monthly' ? monthlyP : nightlyP;
         const isAvailNow = !room.availabilityDate;
@@ -1842,7 +1842,9 @@ const PropertyDetailPage = () => {
 
   // ── ROOM TABLE LOGIC ─────────────────────────────────────────────────────
   const showDistinctRoomPrices = property ? hasDistinctRoomPrices(property.parsedBedrooms, property.meta) : false;
-  const showSingleBookRow = !showDistinctRoomPrices && property?.property_category !== 'PG';
+  const isHotelStaysCategory = property?.property_category === 'Hotel Stays';
+  const showSingleBookRow = !showDistinctRoomPrices && property?.property_category !== 'PG'
+    && !(isHotelStaysCategory && (property?.parsedBedrooms?.length || 0) > 1);
 
   const handleRoomBookNow = (room) => {
     if (!user) { navigate('/login', { state: { from: location } }); return; }
@@ -2301,9 +2303,20 @@ const PropertyDetailPage = () => {
       .trim();
   };
 
+  // For hotels, the per-room-type prices from "Room Arrangement" set the starting (lowest) price.
+  const hotelRoomLowestPrice = (() => {
+    if (property?.property_category !== 'Hotel Stays') return 0;
+    const rooms = property.parsedBedrooms?.length
+      ? property.parsedBedrooms
+      : (property.meta?.hotelRoomTypes || property.hotelRoomTypes);
+    if (!Array.isArray(rooms) || rooms.length === 0) return 0;
+    const prices = rooms.map(r => Number(r.price ?? r.pricePerNight)).filter(p => !isNaN(p) && p > 0);
+    return prices.length ? Math.min(...prices) : 0;
+  })();
+
   const displayBasePrice = pricingMode === 'monthly'
     ? (selectedPrice || Number(property.meta?.perMonthPrice) || Number(property.meta?.monthlyPrice) || Number(property.monthly_price) || Number(property.price) || 0)
-    : (selectedPrice || Number(property.meta?.perNightPrice) || Number(property.price) || 0);
+    : (selectedPrice || Number(property.meta?.perNightPrice) || hotelRoomLowestPrice || Number(property.price) || 0);
 
   // ── OvikaLiving own-managed nightly properties (TM Luxe / Signature 1-5) ───
   const isOvikaOwnProperty = !!(
@@ -3906,7 +3919,7 @@ const PropertyDetailPage = () => {
                     </div>
                     {showDistinctRoomPrices && (
                       <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.8)', marginTop: '2px' }}>
-                        {selectedPrice ? `Selected room: ₹${formatCurrency(selectedPrice)}` : 'Select a room above'}
+                        {selectedPrice ? `Selected room: ₹${formatCurrency(selectedPrice)}` : `Starts at ₹${formatCurrency(displayBasePrice)}/${pricingMode === 'monthly' ? 'month' : 'night'}`}
                       </span>
                     )}
                   </div>

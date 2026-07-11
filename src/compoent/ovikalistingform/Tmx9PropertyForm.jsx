@@ -263,6 +263,7 @@ const Tmx9PropertyForm = () => {
       if (totalRooms <= 0) newErrors.hotelRoomTypes = "At least one room type with a room count is required";
       if (form.hotelRoomTypes.some(r => !r.roomType)) newErrors.hotelRoomTypes = "Please select a room category for all room types";
       if (form.hotelRoomTypes.some(r => !r.pricePerNight || Number(r.pricePerNight) <= 0)) newErrors.hotelRoomTypes = "Please enter a valid price per night for all room types";
+      if (form.hotelRoomTypes.some(r => !r.areaSqFt || !String(r.areaSqFt).trim())) newErrors.hotelRoomTypes = "Please enter the area (sq ft) for all room types";
     }
 
     if (s === 3 && !isHomestay && !isHotel) {
@@ -291,8 +292,10 @@ const Tmx9PropertyForm = () => {
     }
 
     if (s === 8) {
-      if (!form.baseRate && form.baseRate !== 0) newErrors.baseRate = "Base rate is required";
-      if (form.baseRate && Number(form.baseRate) <= 0) newErrors.baseRate = "Rate must be positive";
+      if (!isHotel) {
+        if (!form.baseRate && form.baseRate !== 0) newErrors.baseRate = "Base rate is required";
+        if (form.baseRate && Number(form.baseRate) <= 0) newErrors.baseRate = "Rate must be positive";
+      }
       if (form.weeklyDiscountPct && (form.weeklyDiscountPct < 0 || form.weeklyDiscountPct > 100)) newErrors.weeklyDiscountPct = "Discount must be between 0 and 100";
       if (!form.selfCheckIn?.trim()) newErrors.selfCheckIn = "Please select self-check-in availability";
       if (form.bookingType !== 0 && form.bookingType !== 1) newErrors.bookingType = "Please select booking type";
@@ -593,7 +596,15 @@ const Tmx9PropertyForm = () => {
       fd.append("description", form.mainDescription || "");
       fd.append("city", form.city || "");
       fd.append("address", form.address || "");
-      if (form.baseRate !== "" && form.baseRate !== null) fd.append("price", Number(form.baseRate).toFixed(2));
+      if (isHotel) {
+        const roomPrices = (form.hotelRoomTypes || [])
+          .map(r => Number(r.pricePerNight))
+          .filter(n => !isNaN(n) && n > 0);
+        const lowestRoomPrice = roomPrices.length ? Math.min(...roomPrices) : null;
+        if (lowestRoomPrice !== null) fd.append("price", lowestRoomPrice.toFixed(2));
+      } else if (form.baseRate !== "" && form.baseRate !== null) {
+        fd.append("price", Number(form.baseRate).toFixed(2));
+      }
       fd.append("booking_type", String(form.bookingType));
       fd.append("owner_id", String(ownerId));
       fd.append("rental_type", "short");
@@ -623,7 +634,16 @@ const Tmx9PropertyForm = () => {
       const meta = {
         propertyType: form.propertyType,
         propertyCategory: form.propertyCategory,
-        bedrooms: form.bedroomDetails.map(d => ({ type: d.type, count: d.count })),
+        bedrooms: isHotel
+          ? form.hotelRoomTypes.map(r => ({
+              type: r.roomType,
+              count: Number(r.numberOfRooms) || 0,
+              bedType: r.bedType,
+              areaSqFt: r.areaSqFt,
+              price: Number(r.pricePerNight) || 0,
+              attachedBathroom: true,
+            }))
+          : form.bedroomDetails.map(d => ({ type: d.type, count: d.count })),
         beds: form.beds,
         bathrooms: form.bathroomDetails.map(d => ({ type: d.type, count: d.count })),
         area: form.area,
@@ -674,6 +694,12 @@ const Tmx9PropertyForm = () => {
       fd.append("amenities", JSON.stringify(meta.amenities));
       fd.append("bedrooms", JSON.stringify(meta.bedrooms));
       fd.append("bathrooms", JSON.stringify(meta.bathrooms));
+      if (isHotel) {
+        const firstRoomArea = (form.hotelRoomTypes || []).map(r => r.areaSqFt).find(a => a && String(a).trim());
+        fd.append("area", firstRoomArea || "");
+      } else {
+        fd.append("area", form.area || "");
+      }
       fd.append(
   "guest_policy",
   JSON.stringify({
@@ -1390,11 +1416,18 @@ const Tmx9PropertyForm = () => {
                 </>
               ) : (
                 <>
-                  <div className="tmx9pf-field">
-                    <label className="tmx9pf-label">Base nightly rate (₹) *</label>
-                    <input name="baseRate" type="number" min="0" value={form.baseRate} onChange={handleNumChange} className={`tmx9pf-input ${errors.baseRate ? "tmx9pf-input--error" : ""}`} />
-                    {renderError("baseRate")}
-                  </div>
+                  {!isHotel && (
+                    <div className="tmx9pf-field">
+                      <label className="tmx9pf-label">Base nightly rate (₹) *</label>
+                      <input name="baseRate" type="number" min="0" value={form.baseRate} onChange={handleNumChange} className={`tmx9pf-input ${errors.baseRate ? "tmx9pf-input--error" : ""}`} />
+                      {renderError("baseRate")}
+                    </div>
+                  )}
+                  {isHotel && (
+                    <div className="tmx9pf-field full" style={{background:'#f8fafc', border:'1px solid #e2e8f0', borderRadius:8, padding:'12px 14px', color:'#475569', fontSize:13}}>
+                      Your nightly rate is set per room type in the <strong>Room Arrangement</strong> step. The lowest room price will be shown as the starting price on your listing.
+                    </div>
+                  )}
                   <div className="tmx9pf-field">
                     <label className="tmx9pf-label">Weekend rate</label>
                     <input type="number" name="weekendRate" value={form.weekendRate} onChange={handleChange} className="tmx9pf-input" />
