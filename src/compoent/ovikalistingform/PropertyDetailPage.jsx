@@ -3396,7 +3396,7 @@ const PropertyDetailPage = () => {
                 </div>
               </div>
               {property.balconies > 0 && <div className="feature-box"><FiWind className="f-icon"/><div><strong>{property.balconies}</strong><span>Balcony</span></div></div>}
-              <div className="feature-box"><BiArea className="f-icon"/><div><strong>{property.area || 'N/A'}</strong><span>Sq Ft</span></div></div>
+              {!isHotelStaysCategory && <div className="feature-box"><BiArea className="f-icon"/><div><strong>{property.area || 'N/A'}</strong><span>Sq Ft</span></div></div>}
               {property.max_guests > 0 && !isPG && <div className="feature-box"><FiUser className="f-icon"/><div><strong>{property.max_guests}</strong><span>Guests</span></div></div>}
               {property.facing && <div className="feature-box"><FiCompass className="f-icon"/><div><strong>{property.facing}</strong><span>Facing</span></div></div>}
               {isOvikaOwnProperty && !isNightlyOfferProperty && pricingMode !== 'monthly' && (
