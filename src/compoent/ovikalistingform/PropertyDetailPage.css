@@ -2161,6 +2161,23 @@ table {
     color: #a16207;
   }
 
+  /* 2x2 grid variant — used for the simplified single-room mobile card */
+  .rm-mob-card-stats--grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .rm-mob-card-stats--grid2 .rm-mob-stat {
+    border-right: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .rm-mob-card-stats--grid2 .rm-mob-stat:nth-child(2n) {
+    border-right: none;
+  }
+  .rm-mob-card-stats--grid2 .rm-mob-stat:nth-last-child(-n+2) {
+    border-bottom: none;
+  }
+
   /* Card footer: action buttons */
   .rm-mob-card-foot {
     display: flex;
@@ -4086,10 +4103,31 @@ table {
     grid-template-columns: 1fr 1fr;
     gap: 12px;
   }
+  .pdp-stay-details-grid--monthly {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+  }
   .pdp-stay-detail-item {
     display: flex;
     flex-direction: column;
     gap: 4px;
+  }
+  .pdp-stay-details-grid--monthly .pdp-stay-detail-item {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .pdp-stay-details-grid--monthly .pdp-sd-label {
+    font-size: 0.56rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pdp-stay-details-grid--monthly .pdp-sd-value {
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .pdp-sd-label {
     font-size: 0.6rem;

@@ -610,7 +610,7 @@ const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookN
   );
 };
 
-const RoomTableSingleMobile = ({ rooms, price, priceUnit, availableFrom, onBookNow }) => {
+const RoomTableSingleMobile = ({ rooms, price, priceUnit, area, availableFrom, onBookNow }) => {
   const isAvailNow = !availableFrom;
   const availLabel = availableFrom
     ? new Date(availableFrom).toLocaleDateString('en-IN', { day:'numeric', month:'short' })
@@ -619,52 +619,29 @@ const RoomTableSingleMobile = ({ rooms, price, priceUnit, availableFrom, onBookN
   return (
     <div className="rm-mob-wrap">
       <div className="rm-mob-card">
-        <div className="rm-mob-card-head">
-          <div style={{ flex:1 }}>
-            {rooms.map((room, i) => (
-              <div key={i} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:8, marginBottom: i < rooms.length - 1 ? 10 : 0, paddingBottom: i < rooms.length - 1 ? 10 : 0, borderBottom: i < rooms.length - 1 ? '1px dashed #f1f5f9' : 'none' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:8, flex:1, minWidth:0 }}>
-                  <div style={{ width:24, height:18, flexShrink:0, background:'#f1f5f9', borderRadius:3, border:'1px solid #e2e8f0', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                    <svg width="14" height="10" viewBox="0 0 14 10" fill="none">
-                      <rect x="0.5" y="3.5" width="13" height="6" rx="1.5" fill="#94a3b8"/>
-                      <rect x="0.5" y="0.5" width="3" height="4" rx="1" fill="#cbd5e1"/>
-                      <rect x="10.5" y="0.5" width="3" height="4" rx="1" fill="#cbd5e1"/>
-                    </svg>
-                  </div>
-                  <div style={{ minWidth:0 }}>
-                    <div className="rm-mob-card-title" style={{ marginBottom:3 }}>
-                      {room.type || `Bedroom ${i+1}`}
-                    </div>
-                    <div className="rm-mob-card-tags">
-                      {room.bedType   && <span className="rm-mob-tag">{room.bedType}</span>}
-                      {room.ac        && <span className="rm-mob-tag rm-mob-tag--ac">❄ AC</span>}
-                      {room.furnished && <span className="rm-mob-tag">Furnished</span>}
-                    </div>
-                  </div>
-                </div>
-                <div style={{ flexShrink:0 }}>
-                  {room.attachedBathroom === null || room.attachedBathroom === undefined ? (
-                    <span style={{ fontSize:'0.72rem', color:'#94a3b8' }}>—</span>
-                  ) : (
-                    <span style={{
-                      display:'inline-flex', alignItems:'center', gap:4,
-                      fontSize:'0.72rem', fontWeight:600, padding:'3px 8px',
-                      borderRadius:99, whiteSpace:'nowrap',
-                      background: room.attachedBathroom ? '#f0fdf4' : '#f8fafc',
-                      color:      room.attachedBathroom ? '#16a34a' : '#64748b',
-                      border:     room.attachedBathroom ? '1px solid #bbf7d0' : '1px solid #e2e8f0',
-                    }}>
-                      <span style={{ width:5, height:5, borderRadius:'50%', background: room.attachedBathroom ? '#22c55e' : '#94a3b8', display:'inline-block', flexShrink:0 }}/>
-                      {room.attachedBathroom ? 'Attached' : 'Shared'}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
+        {rooms.map((room, i) => (
+          <div
+            key={i}
+            className="rm-mob-card-head"
+            style={{ borderBottom: i === rooms.length - 1 ? undefined : '1px dashed #e2e8f0' }}
+          >
+            <div className="rm-mob-card-title" style={{ marginBottom:0 }}>{room.type || `Bedroom ${i + 1}`}</div>
+            <span style={{
+              fontSize:'0.7rem', fontWeight:600, flexShrink:0,
+              color: room.attachedBathroom ? '#16a34a' : '#64748b',
+            }}>
+              {room.attachedBathroom === null || room.attachedBathroom === undefined
+                ? ''
+                : (room.attachedBathroom ? '🛁 Attached' : '🛁 Shared')}
+            </span>
           </div>
-        </div>
+        ))}
 
         <div className="rm-mob-card-stats">
+          <div className="rm-mob-stat">
+            <span className="rm-mob-stat-label">Area</span>
+            <span className="rm-mob-stat-value">{area || '—'}</span>
+          </div>
           <div className="rm-mob-stat">
             <span className="rm-mob-stat-label">Price</span>
             <span className="rm-mob-stat-value">
@@ -755,7 +732,7 @@ const RoomTablePerRoom = ({ rooms, pricingMode, propertyPrice, propertyArea, onB
   );
 };
 
-const RoomTablePerRoomMobile = ({ rooms, pricingMode, propertyPrice, onBookNow, onEnquire, showEnquire, hideDeposit }) => {
+const RoomTablePerRoomMobile = ({ rooms, pricingMode, propertyPrice, propertyArea, onBookNow, onEnquire, showEnquire, hideDeposit }) => {
   const priceUnit = pricingMode === 'monthly' ? 'month' : 'night';
   return (
     <div className="rm-mob-wrap">
@@ -763,6 +740,7 @@ const RoomTablePerRoomMobile = ({ rooms, pricingMode, propertyPrice, onBookNow, 
         const nightlyP = Number(room.price) || Number(propertyPrice) || 0;
         const monthlyP = Number(room.price) || Number(propertyPrice) || 0;
         const displayP = pricingMode === 'monthly' ? monthlyP : nightlyP;
+        const area = room.areaSqFt ? `${room.areaSqFt} sqft` : (propertyArea ? `${propertyArea} sqft` : '—');
         const isAvailNow = !room.availabilityDate;
         const availLabel = room.availabilityDate
           ? new Date(room.availabilityDate).toLocaleDateString('en-IN', { day:'numeric', month:'short' })
@@ -787,6 +765,10 @@ const RoomTablePerRoomMobile = ({ rooms, pricingMode, propertyPrice, onBookNow, 
                 <span className={`rm-mob-stat-value ${room.attachedBathroom ? 'rm-mob-stat-value--green' : ''}`}>
                   {room.attachedBathroom ? 'Attached' : 'Shared'}
                 </span>
+              </div>
+              <div className="rm-mob-stat">
+                <span className="rm-mob-stat-label">Area</span>
+                <span className="rm-mob-stat-value">{area}</span>
               </div>
               <div className="rm-mob-stat">
                 <span className="rm-mob-stat-label">Price</span>
@@ -3385,26 +3367,45 @@ const PropertyDetailPage = () => {
       <div className="content-grid">
         <div className="details-column">
 
-          {/* ── Mobile-only Stay Details card ── */}
+          {/* ── Mobile-only Stay Details card — mirrors the desktop booking-card's check-in/notice-period info, which is CSS-hidden on mobile ── */}
           <div className="pdp-stay-details-card">
             <h3 className="pdp-stay-details-title">Stay details</h3>
-            <div className="pdp-stay-details-grid">
-              <div className="pdp-stay-detail-item">
-                <span className="pdp-sd-label">CHECK-IN</span>
-                <span className="pdp-sd-value">{formatTime12h(property.check_in_time) || '2:00 PM'}</span>
-              </div>
-              <div className="pdp-stay-detail-item">
-                <span className="pdp-sd-label">CHECK-OUT</span>
-                <span className="pdp-sd-value">{formatTime12h(property.check_out_time || property.meta?.check_out_time || '11:00') || '11:00 AM'}</span>
-              </div>
-              <div className="pdp-stay-detail-item">
-                <span className="pdp-sd-label">GUESTS</span>
-                <span className="pdp-sd-value">{property.guests || property.max_guests || 2} Adults</span>
-              </div>
-              <div className="pdp-stay-detail-item">
-                <span className="pdp-sd-label">CANCELLATION</span>
-                <span className="pdp-sd-value pdp-sd-green">Free</span>
-              </div>
+            <div className={`pdp-stay-details-grid${pricingMode === 'monthly' ? ' pdp-stay-details-grid--monthly' : ''}`}>
+              {pricingMode === 'monthly' ? (
+                <>
+                  <div className="pdp-stay-detail-item">
+                    <span className="pdp-sd-label">CHECK-IN TIME</span>
+                    <span className="pdp-sd-value">{formData.checkInDate ? new Date(formData.checkInDate).toLocaleDateString() : (formatTime12h(property.check_in_time) || 'Select Date')}</span>
+                  </div>
+                  <div className="pdp-stay-detail-item">
+                    <span className="pdp-sd-label">NOTICE PERIOD</span>
+                    <span className="pdp-sd-value">{(() => { const np = property.noticePeriod ?? property.meta?.noticePeriod; return (property.property_name?.toLowerCase().includes('signature') || Number(np) === 0) ? 'Nil' : `${np || 30} Days`; })()}</span>
+                  </div>
+                  <div className="pdp-stay-detail-item">
+                    <span className="pdp-sd-label">GUESTS</span>
+                    <span className="pdp-sd-value">{property.guests || property.max_guests || 2} Adults</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="pdp-stay-detail-item">
+                    <span className="pdp-sd-label">CHECK-IN</span>
+                    <span className="pdp-sd-value">{formatTime12h(property.check_in_time) || '2:00 PM'}</span>
+                  </div>
+                  <div className="pdp-stay-detail-item">
+                    <span className="pdp-sd-label">CHECK-OUT</span>
+                    <span className="pdp-sd-value">{formatTime12h(property.check_out_time || property.meta?.check_out_time || '11:00') || '11:00 AM'}</span>
+                  </div>
+                  <div className="pdp-stay-detail-item">
+                    <span className="pdp-sd-label">GUESTS</span>
+                    <span className="pdp-sd-value">{property.guests || property.max_guests || 2} Adults</span>
+                  </div>
+                  <div className="pdp-stay-detail-item">
+                    <span className="pdp-sd-label">CANCELLATION</span>
+                    <span className="pdp-sd-value pdp-sd-green">Free</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -3500,6 +3501,7 @@ const PropertyDetailPage = () => {
                       rooms={property.parsedBedrooms}
                       price={displayBasePrice}
                       priceUnit={pricingMode === 'monthly' ? 'month' : 'night'}
+                      area={property.area ? `${property.area} sqft` : '—'}
                       availableFrom={property.availableFrom || property.meta?.availableFrom}
                       onBookNow={handleRoomBookNow}
                     />
@@ -3523,6 +3525,7 @@ const PropertyDetailPage = () => {
                       propertyPrice={pricingMode === 'monthly'
                         ? (Number(property.meta?.perMonthPrice) || Number(property.monthly_price) || Number(property.price) || 0)
                         : (Number(property.meta?.perNightPrice) || Number(property.price) || 0)}
+                      propertyArea={property.area}
                       onBookNow={handleRoomBookNow}
                       showEnquire={false}
                       hideDeposit={isNightlyOfferProperty}
@@ -3627,6 +3630,7 @@ const PropertyDetailPage = () => {
                   rooms={property.parsedBedrooms}
                   pricingMode={pricingMode}
                   propertyPrice={0}
+                  propertyArea={property.area}
                   onBookNow={handleRoomBookNow}
                   onEnquire={null}
                   showEnquire={false}
