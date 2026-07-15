@@ -1,7 +1,8 @@
 import React from 'react'
 import { Helmet } from 'react-helmet'
 import HomePageNew1 from './HomePageNew1'
-import HomePageNew2 from './HomePageNew2'
+// import HomePageNew2 from './HomePageNew2' // commented out for now — restore later if needed
+import FeaturedStays from './FeaturedStays'
 import Home3 from "../HomePageNew/Home3"
 import Home7 from "../HomePageNew/Home7"
 import Home2 from "../HomePageNew/Home2"
@@ -213,7 +214,8 @@ export const HomePageNewMain = () => {
       </Helmet>
       <div style={{ overflow: 'visible' }}>
         <HomePageNew1 />
-        <HomePageNew2 />
+        {/* <HomePageNew2 /> commented out for now — restore later if needed */}
+        <FeaturedStays />
         <Home3 />
         <Home7 />
         <HomeReviews />
