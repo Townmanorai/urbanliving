@@ -1,7 +1,14 @@
 
-import React, { useState } from "react";
-import { X, Linkedin, Instagram, Facebook } from "lucide-react";
+import React from "react";
+import { Facebook, Instagram, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
+
+/* =====================================================================
+   OLD FOOTER — COMMENTED OUT FOR NOW (restore this whenever needed)
+   =====================================================================
+
+import { useState } from "react";
+import { X } from "lucide-react";
 
 const LinkList = ({ items }) => (
   <div
@@ -32,7 +39,6 @@ const LinkList = ({ items }) => (
 );
 
 const mobileCSS = `
-/* ── Desktop logo layout ── */
 .footer-logo-img {
   width: 160px;
   display: block;
@@ -125,22 +131,22 @@ const mobileCSS = `
   .quicklinks-col, .contactus-col, .legal-col {
     margin: 0 !important;
   }
-  
+
   .contactus-col {
     margin-right: 0 !important;
   }
-  
+
   .newsletter-row {
     padding: 20px 0 !important;
   }
-  
+
   .newsletter-wrapper {
     flex-direction: column !important;
     gap: 15px !important;
     width: 100% !important;
     max-width: 100% !important;
   }
-  
+
   .newsletter-wrapper p {
     white-space: normal !important;
     font-size: 10px !important;
@@ -148,19 +154,19 @@ const mobileCSS = `
     margin: 0 !important;
     text-align: center !important;
   }
-  
+
   .newsletter-inputrow {
     width: 100% !important;
     display: flex !important;
     justify-content: center !important;
     flex: none !important;
   }
-  
+
   .newsletter-inputrow > div {
     width: 90% !important;
     max-width: 350px !important;
   }
-  
+
   .bottom-row {
     flex-direction: column !important;
     align-items: center !important;
@@ -168,16 +174,16 @@ const mobileCSS = `
     gap: 16px !important;
     text-align: center !important;
   }
-  
+
   .bottom-row > div {
     justify-content: center !important;
     font-size:10px !important;
   }
-  
+
   .new-link-format {
     font-size: 10px !important;
   }
-  
+
   .footer-link-columns a,
   .footer-col.quicklinks-col a,
   .footer-col.contactus-col span,
@@ -193,11 +199,11 @@ const mobileCSS = `
   .newsletter-row {
     padding: 10px 0 !important;
   }
-  
+
   .query-popup-overlay {
     padding: 10px !important;
   }
-  
+
   .query-popup-content {
     width: 95% !important;
     max-width: 400px !important;
@@ -205,11 +211,11 @@ const mobileCSS = `
     max-height: 90vh !important;
     overflow-y: auto !important;
   }
-  
+
   .query-popup-content h2 {
     font-size: 20px !important;
   }
-  
+
   .query-popup-content input,
   .query-popup-content textarea {
     font-size: 14px !important;
@@ -217,7 +223,7 @@ const mobileCSS = `
 }
 `;
 
-const HoomieFooter = () => {
+const OldHoomieFooter = () => {
   const [query, setQuery] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
@@ -258,14 +264,8 @@ const HoomieFooter = () => {
       if (response.ok) {
         const data = await response.json();
         console.log("Query submitted successfully:", data);
-        
-        // Close the form popup
         setShowPopup(false);
-        
-        // Show success popup
         setShowSuccessPopup(true);
-        
-        // Reset form data
         setFormData({ name: "", phone_number: "", message: "" });
         setQuery("");
       } else {
@@ -298,8 +298,7 @@ const HoomieFooter = () => {
   return (
     <>
       <style>{mobileCSS}</style>
-      
-      {/* Success Popup Modal */}
+
       {showSuccessPopup && (
         <div
           style={{
@@ -404,7 +403,6 @@ const HoomieFooter = () => {
         </div>
       )}
 
-      {/* Form Popup Modal */}
       {showPopup && (
         <div
           className="query-popup-overlay"
@@ -607,8 +605,8 @@ const HoomieFooter = () => {
                 style={{
                   width: "100%",
                   padding: "14px",
-                  background: isSubmitting 
-                    ? "#ccc" 
+                  background: isSubmitting
+                    ? "#ccc"
                     : "linear-gradient(135deg, #c2772b 0%, #a85e1f 100%)",
                   color: "#fff",
                   border: "none",
@@ -654,7 +652,6 @@ const HoomieFooter = () => {
         }}
       >
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          {/* Top Section */}
           <div
             className="footer-grid"
             style={{
@@ -664,7 +661,6 @@ const HoomieFooter = () => {
               marginBottom: "20px",
             }}
           >
-            {/* Company Info */}
             <div className="footer-col logo-col">
               <img
                 src="/ovikalogo11.png"
@@ -677,7 +673,6 @@ const HoomieFooter = () => {
               </p>
             </div>
 
-            {/* Column 1 — Desktop */}
             <div className="footer-col desktop-links-grid">
               <LinkList
                 items={[
@@ -691,7 +686,6 @@ const HoomieFooter = () => {
               />
             </div>
 
-            {/* Column 2 — Desktop */}
             <div className="footer-col desktop-links-grid">
               <LinkList
                 items={[
@@ -708,7 +702,6 @@ const HoomieFooter = () => {
               />
             </div>
 
-            {/* Column 3 — Desktop */}
             <div className="footer-col desktop-links-grid">
               <LinkList
                 items={[
@@ -723,7 +716,6 @@ const HoomieFooter = () => {
 
           </div>
 
-          {/* Mobile Links — 3 columns */}
           <div className="footer-link-columns" style={{ display: "none" }}>
             <div className="footer-col">
               <LinkList
@@ -767,7 +759,6 @@ const HoomieFooter = () => {
 
           </div>
 
-          {/* Newsletter Section */}
           <div
             className="newsletter-row"
             style={{
@@ -856,7 +847,6 @@ const HoomieFooter = () => {
             </div>
           </div>
 
-          {/* Bottom Row */}
           <div
             className="bottom-row"
             style={{
@@ -999,6 +989,246 @@ const HoomieFooter = () => {
               >
                 LEGAL INFO
               </Link>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </>
+  );
+};
+
+===================== END OLD FOOTER ===================== */
+
+const newFooterCSS = `
+.ov-footer {
+  background: #faf7f3;
+  border-top: 1px solid #ece5db;
+  font-family: 'Poppins', sans-serif;
+  padding: 48px 40px 0;
+  color: #4a4a4a;
+}
+
+.ov-footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.ov-footer-top {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr;
+  gap: 32px;
+  padding-bottom: 36px;
+}
+
+.ov-footer-logo-img {
+  height: 30px;
+  object-fit: contain;
+  display: block;
+  margin: 0 0 14px;
+}
+
+.ov-footer-desc {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #7a7a7a;
+  margin: 0 0 20px;
+  max-width: 260px;
+}
+
+.ov-footer-social {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ov-footer-social a {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid #ece5db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4a4a4a;
+  transition: all 0.2s ease;
+}
+
+.ov-footer-social a:hover {
+  background: #c2772b;
+  border-color: #c2772b;
+  color: #fff;
+}
+
+.ov-footer-col h4 {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #2b2b2b;
+  margin: 0 0 16px;
+}
+
+.ov-footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ov-footer-col a {
+  font-size: 13.5px;
+  color: #7a7a7a;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  width: fit-content;
+}
+
+.ov-footer-col a:hover {
+  color: #c2772b;
+}
+
+.ov-footer-bottom {
+  border-top: 1px solid #ece5db;
+  padding: 18px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12.5px;
+  color: #8a8a8a;
+}
+
+.ov-footer-bottom-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.ov-footer-bottom-links a {
+  color: #8a8a8a;
+  text-decoration: none;
+}
+
+.ov-footer-bottom-links a:hover {
+  color: #c2772b;
+}
+
+@media (max-width: 900px) {
+  .ov-footer-top {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 32px;
+  }
+  .ov-footer-brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .ov-footer {
+    padding: 32px 20px 0;
+  }
+  .ov-footer-top {
+    grid-template-columns: 1fr;
+  }
+  .ov-footer-bottom {
+    justify-content: center;
+    text-align: center;
+  }
+}
+`;
+
+const HoomieFooter = () => {
+  return (
+    <>
+      <style>{newFooterCSS}</style>
+      <footer className="ov-footer">
+        <div className="ov-footer-inner">
+          <div className="ov-footer-top">
+            <div className="ov-footer-brand">
+              <img
+                src="/ovikaliving_logo_clean.png"
+                alt="OvikaLiving"
+                className="ov-footer-logo-img"
+              />
+              <p className="ov-footer-desc">
+                <strong>OvikaLiving</strong> — The Hybrid Rental &amp; Urban Living Brand of{" "}
+                Townmanor Technologies Pvt. Ltd. Transforming urban living through flexible
+                spaces, smart rentals, and hassle-free experiences.
+              </p>
+              <div className="ov-footer-social">
+                <a
+                  href="https://www.facebook.com/share/1BojvDLPY6/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                >
+                  <Facebook size={16} />
+                </a>
+                <a
+                  href="https://www.instagram.com/ovikaliving/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                >
+                  <Instagram size={16} />
+                </a>
+                <a
+                  href="https://www.linkedin.com/company/townmanor/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                >
+                  <Linkedin size={16} />
+                </a>
+              </div>
+            </div>
+
+            <div className="ov-footer-col">
+              <h4>Company</h4>
+              <Link to="/about">About Us</Link>
+              <Link to="/career-support">Career Support</Link>
+              <Link to="/nightly-stays">Nightly Stays</Link>
+              <Link to="/monthly-rentals">Monthly Rentals</Link>
+              <a href="https://www.townmanor.ai/" target="_blank" rel="noopener noreferrer">
+                Explore Townmanor
+              </a>
+            </div>
+
+            <div className="ov-footer-col">
+              <h4>Support</h4>
+              <Link to="/faq">Help Center</Link>
+              <Link to="/terms-and-conditions">Terms &amp; Conditions</Link>
+              <Link to="/privacy-policy">Privacy Policy</Link>
+              <Link to="/refund-cancellation-policy">Cancellation Policy</Link>
+              <Link to="/legal-information">Legal Information</Link>
+            </div>
+
+            <div className="ov-footer-col">
+              <h4>For Hosts</h4>
+              <Link to="/listed1">List Your Property</Link>
+              <Link to="/roi-calculator">ROI Calculator</Link>
+              <Link to="/buy-leads">Buy Leads</Link>
+              <Link to="/ovika-verified">OvikaLiving Verified</Link>
+              <Link to="/ovika-self-verified">Self Verification</Link>
+            </div>
+
+            <div className="ov-footer-col">
+              <h4>Top Cities</h4>
+              <Link to="/properties?city=Noida">Noida</Link>
+              <Link to="/properties?city=Greater%20Noida">Greater Noida</Link>
+              <Link to="/properties?city=Delhi">Delhi</Link>
+              <Link to="/properties?city=Gurugram">Gurgaon</Link>
+              <Link to="/properties">View All</Link>
+            </div>
+          </div>
+
+          <div className="ov-footer-bottom">
+            <span>&copy; {new Date().getFullYear()} OvikaLiving. All rights reserved.</span>
+            <div className="ov-footer-bottom-links">
+              <Link to="/privacy-policy">Privacy</Link>
+              <Link to="/terms-and-conditions">Terms</Link>
+              <Link to="/contactus">Contact Us</Link>
             </div>
           </div>
         </div>
