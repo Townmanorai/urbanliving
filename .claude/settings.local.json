@@ -18,7 +18,19 @@
       "Bash(curl -s \"https://www.townmanor.ai/api/ovika/properties/1773\")",
       "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{try{const j=JSON.parse\\(d\\);console.log\\(JSON.stringify\\(j,null,2\\)\\)}catch\\(e\\){console.log\\('err',e.message,d.slice\\(0,500\\)\\)}}\\)\")",
       "Bash(curl -s \"https://www.townmanor.ai/api/ovika/properties\")",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(npm run *)",
+      "Read(//tmp/**)",
+      "Bash(sleep 4 && cat /tmp/vite_dev.log 2>/dev/null; echo \"---\"; cat \"C:\\\\Users\\\\omawa\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-omawa-OneDrive-Desktop-urbhannew-urbanliving\\\\2cc3500a-2da4-4cd4-9a3f-84ceea56e3e3\\\\tasks\\\\btxh919ez.output\" 2>/dev/null)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5183/)",
+      "Bash(chromium-cli --help)",
+      "Bash(npm ls *)",
+      "Bash(node -e \"require.resolve\\('playwright'\\)\")",
+      "Bash(timeout 15 curl -sI https://registry.npmjs.org/playwright)",
+      "Bash(mkdir -p \"/c/Users/omawa/AppData/Local/Temp/claude/c--Users-omawa-OneDrive-Desktop-urbhannew-urbanliving/2cc3500a-2da4-4cd4-9a3f-84ceea56e3e3/scratchpad/pw\")",
+      "Read(//c/Users/omawa/AppData/Local/Temp/claude/c--Users-omawa-OneDrive-Desktop-urbhannew-urbanliving/2cc3500a-2da4-4cd4-9a3f-84ceea56e3e3/scratchpad/**)",
+      "Bash(npm init *)",
+      "Bash(npm install *)"
     ]
   }
 }

@@ -5,6 +5,19 @@ import "./AuthPage.css";
 import { useNavigate, useLocation, Navigate } from "react-router";
 import { AuthContext } from "./AuthContext";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import {
+  Home,
+  MapPin,
+  Star,
+  ShieldCheck,
+  Mail,
+  Lock,
+  User,
+  Phone,
+  CreditCard,
+  Headphones,
+  Users,
+} from "lucide-react";
 
 const API_BASE = "https://www.townmanor.ai/api";
 const STORAGE_KEY = "user"; // keep same as AuthContext
@@ -251,125 +264,234 @@ export default function AuthPage() {
         <meta name="keywords" content="ovikaliving login, ovika sign up, pg booking login noida, co-living login noida, ovika account, tenant login noida, property owner login ovika, लॉगिन ओविका, ओविका अकाउंट बनाएं, पीजी बुकिंग लॉगिन नोएडा, किरायेदार लॉगिन नोएडा, नोएडा पीजी साइन अप, ओविका लिविंग लॉगिन" />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
-      <div className="auth-illustration">
-        <img src="/ill.webp" alt="illustration" />
-      </div>
 
-      <div className="auth-form-container">
-        <div className="auth-toggle">
-          <button className={isLogin ? "auth-toggle-btn active" : "auth-toggle-btn"} onClick={() => { setIsLogin(true); setErrorMsg(""); setSuccessMsg(""); }}>Sign In</button>
-          <button className={!isLogin ? "auth-toggle-btn active" : "auth-toggle-btn"} onClick={() => { setIsLogin(false); setErrorMsg(""); setSuccessMsg(""); }}>Sign Up</button>
+      <div className="auth-page">
+        {/* LEFT: Hero panel */}
+        <div className="auth-left">
+          <div className="auth-left-text">
+            <h1 className="auth-hero-title">
+              Find Your <span>Perfect Stay</span>
+            </h1>
+            <p className="auth-hero-subtitle">
+              Verified rental homes, PGs &amp; co-living spaces across top cities.
+            </p>
+
+            <div className="auth-stats">
+              <div className="auth-stat">
+                <Home className="auth-stat-icon" size={26} />
+                <div className="auth-stat-value">2,000+</div>
+                <div className="auth-stat-label">Properties</div>
+              </div>
+              <div className="auth-stat">
+                <MapPin className="auth-stat-icon" size={26} />
+                <div className="auth-stat-value">6+</div>
+                <div className="auth-stat-label">Cities</div>
+              </div>
+              <div className="auth-stat">
+                <Star className="auth-stat-icon" size={26} />
+                <div className="auth-stat-value">4.8</div>
+                <div className="auth-stat-label">Rating</div>
+              </div>
+              <div className="auth-stat">
+                <ShieldCheck className="auth-stat-icon" size={26} />
+                <div className="auth-stat-value">100%</div>
+                <div className="auth-stat-label">Verified</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="auth-left-image-wrap">
+            <div className="auth-left-bg-layer blur-3" aria-hidden="true" />
+            <div className="auth-left-bg-layer blur-2" aria-hidden="true" />
+            <div className="auth-left-bg-layer blur-1" aria-hidden="true" />
+            <img src="/newnew.jpeg" alt="Modern living room" className="auth-left-bg" />
+            <div className="auth-left-image-scrim" aria-hidden="true" />
+          </div>
         </div>
 
-        <h2 className="auth-title">{isLogin ? "Welcome back" : "Create an account"}</h2>
-        <p className="auth-subtitle">{isLogin ? "Please enter your details to sign in" : "Please enter your details to sign up"}</p>
+        {/* RIGHT: Auth card */}
+        <div className="auth-right">
+          <div className="auth-form-container">
+            <div className="auth-toggle">
+              <button className={isLogin ? "auth-toggle-btn active" : "auth-toggle-btn"} onClick={() => { setIsLogin(true); setErrorMsg(""); setSuccessMsg(""); }}>Sign In</button>
+              <button className={!isLogin ? "auth-toggle-btn active" : "auth-toggle-btn"} onClick={() => { setIsLogin(false); setErrorMsg(""); setSuccessMsg(""); }}>Sign Up</button>
+            </div>
 
-        <form className="auth-form" onSubmit={onSubmit}>
-          {!isLogin && (
-            <>
-              <label>Username</label>
-              <input type="text" placeholder="Enter your name" value={username} onChange={(e) => setUsername(e.target.value)} required />
-              <label>Phone</label>
-              <input type="tel" placeholder="Enter your phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
-            </>
-          )}
+            <h2 className="auth-title">
+              {isLogin ? (
+                <>Welcome back! <span className="auth-wave" role="img" aria-label="waving hand">👋</span></>
+              ) : (
+                "Create an account"
+              )}
+            </h2>
+            <p className="auth-subtitle">{isLogin ? "Sign in to continue to your account" : "Please enter your details to sign up"}</p>
 
-          <label>Email</label>
-          <input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <form className="auth-form" onSubmit={onSubmit}>
+              {!isLogin && (
+                <>
+                  <label>Username</label>
+                  <div className="auth-input-wrap">
+                    <User className="auth-input-icon" size={18} />
+                    <input type="text" placeholder="Enter your name" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                  </div>
 
-          <label>Password</label>
-          <div className="password-input">
-            <input type={showPassword ? "text" : "password"} placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            <button type="button" className="toggle-visibility" onClick={() => setShowPassword((p) => !p)} aria-label={showPassword ? "Hide password" : "Show password"}>
-              {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
-            </button>
-          </div>
+                  <label>Phone</label>
+                  <div className="auth-input-wrap">
+                    <Phone className="auth-input-icon" size={18} />
+                    <input type="tel" placeholder="Enter your phone number" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                  </div>
+                </>
+              )}
 
-          {/* NEW: Confirm Password field (only shown during signup) */}
-          {!isLogin && (
-            <>
-              <label>Confirm Password</label>
-              <div className="password-input">
-                <input type={showConfirmPassword ? "text" : "password"} placeholder="Re-enter your password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-                <button type="button" className="toggle-visibility" onClick={() => setShowConfirmPassword((p) => !p)} aria-label={showConfirmPassword ? "Hide password" : "Show password"}>
-                  {showConfirmPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+              <label>Email</label>
+              <div className="auth-input-wrap">
+                <Mail className="auth-input-icon" size={18} />
+                <input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              </div>
+
+              <label>Password</label>
+              <div className="auth-input-wrap password-input">
+                <Lock className="auth-input-icon" size={18} />
+                <input type={showPassword ? "text" : "password"} placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                <button type="button" className="toggle-visibility" onClick={() => setShowPassword((p) => !p)} aria-label={showPassword ? "Hide password" : "Show password"}>
+                  {showPassword ? <AiOutlineEyeInvisible size={18} /> : <AiOutlineEye size={18} />}
                 </button>
               </div>
-            </>
-          )}
 
-          {isLogin && (
-            <div className="auth-options">
-              <div>
-                <input type="checkbox" id="remember" />
-                <label htmlFor="remember">Remember me</label>
-              </div>
-              <button type="button" className="auth-forgot btn-link" onClick={openForgot}>Forgot password?</button>
-            </div>
-          )}
+              {/* Confirm Password field (only shown during signup) */}
+              {!isLogin && (
+                <>
+                  <label>Confirm Password</label>
+                  <div className="auth-input-wrap password-input">
+                    <Lock className="auth-input-icon" size={18} />
+                    <input type={showConfirmPassword ? "text" : "password"} placeholder="Re-enter your password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+                    <button type="button" className="toggle-visibility" onClick={() => setShowConfirmPassword((p) => !p)} aria-label={showConfirmPassword ? "Hide password" : "Show password"}>
+                      {showConfirmPassword ? <AiOutlineEyeInvisible size={18} /> : <AiOutlineEye size={18} />}
+                    </button>
+                  </div>
+                </>
+              )}
 
-          {errorMsg && (
-            <div style={{
-              background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8,
-              padding: '10px 14px', marginBottom: 12,
-              display: 'flex', alignItems: 'flex-start', gap: 8,
-              fontSize: '0.85rem', color: '#b91c1c', lineHeight: 1.5,
-            }}>
-              <span style={{ fontSize: 16, flexShrink: 0 }}>⚠️</span>
-              <span>{errorMsg}</span>
-            </div>
-          )}
-          {successMsg && (
-            <div style={{
-              background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 8,
-              padding: '10px 14px', marginBottom: 12,
-              display: 'flex', alignItems: 'flex-start', gap: 8,
-              fontSize: '0.85rem', color: '#15803d', lineHeight: 1.5,
-            }}>
-              <span style={{ fontSize: 16, flexShrink: 0 }}>✅</span>
-              <span>{successMsg}</span>
-            </div>
-          )}
-          <button type="submit" className="auth-submit" disabled={submitting}>
-            {submitting ? (isLogin ? "Signing In..." : "Signing Up...") : isLogin ? "Sign In" : "Sign Up"}
-          </button>
-        </form>
-
-        {forgotOpen && (
-          <div role="dialog" aria-modal="true" aria-labelledby="forgot-title" className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) closeForgot(); }}>
-            <div className="modal">
-              <div className="modal-header">
-                <h3 id="forgot-title" style={{ margin: 0 }}>{forgotStep === 1 ? "Reset your password" : "Set a new password"}</h3>
-                <button type="button" onClick={closeForgot} className="modal-close" aria-label="Close">×</button>
-              </div>
-
-              {forgotError && (
-                <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8, padding: '8px 12px', marginBottom: 10, fontSize: '0.82rem', color: '#b91c1c', display: 'flex', gap: 6 }}>
-                  <span>⚠️</span><span>{forgotError}</span>
+              {isLogin && (
+                <div className="auth-options">
+                  <label className="auth-remember">
+                    <input type="checkbox" id="remember" defaultChecked />
+                    <span>Remember me</span>
+                  </label>
+                  <button type="button" className="auth-forgot btn-link" onClick={openForgot}>Forgot password?</button>
                 </div>
               )}
 
-              {forgotStep === 1 && (
-                <div>
-                  <label>Email</label>
-                  <input type="email" placeholder="Enter your account email" value={forgotEmail} onChange={(e) => { setForgotEmail(e.target.value); setForgotError(""); }} style={{ width: "100%", marginTop: 6, marginBottom: 14 }} className="auth-password-input" />
-                  <button type="button" onClick={proceedForgotStep1} disabled={forgotSubmitting} className="auth-submit" style={{ width: "100%" }}>Continue</button>
+              {errorMsg && (
+                <div style={{
+                  background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8,
+                  padding: '10px 14px', marginBottom: 4,
+                  display: 'flex', alignItems: 'flex-start', gap: 8,
+                  fontSize: '0.85rem', color: '#b91c1c', lineHeight: 1.5,
+                }}>
+                  <span style={{ fontSize: 16, flexShrink: 0 }}>⚠️</span>
+                  <span>{errorMsg}</span>
+                </div>
+              )}
+              {successMsg && (
+                <div style={{
+                  background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 8,
+                  padding: '10px 14px', marginBottom: 4,
+                  display: 'flex', alignItems: 'flex-start', gap: 8,
+                  fontSize: '0.85rem', color: '#15803d', lineHeight: 1.5,
+                }}>
+                  <span style={{ fontSize: 16, flexShrink: 0 }}>✅</span>
+                  <span>{successMsg}</span>
                 </div>
               )}
 
-              {forgotStep === 2 && (
-                <div>
-                  <label>New Password</label>
-                  <input type="password" placeholder="Enter new password" value={newPwd} onChange={(e) => { setNewPwd(e.target.value); setForgotError(""); }} style={{ width: "100%", marginTop: 6, marginBottom: 12 }} className="auth-password-input" />
-                  <label>Confirm New Password</label>
-                  <input type="password" placeholder="Re-enter new password" value={newPwd2} onChange={(e) => { setNewPwd2(e.target.value); setForgotError(""); }} style={{ width: "100%", marginTop: 6, marginBottom: 14 }} className="auth-password-input" />
-                  <button type="button" onClick={submitForgot} disabled={forgotSubmitting} className="auth-submit" style={{ width: "100%" }}>{forgotSubmitting ? "Submitting..." : "Reset Password"}</button>
-                </div>
-              )}
-            </div>
+              <button type="submit" className="auth-submit" disabled={submitting}>
+                {submitting ? (isLogin ? "Signing In..." : "Signing Up...") : isLogin ? "Sign In" : "Sign Up"}
+              </button>
+            </form>
+
+            <p className="auth-safe-note">
+              <ShieldCheck size={15} />
+              Your data is safe with us. We never share your details.
+            </p>
           </div>
-        )}
+        </div>
       </div>
+
+      {/* Bottom trust/feature bar */}
+      <div className="auth-features-bar">
+        <div className="auth-feature">
+          <span className="auth-feature-icon-wrap">
+            <ShieldCheck size={20} />
+          </span>
+          <div>
+            <div className="auth-feature-title">Verified Listings</div>
+            <div className="auth-feature-sub">100% verified properties for your safety</div>
+          </div>
+        </div>
+        <div className="auth-feature">
+          <span className="auth-feature-icon-wrap">
+            <CreditCard size={20} />
+          </span>
+          <div>
+            <div className="auth-feature-title">Secure Payments</div>
+            <div className="auth-feature-sub">Safe &amp; hassle-free payments</div>
+          </div>
+        </div>
+        <div className="auth-feature">
+          <span className="auth-feature-icon-wrap">
+            <Headphones size={20} />
+          </span>
+          <div>
+            <div className="auth-feature-title">24x7 Support</div>
+            <div className="auth-feature-sub">We are here for you anytime</div>
+          </div>
+        </div>
+        <div className="auth-feature">
+          <span className="auth-feature-icon-wrap">
+            <Users size={20} />
+          </span>
+          <div>
+            <div className="auth-feature-title">Trusted by Thousands</div>
+            <div className="auth-feature-sub">Join thousands of happy customers</div>
+          </div>
+        </div>
+      </div>
+
+      {forgotOpen && (
+        <div role="dialog" aria-modal="true" aria-labelledby="forgot-title" className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) closeForgot(); }}>
+          <div className="modal">
+            <div className="modal-header">
+              <h3 id="forgot-title" style={{ margin: 0 }}>{forgotStep === 1 ? "Reset your password" : "Set a new password"}</h3>
+              <button type="button" onClick={closeForgot} className="modal-close" aria-label="Close">×</button>
+            </div>
+
+            {forgotError && (
+              <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8, padding: '8px 12px', marginBottom: 10, fontSize: '0.82rem', color: '#b91c1c', display: 'flex', gap: 6 }}>
+                <span>⚠️</span><span>{forgotError}</span>
+              </div>
+            )}
+
+            {forgotStep === 1 && (
+              <div>
+                <label>Email</label>
+                <input type="email" placeholder="Enter your account email" value={forgotEmail} onChange={(e) => { setForgotEmail(e.target.value); setForgotError(""); }} style={{ width: "100%", marginTop: 6, marginBottom: 14 }} className="auth-password-input" />
+                <button type="button" onClick={proceedForgotStep1} disabled={forgotSubmitting} className="auth-submit" style={{ width: "100%" }}>Continue</button>
+              </div>
+            )}
+
+            {forgotStep === 2 && (
+              <div>
+                <label>New Password</label>
+                <input type="password" placeholder="Enter new password" value={newPwd} onChange={(e) => { setNewPwd(e.target.value); setForgotError(""); }} style={{ width: "100%", marginTop: 6, marginBottom: 12 }} className="auth-password-input" />
+                <label>Confirm New Password</label>
+                <input type="password" placeholder="Re-enter new password" value={newPwd2} onChange={(e) => { setNewPwd2(e.target.value); setForgotError(""); }} style={{ width: "100%", marginTop: 6, marginBottom: 14 }} className="auth-password-input" />
+                <button type="button" onClick={submitForgot} disabled={forgotSubmitting} className="auth-submit" style={{ width: "100%" }}>{forgotSubmitting ? "Submitting..." : "Reset Password"}</button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
