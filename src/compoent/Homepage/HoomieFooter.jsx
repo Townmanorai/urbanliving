@@ -1126,10 +1126,26 @@ const newFooterCSS = `
 
 @media (max-width: 560px) {
   .ov-footer {
-    padding: 32px 20px 0;
+    padding: 28px 18px 0;
   }
   .ov-footer-top {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px 12px;
+    row-gap: 24px;
+  }
+  .ov-footer-desc {
+    max-width: 100%;
+  }
+  .ov-footer-col h4 {
+    font-size: 10.5px;
+    margin-bottom: 10px;
+  }
+  .ov-footer-col {
+    gap: 9px;
+  }
+  .ov-footer-col a {
+    font-size: 11.5px;
+    line-height: 1.35;
   }
   .ov-footer-bottom {
     justify-content: center;
