@@ -4,18 +4,22 @@
 }
 
 #root {
-   overflow-x: hidden !important;
    background: #fff;
    display: flex;
    flex-direction: column;
    min-height: 100vh;
 }
 
-/* routes wrapper grows to fill remaining space, pushing footer to bottom */
+/* routes wrapper grows to fill remaining space, pushing footer to bottom.
+   overflow-x lives here (not on html/body/#root) so it clips any
+   horizontally-overflowing page content without turning html/body into a
+   scroll container — that would silently break position:sticky on Navbar,
+   which is a sibling of this wrapper, not a descendant. */
 .app-routes-wrapper {
    flex: 1 0 auto;
    display: flex;
    flex-direction: column;
+   overflow-x: hidden;
 }
 
 html, body {

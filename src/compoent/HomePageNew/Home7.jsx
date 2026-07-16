@@ -73,7 +73,7 @@ const styles = `
     --text-dark: #1a1209;
     --text-mid: #6b5540;
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(160deg, #fdf7ee 0%, #f5ead6 60%, #ede4cf 100%);
+    background: #fff;
     padding: 40px 24px 52px;
     position: relative;
     overflow: hidden;

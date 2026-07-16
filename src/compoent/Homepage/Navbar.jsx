@@ -1,6 +1,6 @@
 
 
-import { UserCircle2, LogOut, Home, Moon, CalendarDays, Star, Building2, TrendingUp, BarChart3, Shield, MessageCircle, Phone, Briefcase, CheckCircle, Map, MapPin, Zap, Hotel } from "lucide-react";
+import { UserCircle2, LogOut, Home, Moon, CalendarDays, Star, Building2, TrendingUp, BarChart3, Shield, MessageCircle, Phone, Briefcase, CheckCircle, Map, MapPin, Hotel } from "lucide-react";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { AuthContext } from "../Login/AuthContext";
@@ -405,45 +405,37 @@ export default function Navbar() {
           {/* RIGHT-ALIGNED: Nav text links */}
           <nav style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: "auto" }}>
             {[
-                { label: "List Property",   action: handleBecomeHostClick },
               { label: "Signature Stays", path: "/properties?category=Signature+Stays", action: handleSignatureStaysClick },
-            ].map(({ label, path, action }) => {
-              const isLeads = label === "Buy Leads";
-              return (
+              { label: "List Your Property", action: handleBecomeHostClick },
+              { label: "Help", action: (e) => navClick(e, "/faq", navigate) },
+            ].map(({ label, path, action }) => (
                 <button
                   key={label}
                   onClick={(e) => path ? navClick(e, path, navigate) : action(e)}
                   onAuxClick={(e) => path ? auxNavClick(e, path) : null}
                   style={{
-                    border: isLeads ? "1.5px solid #c2772b" : "none",
-                    background: isLeads ? "linear-gradient(135deg,#c2772b,#e0a94e)" : "transparent",
+                    border: "none",
+                    background: "transparent",
                     cursor: "pointer",
                     fontFamily: "Poppins, sans-serif",
                     fontSize: 13.5,
-                    fontWeight: isLeads ? 700 : 500,
-                    color: isLeads ? "#fff" : "#232323",
-                    padding: isLeads ? "7px 16px" : "8px 14px",
-                    borderRadius: isLeads ? 20 : 8,
+                    fontWeight: 500,
+                    color: "#232323",
+                    padding: "8px 14px",
+                    borderRadius: 8,
                     transition: "all 0.18s ease",
                     whiteSpace: "nowrap",
                   }}
-                  onMouseEnter={(e) => {
-                    if (isLeads) { e.currentTarget.style.opacity = "0.88"; }
-                    else { e.currentTarget.style.color = "#c2772b"; e.currentTarget.style.background = "#fdf8f2"; }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (isLeads) { e.currentTarget.style.opacity = "1"; }
-                    else { e.currentTarget.style.color = "#232323"; e.currentTarget.style.background = "transparent"; }
-                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = "#c2772b"; e.currentTarget.style.background = "#fdf8f2"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = "#232323"; e.currentTarget.style.background = "transparent"; }}
                 >
-                  {isLeads ? <><Zap size={13}/> Buy Leads</> : label}
+                  {label}
                 </button>
-              );
-            })}
+            ))}
           </nav>
 
           {/* RIGHT: auth */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0, marginLeft: 12 }}>
             {user ? (
               <button
                 onClick={() => setSideMenuOpen(true)}
@@ -459,11 +451,11 @@ export default function Navbar() {
               <button
                 onClick={handleLogin}
                 onAuxClick={(e) => auxNavClick(e, "/login")}
-                style={{ border: "1.5px solid #c2772b", background: "#fff", color: "#c2772b", fontWeight: 500, fontSize: 13, borderRadius: 22, padding: "6px 20px", height: 34, display: "flex", alignItems: "center", cursor: "pointer", fontFamily: "Poppins, sans-serif", transition: "all 0.25s", boxShadow: "0 1px 6px rgba(194,119,43,0.12)", letterSpacing: "0.3px" }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "#fef9f2"; e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 3px 12px rgba(194,119,43,0.22)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 1px 6px rgba(194,119,43,0.12)"; }}
+                style={{ border: "none", background: "#f7e6cd", color: "#3a2c18", fontWeight: 600, fontSize: 13, borderRadius: 22, padding: "9px 20px", height: 36, display: "flex", alignItems: "center", cursor: "pointer", fontFamily: "Poppins, sans-serif", transition: "all 0.25s", letterSpacing: "0.2px" }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "#f0d9b5"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "#f7e6cd"; }}
               >
-                Sign In
+                Sign In / Register
               </button>
             )}
           </div>
