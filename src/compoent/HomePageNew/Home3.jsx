@@ -101,21 +101,7 @@ const Home3 = () => {
     <section className={`home3-section ${tab}-active`}>
       <div className="home3-container">
         
-        <div style={{ textAlign: 'center', marginBottom: 20 }}>
-          <div style={{
-            display: 'inline-flex',
-            background: 'rgba(194,119,43,0.1)',
-            border: '1px solid rgba(194,119,43,0.25)',
-            borderRadius: 20,
-            padding: '5px 18px',
-            fontSize: '0.62rem',
-            color: '#c2772b',
-            letterSpacing: '1.4px',
-            textTransform: 'uppercase',
-            fontWeight: 600,
-            fontFamily: "'Poppins', sans-serif",
-          }}>✦ How OvikaLiving Works</div>
-        </div>
+        <div className="home3-eyebrow">✦ How OvikaLiving Works</div>
 
         <div className="home3-toggle">
           <div className="home3-toggle-pill">

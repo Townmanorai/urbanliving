@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useRef, useState } from "react";
+import { Quote, Star } from "lucide-react";
 
 const REVIEWS = [
   {
@@ -133,9 +134,14 @@ const REVIEWS = [
   },
 ];
 
+/* =====================================================================
+   OLD REVIEWS CAROUSEL (auto-scrolling marquee) — commented out for now
+   restore this whenever needed
+   =====================================================================
+
 const allReviews = [...REVIEWS, ...REVIEWS];
 
-export default function HomeReviews() {
+export function OldHomeReviews() {
   const trackRef = useRef(null);
 
   useEffect(() => {
@@ -205,7 +211,6 @@ export default function HomeReviews() {
                 gap: 10,
               }}
             >
-              {/* Top row */}
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <div style={{
                   width: 38,
@@ -245,7 +250,6 @@ export default function HomeReviews() {
                 </div>
               </div>
 
-              {/* Review text */}
               <p style={{
                 fontFamily: "'Poppins', sans-serif",
                 fontSize: "0.74rem",
@@ -265,5 +269,179 @@ export default function HomeReviews() {
         </div>
       </div>
     </div>
+  );
+}
+
+===================== END OLD REVIEWS CAROUSEL ===================== */
+
+const CARDS_PER_PAGE = 4;
+
+const css = `
+.hr-section {
+  background: #fff;
+  padding: 44px 40px 52px;
+  font-family: 'Poppins', sans-serif;
+}
+.hr-inner { max-width: 1400px; margin: 0 auto; }
+.hr-eyebrow {
+  font-size: 0.72rem;
+  color: #c2772b;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.hr-title {
+  margin: 0 0 24px;
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #1a1209;
+}
+.hr-row {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 6px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hr-row::-webkit-scrollbar { display: none; }
+.hr-card {
+  flex: 0 0 calc(25% - 15px);
+  scroll-snap-align: start;
+  background: #fff;
+  border: 1.5px solid #f0e8da;
+  border-radius: 16px;
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 4px 18px rgba(194,119,43,0.06);
+}
+.hr-quote { color: #f3d3ac; }
+.hr-text {
+  font-size: 0.82rem;
+  color: #4a3828;
+  line-height: 1.6;
+  margin: 0;
+  min-height: 4.8em;
+}
+.hr-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hr-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.76rem;
+  flex-shrink: 0;
+}
+.hr-name {
+  font-weight: 700;
+  font-size: 0.84rem;
+  color: #1a1209;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hr-location {
+  font-size: 0.7rem;
+  color: #8a8a8a;
+}
+.hr-rating {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #1a1209;
+  flex-shrink: 0;
+}
+.hr-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 22px;
+}
+.hr-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(194,119,43,0.25);
+  transition: all 0.25s ease;
+}
+.hr-dot--active {
+  width: 18px;
+  background: #c2772b;
+}
+@media (max-width: 1024px) {
+  .hr-card { flex: 0 0 calc(50% - 10px); }
+}
+@media (max-width: 600px) {
+  .hr-section { padding: 32px 18px 40px; }
+  .hr-title { font-size: 1.4rem; }
+  .hr-card { flex: 0 0 82%; }
+}
+`;
+
+export default function HomeReviews() {
+  const rowRef = useRef(null);
+  const [activeDot, setActiveDot] = useState(0);
+
+  const totalPages = Math.ceil(REVIEWS.length / CARDS_PER_PAGE);
+
+  const handleScroll = () => {
+    const el = rowRef.current;
+    if (!el) return;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    if (maxScroll <= 0) { setActiveDot(0); return; }
+    const ratio = el.scrollLeft / maxScroll;
+    setActiveDot(Math.min(totalPages - 1, Math.round(ratio * (totalPages - 1))));
+  };
+
+  return (
+    <section className="hr-section">
+      <style>{css}</style>
+      <div className="hr-inner">
+        <div className="hr-eyebrow">What Our Guests Say</div>
+        <h2 className="hr-title">Loved by Thousands of Happy Guests</h2>
+
+        <div className="hr-row" ref={rowRef} onScroll={handleScroll}>
+          {REVIEWS.map(r => (
+            <div key={r.id} className="hr-card">
+              <Quote className="hr-quote" size={26} fill="currentColor" />
+              <p className="hr-text">{r.text}</p>
+              <div className="hr-footer">
+                <div className="hr-avatar" style={{ background: r.color }}>{r.initials}</div>
+                <div style={{ minWidth: 0 }}>
+                  <div className="hr-name">{r.name}</div>
+                  <div className="hr-location">{r.location.split(',')[0]}</div>
+                </div>
+                <div className="hr-rating">
+                  <Star size={14} color="#f5a623" fill="#f5a623" /> {r.rating.toFixed(1)}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {totalPages > 1 && (
+          <div className="hr-dots">
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <div key={i} className={`hr-dot ${i === activeDot ? 'hr-dot--active' : ''}`} />
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
   );
 }

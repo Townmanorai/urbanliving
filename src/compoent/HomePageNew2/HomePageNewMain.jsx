@@ -2,7 +2,10 @@ import React from 'react'
 import { Helmet } from 'react-helmet'
 import HomePageNew1 from './HomePageNew1'
 // import HomePageNew2 from './HomePageNew2' // commented out for now — restore later if needed
+import BrowseByType from './BrowseByType'
 import FeaturedStays from './FeaturedStays'
+import WhyChooseUs from './WhyChooseUs'
+import TopLocations from './TopLocations'
 import Home3 from "../HomePageNew/Home3"
 import Home7 from "../HomePageNew/Home7"
 import Home2 from "../HomePageNew/Home2"
@@ -215,7 +218,10 @@ export const HomePageNewMain = () => {
       <div style={{ overflow: 'visible' }}>
         <HomePageNew1 />
         {/* <HomePageNew2 /> commented out for now — restore later if needed */}
+        <BrowseByType />
         <FeaturedStays />
+        <WhyChooseUs />
+        <TopLocations />
         <Home3 />
         <Home7 />
         <HomeReviews />
