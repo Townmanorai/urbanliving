@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { CheckCircle2, ShieldCheck, BadgeCheck, ArrowRight } from "lucide-react";
 import "./Home3.css";
 
 const rentersSteps = [
@@ -165,77 +166,38 @@ const Home3 = () => {
           <div className="home3-cta-features">
             {cta.checks.map((c, i) => (
               <div className="home3-feature" key={i}>
-                <span className="home3-feature-icon">✓</span>
+                <CheckCircle2 size={15} className="home3-feature-icon" />
                 {c}
               </div>
             ))}
           </div>
-          <button className="home3-cta-btn" onClick={handleCTAClick}>{cta.btnText}</button>
+          <button className="home3-cta-btn" onClick={handleCTAClick}>
+            {cta.btnText} <ArrowRight size={15} />
+          </button>
         </div>
 
-        {/* Premium Verified Badges */}
+        {/* Verified Badges */}
         <div className="h3-vbadge-wrap">
-          <h2 className="h3-vbadge-heading">Get your property <span style={{ color: '#C98B3E' }}>verified</span></h2>
-          <p className="h3-vbadge-subheading">— Earn more visibility and win bookings faster —</p>
+          <div className="h3-vbadge-eyebrow">Get Verified</div>
+          <h2 className="h3-vbadge-heading">Boost trust, win more bookings</h2>
+          <p className="h3-vbadge-subheading">Verified listings earn more visibility and convert faster.</p>
+
           <div className="h3-vbadge-row">
-
-            {/* OvikaLiving Verified — green */}
             <Link to="/ovika-verified" className="h3-vbadge">
-              <div className="h3-vbadge-shield-wrap">
-                <svg viewBox="0 0 130 155" fill="none" xmlns="http://www.w3.org/2000/svg" className="h3-vbadge-shield">
-                  <defs>
-                    <linearGradient id="gRim"  x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#E8D45A"/><stop offset="100%" stopColor="#A88A00"/></linearGradient>
-                    <linearGradient id="gBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#3a7d44"/><stop offset="100%" stopColor="#1a4a20"/></linearGradient>
-                    <linearGradient id="gRib"  x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="#1a4a20"/><stop offset="50%" stopColor="#2d6e38"/><stop offset="100%" stopColor="#1a4a20"/></linearGradient>
-                  </defs>
-                  <path d="M65 3 L124 28 L124 82 C124 118 65 150 65 150 C65 150 6 118 6 82 L6 28 Z" fill="url(#gRim)"/>
-                  <path d="M65 10 L117 33 L117 82 C117 114 65 143 65 143 C65 143 13 114 13 82 L13 33 Z" fill="url(#gBody)"/>
-                  <path d="M13 66 L117 66 L117 97 C105 107 87 116 65 121 C43 116 25 107 13 97 Z" fill="url(#gRib)"/>
-                  <path d="M4 63 L13 68 L13 95 L4 90 Z" fill="#0e3518"/>
-                  <path d="M126 63 L117 68 L117 95 L126 90 Z" fill="#0e3518"/>
-                  <path d="M38 72 L55 92 L92 52" stroke="#E8D45A" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                </svg>
-              </div>
-              <div className="h3-vbadge-text">
-                <div className="h3-vbadge-top h3-vbadge-top--green">
-                  <span className="h3-vbadge-title">OvikaLiving Verified</span>
-                </div>
-                <div className="h3-vbadge-bottom">
-                  <span className="h3-vbadge-sub">Physically verified by OvikaLiving</span>
-                </div>
+              <div className="h3-vbadge-icon h3-vbadge-icon--green"><ShieldCheck size={22} /></div>
+              <div>
+                <div className="h3-vbadge-title">OvikaLiving Verified</div>
+                <p className="h3-vbadge-sub">Physically verified by the OvikaLiving team</p>
               </div>
             </Link>
 
-            {/* Divider */}
-            <div className="h3-vbadge-divider" />
-
-            {/* Self Verified — orange */}
             <Link to="/ovika-self-verified" className="h3-vbadge">
-              <div className="h3-vbadge-shield-wrap">
-                <svg viewBox="0 0 130 155" fill="none" xmlns="http://www.w3.org/2000/svg" className="h3-vbadge-shield">
-                  <defs>
-                    <linearGradient id="oRim"  x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#F5C842"/><stop offset="100%" stopColor="#C88A0A"/></linearGradient>
-                    <linearGradient id="oBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#E07030"/><stop offset="100%" stopColor="#8B3A00"/></linearGradient>
-                    <linearGradient id="oRib"  x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="#8B3A00"/><stop offset="50%" stopColor="#C05010"/><stop offset="100%" stopColor="#8B3A00"/></linearGradient>
-                  </defs>
-                  <path d="M65 3 L124 28 L124 82 C124 118 65 150 65 150 C65 150 6 118 6 82 L6 28 Z" fill="url(#oRim)"/>
-                  <path d="M65 10 L117 33 L117 82 C117 114 65 143 65 143 C65 143 13 114 13 82 L13 33 Z" fill="url(#oBody)"/>
-                  <path d="M13 66 L117 66 L117 97 C105 107 87 116 65 121 C43 116 25 107 13 97 Z" fill="url(#oRib)"/>
-                  <path d="M4 63 L13 68 L13 95 L4 90 Z" fill="#5a2000"/>
-                  <path d="M126 63 L117 68 L117 95 L126 90 Z" fill="#5a2000"/>
-                  <path d="M38 72 L55 92 L92 52" stroke="#F5C842" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                </svg>
-              </div>
-              <div className="h3-vbadge-text">
-                <div className="h3-vbadge-top h3-vbadge-top--orange">
-                  <span className="h3-vbadge-title">Self Verified</span>
-                </div>
-                <div className="h3-vbadge-bottom">
-                  <span className="h3-vbadge-sub">Verified by property owner via images &amp; video.</span>
-                </div>
+              <div className="h3-vbadge-icon h3-vbadge-icon--orange"><BadgeCheck size={22} /></div>
+              <div>
+                <div className="h3-vbadge-title">Self Verified</div>
+                <p className="h3-vbadge-sub">Verified by the property owner via images &amp; video</p>
               </div>
             </Link>
-
           </div>
         </div>
 
