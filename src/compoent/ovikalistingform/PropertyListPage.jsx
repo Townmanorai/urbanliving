@@ -660,9 +660,10 @@ const PropertyCard = ({ property, rentalType }) => {
           );
         })()}
 
-        {/* Top row: name + rating */}
+        {/* Top row: name (rating stack is absolutely positioned so its extra height
+            never pushes the location line down) */}
         <div className="plp-hcard-toprow">
-          <h3 className="plp-hcard-name" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <h3 className="plp-hcard-name" style={{ display: 'flex', alignItems: 'center', gap: 6, paddingRight: 90 }}>
             {property.property_name || 'Untitled Property'}
 {(() => {
               const m = (() => { try { return typeof property.meta === 'object' ? property.meta : JSON.parse(property.meta || '{}'); } catch { return {}; } })();
@@ -676,14 +677,14 @@ const PropertyCard = ({ property, rentalType }) => {
               );
             })()}
           </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2, flexShrink: 0 }}>
-            <div className="plp-hcard-rating">
-              <FiStar style={{ fontSize: 11, fill: '#fff', color: '#fff' }} />
-              <span>{randomRating}</span>
-            </div>
-            <span className="plp-hcard-reviews">({reviewCount} Reviews)</span>
-            <span className="plp-hcard-recommend">{recommendedPct}% Recommended</span>
+        </div>
+        <div className="plp-hcard-ratingstack">
+          <div className="plp-hcard-rating">
+            <FiStar style={{ fontSize: 11, fill: '#fff', color: '#fff' }} />
+            <span>{randomRating}</span>
           </div>
+          <span className="plp-hcard-reviews">({reviewCount} Reviews)</span>
+          <span className="plp-hcard-recommend">{recommendedPct}% Recommended</span>
         </div>
 
         {/* Location */}
@@ -2137,14 +2138,14 @@ const PropertyListPage = () => {
           overflow: hidden;
           cursor: pointer;
           transition: box-shadow 0.22s ease, transform 0.22s ease;
-          height: 232px;
         }
         .plp-hcard:hover {
           box-shadow: 0 8px 28px rgba(0,0,0,0.12);
           transform: translateY(-2px);
         }
 
-        /* ── Image block (left) ── */
+        /* ── Image block (left) — absolutely positioned img so it never drives the
+             row's height; the details column's natural content decides card height. */
         .plp-hcard-imgblock {
           display: flex;
           flex-direction: row;
@@ -2153,6 +2154,7 @@ const PropertyListPage = () => {
           gap: 3px;
           overflow: hidden;
           border-radius: 14px 0 0 14px;
+          align-self: stretch;
         }
         .plp-hcard-mainimg {
           flex: 1;
@@ -2162,6 +2164,8 @@ const PropertyListPage = () => {
           background: #f3f4f6;
         }
         .plp-hcard-mainimg img {
+          position: absolute;
+          inset: 0;
           width: 100%; height: 100%;
           object-fit: cover;
           transition: transform 0.45s ease;
@@ -2220,6 +2224,7 @@ const PropertyListPage = () => {
           flex-direction: column;
           gap: 5px;
           overflow: hidden;
+          position: relative;
         }
         .plp-hcard-toprow {
           display: flex;
@@ -2233,6 +2238,12 @@ const PropertyListPage = () => {
           overflow: hidden; display: -webkit-box;
           -webkit-line-clamp: 2; -webkit-box-orient: vertical;
           flex: 1;
+        }
+        .plp-hcard-ratingstack {
+          position: absolute;
+          top: 14px; right: 18px;
+          display: flex; flex-direction: column; align-items: flex-end;
+          gap: 2px;
         }
         .plp-hcard-rating {
           display: inline-flex; align-items: center; gap: 3px;
@@ -2293,7 +2304,6 @@ const PropertyListPage = () => {
           align-items: center;
           justify-content: space-between;
           gap: 10px;
-          margin-top: auto;
           padding-top: 10px;
           border-top: 1px solid #f3f4f6;
         }
