@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import "./tmx9pf-form.css";
 import { AuthContext } from "../Login/AuthContext";
@@ -115,20 +115,23 @@ function isAcceptedFile(file) {
   return false;
 }
 
-const Tmx9PropertyForm = () => {
+const Tmx9PropertyForm = ({ propId: passedId, onComplete } = {}) => {
   const { user } = useContext(AuthContext);
   const [searchParams] = useSearchParams();
+  const { id: paramId } = useParams();
+  const navigate = useNavigate();
+  const editId = passedId || paramId;
+  const isEditMode = !!editId;
 
   const urlCategory = searchParams.get('category');
   const initCategory = DEFAULT_PROPERTY_CATEGORIES.includes(urlCategory)
     ? urlCategory
     : DEFAULT_PROPERTY_CATEGORIES[0];
 
-  const isHomestay = initCategory === "Homestays & BnB";
-  const isHotel = initCategory === "Hotel Stays";
-
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingEdit, setIsLoadingEdit] = useState(isEditMode);
+  const [existingPhotos, setExistingPhotos] = useState([]);
 
   const [form, setForm] = useState({
     propertyType: PROPERTY_TYPES[0],
@@ -190,6 +193,11 @@ const Tmx9PropertyForm = () => {
 
   });
 
+  // Derived from form state (not the URL-only initial category) so that, in edit mode,
+  // these correctly flip once the fetched property's real category is loaded into form.
+  const isHomestay = form.propertyCategory === "Homestays & BnB";
+  const isHotel = form.propertyCategory === "Hotel Stays";
+
   const photoPreviews = useFilePreviews();
   const [coverIndex, setCoverIndex] = useState(null);
   const [idFiles, setIdFiles] = useState([]);
@@ -230,6 +238,117 @@ const Tmx9PropertyForm = () => {
     Object.values(AMENITIES).flat().forEach((a) => (all[a] = false));
     setForm((f) => ({ ...f, amenities: all }));
   }, []);
+
+  // ── EDIT MODE: fetch the existing property and prefill the whole form ──────
+  useEffect(() => {
+    if (!isEditMode) return;
+    let cancelled = false;
+    (async () => {
+      setIsLoadingEdit(true);
+      try {
+        const res = await fetch(`${API_BASE}/ovika/properties/${editId}`);
+        const json = await res.json().catch(() => null);
+        const data = json?.data || json;
+        if (!data) throw new Error("No property data returned");
+        if (cancelled) return;
+
+        const parseJson = (val, fallback) => {
+          if (val === null || val === undefined) return fallback;
+          if (typeof val === "object") return val;
+          try { return JSON.parse(val); } catch { return fallback; }
+        };
+        const guidebook = parseJson(data.guidebook, {});
+        const guestPolicy = parseJson(data.guest_policy, {});
+        const bedroomsRaw = parseJson(data.bedrooms, []);
+        const bathroomsRaw = parseJson(data.bathrooms, []);
+        const amenitiesRaw = parseJson(data.amenities, []);
+        const category = DEFAULT_PROPERTY_CATEGORIES.includes(data.property_category) ? data.property_category : DEFAULT_PROPERTY_CATEGORIES[0];
+        const hotel = category === "Hotel Stays";
+
+        setForm(f => ({
+          ...f,
+          propertyType: data.property_type || f.propertyType,
+          propertyCategory: category,
+          title: data.property_name || "",
+          mainDescription: data.description || "",
+          address: data.address || "",
+          country: data.country || "India",
+          postalCode: data.postal_code || "",
+          city: data.city || "",
+          latitude: data.latitude ?? "",
+          longitude: data.longitude ?? "",
+          bedroomDetails: (!hotel && Array.isArray(bedroomsRaw) && bedroomsRaw.length)
+            ? bedroomsRaw.map((b, i) => ({ id: i, type: b.type || "King Bed", count: Number(b.count) || 1 }))
+            : f.bedroomDetails,
+          bathroomDetails: (Array.isArray(bathroomsRaw) && bathroomsRaw.length)
+            ? bathroomsRaw.map((b, i) => ({ id: i, type: b.type || "Attached", count: Number(b.count) || 1 }))
+            : f.bathroomDetails,
+          hotelRoomTypes: (hotel && Array.isArray(bedroomsRaw) && bedroomsRaw.length)
+            ? bedroomsRaw.map((b, i) => ({ id: i, roomType: b.type || "Standard Room", numberOfRooms: Number(b.count) || 1, bedType: b.bedType || "King Bed", maxOccupancy: 2, areaSqFt: b.areaSqFt || "", pricePerNight: b.price || "" }))
+            : f.hotelRoomTypes,
+          beds: data.beds ?? f.beds,
+          area: data.area || "",
+          amenities: (() => { const all = {}; Object.values(AMENITIES).flat().forEach(a => { all[a] = Array.isArray(amenitiesRaw) && amenitiesRaw.includes(a); }); return all; })(),
+          checkInTime: data.check_in_time || f.checkInTime,
+          checkOutTime: data.check_out_time || f.checkOutTime,
+          smokingAllowed: !!data.smoking_allowed,
+          petsAllowed: !!data.pets_allowed,
+          eventsAllowed: !!data.events_allowed,
+          drinkingAllowed: !!data.drinking_alcohol,
+          outsideGuestsAllowed: !!data.outside_guests_allowed,
+          quietHours: data.quiet_hours || f.quietHours,
+          maxGuests: data.max_guests ?? f.maxGuests,
+          baseRate: data.price ?? "",
+          bookingType: data.booking_type !== undefined && data.booking_type !== null ? Number(data.booking_type) : f.bookingType,
+          weekendRate: data.weekend_rate ?? "",
+          weeklyDiscountPct: data.weekly_discount_pct ?? "",
+          monthlyDiscountPct: data.monthly_discount_pct ?? "",
+          cleaningFee: data.cleaning_fee ?? "",
+          selfCheckIn: data.self_check_in !== undefined && data.self_check_in !== null
+            ? (Number(data.self_check_in) === 1 ? "Available" : "Not Available")
+            : f.selfCheckIn,
+          registrationNumber: data.registration_number || "",
+          localCompliance: data.local_compliance || "",
+          transportTips: {
+            taxi: guidebook.transport_tips?.taxi || "",
+            parking: guidebook.transport_tips?.parking || "",
+            localTravel: guidebook.transport_tips?.local_travel || guidebook.transport_tips?.localTravel || "",
+          },
+          cafesRestaurants: (Array.isArray(guidebook.cafes_restaurants) && guidebook.cafes_restaurants.length)
+            ? guidebook.cafes_restaurants.map((c, i) => ({ id: i, name: c.name || "", distanceM: c.distance_m ?? "" }))
+            : f.cafesRestaurants,
+          essentialsNearby: {
+            atm: guidebook.essentials_nearby?.atm || "",
+            grocery: guidebook.essentials_nearby?.grocery || "",
+            medical: guidebook.essentials_nearby?.medical || "",
+          },
+          mustVisitPlaces: (Array.isArray(guidebook.must_visit_places) && guidebook.must_visit_places.length)
+            ? guidebook.must_visit_places.map((p, i) => ({ id: i, place: p.place || "", bestTime: p.best_time || "" }))
+            : f.mustVisitPlaces,
+          houseSpecificTips: (Array.isArray(guidebook.house_specific_tips) && guidebook.house_specific_tips.length) ? guidebook.house_specific_tips : f.houseSpecificTips,
+          familyAllowed: !!guestPolicy.family_allowed,
+          unmarriedCoupleAllowed: !!guestPolicy.unmarried_couple_allowed,
+          bachelorAllowed: !!guestPolicy.bachelors_allowed,
+        }));
+
+        setPolicy(data.cancellation_policy || DEFAULT_CANCELLATION_POLICIES[0]);
+        setInsurance(data.insurance === "1" || data.insurance === 1 || data.insurance === true);
+        setDamageProtection(data.damage_protection === "1" || data.damage_protection === 1 || data.damage_protection === true);
+
+        let photos = [];
+        if (Array.isArray(data.photos)) photos = data.photos;
+        else if (typeof data.photos === "string") { try { photos = JSON.parse(data.photos); } catch { photos = data.photos.split(",").filter(Boolean); } }
+        setExistingPhotos(photos.filter(Boolean));
+        setCoverIndex(Number(data.cover_photo_index) || 0);
+      } catch (err) {
+        console.error("Failed to load property for edit:", err);
+        alert("Failed to load property data for editing.");
+      } finally {
+        if (!cancelled) setIsLoadingEdit(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [editId, isEditMode]);
 
   const validateForStep = (s) => {
     const newErrors = {};
@@ -288,7 +407,7 @@ const Tmx9PropertyForm = () => {
     }
 
     if (s === 7) {
-      if (photoPreviews.previews.length === 0) newErrors.photos = "At least one photo is required";
+      if (photoPreviews.previews.length === 0 && existingPhotos.length === 0) newErrors.photos = "At least one photo is required";
     }
 
     if (s === 8) {
@@ -571,7 +690,7 @@ const Tmx9PropertyForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setIsSubmitting(true);
 
     const ownerId = await resolveOwnerId();
@@ -591,6 +710,136 @@ const Tmx9PropertyForm = () => {
     }
 
     try {
+      if (isEditMode) {
+        // ── EDIT MODE: upload any new photos separately, then PUT a JSON payload ──
+        let uploadedUrls = [];
+        const photoEntries = photoPreviews.previews.filter(p => p?.file);
+        if (photoEntries.length > 0) {
+          try {
+            const compressedPhotos = await Promise.all(photoEntries.map(p => compressImage(p.file)));
+            const uploadFd = new FormData();
+            compressedPhotos.forEach((f, i) => uploadFd.append("images", f, photoEntries[i].name || `photo-${i}`));
+            const uploadRes = await fetch("https://www.townmanor.ai/api/image/aws-upload-owner-images", {
+              method: "POST",
+              body: uploadFd,
+            });
+            const uploadData = await uploadRes.json().catch(() => null);
+            if (uploadRes.ok && Array.isArray(uploadData?.fileUrls)) uploadedUrls = uploadData.fileUrls;
+          } catch (err) {
+            console.warn("New photo upload failed, continuing without them:", err);
+            alert("Could not upload the new photos. The update will proceed without them.");
+          }
+        }
+        const updatedPhotos = [...existingPhotos, ...uploadedUrls];
+
+        const guidebook = {
+          transport_tips: {
+            taxi: form.transportTips.taxi,
+            parking: form.transportTips.parking,
+            local_travel: form.transportTips.localTravel
+          },
+          cafes_restaurants: form.cafesRestaurants
+            .filter(c => c.name.trim())
+            .map(c => ({ name: c.name, distance_m: Number(c.distanceM) || 0 })),
+          essentials_nearby: {
+            atm: form.essentialsNearby.atm,
+            grocery: form.essentialsNearby.grocery,
+            medical: form.essentialsNearby.medical
+          },
+          must_visit_places: form.mustVisitPlaces
+            .filter(p => p.place.trim())
+            .map(p => ({ place: p.place, best_time: p.bestTime })),
+          house_specific_tips: form.houseSpecificTips.filter(t => t.trim())
+        };
+
+        const bedroomsPayload = isHotel
+          ? form.hotelRoomTypes.map(r => ({
+              type: r.roomType,
+              count: Number(r.numberOfRooms) || 0,
+              bedType: r.bedType,
+              areaSqFt: r.areaSqFt,
+              price: Number(r.pricePerNight) || 0,
+              attachedBathroom: true,
+            }))
+          : form.bedroomDetails.map(d => ({ type: d.type, count: d.count }));
+        const bathroomsPayload = form.bathroomDetails.map(d => ({ type: d.type, count: d.count }));
+        const areaPayload = isHotel
+          ? ((form.hotelRoomTypes || []).map(r => r.areaSqFt).find(a => a && String(a).trim()) || "")
+          : (form.area || "");
+        const pricePayload = isHotel
+          ? (() => {
+              const roomPrices = (form.hotelRoomTypes || []).map(r => Number(r.pricePerNight)).filter(n => !isNaN(n) && n > 0);
+              return roomPrices.length ? Math.min(...roomPrices) : (Number(form.baseRate) || 0);
+            })()
+          : (Number(form.baseRate) || 0);
+
+        const putPayload = {
+          property_name: form.title || "",
+          description: form.mainDescription || "",
+          price: pricePayload,
+          city: form.city || "",
+          address: form.address || "",
+          postal_code: form.postalCode || "",
+          country: form.country || "India",
+          property_type: (form.propertyType || "entire place").toLowerCase(),
+          property_category: form.propertyCategory || "Apartments & Villas",
+          booking_type: String(form.bookingType),
+          area: areaPayload,
+          beds: form.beds,
+          max_guests: form.maxGuests,
+          owner_id: String(ownerId),
+          check_in_time: form.checkInTime,
+          check_out_time: form.checkOutTime,
+          self_check_in: form.selfCheckIn === "Available" ? 1 : 0,
+          smoking_allowed: !!form.smokingAllowed,
+          pets_allowed: !!form.petsAllowed,
+          events_allowed: !!form.eventsAllowed,
+          drinking_alcohol: !!form.drinkingAllowed,
+          outside_guests_allowed: !!form.outsideGuestsAllowed,
+          weekend_rate: form.weekendRate,
+          weekly_discount_pct: form.weeklyDiscountPct,
+          monthly_discount_pct: form.monthlyDiscountPct,
+          cleaning_fee: form.cleaningFee,
+          registration_number: form.registrationNumber,
+          local_compliance: form.localCompliance,
+          cancellation_policy: policy,
+          insurance: insurance ? "1" : "0",
+          damage_protection: damageProtection ? "1" : "0",
+          latitude: form.latitude !== "" ? Number(form.latitude) : null,
+          longitude: form.longitude !== "" ? Number(form.longitude) : null,
+          amenities: JSON.stringify(Object.keys(form.amenities || {}).filter((k) => form.amenities[k])),
+          bedrooms: JSON.stringify(bedroomsPayload),
+          bathrooms: JSON.stringify(bathroomsPayload),
+          photos: JSON.stringify(updatedPhotos),
+          cover_photo_index: coverIndex ?? 0,
+          guidebook: JSON.stringify(guidebook),
+          guest_policy: JSON.stringify({
+            family_allowed: Boolean(form.familyAllowed),
+            unmarried_couple_allowed: Boolean(form.unmarriedCoupleAllowed),
+            bachelors_allowed: Boolean(form.bachelorAllowed),
+          }),
+        };
+
+        const putRes = await fetch(`${API_BASE}/ovika/properties/${editId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(putPayload),
+        });
+        const putData = await putRes.json().catch(() => ({}));
+        if (!putRes.ok) {
+          console.error("Update API error", putRes.status, putData);
+          alert(`Failed to update property (${putRes.status}): ${putData.message || putData.error || "Unknown error"}`);
+          setIsSubmitting(false);
+          return;
+        }
+        alert("Property updated successfully!");
+        if (onComplete) onComplete();
+        else navigate("/admin-control-panel");
+        setIsSubmitting(false);
+        return;
+      }
+
       const fd = new FormData();
       fd.append("property_name", form.title || "");
       fd.append("description", form.mainDescription || "");
@@ -777,13 +1026,32 @@ const Tmx9PropertyForm = () => {
     </div>
   );
 
+  if (isEditMode && isLoadingEdit) {
+    return (
+      <div className="tmx9pf-root">
+        <div style={{ padding: "80px 20px", textAlign: "center", fontSize: "1rem", color: "#6b7280" }}>Loading property…</div>
+      </div>
+    );
+  }
+
   return (
     <div className="tmx9pf-root">
       <Helmet>
-        <title>List Your Property | OvikaLiving</title>
+        <title>{isEditMode ? "Update Property | OvikaLiving" : "List Your Property | OvikaLiving"}</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
-    <form className="tmx9pf-paginated" onSubmit={handleSubmit} noValidate>
+    <form
+      className="tmx9pf-paginated"
+      onSubmit={(e) => e.preventDefault()}
+      onKeyDown={(e) => {
+        // Native form submission is fully disabled below — this just stops Enter
+        // from doing anything unexpected (like clicking a focused button) too.
+        if (e.key === "Enter" && e.target.tagName !== "TEXTAREA") {
+          e.preventDefault();
+        }
+      }}
+      noValidate
+    >
       <style>{`
         .tmx9pf-dynamic-row {
           display: flex;
@@ -1333,20 +1601,43 @@ const Tmx9PropertyForm = () => {
             <h2 className="tmx9pf-section-title">Photos &amp; Media</h2>
             <div className="tmx9pf-grid">
               <div className="tmx9pf-field full">
-                <label className="tmx9pf-label">Photos — up to 12 *</label>
+                {isEditMode && existingPhotos.length > 0 && (
+                  <>
+                    <label className="tmx9pf-label">Current Photos</label>
+                    <div className="tmx9pf-photo-previews">
+                      {existingPhotos.map((url, i) => (
+                        <div key={`existing-${i}`} className="tmx9pf-photo-thumb">
+                          <img src={url} alt={`Existing ${i + 1}`} />
+                          <div className="tmx9pf-photo-actions">
+                            <button
+                              type="button"
+                              onClick={() => setCoverIndex(i)}
+                              className={`tmx9pf-small-btn ${coverIndex === i ? "tmx9pf-small-btn--active" : ""}`}
+                            >Cover</button>
+                            <button type="button" onClick={() => setExistingPhotos(prev => prev.filter((_, idx) => idx !== i))} className="tmx9pf-small-btn">Remove</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+                <label className="tmx9pf-label">{isEditMode ? "Add More Photos" : "Photos — up to 12 *"}</label>
                 <input type="file" accept="image/*,application/pdf" multiple onChange={handlePhotos} className={`tmx9pf-file ${errors.photos ? "tmx9pf-file--error" : ""}`} />
                 {renderError("photos")}
                 <div className="tmx9pf-photo-previews">
-                  {photoPreviews.previews.length === 0 && <div className="tmx9pf-muted">No photos selected</div>}
-                  {photoPreviews.previews.map((p, i) => (
-                    <div key={i} className="tmx9pf-photo-thumb">
-                      <img src={p.url} alt={p.name} />
-                      <div className="tmx9pf-photo-actions">
-                        <button type="button" onClick={() => setCoverIndex(i)} className={`tmx9pf-small-btn ${coverIndex === i ? "tmx9pf-small-btn--active" : ""}`}>Cover</button>
-                        <button type="button" onClick={() => removePhoto(i)} className="tmx9pf-small-btn">Remove</button>
+                  {photoPreviews.previews.length === 0 && <div className="tmx9pf-muted">No new photos selected</div>}
+                  {photoPreviews.previews.map((p, i) => {
+                    const combinedIndex = existingPhotos.length + i;
+                    return (
+                      <div key={i} className="tmx9pf-photo-thumb">
+                        <img src={p.url} alt={p.name} />
+                        <div className="tmx9pf-photo-actions">
+                          <button type="button" onClick={() => setCoverIndex(combinedIndex)} className={`tmx9pf-small-btn ${coverIndex === combinedIndex ? "tmx9pf-small-btn--active" : ""}`}>Cover</button>
+                          <button type="button" onClick={() => removePhoto(i)} className="tmx9pf-small-btn">Remove</button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -1561,13 +1852,13 @@ const Tmx9PropertyForm = () => {
         {step < STEPS.length - 1 ? (
           <button type="button" onClick={goNext} className="tmx9pf-nav-btn tmx9pf-nav-next">Next</button>
         ) : (
-          <button type="submit" className="tmx9pf-nav-btn tmx9pf-nav-next" disabled={isSubmitting} style={{ opacity: isSubmitting ? 0.75 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}>
+          <button type="button" onClick={handleSubmit} className="tmx9pf-nav-btn tmx9pf-nav-next" disabled={isSubmitting} style={{ opacity: isSubmitting ? 0.75 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}>
             {isSubmitting ? (
               <span style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center' }}>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" className="spin-icon"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeOpacity="0.3"/><path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/></svg>
-                Uploading...
+                {isEditMode ? "Saving..." : "Uploading..."}
               </span>
-            ) : "Publish"}
+            ) : (isEditMode ? "Save Changes" : "Publish")}
           </button>
         )}
       </div>

@@ -200,6 +200,14 @@ function App() {
               </RequireAuth>
             }
           />
+          <Route
+            path="/update-property/:id"
+            element={
+              <RequireAuth>
+                <Tmx9PropertyForm />
+              </RequireAuth>
+            }
+          />
           <Route path="/properties" element={<PropertyListPage />} />
           <Route path="/property/:id" element={<PropertyDetailPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />

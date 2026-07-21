@@ -79,7 +79,10 @@ import {
   Accessibility,
   Sparkles,
   Coffee,
-  Cast
+  Cast,
+  Plane,
+  ShoppingCart,
+  Hospital
 } from 'lucide-react';
 import { MdCurrencyRupee, MdOutlineCurrencyRupee } from 'react-icons/md';
 import { Helmet } from 'react-helmet';
@@ -184,6 +187,56 @@ const getAmenityIcon = (name) => {
   return Icon
     ? <Icon size={16} style={{ color: '#c98b3e', flexShrink: 0 }} />
     : <Lightbulb size={16} style={{ color: '#c98b3e', flexShrink: 0 }} />;
+};
+
+const getNearbyIcon = (name) => {
+  const n = (name || '').toString().toLowerCase();
+  let Icon = MapPinIcon;
+  if (/metro|station|railway|train/.test(n)) Icon = Train;
+  else if (/airport/.test(n)) Icon = Plane;
+  else if (/temple|fort|monument|mandir|museum|palace|heritage/.test(n)) Icon = Landmark;
+  else if (/sports|gym|stadium|complex/.test(n)) Icon = Dumbbell;
+  else if (/hospital|clinic|medical/.test(n)) Icon = Hospital;
+  else if (/mall|market|shopping|store|bazaar/.test(n)) Icon = ShoppingCart;
+  else if (/cafe|restaurant|food/.test(n)) Icon = Utensils;
+  return <Icon size={16} style={{ color: '#c2772b', flexShrink: 0 }} />;
+};
+
+const formatDistance = (m) => {
+  const meters = Number(m) || 0;
+  if (meters <= 0) return '';
+  return meters >= 1000 ? `${(meters / 1000).toFixed(1)} km` : `${meters} m`;
+};
+
+const parseGuidebook = (property) => {
+  let gb = property?.guidebook;
+  if (typeof gb === 'string') { try { gb = JSON.parse(gb); } catch { gb = null; } }
+  if (typeof gb === 'string') { try { gb = JSON.parse(gb); } catch { gb = null; } }
+  return (gb && typeof gb === 'object' && !Array.isArray(gb)) ? gb : null;
+};
+
+const ESSENTIALS_ICON = { atm: CreditCard, grocery: ShoppingCart, medical: Hospital, shopping: ShoppingCart };
+const ESSENTIALS_LABEL = { atm: 'ATM', grocery: 'Grocery Store', medical: 'Medical / Pharmacy', shopping: 'Shopping' };
+
+// Flat, sorted list of all "nearby place" style entries (cafes/restaurants have real distances;
+// essentials & must-visit places don't, so they're pushed after the distance-sorted ones).
+const buildNearbyPlaces = (gb) => {
+  if (!gb) return [];
+  const items = [];
+  (Array.isArray(gb.cafes_restaurants) ? gb.cafes_restaurants : []).forEach(s => {
+    if (s?.name) items.push({ name: s.name, info: formatDistance(s.distance_m), sortKey: Number(s.distance_m) || 0, icon: getNearbyIcon(s.name) });
+  });
+  items.sort((a, b) => a.sortKey - b.sortKey);
+  const essentials = gb.essentials_nearby || {};
+  Object.entries(essentials).forEach(([k, v]) => {
+    if (!v) return;
+    const Icon = ESSENTIALS_ICON[k] || MapPinIcon;
+    items.push({ name: v, info: ESSENTIALS_LABEL[k] || k, sortKey: Infinity, icon: <Icon size={16} style={{ color: '#c2772b', flexShrink: 0 }} /> });
+  });
+  (Array.isArray(gb.must_visit_places) ? gb.must_visit_places : []).forEach(p => {
+    if (p?.place) items.push({ name: p.place, info: p.best_time || 'Must visit', sortKey: Infinity, icon: <Landmark size={16} style={{ color: '#c2772b', flexShrink: 0 }} /> });
+  });
+  return items;
 };
 
 const RULE_ICON_MAP = {
@@ -1575,6 +1628,7 @@ const PropertyDetailPage = () => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showReviewsModal, setShowReviewsModal] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [showNearbyModal, setShowNearbyModal] = useState(false);
 
   useEffect(() => {
     const prevBody = document.body.style.backgroundColor;
@@ -1589,11 +1643,11 @@ const PropertyDetailPage = () => {
 
   // Scroll lock when any modal is open
   useEffect(() => {
-    const anyOpen = !!(showImageViewer || showPaymentModal || showLeadModal || showPhotoGallery || showReviewsModal);
+    const anyOpen = !!(showImageViewer || showPaymentModal || showLeadModal || showPhotoGallery || showReviewsModal || showNearbyModal);
     document.body.style.overflow = anyOpen ? 'hidden' : '';
     document.documentElement.style.overflow = anyOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; document.documentElement.style.overflow = ''; };
-  }, [showImageViewer, showPaymentModal, showLeadModal, showPhotoGallery, showReviewsModal]);
+  }, [showImageViewer, showPaymentModal, showLeadModal, showPhotoGallery, showReviewsModal, showNearbyModal]);
   const [calendarViewMonth, setCalendarViewMonth] = useState(new Date());
   const [monthlyDuration, setMonthlyDuration] = useState(1);
   const [monthPickerYear, setMonthPickerYear] = useState(new Date().getFullYear());
@@ -2534,6 +2588,104 @@ const PropertyDetailPage = () => {
 
       {showImageViewer && <ImageViewer images={photos} initialIndex={viewerImageIndex} onClose={() => setShowImageViewer(false)} />}
       {showPhotoGallery && <PhotoGallerySlider property={property} onClose={() => setShowPhotoGallery(false)} />}
+
+      {/* ── What's nearby — full-page bottom sheet, shows every guidebook section ── */}
+      {showNearbyModal && (() => {
+        const gb = parseGuidebook(property);
+        const cafes = (gb && Array.isArray(gb.cafes_restaurants)) ? gb.cafes_restaurants.filter(s => s?.name) : [];
+        const sortedCafes = [...cafes].sort((a, b) => (Number(a.distance_m) || 0) - (Number(b.distance_m) || 0));
+        const essentials = gb?.essentials_nearby ? Object.entries(gb.essentials_nearby).filter(([, v]) => v) : [];
+        const mustVisit = (gb && Array.isArray(gb.must_visit_places)) ? gb.must_visit_places.filter(p => p?.place) : [];
+        const transport = gb?.transport_tips ? Object.entries(gb.transport_tips).filter(([, v]) => v) : [];
+        const TRANSPORT_LABEL = { taxi: 'Taxi / Cab Services', parking: 'Parking Info', localTravel: 'Local Travel Tips', local: 'Local Travel Tips', bus: 'Bus', metro: 'Metro' };
+        const houseTips = (gb && Array.isArray(gb.house_specific_tips)) ? gb.house_specific_tips.filter(Boolean) : [];
+        const nothingAtAll = sortedCafes.length === 0 && essentials.length === 0 && mustVisit.length === 0 && transport.length === 0 && houseTips.length === 0;
+        return (
+          <div className="pdp-nearby-modal-overlay" onClick={() => setShowNearbyModal(false)}>
+            <div className="pdp-nearby-modal-sheet" onClick={(e) => e.stopPropagation()}>
+              <div className="pdp-nearby-modal-header">
+                <h2>What&apos;s nearby</h2>
+                <button className="pdp-nearby-modal-close" onClick={() => setShowNearbyModal(false)} aria-label="Close"><FiX size={20} /></button>
+              </div>
+              <div className="pdp-nearby-modal-body">
+                {nothingAtAll && <p style={{ color: '#9ca3af', fontSize: '0.9rem' }}>No nearby info added for this property yet.</p>}
+
+                {sortedCafes.length > 0 && (
+                  <div className="pdp-nearby-section">
+                    <h4>Cafes &amp; Restaurants</h4>
+                    <div className="pdp-nearby-list">
+                      {sortedCafes.map((s, i) => (
+                        <div key={i} className="pdp-nearby-item">
+                          <span className="pdp-nearby-item-left">{getNearbyIcon(s.name)}<span>{s.name}</span></span>
+                          <span className="pdp-nearby-item-dist">{formatDistance(s.distance_m)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {essentials.length > 0 && (
+                  <div className="pdp-nearby-section">
+                    <h4>Essentials Nearby</h4>
+                    <div className="pdp-nearby-list">
+                      {essentials.map(([k, v], i) => {
+                        const Icon = ESSENTIALS_ICON[k] || MapPinIcon;
+                        return (
+                          <div key={i} className="pdp-nearby-item">
+                            <span className="pdp-nearby-item-left"><Icon size={16} style={{ color: '#c2772b', flexShrink: 0 }} /><span>{v}</span></span>
+                            <span className="pdp-nearby-item-dist">{ESSENTIALS_LABEL[k] || k}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {mustVisit.length > 0 && (
+                  <div className="pdp-nearby-section">
+                    <h4>Must Visit Places</h4>
+                    <div className="pdp-nearby-list">
+                      {mustVisit.map((p, i) => (
+                        <div key={i} className="pdp-nearby-item">
+                          <span className="pdp-nearby-item-left"><Landmark size={16} style={{ color: '#c2772b', flexShrink: 0 }} /><span>{p.place}</span></span>
+                          <span className="pdp-nearby-item-dist">{p.best_time || ''}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {transport.length > 0 && (
+                  <div className="pdp-nearby-section">
+                    <h4>Transport &amp; Travel</h4>
+                    <div className="pdp-nearby-list">
+                      {transport.map(([k, v], i) => (
+                        <div key={i} className="pdp-nearby-item">
+                          <span className="pdp-nearby-item-left"><Train size={16} style={{ color: '#c2772b', flexShrink: 0 }} /><span>{v}</span></span>
+                          <span className="pdp-nearby-item-dist">{TRANSPORT_LABEL[k] || k}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {houseTips.length > 0 && (
+                  <div className="pdp-nearby-section">
+                    <h4>House-Specific Tips</h4>
+                    <div className="pdp-nearby-list">
+                      {houseTips.map((tip, i) => (
+                        <div key={i} className="pdp-nearby-item">
+                          <span className="pdp-nearby-item-left"><Sparkles size={16} style={{ color: '#c2772b', flexShrink: 0 }} /><span>{tip}</span></span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── Share Modal ── */}
       {showShareModal && (() => {
@@ -3676,69 +3828,17 @@ const PropertyDetailPage = () => {
                   </div>
                 </div>
 
-                <div className="rm-table-outer">
-                  <table className="rm-table">
-                    <thead>
-                      <tr>
-                        <th className="rm-th rm-th--room">Room Type</th>
-                        <th className="rm-th">Bathroom</th>
-                        <th className="rm-th">Area</th>
-                        <th className="rm-th rm-th--price">{pricingMode === 'monthly' ? 'Price / Month' : 'Price / Night'}</th>
-                        <th className="rm-th">Available</th>
-                        <th className="rm-th rm-th--action"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {property.parsedBedrooms.map((room, i) => {
-                        // For nightly: only use nightly-specific prices, NOT monthly price as fallback
-                        const propertyNightlyPrice = Number(property.meta?.perNightPrice) || 0;
-                        const displayPrice = pricingMode === 'monthly'
-                          ? (Number(room.price) || 0)
-                          : (Number(room.perNightPrice) || Number(room.nightlyPrice) || propertyNightlyPrice);
-                        const priceUnit = pricingMode === 'monthly' ? '/mo' : '/night';
-                        const isLast = i === property.parsedBedrooms.length - 1;
-                        return (
-                          <tr key={i} className={`rm-row ${isLast ? 'rm-row--last' : ''}`}>
-                            <td className="rm-td rm-td--room">
-                              <div className="rm-room-cell">
-                                <span className="rm-row-index">{String(i + 1).padStart(2, '0')}</span>
-                                <div className="rm-room-info">
-                                  <span className="rm-room-name">{room.type || 'Standard Room'}</span>
-                                  <div className="rm-room-tags">
-                                    {room.bedType   && <span className="rm-tag">{room.bedType}</span>}
-                                    {room.ac        && <span className="rm-tag rm-tag--ac">❄ AC</span>}
-                                    {room.furnished && <span className="rm-tag">Furnished</span>}
-                                    {!room.bedType && !room.ac && !room.furnished && <span className="rm-tag">Standard</span>}
-                                  </div>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="rm-td"><BathBadge attached={room.attachedBathroom} /></td>
-                            <td className="rm-td"><span className="rm-area-val">{room.areaSqFt ? `${room.areaSqFt} sqft` : '—'}</span></td>
-                            <td className="rm-td rm-td--price">
-                              {displayPrice > 0 ? (
-                                <div className="rm-price-cell">
-                                  <div style={{ display:'flex', alignItems:'baseline', gap:'2px' }}>
-                                    <span className="rm-price-main">₹{displayPrice.toLocaleString('en-IN')}</span>
-                                    <span className="rm-price-unit">{priceUnit}</span>
-                                  </div>
-                                  {pricingMode === 'monthly' && room.securityDeposit && (
-                                    <div className="rm-deposit">Security Deposit: ₹{Number(room.securityDeposit).toLocaleString('en-IN')}</div>
-                                  )}
-                                </div>
-                              ) : <span className="rm-on-request">On Request</span>}
-                            </td>
-                            <td className="rm-td"><AvailBadge date={room.availabilityDate} /></td>
-                            <td className="rm-td rm-td--cta">
-                              <button className="rm-book-btn" onClick={() => handleRoomBookNow(room)}>Book Now</button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-
+                <RoomTablePerRoom
+                  rooms={property.parsedBedrooms}
+                  pricingMode={pricingMode}
+                  propertyPrice={0}
+                  propertyArea={property.area}
+                  onBookNow={handleRoomBookNow}
+                  coverPhoto={getPhotoUrl(photos[Number(property.cover_photo_index) || 0] || photos[0])}
+                  maxGuests={property.max_guests}
+                  hasWifi={(property.amenities || []).some(a => /wi-?fi/i.test(a))}
+                  hasTv={(property.amenities || []).some(a => /\btv\b/i.test(a))}
+                />
                 <RoomTablePerRoomMobile
                   rooms={property.parsedBedrooms}
                   pricingMode={pricingMode}
@@ -3875,6 +3975,28 @@ const PropertyDetailPage = () => {
             </>
           )}
 
+          {/* ── Why guests love this place — top amenities preview ── */}
+          {(() => {
+            const topAmenities = Object.values(groupedAmenities).flat().slice(0, 8);
+            if (topAmenities.length === 0) return null;
+            return (
+              <>
+                <div className="divider"></div>
+                <div className="text-section">
+                  <h3>Why guests love this place</h3>
+                  <div className="pdp-love-grid">
+                    {topAmenities.map((am, i) => (
+                      <div key={i} className="pdp-love-item">
+                        <div className="pdp-love-icon">{getAmenityIcon(am)}</div>
+                        <span>{am}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            );
+          })()}
+
           {/* ── Amenities & Features ── */}
           <div className="divider"></div>
           <div className="text-section">
@@ -3952,86 +4074,6 @@ const PropertyDetailPage = () => {
                   </div>
                 )}
               </div>
-            </div>
-
-            {/* Local Guide */}
-            <div className="divider"></div>
-            <div className="text-section" style={{ marginBottom: 0 }}>
-              {(() => {
-                let gb = property?.guidebook;
-                if (typeof gb === 'string') { try { gb = JSON.parse(gb); } catch { gb = null; } }
-                if (typeof gb === 'string') { try { gb = JSON.parse(gb); } catch { gb = null; } }
-                if (!gb || typeof gb !== 'object' || Array.isArray(gb)) return null;
-                const hasValue = (v) => { if (v === null || v === undefined || v === '') return false; if (Array.isArray(v)) return v.length > 0; if (typeof v === 'object') return Object.values(v).some(x => x !== null && x !== undefined && x !== ''); return true; };
-                const keys = Object.keys(gb).filter(k => hasValue(gb[k]));
-                if (keys.length === 0) return null;
-                const renderVal = (val) => { if (val === null || val === undefined) return null; if (typeof val === 'string' || typeof val === 'number') return String(val); if (Array.isArray(val)) return val.map(v => typeof v === 'object' ? JSON.stringify(v) : String(v)).join(', '); if (typeof val === 'object') return Object.entries(val).map(([k,v]) => `${k}: ${v}`).join(' · '); return String(val); };
-                const ICON_MAP = { transport_tips: '🚌', cafes_restaurants: '☕', essentials_nearby: '🛒', house_specific_tips: '💡', must_visit: '📍', must_visit_places: '📍' };
-                const COUNT_LABEL = { transport_tips: 'routes', cafes_restaurants: 'nearby', essentials_nearby: 'spots', house_specific_tips: 'tips', must_visit: 'highlight', must_visit_places: 'highlight' };
-                return (
-                  <>
-                    <h3>Local guide</h3>
-                    <div className="gbGrid">
-                      {keys.map(key => {
-                        const val = gb[key];
-                        const label = key.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
-                        const icon = ICON_MAP[key] || '📌';
-                        if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'object') {
-                          const cols = Object.keys(val[0]);
-                          return (
-                            <div key={key} className="gbCard gbCardWide">
-                              <div className="gbCardHeader">
-                                <div className="gbIconWrap" style={{ fontSize: '0.9rem' }}>{icon}</div>
-                                <div className="gbCardHeaderText"><div className="gbCardTitle">{label}</div><div className="gbCardMeta">{val.length} {COUNT_LABEL[key] || 'items'}</div></div>
-                              </div>
-                              <div className="gbTableWrap">
-                                <table className="gbTable">
-                                  <tbody>{val.map((item, idx) => <tr key={idx}>{cols.map((c,ci) => <td key={c} className={ci > 0 ? 'gbTdRight' : 'gbTdName'}>{item[c] ?? '-'}</td>)}</tr>)}</tbody>
-                                </table>
-                              </div>
-                            </div>
-                          );
-                        }
-                        if (Array.isArray(val) && val.length > 0) {
-                          return (
-                            <div key={key} className="gbCard gbCardWide">
-                              <div className="gbCardHeader">
-                                <div className="gbIconWrap" style={{ fontSize: '0.9rem' }}>{icon}</div>
-                                <div className="gbCardHeaderText"><div className="gbCardTitle">{label}</div><div className="gbCardMeta">{val.length} {COUNT_LABEL[key] || 'items'}</div></div>
-                              </div>
-                              <ul className="gbTips">{val.map((tip,idx)=><li key={idx} className="gbTip"><span className="gbTipDot"/><span className="gbTipText">{typeof tip==='object'?JSON.stringify(tip):String(tip)}</span></li>)}</ul>
-                            </div>
-                          );
-                        }
-                        if (typeof val === 'object' && !Array.isArray(val)) {
-                          const entries = Object.entries(val).filter(([,v])=>v);
-                          if (entries.length===0) return null;
-                          return (
-                            <div key={key} className="gbCard gbCardWide">
-                              <div className="gbCardHeader">
-                                <div className="gbIconWrap" style={{ fontSize: '0.9rem' }}>{icon}</div>
-                                <div className="gbCardHeaderText"><div className="gbCardTitle">{label}</div><div className="gbCardMeta">{entries.length} {COUNT_LABEL[key] || 'spots'}</div></div>
-                              </div>
-                              <div className="gbRows">{entries.map(([k,v])=><div key={k} className="gbRow"><div className="gbRowLeft"><span className="gbRowLabel">{k.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}</span></div><div className="gbRowValue">{renderVal(v)}</div></div>)}</div>
-                            </div>
-                          );
-                        }
-                        const text = renderVal(val);
-                        if (!text) return null;
-                        return (
-                          <div key={key} className="gbCard gbCardWide">
-                            <div className="gbCardHeader">
-                              <div className="gbIconWrap" style={{ fontSize: '0.9rem' }}>{icon}</div>
-                              <div className="gbCardHeaderText"><div className="gbCardTitle">{label}</div></div>
-                            </div>
-                            <div className="gbRows"><div className="gbRow"><div className="gbRowValue">{text}</div></div></div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </>
-                );
-              })()}
             </div>
           </div>
 
@@ -4206,6 +4248,36 @@ const PropertyDetailPage = () => {
               </div>
             </div>
           )}
+
+          {/* What's nearby — combines cafes/restaurants, essentials, and must-visit places from the listing's guidebook */}
+          {(() => {
+            const gb = parseGuidebook(property);
+            const allPlaces = buildNearbyPlaces(gb);
+            const hasTips = gb && ((gb.transport_tips && Object.values(gb.transport_tips).some(Boolean)) || (Array.isArray(gb.house_specific_tips) && gb.house_specific_tips.some(Boolean)));
+            if (allPlaces.length === 0 && !hasTips) return null;
+            const preview = allPlaces.slice(0, 5);
+            return (
+              <div className="pdp-nearby-card">
+                <div className="pdp-nearby-header">
+                  <h3 style={{ margin: 0 }}>What&apos;s nearby</h3>
+                  {(allPlaces.length > 5 || hasTips) && (
+                    <button className="pdp-nearby-viewall" onClick={() => setShowNearbyModal(true)}>View all</button>
+                  )}
+                </div>
+                <div className="pdp-nearby-list">
+                  {preview.map((s, i) => (
+                    <div key={i} className="pdp-nearby-item">
+                      <span className="pdp-nearby-item-left">{s.icon}<span>{s.name}</span></span>
+                      <span className="pdp-nearby-item-dist">{s.info}</span>
+                    </div>
+                  ))}
+                  {preview.length === 0 && hasTips && (
+                    <button className="pdp-nearby-viewall" style={{ padding: '10px 0' }} onClick={() => setShowNearbyModal(true)}>See transport & local tips</button>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* ── Location Card ── */}
           <div className="pdp-location-card">

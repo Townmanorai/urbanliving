@@ -475,6 +475,22 @@ const PGListingForm = () => {
     else setUsePerRoomPricing(false);
   }, [form.propertyCategory]);
 
+  // ── Room "type" dropdown swaps between SHARING_TYPES (PG) and ROOM_CATEGORIES (non-PG) —
+  // fix up any room whose saved type no longer matches the active list (e.g. the default
+  // "Regular Bedroom" left over from before PG was selected) so the displayed value and the
+  // actual saved value never drift apart. ──
+  useEffect(() => {
+    const validTypes = isPG ? SHARING_TYPES : ROOM_CATEGORIES;
+    setForm(f => {
+      const needsFix = f.bedroomDetails.some(r => !validTypes.includes(r.type));
+      if (!needsFix) return f;
+      return {
+        ...f,
+        bedroomDetails: f.bedroomDetails.map(r => validTypes.includes(r.type) ? r : { ...r, type: validTypes[0] }),
+      };
+    });
+  }, [isPG]);
+
   const STEPS = [
     { id: 1, title: "Info", icon: <Info size={18} /> },
     { id: 2, title: "Details", icon: <FileText size={18} /> },

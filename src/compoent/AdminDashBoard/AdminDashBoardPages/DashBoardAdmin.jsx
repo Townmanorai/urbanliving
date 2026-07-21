@@ -1,4 +1,4 @@
-
+﻿
 import React, { useEffect, useState, useContext, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import styles from "./Dashboard.module.css";
 import { AuthContext } from "../../Login/AuthContext";
 import { Home, Plus, Loader, Moon, Calendar, Building } from "lucide-react";
 import PGUpdateForm from "../../ovikalistingform/PGUpdateForm";
+import Tmx9PropertyForm from "../../ovikalistingform/Tmx9PropertyForm";
 import ImageClassificationModal from "../SuperAdmin/ImageClassificationModal";
 
 function KeyItem({ text, filetype = "pdf" }) {
@@ -72,7 +73,7 @@ const PROPERTY_TYPES = ["Entire place", "Private room", "Shared room", "Hotel ro
 const PG_TYPES = ["Boys PG", "Girls PG", "Co-ed PG"];
 const SHARING_TYPES = ["Single Room", "Double Sharing", "Triple Sharing", "Four Sharing", "Dormitory"];
 
-// ─── HELPER: Parse meta safely ────────────────────────────────────────────────
+// â”€â”€â”€ HELPER: Parse meta safely â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const parseMeta = (prop) => {
   if (!prop) return {};
   let meta = prop.meta;
@@ -84,7 +85,7 @@ const parseMeta = (prop) => {
   return {};
 };
 
-// ─── CLEAN DESCRIPTION: pehle se appended junk hatao ─────────────────────────
+// â”€â”€â”€ CLEAN DESCRIPTION: pehle se appended junk hatao â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Ye function description se "--- PG Details ---", "--- Local Guide ---" etc. saaf karta hai
 const cleanDescription = (raw) => {
   if (!raw || typeof raw !== 'string') return '';
@@ -96,7 +97,7 @@ const cleanDescription = (raw) => {
     .trim();
 };
 
-// ─── MONTHLY vs NIGHTLY — FINAL LOGIC ─────────────────────────────────────────
+// â”€â”€â”€ MONTHLY vs NIGHTLY â€” FINAL LOGIC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const NIGHTLY_ONLY_CATEGORIES = ["villa", "cabin", "bungalow", "hotel"];
 const MONTHLY_ONLY_CATEGORIES = ["flat", "penthouse", "pg"];
 const PG_UPDATE_DEFAULT_TIMES = ["12:00", "12:00:00", "11:00", "11:00:00"];
@@ -137,699 +138,6 @@ const isMonthlyProperty = (prop) => {
 };
 
 const isNightlyProperty = (prop) => !isMonthlyProperty(prop);
-
-function EditPropertyModal({ property, onClose, onRefresh }) {
-  const [loading, setLoading] = useState(false);
-  const [debugInfo, setDebugInfo] = useState("");
-
-  const isPG = property.property_category === "PG" ||
-    (typeof property.meta === 'string' ? JSON.parse(property.meta || '{}') : property.meta)?.propertyCategory === "PG";
-
-  const getMeta = (key, fallback = "") => {
-    if (!property) return fallback;
-    if (property[key] !== undefined && property[key] !== null) return property[key];
-    let m = property.meta;
-    if (typeof m === 'string') {
-      try { m = JSON.parse(m); } catch (e) { m = {}; }
-    }
-    if (['familyAllowed', 'unmarriedCoupleAllowed', 'bachelorAllowed'].includes(key)) {
-      let gp = property.guest_policy;
-      if (typeof gp === 'string') { try { gp = JSON.parse(gp); } catch (e) { } }
-      if (key === 'familyAllowed') return gp?.family_allowed ?? m?.familyAllowed ?? fallback;
-      if (key === 'unmarriedCoupleAllowed') return gp?.unmarried_couple_allowed ?? m?.unmarriedCoupleAllowed ?? fallback;
-      if (key === 'bachelorAllowed') return gp?.bachelors_allowed ?? m?.bachelorAllowed ?? fallback;
-    }
-    return m?.[key] ?? fallback;
-  };
-
-  const parseJson = (val, fallback = []) => {
-    if (!val) return fallback;
-    if (Array.isArray(val)) return val;
-    if (typeof val === 'string') {
-      try { return JSON.parse(val) || fallback; } catch (e) { return fallback; }
-    }
-    return fallback;
-  };
-
-  const getInitialPhotos = () => {
-    let p = property.photos;
-    if (typeof p === 'string') {
-      p = p.trim();
-      if (p.startsWith('[') && p.endsWith(']')) {
-        try { return JSON.parse(p); } catch (e) { }
-      }
-      return p.split(',').map(s => s.trim()).filter(Boolean);
-    }
-    if (Array.isArray(p)) return p;
-    return [];
-  };
-
-  const getInitialAmenities = () => {
-    let am = getMeta('amenities');
-    if (typeof am === 'string') { try { am = JSON.parse(am); } catch (e) { am = []; } }
-    if (!Array.isArray(am)) am = [];
-    const SIGNATURE_IDS = new Set([77, 78, 79, 80, 81, 314, 315, 316, 317, 323]);
-    if (SIGNATURE_IDS.has(Number(property.id || property._id || 0))) {
-      ['Bath Towels', 'Soap & Shampoo'].forEach(e => { if (!am.includes(e)) am = [...am, e]; });
-    }
-    return am;
-  };
-
-  const getInitialBedroomDetails = () => {
-    const bedrooms = parseJson(property.bedrooms || getMeta('bedrooms'), []);
-    if (isPG && bedrooms.length > 0 && bedrooms[0].price !== undefined) {
-      return bedrooms.map((bed, idx) => ({
-        id: idx, type: bed.type || "Double Sharing",
-        count: bed.count || 1, price: bed.price || "", washroomType: bed.washroomType || "Attached"
-      }));
-    }
-    return bedrooms.length > 0 ? bedrooms : [{ type: "King Bed", count: 1 }];
-  };
-
-  const [photoList, setPhotoList] = useState(getInitialPhotos());
-  const [newFiles, setNewFiles] = useState([]);
-  const [coverIndex, setCoverIndex] = useState(() => {
-    const idx = Number(property.cover_photo_index);
-    return !isNaN(idx) && idx >= 0 ? idx : 0;
-  });
-
-  const [formData, setFormData] = useState({
-    property_name: property.property_name || property.name || "",
-    // ── FIX 1: description load karte waqt pehle se appended junk saaf karo ──
-    description: cleanDescription(property.description),
-    price: (property.price !== undefined && property.price !== null && property.price !== "")
-      ? String(property.price)
-      : "",
-    propertyType: isPG ? (getMeta('propertyType') || PG_TYPES[0]) : (property.property_type || getMeta('propertyType') || PROPERTY_TYPES[0]),
-    propertyCategory: getMeta('propertyCategory') || property.property_category || (isPG ? "PG" : ""),
-    address: property.address || "",
-    city: property.city || "",
-    country: property.country || getMeta('country') || "India",
-    postalCode: property.postal_code || property.zip_code || getMeta('postalCode') || "",
-    latitude: property.latitude || getMeta('latitude') || "",
-    longitude: property.longitude || getMeta('longitude') || "",
-    area: property.area || getMeta('area') || "",
-    beds: property.beds || getMeta('beds') || "",
-    maxGuests: property.max_guests || getMeta('maxGuests', 1),
-    bedrooms: getInitialBedroomDetails(),
-    bathrooms: parseJson(property.bathrooms || getMeta('bathrooms'), [{ type: "Attached", count: 1 }]),
-    weekendRate: property.weekend_rate || getMeta('weekendRate') || "",
-    cleaningFee: property.cleaning_fee || getMeta('cleaningFee') || "",
-    weeklyDiscountPct: property.weekly_discount_pct || getMeta('weeklyDiscountPct') || "",
-    monthlyDiscountPct: property.monthly_discount_pct || getMeta('monthlyDiscountPct') || "",
-    checkInTime: property.check_in_time || getMeta('checkInTime') || "",
-    checkOutTime: property.check_out_time || getMeta('checkOutTime') || "",
-    quietHours: property.quiet_hours || getMeta('quietHours', isPG ? "23:00-06:00" : "22:00-07:00"),
-    smokingAllowed: property.smoking_allowed ? true : getMeta('smokingAllowed', false),
-    petsAllowed: property.pets_allowed ? true : getMeta('petsAllowed', false),
-    eventsAllowed: property.events_allowed ? true : getMeta('eventsAllowed', false),
-    drinkingAllowed: property.drinking_alcohol ? true : getMeta('drinkingAllowed', false),
-    outsideGuestsAllowed: property.outside_guests_allowed ? true : getMeta('outsideGuestsAllowed', false),
-    familyAllowed: getMeta('familyAllowed', false),
-    unmarriedCoupleAllowed: getMeta('unmarriedCoupleAllowed', false),
-    bachelorAllowed: getMeta('bachelorAllowed', isPG ? true : false),
-    selfCheckIn: getMeta('selfCheckIn', ""),
-    bookingType: property.booking_type !== undefined ? property.booking_type : getMeta('bookingType', 0),
-    cancellationPolicy: property.cancellation_policy || getMeta('cancellationPolicy', DEFAULT_CANCELLATION_POLICIES[0]),
-    insurance: property.insurance ? true : getMeta('insurance', false),
-    damageProtection: property.damage_protection ? true : getMeta('damageProtection', false),
-    gateClosingTime: getMeta('gateClosingTime', ""),
-    noticePeriod: getMeta('noticePeriod', 30),
-    lockInPeriod: getMeta('lockInPeriod', 1),
-    foodAvailable: getMeta('foodAvailable', false),
-    electricityCharges: getMeta('electricityCharges', "Included in Rent"),
-    perNightPrice: getMeta('perNightPrice', ""),
-    securityDeposit: getMeta('securityDeposit', ""),
-    localGuide: {
-      nearestMetroStation: getMeta('localGuide')?.nearestMetroStation || "",
-      nearestBusStop: getMeta('localGuide')?.nearestBusStop || "",
-      nearbyMarket: getMeta('localGuide')?.nearbyMarket || "",
-      nearbyHospital: getMeta('localGuide')?.nearbyHospital || "",
-      nearbyShowroom: getMeta('localGuide')?.nearbyShowroom || "",
-      otherNotes: getMeta('localGuide')?.otherNotes || ""
-    },
-    amenities: getInitialAmenities(),
-  });
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-  };
-
-  const handleAmenityToggle = (amenity) => {
-    setFormData(prev => {
-      const current = prev.amenities || [];
-      return current.includes(amenity)
-        ? { ...prev, amenities: current.filter(a => a !== amenity) }
-        : { ...prev, amenities: [...current, amenity] };
-    });
-  };
-
-  const handleFileSelect = (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const images = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
-      setNewFiles(prev => [...prev, ...images]);
-    }
-  };
-
-  const removePhoto = (index) => {
-    setPhotoList(prev => prev.filter((_, i) => i !== index));
-    setCoverIndex(prev => prev === index ? 0 : prev > index ? prev - 1 : prev);
-  };
-  const removeNewFile = (index) => {
-    const globalIdx = photoList.length + index;
-    setNewFiles(prev => prev.filter((_, i) => i !== index));
-    setCoverIndex(prev => prev === globalIdx ? 0 : prev > globalIdx ? prev - 1 : prev);
-  };
-
-  const handleSave = async () => {
-    setLoading(true);
-    setDebugInfo("");
-    const propertyId = property.id || property._id;
-    if (!propertyId) {
-      alert("Error: Property ID not found! Cannot update.");
-      setLoading(false);
-      return;
-    }
-    try {
-      let uploadedUrls = [];
-      if (newFiles.length > 0) {
-        const uploadPromises = newFiles.map(async (file) => {
-          const fd = new FormData();
-          fd.append('images', file);
-          const res = await fetch('https://www.townmanor.ai/api/image/aws-upload-owner-images', {
-            method: 'POST', body: fd,
-          });
-          const data = await res.json();
-          return (data.fileUrls && data.fileUrls[0]) ? data.fileUrls[0] : null;
-        });
-        const results = await Promise.all(uploadPromises);
-        uploadedUrls = results.filter(Boolean);
-      }
-
-      const finalAllPhotos = [...photoList, ...uploadedUrls];
-
-      // ── FIX 2: description mein KUCH BHI append nahi karna ──────────────────
-      // PG Details, Local Guide, [object Object] — sab band
-      // description sirf user ka original text rahega
-      const finalDescription = formData.description || "";
-
-      const payload = {
-        property_name: formData.property_name || "",
-        description: finalDescription,
-        address: formData.address || "",
-        city: formData.city || "",
-        country: formData.country || "",
-        postal_code: formData.postalCode || "",
-        price: formData.price !== "" ? Number(formData.price) : 0,
-        ...(formData.weekendRate !== "" && { weekend_rate: Number(formData.weekendRate) }),
-        ...(formData.cleaningFee !== "" && { cleaning_fee: Number(formData.cleaningFee) }),
-        ...(formData.weeklyDiscountPct !== "" && { weekly_discount_pct: Number(formData.weeklyDiscountPct) }),
-        ...(formData.monthlyDiscountPct !== "" && { monthly_discount_pct: Number(formData.monthlyDiscountPct) }),
-        ...(formData.area !== "" && { area: formData.area }),
-        ...(formData.beds !== "" && { beds: formData.beds }),
-        ...(formData.maxGuests && { max_guests: formData.maxGuests }),
-        ...(formData.latitude !== "" && { latitude: formData.latitude }),
-        ...(formData.longitude !== "" && { longitude: formData.longitude }),
-        ...(formData.checkInTime && { check_in_time: formData.checkInTime }),
-        ...(formData.checkOutTime && { check_out_time: formData.checkOutTime }),
-        ...(formData.quietHours && { quiet_hours: formData.quietHours }),
-        property_type: formData.propertyType || "",
-        property_category: formData.propertyCategory || "",
-        cancellation_policy: formData.cancellationPolicy || "",
-        booking_type: formData.bookingType,
-        smoking_allowed: !!formData.smokingAllowed,
-        pets_allowed: !!formData.petsAllowed,
-        events_allowed: !!formData.eventsAllowed,
-        drinking_alcohol: !!formData.drinkingAllowed,
-        outside_guests_allowed: !!formData.outsideGuestsAllowed,
-        insurance: !!formData.insurance,
-        damage_protection: !!formData.damageProtection,
-        bedrooms: JSON.stringify(formData.bedrooms || []),
-        bathrooms: JSON.stringify(formData.bathrooms || []),
-        photos: JSON.stringify(finalAllPhotos),
-        cover_photo_index: Math.min(coverIndex, finalAllPhotos.length - 1),
-        amenities: JSON.stringify(formData.amenities || []),
-        guest_policy: JSON.stringify({
-          family_allowed: Boolean(formData.familyAllowed),
-          unmarried_couple_allowed: Boolean(formData.unmarriedCoupleAllowed),
-          bachelors_allowed: Boolean(formData.bachelorAllowed),
-        }),
-      };
-
-      const apiUrl = `https://www.townmanor.ai/api/ovika/properties/${propertyId}`;
-      let response;
-      try {
-        response = await axios.put(apiUrl, payload, {
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          timeout: 15000
-        });
-      } catch (putError) {
-        if (putError.response?.status === 405 || putError.response?.status === 404) {
-          response = await axios.patch(apiUrl, payload, {
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            timeout: 15000
-          });
-        } else {
-          throw putError;
-        }
-      }
-      alert(`✅ Property updated successfully!\nPrice: ₹${payload.price}`);
-      onRefresh();
-      onClose();
-    } catch (e) {
-      const status = e.response?.status;
-      const serverMsg = e.response?.data?.error || e.response?.data?.message || e.message;
-      const errorDetails = `Status: ${status || 'Network Error'}\nMessage: ${serverMsg}`;
-      setDebugInfo(`❌ Error ${status}: ${serverMsg}`);
-      alert(`Failed to update property!\n\n${errorDetails}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const modalOverlayStyle = {
-    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999
-  };
-  const modalContentStyle = {
-    background: '#fff', padding: '24px', borderRadius: '12px', width: '90%', maxWidth: '800px',
-    boxShadow: '0 4px 20px rgba(0,0,0,0.2)', maxHeight: '90vh', overflowY: 'auto'
-  };
-  const inputStyle = {
-    width: '100%', padding: '10px', margin: '4px 0 12px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '14px',
-    boxSizing: 'border-box'
-  };
-  const labelStyle = { fontSize: '13px', fontWeight: '600', color: '#555' };
-  const sectionTitleStyle = { fontSize: '16px', fontWeight: '700', color: '#333', marginTop: '20px', marginBottom: '10px', borderBottom: '1px solid #eee', paddingBottom: '6px' };
-  const btnGroupStyle = { display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '24px', position: 'sticky', bottom: '-10px', background: '#fff', padding: '10px 0', borderTop: '1px solid #eee' };
-  const btnStyle = { padding: '10px 20px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: '500' };
-  const dynamicRowStyle = { display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'center' };
-  const toggleRowStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', padding: '8px', background: '#f9f9f9', borderRadius: '6px' };
-  const toggleLabelStyle = { fontSize: '14px', color: '#333' };
-  const photoGrid = { display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '10px', marginTop: '5px' };
-  const photoFrame = { position: 'relative', width: '80px', height: '80px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #eee' };
-  const photoImg = { width: '100%', height: '100%', objectFit: 'cover' };
-  const deleteBtn = { position: 'absolute', top: '2px', right: '2px', background: 'rgba(255,0,0,0.8)', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' };
-
-  const handleAddList = (field) => {
-    setFormData(prev => ({ ...prev, [field]: [...(prev[field] || []), isPG && field === 'bedrooms' ? { type: "Double Sharing", count: 1, price: "", washroomType: "Attached" } : { type: "", count: 1 }] }));
-  };
-  const handleRemoveList = (field, idx) => {
-    setFormData(prev => ({ ...prev, [field]: (prev[field] || []).filter((_, i) => i !== idx) }));
-  };
-  const handleListChange = (field, idx, key, val) => {
-    setFormData(prev => {
-      const list = [...(prev[field] || [])];
-      list[idx] = { ...list[idx], [key]: val };
-      return { ...prev, [field]: list };
-    });
-  };
-
-  const Toggle = ({ checked, onChange }) => (
-    <div style={{ display: 'flex', gap: '4px' }}>
-      <button type="button" onClick={() => onChange(false)} style={{ padding: '6px 12px', borderRadius: '4px', border: '1px solid #ddd', background: !checked ? '#000' : '#fff', color: !checked ? '#fff' : '#000', cursor: 'pointer' }}>No</button>
-      <button type="button" onClick={() => onChange(true)} style={{ padding: '6px 12px', borderRadius: '4px', border: '1px solid #ddd', background: checked ? '#000' : '#fff', color: checked ? '#fff' : '#000', cursor: 'pointer' }}>Yes</button>
-    </div>
-  );
-
-  const AMENITIES_TO_USE = isPG ? PG_AMENITIES : AMENITIES;
-
-  return (
-    <div style={modalOverlayStyle}>
-      <div style={modalContentStyle}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3 style={{ margin: '0', fontSize: '20px' }}>Update {isPG ? 'PG' : 'Property'}</h3>
-          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer' }}>&times;</button>
-        </div>
-        {debugInfo && (
-          <div style={{ background: '#fff3cd', border: '1px solid #ffc107', padding: '8px 12px', borderRadius: '6px', marginTop: '10px', fontSize: '13px', color: '#856404' }}>
-            {debugInfo}
-          </div>
-        )}
-        <div style={{ fontSize: '11px', color: '#aaa', marginTop: '6px' }}>
-          ID: {property.id || property._id || 'NOT FOUND ⚠️'}
-        </div>
-
-        <h4 style={sectionTitleStyle}>Basic Information</h4>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-          <div>
-            <label style={labelStyle}>{isPG ? 'PG Type' : 'Property Type'}</label>
-            <select name="propertyType" value={formData.propertyType} onChange={handleChange} style={inputStyle}>
-              {isPG ? PG_TYPES.map(p => <option key={p} value={p}>{p}</option>) : PROPERTY_TYPES.map(p => <option key={p} value={p}>{p}</option>)}
-            </select>
-          </div>
-          <div>
-            <label style={labelStyle}>Category</label>
-            <select name="propertyCategory" value={formData.propertyCategory} onChange={handleChange} style={inputStyle}>
-              {DEFAULT_PROPERTY_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-          </div>
-        </div>
-        <div>
-          <label style={labelStyle}>{isPG ? 'PG Name' : 'Property Name'}</label>
-          <input name="property_name" value={formData.property_name} onChange={handleChange} style={inputStyle} />
-        </div>
-        <div>
-          <label style={labelStyle}>Description</label>
-          <textarea name="description" value={formData.description} onChange={handleChange} rows={3} style={{ ...inputStyle, fontFamily: 'inherit' }} />
-        </div>
-
-        <h4 style={sectionTitleStyle}>Photos</h4>
-        <div style={{ marginBottom: '16px' }}>
-          <div style={photoGrid}>
-            {photoList.map((url, i) => (
-              <div key={`exist-${i}`} style={{ ...photoFrame, outline: coverIndex === i ? '2.5px solid #c2772b' : 'none', borderRadius: '7px' }}>
-                <img src={url} alt="prop" style={photoImg} onError={e => e.target.src = 'https://via.placeholder.com/70?text=Err'} />
-                <button type="button" onClick={() => removePhoto(i)} style={deleteBtn}>&times;</button>
-                <div
-                  onClick={() => setCoverIndex(i)}
-                  style={{ position:'absolute', bottom:0, left:0, right:0, background: coverIndex === i ? '#c2772b' : 'rgba(0,0,0,0.45)', color:'#fff', fontSize:'10px', fontWeight:'600', textAlign:'center', padding:'2px 0', cursor:'pointer', borderRadius:'0 0 6px 6px' }}
-                >
-                  {coverIndex === i ? '★ Cover' : 'Set Cover'}
-                </div>
-              </div>
-            ))}
-            {newFiles.map((file, i) => {
-              const globalIdx = photoList.length + i;
-              return (
-                <div key={`new-${i}`} style={{ ...photoFrame, outline: coverIndex === globalIdx ? '2.5px solid #c2772b' : 'none', borderRadius: '7px' }}>
-                  <img src={URL.createObjectURL(file)} alt="new" style={photoImg} />
-                  <button type="button" onClick={() => removeNewFile(i)} style={deleteBtn}>&times;</button>
-                  <div
-                    onClick={() => setCoverIndex(globalIdx)}
-                    style={{ position:'absolute', bottom:0, left:0, right:0, background: coverIndex === globalIdx ? '#c2772b' : 'rgba(0,0,0,0.45)', color:'#fff', fontSize:'10px', fontWeight:'600', textAlign:'center', padding:'2px 0', cursor:'pointer', borderRadius:'0 0 6px 6px' }}
-                  >
-                    {coverIndex === globalIdx ? '★ Cover' : 'Set Cover'}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <label htmlFor="modal-file-upload" style={{ ...btnStyle, padding: '8px 16px', background: '#fff8f0', color: '#c2772b', border: '1px solid #f6d4a8', display: 'inline-block', fontSize: '13px', cursor: 'pointer' }}>
-              <i className="fa-solid fa-cloud-arrow-up" style={{ marginRight: '6px' }} />Select Photos
-            </label>
-            <input id="modal-file-upload" type="file" multiple accept="image/*" onChange={handleFileSelect} style={{ display: 'none' }} />
-            <span style={{ fontSize: '12px', color: '#666' }}>{newFiles.length} new selected</span>
-          </div>
-        </div>
-
-        <h4 style={sectionTitleStyle}>Location</h4>
-        <div>
-          <label style={labelStyle}>Address</label>
-          <input name="address" value={formData.address} onChange={handleChange} style={inputStyle} />
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-          <div>
-            <label style={labelStyle}>City</label>
-            <input name="city" value={formData.city} onChange={handleChange} style={inputStyle} />
-          </div>
-          <div>
-            <label style={labelStyle}>Postal Code</label>
-            <input name="postalCode" value={formData.postalCode} onChange={handleChange} style={inputStyle} />
-          </div>
-        </div>
-
-        <h4 style={sectionTitleStyle}>{isPG ? 'Room Details' : 'Property Details'}</h4>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-          <div>
-            <label style={labelStyle}>Area (sq ft)</label>
-            <input name="area" type="number" value={formData.area} onChange={handleChange} style={inputStyle} />
-          </div>
-          <div>
-            <label style={labelStyle}>{isPG ? 'Total Capacity' : 'Total Beds'}</label>
-            <input name="beds" type="number" min="1" value={formData.beds} onChange={handleChange} style={inputStyle} />
-          </div>
-        </div>
-
-        {isPG ? (
-          <>
-            <label style={labelStyle}>Room Sharing Options & Prices</label>
-            <div style={{ border: '1px solid #ddd', padding: '12px', borderRadius: '8px', background: '#fafafa', marginBottom: '12px' }}>
-              {(formData.bedrooms || []).map((bed, idx) => (
-                <div key={idx} style={{ ...dynamicRowStyle, flexWrap: 'wrap' }}>
-                  <select value={bed.type || ""} onChange={(e) => handleListChange('bedrooms', idx, 'type', e.target.value)} style={{ ...inputStyle, margin: 0, flex: '1 1 140px' }}>
-                    {SHARING_TYPES.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                  </select>
-                  <input type="number" min="0" placeholder="Price (₹/night)" value={bed.price || ''} onChange={(e) => handleListChange('bedrooms', idx, 'price', e.target.value)} style={{ ...inputStyle, margin: 0, flex: '1 1 120px' }} />
-                  <select value={bed.washroomType || "Attached"} onChange={(e) => handleListChange('bedrooms', idx, 'washroomType', e.target.value)} style={{ ...inputStyle, margin: 0, flex: '1 1 140px' }}>
-                    <option value="Attached">Attached Washroom</option>
-                    <option value="Common">Common Washroom</option>
-                  </select>
-                  <button type="button" onClick={() => handleRemoveList('bedrooms', idx)} style={{ color: '#ef4444', border: '1px solid #ef4444', background: '#fff', borderRadius: '4px', width: '32px', height: '32px', cursor: 'pointer' }}>&times;</button>
-                </div>
-              ))}
-              <button type="button" onClick={() => handleAddList('bedrooms')} style={{ ...btnStyle, background: '#fff', border: '1px dashed #999', color: '#555', fontSize: '13px', padding: '8px 16px', width: '100%' }}>+ Add Sharing Type</button>
-            </div>
-          </>
-        ) : (
-          <>
-            <label style={labelStyle}>Bedroom Configuration</label>
-            <div style={{ border: '1px solid #ddd', padding: '12px', borderRadius: '8px', background: '#fafafa', marginBottom: '12px' }}>
-              {(formData.bedrooms || []).map((bed, idx) => (
-                <div key={idx} style={dynamicRowStyle}>
-                  <select value={bed.type || ""} onChange={(e) => handleListChange('bedrooms', idx, 'type', e.target.value)} style={{ ...inputStyle, margin: 0, flex: 2 }}>
-                    <option value="">Select Bed Type</option>
-                    {["King Bed", "Queen Bed", "Double Bed", "Single Bed", "Bunk Bed", "Sofa Bed"].map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                  </select>
-                  <input type="number" min="1" placeholder="Count" value={bed.count || 1} onChange={(e) => handleListChange('bedrooms', idx, 'count', Number(e.target.value))} style={{ ...inputStyle, margin: 0, flex: 1 }} />
-                  <button type="button" onClick={() => handleRemoveList('bedrooms', idx)} style={{ color: '#ef4444', border: '1px solid #ef4444', background: '#fff', borderRadius: '4px', width: '32px', height: '32px', cursor: 'pointer' }}>&times;</button>
-                </div>
-              ))}
-              <button type="button" onClick={() => handleAddList('bedrooms')} style={{ ...btnStyle, background: '#fff', border: '1px dashed #999', color: '#555', fontSize: '13px', padding: '8px 16px', width: '100%' }}>+ Add Bedroom Type</button>
-            </div>
-          </>
-        )}
-
-        <label style={labelStyle}>Bathroom Configuration</label>
-        <div style={{ border: '1px solid #ddd', padding: '12px', borderRadius: '8px', background: '#fafafa', marginBottom: '12px' }}>
-          {(formData.bathrooms || []).map((bath, idx) => (
-            <div key={idx} style={dynamicRowStyle}>
-              <select value={bath.type || ""} onChange={(e) => handleListChange('bathrooms', idx, 'type', e.target.value)} style={{ ...inputStyle, margin: 0, flex: 2 }}>
-                <option value="">Select Bath Type</option>
-                <option value="Attached">Attached</option>
-                <option value="Common">Common</option>
-                <option value="En-suite">En-suite</option>
-                <option value="Jack & Jill">Jack & Jill</option>
-                <option value="Separate">Separate</option>
-                <option value="Other">Other</option>
-              </select>
-              <input type="number" min="1" placeholder="Count" value={bath.count || 1} onChange={(e) => handleListChange('bathrooms', idx, 'count', Number(e.target.value))} style={{ ...inputStyle, margin: 0, flex: 1 }} />
-              <button type="button" onClick={() => handleRemoveList('bathrooms', idx)} style={{ color: '#ef4444', border: '1px solid #ef4444', background: '#fff', borderRadius: '4px', width: '32px', height: '32px', cursor: 'pointer' }}>&times;</button>
-            </div>
-          ))}
-          <button type="button" onClick={() => handleAddList('bathrooms')} style={{ ...btnStyle, background: '#fff', border: '1px dashed #999', color: '#555', fontSize: '13px', padding: '8px 16px', width: '100%' }}>+ Add Bathroom Type</button>
-        </div>
-
-        <h4 style={sectionTitleStyle}>Amenities</h4>
-        <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #eee', padding: '10px', borderRadius: '8px' }}>
-          {Object.entries(AMENITIES_TO_USE).map(([group, list]) => (
-            <div key={group} style={{ marginBottom: '12px' }}>
-              <div style={{ fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', color: '#888', marginBottom: '6px' }}>{group.replace(/_/g, ' ')}</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                {list.map(a => (
-                  <label key={a} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', background: '#f5f5f5', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}>
-                    <input type="checkbox" checked={formData.amenities.includes(a)} onChange={() => handleAmenityToggle(a)} />
-                    {a}
-                  </label>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <h4 style={sectionTitleStyle}>Pricing & Costs</h4>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-          <div>
-            <label style={{ ...labelStyle, color: '#c98b3e' }}>
-              {isPG ? 'Base Rent (₹/month)' : 'Base Price (₹/night)'} <span style={{ color: 'red' }}>*</span>
-            </label>
-            <input
-              name="price"
-              type="number"
-              min="0"
-              value={formData.price}
-              onChange={handleChange}
-              style={{ ...inputStyle, border: '2px solid #c98b3e', fontWeight: '600', fontSize: '16px' }}
-              placeholder="Enter price e.g. 2500"
-            />
-            <span style={{ fontSize: '11px', color: '#888' }}>Current saved: ₹{property.price || 'Not set'}</span>
-          </div>
-          {!isPG && (
-            <div>
-              <label style={labelStyle}>Weekend Rate</label>
-              <input name="weekendRate" type="number" value={formData.weekendRate} onChange={handleChange} style={inputStyle} />
-            </div>
-          )}
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-          <div>
-            <label style={labelStyle}>{isPG ? 'Maintenance Fee' : 'Cleaning Fee'}</label>
-            <input name="cleaningFee" type="number" value={formData.cleaningFee} onChange={handleChange} style={inputStyle} />
-          </div>
-          {isPG && (
-            <div>
-              <label style={labelStyle}>Security Deposit</label>
-              <input name="securityDeposit" type="number" value={formData.securityDeposit} onChange={(e) => setFormData(f => ({ ...f, securityDeposit: e.target.value }))} style={inputStyle} />
-            </div>
-          )}
-          {!isPG && (
-            <>
-              <div>
-                <label style={labelStyle}>Weekly Disc (%)</label>
-                <input name="weeklyDiscountPct" type="number" value={formData.weeklyDiscountPct} onChange={handleChange} style={inputStyle} />
-              </div>
-              <div>
-                <label style={labelStyle}>Monthly Disc (%)</label>
-                <input name="monthlyDiscountPct" type="number" value={formData.monthlyDiscountPct} onChange={handleChange} style={inputStyle} />
-              </div>
-            </>
-          )}
-        </div>
-
-        <h4 style={sectionTitleStyle}>Rules & Policies</h4>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-          <div>
-            <div style={toggleRowStyle}>
-              <span style={toggleLabelStyle}>Max Guests</span>
-              <input name="maxGuests" type="number" value={formData.maxGuests} onChange={handleChange} style={{ width: '60px', padding: '4px' }} />
-            </div>
-            {isPG && (
-              <>
-                <div style={toggleRowStyle}>
-                  <span style={toggleLabelStyle}>Gate Closing Time</span>
-                  <input name="gateClosingTime" type="time" value={formData.gateClosingTime} onChange={handleChange} style={{ padding: '4px' }} />
-                </div>
-                <div style={{ marginBottom: '8px' }}>
-                  <label style={labelStyle}>Notice Period (Days)</label>
-                  <input name="noticePeriod" type="number" value={formData.noticePeriod} onChange={handleChange} style={inputStyle} />
-                </div>
-                <div style={{ marginBottom: '8px' }}>
-                  <label style={labelStyle}>Lock-in Period (Months)</label>
-                  <input name="lockInPeriod" type="number" value={formData.lockInPeriod} onChange={handleChange} style={inputStyle} />
-                </div>
-              </>
-            )}
-            {!isPG && (
-              <>
-                <div style={toggleRowStyle}>
-                  <span style={toggleLabelStyle}>Check-In Time</span>
-                  <input name="checkInTime" type="time" value={formData.checkInTime} onChange={handleChange} style={{ padding: '4px' }} />
-                </div>
-                <div style={toggleRowStyle}>
-                  <span style={toggleLabelStyle}>Check-Out Time</span>
-                  <input name="checkOutTime" type="time" value={formData.checkOutTime} onChange={handleChange} style={{ padding: '4px' }} />
-                </div>
-              </>
-            )}
-            <div style={{ marginBottom: '8px' }}>
-              <label style={labelStyle}>Cancellation Policy</label>
-              <select name="cancellationPolicy" value={formData.cancellationPolicy} onChange={handleChange} style={inputStyle}>
-                {DEFAULT_CANCELLATION_POLICIES.map(p => <option key={p} value={p}>{p}</option>)}
-              </select>
-            </div>
-            <div style={{ marginBottom: '8px' }}>
-              <label style={labelStyle}>Booking Type</label>
-              <select name="bookingType" value={formData.bookingType} onChange={handleChange} style={inputStyle}>
-                <option value={0}>Instant Booking</option>
-                <option value={1}>Approval Required</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <div style={toggleRowStyle}>
-              <span style={toggleLabelStyle}>Smoking Allowed</span>
-              <Toggle checked={formData.smokingAllowed} onChange={(v) => setFormData(f => ({ ...f, smokingAllowed: v }))} />
-            </div>
-            <div style={toggleRowStyle}>
-              <span style={toggleLabelStyle}>Pets Allowed</span>
-              <Toggle checked={formData.petsAllowed} onChange={(v) => setFormData(f => ({ ...f, petsAllowed: v }))} />
-            </div>
-            {!isPG && (
-              <div style={toggleRowStyle}>
-                <span style={toggleLabelStyle}>Events Allowed</span>
-                <Toggle checked={formData.eventsAllowed} onChange={(v) => setFormData(f => ({ ...f, eventsAllowed: v }))} />
-              </div>
-            )}
-            <div style={toggleRowStyle}>
-              <span style={toggleLabelStyle}>Drinking Allowed</span>
-              <Toggle checked={formData.drinkingAllowed} onChange={(v) => setFormData(f => ({ ...f, drinkingAllowed: v }))} />
-            </div>
-            <div style={toggleRowStyle}>
-              <span style={toggleLabelStyle}>Outside Guests</span>
-              <Toggle checked={formData.outsideGuestsAllowed} onChange={(v) => setFormData(f => ({ ...f, outsideGuestsAllowed: v }))} />
-            </div>
-            {isPG && (
-              <div style={toggleRowStyle}>
-                <span style={toggleLabelStyle}>Food Available</span>
-                <Toggle checked={formData.foodAvailable} onChange={(v) => setFormData(f => ({ ...f, foodAvailable: v }))} />
-              </div>
-            )}
-            <div style={toggleRowStyle}>
-              <span style={toggleLabelStyle}>Family Allowed</span>
-              <Toggle checked={formData.familyAllowed} onChange={(v) => setFormData(f => ({ ...f, familyAllowed: v }))} />
-            </div>
-            <div style={toggleRowStyle}>
-              <span style={toggleLabelStyle}>Unmarried Couples</span>
-              <Toggle checked={formData.unmarriedCoupleAllowed} onChange={(v) => setFormData(f => ({ ...f, unmarriedCoupleAllowed: v }))} />
-            </div>
-            <div style={toggleRowStyle}>
-              <span style={toggleLabelStyle}>Bachelors Allowed</span>
-              <Toggle checked={formData.bachelorAllowed} onChange={(v) => setFormData(f => ({ ...f, bachelorAllowed: v }))} />
-            </div>
-          </div>
-        </div>
-
-        {isPG && (
-          <div style={{ marginTop: '12px' }}>
-            <label style={labelStyle}>Electricity Charges</label>
-            <select name="electricityCharges" value={formData.electricityCharges} onChange={handleChange} style={inputStyle}>
-              <option value="Included in Rent">Included in Rent</option>
-              <option value="Separate (As per Meter)">Separate (As per Meter)</option>
-              <option value="Fixed Amount">Fixed Amount</option>
-            </select>
-          </div>
-        )}
-
-        {isPG && (
-          <>
-            <h4 style={sectionTitleStyle}>Local Guide / Neighborhood</h4>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-              <div>
-                <label style={labelStyle}>Nearest Metro Station</label>
-                <input value={formData.localGuide.nearestMetroStation} onChange={(e) => setFormData(f => ({ ...f, localGuide: { ...f.localGuide, nearestMetroStation: e.target.value } }))} style={inputStyle} placeholder="e.g. MG Road Metro" />
-              </div>
-              <div>
-                <label style={labelStyle}>Nearest Bus Stop</label>
-                <input value={formData.localGuide.nearestBusStop} onChange={(e) => setFormData(f => ({ ...f, localGuide: { ...f.localGuide, nearestBusStop: e.target.value } }))} style={inputStyle} placeholder="e.g. Sector 18 Bus Stand" />
-              </div>
-              <div>
-                <label style={labelStyle}>Nearby Market / Grocery</label>
-                <input value={formData.localGuide.nearbyMarket} onChange={(e) => setFormData(f => ({ ...f, localGuide: { ...f.localGuide, nearbyMarket: e.target.value } }))} style={inputStyle} placeholder="e.g. Super Mart" />
-              </div>
-              <div>
-                <label style={labelStyle}>Nearby Hospital / Pharmacy</label>
-                <input value={formData.localGuide.nearbyHospital} onChange={(e) => setFormData(f => ({ ...f, localGuide: { ...f.localGuide, nearbyHospital: e.target.value } }))} style={inputStyle} placeholder="e.g. City Hospital" />
-              </div>
-              <div>
-                <label style={labelStyle}>Other Landmarks / Notes</label>
-                <textarea value={formData.localGuide.otherNotes} onChange={(e) => setFormData(f => ({ ...f, localGuide: { ...f.localGuide, otherNotes: e.target.value } }))} style={{ ...inputStyle, fontFamily: 'inherit' }} placeholder="Any other landmarks nearby..." rows={3} />
-              </div>
-            </div>
-          </>
-        )}
-
-        <div style={btnGroupStyle}>
-          <button type="button" onClick={onClose} style={{ ...btnStyle, background: '#f5f5f5', color: '#333' }}>Cancel</button>
-          <button type="button" onClick={handleSave} disabled={loading} style={{ ...btnStyle, background: loading ? '#ccc' : '#c98b3e', color: '#fff', minWidth: '120px' }}>
-            {loading ? '⏳ Saving...' : '💾 Save Changes'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function PropertyCard({ photoUrl, name, location, priceText, details, propertyId, onEdit, onDelete, onView, onViewImages }) {
   return (
@@ -1114,12 +422,12 @@ export default function DashBoardAdmin() {
     const bathroomCount = prop.total_bathrooms || getRoomCount(prop.bathrooms);
     if (bathroomCount > 0) detailsPieces.push(`${bathroomCount} BA`);
     if (prop.max_guests !== undefined && prop.max_guests !== null) detailsPieces.push(`Up to ${prop.max_guests} guests`);
-    const details = detailsPieces.join(" • ");
+    const details = detailsPieces.join(" â€¢ ");
     const isMonthly = isMonthlyProperty(prop);
     const priceText = prop.price
       ? isMonthly
-        ? `₹${Number(prop.price).toLocaleString("en-IN")} / month`
-        : `₹${Number(prop.price).toLocaleString("en-IN")} / night`
+        ? `â‚¹${Number(prop.price).toLocaleString("en-IN")} / month`
+        : `â‚¹${Number(prop.price).toLocaleString("en-IN")} / night`
       : "";
     const photoUrl = getPropertyPhoto(prop);
     return (
@@ -1169,7 +477,7 @@ export default function DashBoardAdmin() {
         </section>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh", flexDirection: "column", gap: "12px" }}>
           <Loader size={40} style={{ animation: "spin 1s linear infinite", color: "#3b82f6" }} />
-          <p style={{ fontSize: "16px", color: "#6b7280", fontWeight: 500 }}>Loading properties…</p>
+          <p style={{ fontSize: "16px", color: "#6b7280", fontWeight: 500 }}>Loading propertiesâ€¦</p>
         </div>
       </div>
     );
@@ -1248,7 +556,14 @@ export default function DashBoardAdmin() {
         </section>
 
         {editingProperty && (
-          <EditPropertyModal property={editingProperty} onClose={() => setEditingProperty(null)} onRefresh={refresh} />
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9999, overflowY: 'auto', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '20px 0' }}>
+            <div style={{ width: '100%', maxWidth: '960px', position: 'relative', borderRadius: '16px', overflow: 'hidden' }}>
+              <button type="button" onClick={() => setEditingProperty(null)} style={{ position: 'absolute', top: '16px', right: '20px', zIndex: 10001, background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', fontSize: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} title="Close">
+                &times;
+              </button>
+              <Tmx9PropertyForm propId={String(editingProperty.id || editingProperty._id)} onComplete={() => { setEditingProperty(null); refresh(); }} />
+            </div>
+          </div>
         )}
 
         {editingMonthlyProperty && (
