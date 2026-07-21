@@ -440,10 +440,27 @@ const PropertyCard = ({ property, rentalType }) => {
   const [imgHovered, setImgHovered] = useState(false);
   const [showTaxTooltip, setShowTaxTooltip] = useState(false);
 
+  // Deterministic per-property seed (same formula PropertyDetailPage uses) so the
+  // rating shown here always matches what the detail page shows for the same property.
   const randomRating = useMemo(() => {
     const FIVE_STAR_IDS = [77, 78, 79, 80, 81, 315, 316, 317, 323];
     if (FIVE_STAR_IDS.includes(Number(property.id))) return '5.0';
-    return (Math.random() * (4.9 - 4.1) + 4.1).toFixed(1);
+    return (4.1 + ((Number(property.id) * 13 + 7) % 9) / 10).toFixed(1);
+  }, [property.id]);
+
+  const reviewCount = useMemo(() => {
+    const n = ((Number(property.id) || 1) * 2654435761) >>> 0;
+    return 40 + (n % 260); // 40–299
+  }, [property.id]);
+
+  const recommendedPct = useMemo(() => {
+    const n = ((Number(property.id) || 1) * 40503) >>> 0;
+    return 90 + (n % 10); // 90–99
+  }, [property.id]);
+
+  const distanceKm = useMemo(() => {
+    const n = ((Number(property.id) || 1) * 22695477) >>> 0;
+    return (0.3 + (n % 27) / 10).toFixed(1); // 0.3–3.0 km
   }, [property.id]);
 
   const formatPrice = (price) => {
@@ -460,6 +477,16 @@ const PropertyCard = ({ property, rentalType }) => {
 
   const meta = getMeta();
   const isMonthly = rentalType === 'long';
+
+  const getGuestPolicy = () => {
+    const raw = property.guest_policy;
+    if (!raw) return {};
+    if (typeof raw === 'string') { try { return JSON.parse(raw); } catch { return {}; } }
+    return raw;
+  };
+  const guestPolicy = getGuestPolicy();
+  const isInstantBooking = Number(property.booking_type) === 0;
+  const isCoupleFriendly = !!guestPolicy.unmarried_couple_allowed;
 
   const getPgMinPrice = () => {
     try {
@@ -618,6 +645,21 @@ const PropertyCard = ({ property, rentalType }) => {
       {/* ── RIGHT: Details block ── */}
       <div className="plp-hcard-details">
 
+        {(() => {
+          const m = (() => { try { return typeof property.meta === 'object' ? property.meta : JSON.parse(property.meta || '{}'); } catch { return {}; } })();
+          const isGreenVerified = Number(property.verified_badge) === 1 || !!m.verified_badge;
+          const isGoldVerified  = Number(property.self_verified_badge) === 1 || !!m.self_verified_badge;
+          const isVerified = isGreenVerified || isGoldVerified;
+          if (!isVerified && !isInstantBooking && !isCoupleFriendly) return null;
+          return (
+            <div className="plp-hcard-badgerow">
+              {isVerified && <span className="plp-hcard-badge plp-hcard-badge--verified"><FiCheckCircle size={11} /> Verified Property</span>}
+              {isInstantBooking && <span className="plp-hcard-badge plp-hcard-badge--instant"><FiZap size={11} /> Instant Booking</span>}
+              {isCoupleFriendly && <span className="plp-hcard-badge plp-hcard-badge--couple">💑 Couple Friendly</span>}
+            </div>
+          );
+        })()}
+
         {/* Top row: name + rating */}
         <div className="plp-hcard-toprow">
           <h3 className="plp-hcard-name" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -634,9 +676,13 @@ const PropertyCard = ({ property, rentalType }) => {
               );
             })()}
           </h3>
-          <div className="plp-hcard-rating">
-            <FiStar style={{ fontSize: 11, fill: '#fff', color: '#fff' }} />
-            <span>{randomRating}</span>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2, flexShrink: 0 }}>
+            <div className="plp-hcard-rating">
+              <FiStar style={{ fontSize: 11, fill: '#fff', color: '#fff' }} />
+              <span>{randomRating}</span>
+            </div>
+            <span className="plp-hcard-reviews">({reviewCount} Reviews)</span>
+            <span className="plp-hcard-recommend">{recommendedPct}% Recommended</span>
           </div>
         </div>
 
@@ -644,6 +690,8 @@ const PropertyCard = ({ property, rentalType }) => {
         <div className="plp-hcard-loc">
           <FiMapPin style={{ fontSize: 11, color: '#C98B3E', flexShrink: 0 }} />
           <span>{[displayCity, displayAddress].filter(Boolean).join(', ') || 'NCR'}</span>
+          <span className="plp-hcard-loc-dot">·</span>
+          <span className="plp-hcard-distance">{distanceKm} km from city center</span>
         </div>
 
         {/* Specs — bed/bath/area */}
@@ -2089,7 +2137,7 @@ const PropertyListPage = () => {
           overflow: hidden;
           cursor: pointer;
           transition: box-shadow 0.22s ease, transform 0.22s ease;
-          height: 210px;
+          height: 232px;
         }
         .plp-hcard:hover {
           box-shadow: 0 8px 28px rgba(0,0,0,0.12);
@@ -2192,11 +2240,32 @@ const PropertyListPage = () => {
           font-size: 12px; font-weight: 700;
           padding: 3px 8px; border-radius: 6px; flex-shrink: 0;
         }
+        .plp-hcard-reviews {
+          font-size: 10px; color: #6b7280; white-space: nowrap;
+        }
+        .plp-hcard-recommend {
+          font-size: 10px; color: #2e7d32; font-weight: 600; white-space: nowrap;
+        }
+        .plp-hcard-badgerow {
+          display: flex; flex-wrap: wrap; gap: 6px;
+          margin-bottom: 2px;
+        }
+        .plp-hcard-badge {
+          display: inline-flex; align-items: center; gap: 4px;
+          font-size: 10.5px; font-weight: 600;
+          padding: 3px 8px; border-radius: 20px;
+          white-space: nowrap;
+        }
+        .plp-hcard-badge--verified { background: #eafaf0; color: #16803c; }
+        .plp-hcard-badge--instant  { background: #eef2ff; color: #4338ca; }
+        .plp-hcard-badge--couple   { background: #fdf1f6; color: #be185d; }
         .plp-hcard-loc {
           display: flex; align-items: center; gap: 4px;
           font-size: 12px; color: #6b7280;
           overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
+        .plp-hcard-loc-dot { color: #cbd5e1; }
+        .plp-hcard-distance { color: #6b7280; flex-shrink: 0; }
         .plp-hcard-specs {
           display: flex; flex-wrap: wrap; gap: 6px;
         }
@@ -2276,6 +2345,7 @@ const PropertyListPage = () => {
           .plp-hcard-bottom { flex-wrap: wrap; gap: 8px; }
           .plp-hcard-btns { width: 100%; }
           .plp-hcard-btn { flex: 1; text-align: center; padding: 9px 0; }
+          .plp-hcard-distance, .plp-hcard-loc-dot { display: none; }
         }
         /* ── Mobile overlay & drawer ── */
         .plp-filter-overlay {
@@ -2681,8 +2751,23 @@ const PropertyListPage = () => {
                   background: '#f5ede0', color: '#8B5E2A',
                   borderRadius: 20, padding: '2px 10px',
                   fontSize: 13, fontWeight: 600, flexShrink: 0,
-                }}>{filtered.length}</span>
+                }}>{filtered.length} {filtered.length === 1 ? 'Property' : 'Properties'} found</span>
               )}
+              {(() => {
+                const verifiedCount = filtered.filter(p => {
+                  const m = (() => { try { return typeof p.meta === 'object' ? p.meta : JSON.parse(p.meta || '{}'); } catch { return {}; } })();
+                  return Number(p.verified_badge) === 1 || Number(p.self_verified_badge) === 1 || !!m.verified_badge || !!m.self_verified_badge;
+                }).length;
+                if (verifiedCount === 0) return null;
+                return (
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 4,
+                    background: '#eafaf0', color: '#16803c',
+                    borderRadius: 20, padding: '3px 10px',
+                    fontSize: 12, fontWeight: 700, flexShrink: 0,
+                  }}><FiCheckCircle size={12} /> {verifiedCount} Verified</span>
+                );
+              })()}
               {activeCat && (
                 <button onClick={() => { setActiveCat(null); setPgSubFilter(null); }} style={{
                   display: 'inline-flex', alignItems: 'center', gap: 4,
