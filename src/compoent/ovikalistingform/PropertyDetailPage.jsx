@@ -199,6 +199,7 @@ const RULE_ICON_MAP = {
   'Preferred Tenants': UserCheck,
   'Bachelor':        User,
   'Unmarried Couples': Heart,
+  'Check-in time':   Clock,
 };
 
 const getRuleIcon = (label, isAllowed) => {
@@ -612,45 +613,51 @@ const RoomTableSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookN
 };
 
 // ─── Desktop card version of RoomTableSingle (same data/props/handler, card layout instead of a table row) ──
-const RoomCardSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookNow, showDeposit, depositAmount, showMonthlyDeposit, coverPhoto }) => (
+const RoomCardSingle = ({ rooms, price, priceUnit, area, availableFrom, onBookNow, showDeposit, depositAmount, showMonthlyDeposit, coverPhoto, maxGuests, hasWifi, hasTv }) => (
   <div className="rm-cards-grid">
-    {rooms.map((room, i) => (
-      <div key={i} className="rm-card">
-        {coverPhoto && (
-          <div className="rm-card-img">
-            <img src={coverPhoto} alt={room.type || `Bedroom ${i + 1}`} />
-          </div>
-        )}
-        <div className="rm-card-body">
-          <div className="rm-card-toprow">
-            <span className="rm-card-title">{room.type || `Bedroom ${i + 1}`}</span>
-            <span className="rm-card-included"><FiCheck size={12} /> Included</span>
-          </div>
-          <div className="rm-card-specs">
-            {(room.areaSqFt || area) && <span>{room.areaSqFt ? `${room.areaSqFt} sqft` : area}</span>}
-            {room.bedType && <><span className="rm-card-dot">·</span><span>{room.bedType}</span></>}
-          </div>
-          <div className="rm-card-tags">
-            {room.ac && <RoomBadge color="ac">❄ AC</RoomBadge>}
-            {room.furnished && <RoomBadge color="green">Furnished</RoomBadge>}
-            <BathBadge attached={room.attachedBathroom} />
-            <AvailBadge date={availableFrom} />
-          </div>
-          <div className="rm-card-bottomrow">
-            <div>
-              <PriceCell price={price} unit={priceUnit} />
-              {showMonthlyDeposit && (
-                <div className="rm-card-deposit">+₹{formatCurrency(price)} Deposit · 1 Month, Refundable</div>
-              )}
-              {showDeposit && depositAmount && (
-                <div className="rm-card-deposit">+₹{formatCurrency(depositAmount)} Deposit · 1 Night, Refundable</div>
-              )}
+    {rooms.map((room, i) => {
+      const guests = room.maxOccupancy || maxGuests || 2;
+      const roomArea = room.areaSqFt ? `${room.areaSqFt} sqft` : area;
+      return (
+        <div key={i} className="rm-card">
+          {coverPhoto && (
+            <div className="rm-card-img">
+              <img src={coverPhoto} alt={room.type || `Bedroom ${i + 1}`} />
             </div>
-            <button className="rm-card-book-btn" onClick={() => onBookNow(rooms[0])}>Book Now</button>
+          )}
+          <div className="rm-card-body">
+            <div className="rm-card-toprow">
+              <span className="rm-card-title">{room.type || `Bedroom ${i + 1}`}</span>
+              <span className="rm-card-included"><FiCheck size={12} /> Included</span>
+            </div>
+            <div className="rm-card-specs">
+              {roomArea && roomArea !== '—' && <span>{roomArea}</span>}
+              {roomArea && roomArea !== '—' && <span className="rm-card-dot">·</span>}
+              <span>{guests} Guest{guests !== 1 ? 's' : ''}</span>
+            </div>
+            <div className="rm-card-tags">
+              <span className="rm-card-chip"><BiBed size={13} /> 1 Bed</span>
+              <span className="rm-card-chip"><BiBath size={13} /> 1</span>
+              {room.ac && <span className="rm-card-chip"><Snowflake size={13} /> AC</span>}
+              {hasWifi && <span className="rm-card-chip"><Wifi size={13} /> WiFi</span>}
+              {hasTv && <span className="rm-card-chip"><Tv size={13} /> TV</span>}
+            </div>
+            <div className="rm-card-bottomrow">
+              <div>
+                <PriceCell price={price} unit={priceUnit} />
+                {showMonthlyDeposit && (
+                  <div className="rm-card-deposit">+₹{formatCurrency(price)} Deposit · 1 Month, Refundable</div>
+                )}
+                {showDeposit && depositAmount && (
+                  <div className="rm-card-deposit">+₹{formatCurrency(depositAmount)} Deposit · 1 Night, Refundable</div>
+                )}
+              </div>
+              <button className="rm-card-book-btn" onClick={() => onBookNow(rooms[0])}>Book Now</button>
+            </div>
           </div>
         </div>
-      </div>
-    ))}
+      );
+    })}
   </div>
 );
 
@@ -714,64 +721,50 @@ const RoomTableSingleMobile = ({ rooms, price, priceUnit, area, availableFrom, o
   );
 };
 
-// ─── SCENARIO 2: Per-room pricing ────────────────────────────────────────────
-const RoomTablePerRoom = ({ rooms, pricingMode, propertyPrice, propertyArea, onBookNow }) => {
+// ─── SCENARIO 2: Per-room pricing (desktop) — same card look as RoomCardSingle, one price per room ──
+const RoomTablePerRoom = ({ rooms, pricingMode, propertyPrice, propertyArea, onBookNow, coverPhoto, maxGuests, hasWifi, hasTv }) => {
   const priceUnit = pricingMode === 'monthly' ? 'month' : 'night';
   return (
-    <div className="rm-table-outer">
-      <table className="rm-table">
-        <thead>
-          <tr>
-            <th className="rm-th rm-th--room">Room</th>
-            <th className="rm-th">Bathroom</th>
-            <th className="rm-th">Area</th>
-            <th className="rm-th rm-th--price">Price / {priceUnit}</th>
-            <th className="rm-th">Available</th>
-            <th className="rm-th rm-th--action"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {rooms.map((room, i) => {
-            const isLast = i === rooms.length - 1;
-            const nightlyP = Number(room.price) || Number(propertyPrice) || 0;
-            const monthlyP = Number(room.price) || Number(propertyPrice) || 0;
-            const displayP = pricingMode === 'monthly' ? monthlyP : nightlyP;
-            const area = room.areaSqFt ? `${room.areaSqFt} sqft` : (propertyArea ? `${propertyArea} sqft` : '—');
-            return (
-              <tr key={i} className={`rm-row ${isLast ? 'rm-row--last' : ''}`}>
-                <td className="rm-td rm-td--room">
-                  <div className="rm-room-cell">
-                    <div className="rm-bed-icon-wrap">
-                      <div className="rm-bed-icon">
-                        <div className="rm-bed-headboard"></div>
-                        <div className="rm-bed-body"><div className="rm-bed-pillow"></div><div className="rm-bed-pillow"></div></div>
-                      </div>
-                    </div>
-                    <div className="rm-room-info">
-                      <span className="rm-room-name">{room.type || 'Bedroom'}</span>
-                      <div className="rm-room-tags">
-                        {room.bedType   && <span className="rm-tag">{room.bedType}</span>}
-                        {room.ac        && <span className="rm-tag rm-tag--ac">❄ AC</span>}
-                        {room.furnished && <span className="rm-tag">Furnished</span>}
-                        {!room.bedType && !room.ac && !room.furnished && <span className="rm-tag">Standard</span>}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td className="rm-td"><BathBadge attached={room.attachedBathroom} /></td>
-                <td className="rm-td"><span className="rm-area-val">{area}</span></td>
-                <td className="rm-td rm-td--price">
+    <div className="rm-cards-grid">
+      {rooms.map((room, i) => {
+        const nightlyP = Number(room.price) || Number(propertyPrice) || 0;
+        const monthlyP = Number(room.price) || Number(propertyPrice) || 0;
+        const displayP = pricingMode === 'monthly' ? monthlyP : nightlyP;
+        const roomArea = room.areaSqFt ? `${room.areaSqFt} sqft` : (propertyArea ? `${propertyArea} sqft` : '—');
+        const guests = room.maxOccupancy || maxGuests || 2;
+        return (
+          <div key={i} className="rm-card">
+            {coverPhoto && (
+              <div className="rm-card-img">
+                <img src={coverPhoto} alt={room.type || `Bedroom ${i + 1}`} />
+              </div>
+            )}
+            <div className="rm-card-body">
+              <div className="rm-card-toprow">
+                <span className="rm-card-title">{room.type || `Bedroom ${i + 1}`}</span>
+              </div>
+              <div className="rm-card-specs">
+                {roomArea && roomArea !== '—' && <span>{roomArea}</span>}
+                {roomArea && roomArea !== '—' && <span className="rm-card-dot">·</span>}
+                <span>{guests} Guest{guests !== 1 ? 's' : ''}</span>
+              </div>
+              <div className="rm-card-tags">
+                <span className="rm-card-chip"><BiBed size={13} /> 1 Bed</span>
+                <span className="rm-card-chip"><BiBath size={13} /> 1</span>
+                {room.ac && <span className="rm-card-chip"><Snowflake size={13} /> AC</span>}
+                {hasWifi && <span className="rm-card-chip"><Wifi size={13} /> WiFi</span>}
+                {hasTv && <span className="rm-card-chip"><Tv size={13} /> TV</span>}
+              </div>
+              <div className="rm-card-bottomrow">
+                <div>
                   <PriceCell price={displayP} unit={priceUnit} />
-                </td>
-                <td className="rm-td"><AvailBadge date={room.availabilityDate} /></td>
-                <td className="rm-td rm-td--cta">
-                  <button className="rm-book-btn" onClick={() => onBookNow(room)}>Book Now</button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                </div>
+                <button className="rm-card-book-btn" onClick={() => onBookNow(room)}>Book Now</button>
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };
@@ -3279,6 +3272,7 @@ const PropertyDetailPage = () => {
         </div>
       </div>
 
+      <div className="pdp-gallery-host-row">
       <section className="image-gallery">
         {/* ── Airbnb-style gallery grid ── */}
         {(() => {
@@ -3423,6 +3417,43 @@ const PropertyDetailPage = () => {
           ))}
         </div>
       </section>
+
+      {/* Host Card — name/avatar/Verified badge are real (gated on the property's actual verification status).
+          The "Superhost" tag and the years/response-rate/response-time stats below are decorative/generic —
+          no per-host data exists in the backend to back them, shown the same on every listing by request. */}
+      <div className="pdp-host-card2 pdp-host-card2--gallery">
+        <div className="pdp-host-card2-toprow">
+          <div className="host-avatar">
+            {hostImage
+              ? <img src={hostImage} alt="Host" className="host-img" />
+              : <span className="host-initial">
+                  {(hostUser?.name || property.property_name || 'H').charAt(0).toUpperCase()}
+                </span>
+            }
+          </div>
+          <div className="host-info" style={{ flex: 1, minWidth: 0 }}>
+            <div className="host-label">Hosted by</div>
+            <h4 className="host-name" style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+              {hostUser?.name || property.property_name || 'Property Host'}
+              <span className="pdp-host-superhost-tag">🏆 Superhost</span>
+            </h4>
+            {isVerifiedProperty && (
+              <span className="pdp-host-verified-tag"><FiCheckCircle size={12} /> Verified Host</span>
+            )}
+          </div>
+        </div>
+
+        <div className="pdp-host-stats-grid">
+          <div className="pdp-host-stat"><span className="pdp-host-stat-num">5+</span><span className="pdp-host-stat-lbl">Years hosting</span></div>
+          <div className="pdp-host-stat"><span className="pdp-host-stat-num">95%</span><span className="pdp-host-stat-lbl">Response rate</span></div>
+          <div className="pdp-host-stat"><span className="pdp-host-stat-num">5 min</span><span className="pdp-host-stat-lbl">Response time</span></div>
+        </div>
+
+        <a href="https://wa.me/919319392227" target="_blank" rel="noopener noreferrer" className="pdp-host-contact-btn">
+          Contact host
+        </a>
+      </div>
+      </div>
 
       <section className="title-section">
         {/* title + rating on same row */}
@@ -3571,6 +3602,9 @@ const PropertyDetailPage = () => {
                       depositAmount={displayBasePrice}
                       showMonthlyDeposit={!!(isOvikaMonthlyProperty && pricingMode === 'monthly')}
                       coverPhoto={getPhotoUrl(photos[Number(property.cover_photo_index) || 0] || photos[0])}
+                      maxGuests={property.max_guests}
+                      hasWifi={(property.amenities || []).some(a => /wi-?fi/i.test(a))}
+                      hasTv={(property.amenities || []).some(a => /\btv\b/i.test(a))}
                     />
                     <RoomTableSingleMobile
                       rooms={property.parsedBedrooms}
@@ -3593,6 +3627,10 @@ const PropertyDetailPage = () => {
                         : (Number(property.meta?.perNightPrice) || Number(property.price) || 0)}
                       propertyArea={property.area}
                       onBookNow={handleRoomBookNow}
+                      coverPhoto={getPhotoUrl(photos[Number(property.cover_photo_index) || 0] || photos[0])}
+                      maxGuests={property.max_guests}
+                      hasWifi={(property.amenities || []).some(a => /wi-?fi/i.test(a))}
+                      hasTv={(property.amenities || []).some(a => /\btv\b/i.test(a))}
                     />
                     <RoomTablePerRoomMobile
                       rooms={property.parsedBedrooms}
@@ -3881,34 +3919,39 @@ const PropertyDetailPage = () => {
             {/* Left: House Rules */}
             <div className="text-section" style={{ marginBottom: 0 }}>
               <h3>House rules &amp; policies</h3>
-              <div className="pdp-rules-grid2">
-                {(() => { const v = !!(property.smoking_allowed || property.smokingAllowed || property.meta?.smokingAllowed || pgHouseRules.includes('Smoking Allowed')); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Smoking', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Smoking</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
-                {(() => { const v = !!(property.pets_allowed || property.petsAllowed || property.meta?.petsAllowed || pgHouseRules.includes('Pets Allowed')); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Pets', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Pets</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
-                {(() => { const v = !!(property.events_allowed || property.eventsAllowed || property.meta?.eventsAllowed || pgHouseRules.includes('Events Allowed')); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Events', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Events</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
-                {(() => { const v = !!(property.drinking_alcohol || property.drinking_allowed || property.drinkingAllowed || property.meta?.drinkingAllowed || pgHouseRules.includes('Drinking Allowed')); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Alcohol', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Alcohol</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
-                {!isPG && (() => { const v = !!guestPolicy.family_allowed; return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Family', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Family</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
-                {(() => { const v = !!(guestPolicy.unmarried_couple_allowed || pgHouseRules.includes('Couple Friendly') || pgHouseRules.includes('Girlfriend/Boyfriend Entry Allowed')); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Couples', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Couples</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
-                {(() => { const v = pgHouseRules.includes('Late Entry Allowed'); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Late Entry', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Late Entry</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
-                {(() => { const v = pgHouseRules.includes('Friends Allowed'); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Visitors/Friends', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Visitors/Friends</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
-                {(pgHouseRules.includes('Veg Only') || pgHouseRules.includes('Non-Veg Allowed')) && (
-                  <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Food', true)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Food</span><span className="pdp-rule-val2">{pgHouseRules.includes('Veg Only') ? 'Veg Only' : 'Non-Veg Allowed'}</span></div></div>
-                )}
-                {preferredTenants.filter(t => t !== 'No Preference').map((t, i) => (
-                  <div key={i} className="pdp-rule-card2">
-                    <div className="pdp-rule-icon2">{getRuleIcon('Preferred Tenants', true)}</div>
-                    <div className="pdp-rule-info2">
-                      <span className="pdp-rule-lbl2">Preferred Tenants</span>
-                      <span className="pdp-rule-val2">{t}</span>
+              <div className="pdp-rules-box">
+                <div className="pdp-rules-grid2">
+                  {(() => { const v = !!(property.smoking_allowed || property.smokingAllowed || property.meta?.smokingAllowed || pgHouseRules.includes('Smoking Allowed')); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Smoking', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Smoking</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
+                  {(() => { const v = !!(property.pets_allowed || property.petsAllowed || property.meta?.petsAllowed || pgHouseRules.includes('Pets Allowed')); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Pets', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Pets</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
+                  {(() => { const v = !!(property.events_allowed || property.eventsAllowed || property.meta?.eventsAllowed || pgHouseRules.includes('Events Allowed')); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Events', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Events</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
+                  {(() => { const v = !!(property.drinking_alcohol || property.drinking_allowed || property.drinkingAllowed || property.meta?.drinkingAllowed || pgHouseRules.includes('Drinking Allowed')); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Alcohol', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Alcohol</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
+                  {!isPG && (() => { const v = !!guestPolicy.family_allowed; return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Family', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Family</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
+                  {(() => { const v = !!(guestPolicy.unmarried_couple_allowed || pgHouseRules.includes('Couple Friendly') || pgHouseRules.includes('Girlfriend/Boyfriend Entry Allowed')); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Couples', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Couples</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
+                  {(() => { const v = pgHouseRules.includes('Late Entry Allowed'); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Late Entry', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Late Entry</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
+                  {(() => { const v = pgHouseRules.includes('Friends Allowed'); return <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Visitors/Friends', v)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Visitors/Friends</span><span className="pdp-rule-val2">{v ? 'Allowed' : 'Not allowed'}</span></div></div>; })()}
+                  {(pgHouseRules.includes('Veg Only') || pgHouseRules.includes('Non-Veg Allowed')) && (
+                    <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Food', true)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Food</span><span className="pdp-rule-val2">{pgHouseRules.includes('Veg Only') ? 'Veg Only' : 'Non-Veg Allowed'}</span></div></div>
+                  )}
+                  {property.check_in_time && (
+                    <div className="pdp-rule-card2"><div className="pdp-rule-icon2">{getRuleIcon('Check-in time', true)}</div><div className="pdp-rule-info2"><span className="pdp-rule-lbl2">Check-in time</span><span className="pdp-rule-val2">{formatTime12h(property.check_in_time)}{property.check_out_time ? ` - ${formatTime12h(property.check_out_time)}` : ''}</span></div></div>
+                  )}
+                  {preferredTenants.filter(t => t !== 'No Preference').map((t, i) => (
+                    <div key={i} className="pdp-rule-card2">
+                      <div className="pdp-rule-icon2">{getRuleIcon('Preferred Tenants', true)}</div>
+                      <div className="pdp-rule-info2">
+                        <span className="pdp-rule-lbl2">Preferred Tenants</span>
+                        <span className="pdp-rule-val2">{t}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-              {((property.cancellation_policy && property.cancellation_policy !== 'undefined') || guestPolicy.cancellationPolicy) && (
-                <div style={{ marginTop: '10px', padding: '8px 12px', background: '#fffbf5', borderRadius: '8px', border: '1px solid #ddd0c0', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ fontSize: '0.78rem', color: '#374151' }}><strong>Cancellation:</strong> {property.cancellation_policy || guestPolicy.cancellationPolicy}</span>
-                  <a href="/refund-cancellation-policy" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.75rem', color: '#c98b3e', fontWeight: 700, whiteSpace: 'nowrap', marginLeft: 'auto' }}>Read full policy</a>
+                  ))}
                 </div>
-              )}
+                {((property.cancellation_policy && property.cancellation_policy !== 'undefined') || guestPolicy.cancellationPolicy) && (
+                  <div className="pdp-rules-cancellation">
+                    <span>Cancellation <strong>{property.cancellation_policy || guestPolicy.cancellationPolicy}</strong></span>
+                    <a href="/refund-cancellation-policy" target="_blank" rel="noopener noreferrer">Read policies</a>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Local Guide */}
@@ -4164,42 +4207,6 @@ const PropertyDetailPage = () => {
             </div>
           )}
 
-          {/* Host Card — name/avatar/Verified badge are real (gated on the property's actual verification status).
-              The "Superhost" tag and the years/response-rate/response-time stats below are decorative/generic —
-              no per-host data exists in the backend to back them, shown the same on every listing by request. */}
-          <div className="pdp-host-card2">
-            <div className="pdp-host-card2-toprow">
-              <div className="host-avatar">
-                {hostImage
-                  ? <img src={hostImage} alt="Host" className="host-img" />
-                  : <span className="host-initial">
-                      {(hostUser?.name || property.property_name || 'H').charAt(0).toUpperCase()}
-                    </span>
-                }
-              </div>
-              <div className="host-info" style={{ flex: 1, minWidth: 0 }}>
-                <div className="host-label">Hosted by</div>
-                <h4 className="host-name" style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                  {hostUser?.name || property.property_name || 'Property Host'}
-                  <span className="pdp-host-superhost-tag">🏆 Superhost</span>
-                </h4>
-                {isVerifiedProperty && (
-                  <span className="pdp-host-verified-tag"><FiCheckCircle size={12} /> Verified Host</span>
-                )}
-              </div>
-            </div>
-
-            <div className="pdp-host-stats-grid">
-              <div className="pdp-host-stat"><span className="pdp-host-stat-num">5+</span><span className="pdp-host-stat-lbl">Years hosting</span></div>
-              <div className="pdp-host-stat"><span className="pdp-host-stat-num">95%</span><span className="pdp-host-stat-lbl">Response rate</span></div>
-              <div className="pdp-host-stat"><span className="pdp-host-stat-num">5 min</span><span className="pdp-host-stat-lbl">Response time</span></div>
-            </div>
-
-            <a href="https://wa.me/919319392227" target="_blank" rel="noopener noreferrer" className="pdp-host-contact-btn">
-              Contact host
-            </a>
-          </div>
-
           {/* ── Location Card ── */}
           <div className="pdp-location-card">
             <h3 className="pdp-location-title">Location</h3>
@@ -4323,7 +4330,7 @@ const PropertyDetailPage = () => {
             <div className="pdp-need-help-row">
               <a href="https://wa.me/919319392227" target="_blank" rel="noopener noreferrer" className="pdp-help-btn">
                 <div className="pdp-help-icon-wrap" style={{ background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.554 4.118 1.528 5.847L0 24l6.335-1.508A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#25D366" d="M12 0C5.373 0 0 5.373 0 12c0 2.124.554 4.118 1.528 5.847L0 24l6.335-1.508A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/><path fill="#fff" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
                 </div>
                 <div>
                   <div className="pdp-help-title">WhatsApp</div>
