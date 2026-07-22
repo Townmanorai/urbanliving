@@ -390,7 +390,7 @@ export default function DashBoardAdmin() {
     const meta = (() => { try { return typeof p.meta === 'object' ? p.meta : JSON.parse(p.meta || '{}'); } catch { return {}; } })();
     const metaCat = (meta.propertyCategory || '').toLowerCase().trim();
 
-    if (name.includes('signature') || name.includes('ovika')) return 'Signature Stays';
+    if (cat.includes('signature') || metaCat.includes('signature') || name.includes('signature') || name.includes('ovika')) return 'Signature Stays';
     if (cat.includes('hotel') || type.includes('hotel') || name.includes('hotel')) return 'Hotel Stays';
     if (cat === 'pg & co-living' || cat === 'pg' || cat.includes('pg') || cat.includes('co-living') || cat.includes('coliving') || type.includes('pg') || metaCat.includes('pg')) return 'PG & Co-Living';
     if (cat === 'homestays & bnb' || cat.includes('homestay') || cat.includes('bnb') || type.includes('homestay') || type.includes('bnb') || type.includes('bed & breakfast') || type.includes('vacation rental') || type.includes('guesthouse')) return 'Homestays & BnB';
