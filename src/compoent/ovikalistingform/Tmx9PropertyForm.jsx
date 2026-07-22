@@ -124,9 +124,13 @@ const Tmx9PropertyForm = ({ propId: passedId, onComplete } = {}) => {
   const isEditMode = !!editId;
 
   const urlCategory = searchParams.get('category');
-  const initCategory = DEFAULT_PROPERTY_CATEGORIES.includes(urlCategory)
-    ? urlCategory
-    : DEFAULT_PROPERTY_CATEGORIES[0];
+  const hasValidUrlCategory = DEFAULT_PROPERTY_CATEGORIES.includes(urlCategory);
+  const initCategory = hasValidUrlCategory ? urlCategory : DEFAULT_PROPERTY_CATEGORIES[0];
+
+  // If the host landed here without a valid ?category= in the URL (e.g. via a nav
+  // link that doesn't specify one), don't silently default to "Signature Stays" —
+  // make them explicitly pick a category first.
+  const [needsCategoryPicker, setNeedsCategoryPicker] = useState(!hasValidUrlCategory && !passedId && !paramId);
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -1030,6 +1034,40 @@ const Tmx9PropertyForm = ({ propId: passedId, onComplete } = {}) => {
     return (
       <div className="tmx9pf-root">
         <div style={{ padding: "80px 20px", textAlign: "center", fontSize: "1rem", color: "#6b7280" }}>Loading property…</div>
+      </div>
+    );
+  }
+
+  if (needsCategoryPicker) {
+    return (
+      <div className="tmx9pf-root">
+        <Helmet>
+          <title>List Your Property | OvikaLiving</title>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+        <div style={{ maxWidth: 640, margin: "0 auto", padding: "60px 20px" }}>
+          <h2 style={{ fontSize: "1.4rem", fontWeight: 700, marginBottom: 6 }}>What type of place are you listing?</h2>
+          <p style={{ color: "#6b7280", fontSize: "0.9rem", marginBottom: 24 }}>Pick a category to continue — this decides which listing form fields you'll see.</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {DEFAULT_PROPERTY_CATEGORIES.map(cat => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => { setForm(f => ({ ...f, propertyCategory: cat })); setNeedsCategoryPicker(false); }}
+                style={{
+                  textAlign: "left", padding: "16px 18px", borderRadius: 10,
+                  border: "1.5px solid #e5e7eb", background: "#fff",
+                  fontSize: "1rem", fontWeight: 600, color: "#1a1209",
+                  cursor: "pointer",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "#c98b3e"; e.currentTarget.style.background = "#fff8f0"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.background = "#fff"; }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
