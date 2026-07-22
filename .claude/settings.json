@@ -12,7 +12,8 @@
       "Bash(node_modules/.bin/esbuild.cmd \"src/compoent/ovikalistingform/PropertyDetailPage.jsx\" --bundle=false --outfile=out_check.js)",
       "Bash(node_modules/.bin/esbuild.cmd \"src/compoent/ovikalistingform/Tmx9PropertyForm.jsx\" --bundle=false --outfile=out_check.js)",
       "Bash(node_modules/.bin/esbuild.cmd \"src/compoent/AdminDashBoard/AdminDashBoardPages/DashBoardAdmin.jsx\" --bundle=false --outfile=out_check.js)",
-      "Bash(curl -s \"https://www.townmanor.ai/api/ovika/properties/1873\")"
+      "Bash(curl -s \"https://www.townmanor.ai/api/ovika/properties/1873\")",
+      "Bash(node_modules/.bin/esbuild.cmd \"src/compoent/SEO/SeoManager.jsx\" --bundle=false --outfile=out_check.js)"
     ]
   }
 }

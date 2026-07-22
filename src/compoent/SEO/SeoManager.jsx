@@ -3,8 +3,8 @@ import { useLocation, useParams } from 'react-router-dom';
 
 const SITE_NAME   = 'OvikaLiving';
 const SITE_URL    = 'https://www.ovikaliving.com';
-const LOGO_URL    = `${SITE_URL}/ovika-logo.png`;
-const DEFAULT_IMG = `${SITE_URL}/og-default.jpg`;
+const LOGO_URL    = `${SITE_URL}/ovikalivinglogonew.png`;
+const DEFAULT_IMG = `${SITE_URL}/ovikalivinglogonew.png`;
 
 const SEO_ROUTES = {
   '/': {
@@ -138,6 +138,24 @@ const SEO_ROUTES = {
     keywords: 'OvikaLiving legal, company information, regulatory disclosure',
     og: { type: 'website', image: DEFAULT_IMG },
   },
+  '/career-support': {
+    title: 'Careers at OvikaLiving — Join Our Team',
+    description: 'Explore career opportunities at OvikaLiving. Join a fast-growing proptech team building India\'s most trusted rental & stays platform.',
+    keywords: 'OvikaLiving careers, jobs at OvikaLiving, proptech careers Noida, work with OvikaLiving',
+    og: { type: 'website', image: DEFAULT_IMG },
+  },
+  '/tmluxe': {
+    title: 'TM Luxe Signature Stays — Premium Serviced Apartments | OvikaLiving',
+    description: 'Experience TM Luxe by OvikaLiving — premium serviced apartments and signature stays in Noida & Greater Noida with 5-star amenities and self check-in.',
+    keywords: 'TM Luxe, premium serviced apartments Noida, signature stay Noida, luxury short stay Greater Noida, OvikaLiving Luxe',
+    og: { type: 'website', image: DEFAULT_IMG },
+  },
+  '/buy-leads': {
+    title: 'Buy Verified Leads for Your Property | OvikaLiving',
+    description: 'Grow your bookings faster — buy verified tenant & guest leads for your PG, apartment or hotel listing on OvikaLiving.',
+    keywords: 'buy property leads, verified tenant leads, PG owner leads, OvikaLiving leads',
+    og: { type: 'website', image: DEFAULT_IMG },
+  },
 };
 
 // Prefix-based fallbacks for dynamic routes
@@ -157,6 +175,15 @@ const PREFIX_SEO = [
       title: 'Update Listing | OvikaLiving',
       description: 'Update your PG or property listing details on OvikaLiving.',
       keywords: 'update listing, edit PG, OvikaLiving dashboard',
+      og: { type: 'website', image: DEFAULT_IMG },
+    }),
+  },
+  {
+    prefix: '/update-property/',
+    get: () => ({
+      title: 'Update Listing | OvikaLiving',
+      description: 'Update your hotel, homestay, apartment or signature stay listing details on OvikaLiving.',
+      keywords: 'update listing, edit property, OvikaLiving dashboard',
       og: { type: 'website', image: DEFAULT_IMG },
     }),
   },
