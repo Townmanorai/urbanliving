@@ -663,7 +663,7 @@ const PropertyCard = ({ property, rentalType }) => {
         {/* Top row: name (rating stack is absolutely positioned so its extra height
             never pushes the location line down) */}
         <div className="plp-hcard-toprow">
-          <h3 className="plp-hcard-name" style={{ display: 'flex', alignItems: 'center', gap: 6, paddingRight: 90 }}>
+          <h3 className="plp-hcard-name plp-hcard-name--withrating" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             {property.property_name || 'Untitled Property'}
 {(() => {
               const m = (() => { try { return typeof property.meta === 'object' ? property.meta : JSON.parse(property.meta || '{}'); } catch { return {}; } })();
@@ -2239,6 +2239,7 @@ const PropertyListPage = () => {
           -webkit-line-clamp: 2; -webkit-box-orient: vertical;
           flex: 1;
         }
+        .plp-hcard-name--withrating { padding-right: 90px; }
         .plp-hcard-ratingstack {
           position: absolute;
           top: 14px; right: 18px;
@@ -2351,11 +2352,16 @@ const PropertyListPage = () => {
           .plp-hcard-thumbs { display: none; }
           .plp-hcard-details { padding: 12px 14px 14px; gap: 5px; }
           .plp-hcard-name { font-size: 13px; }
+          .plp-hcard-name--withrating { padding-right: 54px; }
           .plp-hcard-price { font-size: 17px; }
           .plp-hcard-bottom { flex-wrap: wrap; gap: 8px; }
           .plp-hcard-btns { width: 100%; }
           .plp-hcard-btn { flex: 1; text-align: center; padding: 9px 0; }
           .plp-hcard-distance, .plp-hcard-loc-dot { display: none; }
+          .plp-hcard-ratingstack { top: 12px; right: 14px; }
+          .plp-hcard-reviews, .plp-hcard-recommend { display: none; }
+          .plp-hcard-badgerow { gap: 4px; }
+          .plp-hcard-badge { font-size: 9.5px; padding: 2px 6px; }
         }
         /* ── Mobile overlay & drawer ── */
         .plp-filter-overlay {
@@ -2375,7 +2381,6 @@ const PropertyListPage = () => {
           border-radius: 0;
           box-shadow: 0 -4px 32px rgba(0,0,0,0.18);
           animation: plpSlideUp 0.28s ease;
-        }
         }
         @keyframes slideUp {
           from { transform: translate(-50%, -50%) scale(0.92); opacity: 0; }

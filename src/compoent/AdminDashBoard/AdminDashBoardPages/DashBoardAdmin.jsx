@@ -73,7 +73,7 @@ const PROPERTY_TYPES = ["Entire place", "Private room", "Shared room", "Hotel ro
 const PG_TYPES = ["Boys PG", "Girls PG", "Co-ed PG"];
 const SHARING_TYPES = ["Single Room", "Double Sharing", "Triple Sharing", "Four Sharing", "Dormitory"];
 
-// â”€â”€â”€ HELPER: Parse meta safely â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── HELPER: Parse meta safely ─────────────────────────────────────────────
 const parseMeta = (prop) => {
   if (!prop) return {};
   let meta = prop.meta;
@@ -85,7 +85,7 @@ const parseMeta = (prop) => {
   return {};
 };
 
-// â”€â”€â”€ CLEAN DESCRIPTION: pehle se appended junk hatao â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── CLEAN DESCRIPTION: pehle se appended junk hatao ───────────────────────
 // Ye function description se "--- PG Details ---", "--- Local Guide ---" etc. saaf karta hai
 const cleanDescription = (raw) => {
   if (!raw || typeof raw !== 'string') return '';
@@ -97,7 +97,7 @@ const cleanDescription = (raw) => {
     .trim();
 };
 
-// â”€â”€â”€ MONTHLY vs NIGHTLY â€” FINAL LOGIC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── MONTHLY vs NIGHTLY — FINAL LOGIC ───────────────────────────────────────
 const NIGHTLY_ONLY_CATEGORIES = ["villa", "cabin", "bungalow", "hotel"];
 const MONTHLY_ONLY_CATEGORIES = ["flat", "penthouse", "pg"];
 const PG_UPDATE_DEFAULT_TIMES = ["12:00", "12:00:00", "11:00", "11:00:00"];
@@ -422,12 +422,12 @@ export default function DashBoardAdmin() {
     const bathroomCount = prop.total_bathrooms || getRoomCount(prop.bathrooms);
     if (bathroomCount > 0) detailsPieces.push(`${bathroomCount} BA`);
     if (prop.max_guests !== undefined && prop.max_guests !== null) detailsPieces.push(`Up to ${prop.max_guests} guests`);
-    const details = detailsPieces.join(" â€¢ ");
+    const details = detailsPieces.join(" • ");
     const isMonthly = isMonthlyProperty(prop);
     const priceText = prop.price
       ? isMonthly
-        ? `â‚¹${Number(prop.price).toLocaleString("en-IN")} / month`
-        : `â‚¹${Number(prop.price).toLocaleString("en-IN")} / night`
+        ? `₹${Number(prop.price).toLocaleString("en-IN")} / month`
+        : `₹${Number(prop.price).toLocaleString("en-IN")} / night`
       : "";
     const photoUrl = getPropertyPhoto(prop);
     return (
@@ -477,7 +477,7 @@ export default function DashBoardAdmin() {
         </section>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh", flexDirection: "column", gap: "12px" }}>
           <Loader size={40} style={{ animation: "spin 1s linear infinite", color: "#3b82f6" }} />
-          <p style={{ fontSize: "16px", color: "#6b7280", fontWeight: 500 }}>Loading propertiesâ€¦</p>
+          <p style={{ fontSize: "16px", color: "#6b7280", fontWeight: 500 }}>Loading properties…</p>
         </div>
       </div>
     );

@@ -418,7 +418,7 @@ const Tmx9PropertyForm = ({ propId: passedId, onComplete } = {}) => {
       if (form.weeklyDiscountPct && (form.weeklyDiscountPct < 0 || form.weeklyDiscountPct > 100)) newErrors.weeklyDiscountPct = "Discount must be between 0 and 100";
       if (!form.selfCheckIn?.trim()) newErrors.selfCheckIn = "Please select self-check-in availability";
       if (form.bookingType !== 0 && form.bookingType !== 1) newErrors.bookingType = "Please select booking type";
-      if (!isHomestay && !aadhaarVerified) newErrors.idFiles = "Please verify your Aadhaar number";
+      // Aadhaar verification requirement disabled for now — see commented-out UI further below.
     }
 
     setErrors(newErrors);
@@ -1783,6 +1783,7 @@ const Tmx9PropertyForm = ({ propId: passedId, onComplete } = {}) => {
                 </select>
               </div>
 
+              {/* Aadhaar Verification + Mobile OTP Verification — commented out for now (not required at listing time).
               {!isHomestay && (
                 <>
                   <div className="tmx9pf-field full">
@@ -1835,12 +1836,15 @@ const Tmx9PropertyForm = ({ propId: passedId, onComplete } = {}) => {
                       {isPhoneVerified && <p style={{ color: '#166534', fontSize: '13px', margin: 0 }}>✓ Phone number verified successfully.</p>}
                     </div>
                   </div>
-                  <div className="tmx9pf-field">
-                    <label className="tmx9pf-label">Selfie verification (optional)</label>
-                    <input type="file" accept="image/*" onChange={handleSelfie} className="tmx9pf-file" />
-                    <div className="tmx9pf-muted">{selfieFile ? selfieFile.name : "No selfie selected"}</div>
-                  </div>
                 </>
+              )}
+              */}
+              {!isHomestay && (
+                <div className="tmx9pf-field">
+                  <label className="tmx9pf-label">Selfie verification (optional)</label>
+                  <input type="file" accept="image/*" onChange={handleSelfie} className="tmx9pf-file" />
+                  <div className="tmx9pf-muted">{selfieFile ? selfieFile.name : "No selfie selected"}</div>
+                </div>
               )}
             </div>
           </section>

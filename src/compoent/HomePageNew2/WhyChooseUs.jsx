@@ -73,7 +73,10 @@ const css = `
 @media (max-width: 600px) {
   .wcu-section { padding: 32px 18px 12px; }
   .wcu-title { font-size: 1.4rem; }
-  .wcu-grid { grid-template-columns: 1fr; gap: 12px; }
+  .wcu-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .wcu-card { flex-direction: column; padding: 14px 12px; gap: 8px; }
+  .wcu-text-title { font-size: 0.8rem; }
+  .wcu-text-desc { font-size: 0.7rem; }
 }
 `;
 

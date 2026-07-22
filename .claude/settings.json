@@ -8,7 +8,10 @@
       "Bash(curl -s \"https://www.townmanor.ai/api/ovika/properties\")",
       "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const j=JSON.parse\\(d\\); const props=j?.data||[]; console.log\\('Total:',props.length\\); if\\(props[0]\\) console.log\\('Keys:',Object.keys\\(props[0]\\).join\\(', '\\)\\); props.slice\\(0,3\\).forEach\\(p=>console.log\\(JSON.stringify\\({city:p.city,locality:p.locality,address:p.address,property_category:p.property_category,property_type:p.property_type,category:p.category}\\)\\)\\)\")",
       "Bash(python3 -c ' *)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(node_modules/.bin/esbuild.cmd \"src/compoent/ovikalistingform/PropertyDetailPage.jsx\" --bundle=false --outfile=out_check.js)",
+      "Bash(node_modules/.bin/esbuild.cmd \"src/compoent/ovikalistingform/Tmx9PropertyForm.jsx\" --bundle=false --outfile=out_check.js)",
+      "Bash(node_modules/.bin/esbuild.cmd \"src/compoent/AdminDashBoard/AdminDashBoardPages/DashBoardAdmin.jsx\" --bundle=false --outfile=out_check.js)"
     ]
   }
 }

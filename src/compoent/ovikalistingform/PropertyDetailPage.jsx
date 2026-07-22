@@ -3570,6 +3570,14 @@ const PropertyDetailPage = () => {
         </div>
       </section>
 
+      {/* Mobile-only: "Verified Property" badge, shown below the gallery instead of
+          overlaid on it (avoids clashing with the floating back button on mobile) */}
+      {isVerifiedProperty && (
+        <div className="pdp-gallery-verified-pill--mobile">
+          <FiCheckCircle size={13} /> Verified Property
+        </div>
+      )}
+
       {/* Host Card — name/avatar/Verified badge are real (gated on the property's actual verification status).
           The "Superhost" tag and the years/response-rate/response-time stats below are decorative/generic —
           no per-host data exists in the backend to back them, shown the same on every listing by request. */}

@@ -413,8 +413,14 @@ const css = `
   .ad-statsbar { padding: 18px 18px; }
   .ad-newsletter-form { flex-direction: column; align-items: stretch; }
   .ad-newsletter-form input { width: 100%; box-sizing: border-box; }
-  .ad-stat { flex: 1 1 calc(50% - 7px); }
-  .ad-stats-row { gap: 10px; }
+  .ad-stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+  }
+  .ad-stat { min-width: 0; }
+  .ad-stat-value, .ad-stat-label { white-space: normal; }
 }
 `;
 
