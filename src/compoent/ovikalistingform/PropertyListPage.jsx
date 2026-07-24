@@ -37,6 +37,41 @@ function useMapThrustLoader() {
 
 const API_BASE_URL = 'https://www.townmanor.ai/api/ovika';
 
+// Hotels live in a separate resource (/ovika/hotels) with their own richer shape
+// (rooms[] with per-room rates instead of a single price). Normalize each hotel
+// record into the same card/filter shape the rest of this page already expects
+// for "Hotel Stays", so the existing render + filter pipeline needs no changes.
+// The id is prefixed with "hotel-" so PropertyDetailPage can tell it apart and
+// fetch it from the hotels endpoint instead of /ovika/properties/:id.
+function normalizeHotel(h) {
+  const rooms = Array.isArray(h.rooms) ? h.rooms : [];
+  const rates = rooms.map(r => Number(r.baseRate4Adults)).filter(n => !isNaN(n) && n > 0);
+  const minPrice = rates.length ? Math.min(...rates) : 0;
+  const maxOcc = rooms.reduce((m, r) => Math.max(m, Number(r.occupancy?.maxOccupancy) || 0), 0);
+  return {
+    id: `hotel-${h.id}`,
+    property_name: h.property_name,
+    description: h.description,
+    address: h.address,
+    city: h.city,
+    state: h.state,
+    country: h.country || 'India',
+    latitude: h.latitude,
+    longitude: h.longitude,
+    price: minPrice,
+    rental_type: 'short',
+    property_type: h.hotel_type,
+    property_category: 'Hotel Stays',
+    photos: h.photos || [],
+    cover_photo_index: h.cover_photo_index || 0,
+    bedrooms: rooms.map(r => ({ type: r.roomType, count: r.numberOfRooms, bedType: r.bedArrangement?.[0]?.bedType, price: r.baseRate4Adults })),
+    bathrooms: rooms.map(r => ({ type: 'Attached', count: r.bathroomCount || 1 })),
+    max_guests: maxOcc || undefined,
+    amenities: Array.isArray(h.amenities) ? h.amenities : [],
+    is_active: true,
+  };
+}
+
 const CITIES = [
   'Delhi','Noida','Greater Noida','Ghaziabad','Gurugram','Faridabad',
   'Agra','Lucknow','Kanpur','Prayagraj','Varanasi','Mathura','Vrindavan',
@@ -1622,10 +1657,24 @@ const PropertyListPage = () => {
   const fetchProperties = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_BASE_URL}/properties`);
-      if (!res.ok) throw new Error('Failed to fetch');
-      const data = await res.json();
-      const raw = data?.data || [];
+      const [propsRes, hotelsRes] = await Promise.allSettled([
+        fetch(`${API_BASE_URL}/properties`),
+        fetch(`${API_BASE_URL}/hotels`),
+      ]);
+
+      let rawProps = [];
+      if (propsRes.status === 'fulfilled' && propsRes.value.ok) {
+        const data = await propsRes.value.json();
+        rawProps = data?.data || [];
+      }
+
+      let rawHotels = [];
+      if (hotelsRes.status === 'fulfilled' && hotelsRes.value.ok) {
+        const data = await hotelsRes.value.json();
+        rawHotels = (data?.data || []).map(normalizeHotel);
+      }
+
+      const raw = [...rawProps, ...rawHotels];
       const seenIds = new Set();
       const list = raw.filter(p => {
         // Remove explicitly inactive properties — if field absent, treat as active

@@ -25,7 +25,7 @@ const CATEGORIES = [
     label: 'Hotel Stays',
     tag: 'Nightly',
     tagClass: 'nightly',
-    path: '/listed1?category=Hotel+Stays',
+    path: '/list-hotel',
     subtitle: 'Hotels, boutique stays & premium rooms',
     about:
       'List your hotel, boutique property, or business accommodation on OvikaLiving and reach thousands of travelers. From budget hotels to luxury boutique properties, we help you fill rooms faster with real-time booking management.',

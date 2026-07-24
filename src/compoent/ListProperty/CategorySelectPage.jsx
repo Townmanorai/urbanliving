@@ -20,7 +20,7 @@ const ALL_CATS = [
     label: 'Hotel Stays',
     sub: 'Hotel rooms, boutique & business hotels',
     tag: 'Nightly',
-    path: '/listed1?category=Hotel+Stays',
+    path: '/list-hotel',
   },
   {
     id: 'homestay',

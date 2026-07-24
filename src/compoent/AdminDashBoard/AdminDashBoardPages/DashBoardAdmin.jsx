@@ -10,6 +10,34 @@ import PGUpdateForm from "../../ovikalistingform/PGUpdateForm";
 import Tmx9PropertyForm from "../../ovikalistingform/Tmx9PropertyForm";
 import ImageClassificationModal from "../SuperAdmin/ImageClassificationModal";
 
+// Hotels are stored in a separate resource (/ovika/hotels) with a different
+// shape (rooms[] instead of a flat bedrooms/price). Normalize each hotel into
+// the same card shape used for properties so it shows up in the owner's list
+// like everything else. id is prefixed with "hotel-" so onView/onDelete know
+// to route to the hotels endpoint instead of /ovika/properties.
+function normalizeHotelForDashboard(h) {
+  const rooms = Array.isArray(h.rooms) ? h.rooms : [];
+  const rates = rooms.map((r) => Number(r.baseRate4Adults)).filter((n) => !isNaN(n) && n > 0);
+  return {
+    id: `hotel-${h.id}`,
+    _hotelId: h.id,
+    _isHotel: true,
+    owner_id: h.owner_id,
+    property_name: h.property_name,
+    city: h.city,
+    country: h.country || "India",
+    price: rates.length ? Math.min(...rates) : 0,
+    rental_type: "short",
+    property_type: h.hotel_type,
+    property_category: "Hotel Stays",
+    photos: h.photos || [],
+    cover_photo_index: h.cover_photo_index || 0,
+    bedrooms: rooms.map((r) => ({ type: r.roomType, count: r.numberOfRooms })),
+    bathrooms: rooms.map((r) => ({ type: "Attached", count: r.bathroomCount || 1 })),
+    max_guests: rooms.reduce((m, r) => Math.max(m, Number(r.occupancy?.maxOccupancy) || 0), 0) || undefined,
+  };
+}
+
 function KeyItem({ text, filetype = "pdf" }) {
   const isXlsx = filetype === "xlsx";
   return (
@@ -295,19 +323,31 @@ export default function DashBoardAdmin() {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.get("https://www.townmanor.ai/api/ovika/properties", { timeout: 10000 });
+      const [propsRes, hotelsRes] = await Promise.allSettled([
+        axios.get("https://www.townmanor.ai/api/ovika/properties", { timeout: 10000 }),
+        axios.get(`https://www.townmanor.ai/api/ovika/hotels/owner/${resolvedOwnerId}`, { timeout: 10000 }),
+      ]);
+
       let all = [];
-      if (!res || !res.data) { all = []; }
-      else if (Array.isArray(res.data)) { all = res.data; }
-      else if (Array.isArray(res.data.data)) { all = res.data.data; }
-      else if (Array.isArray(res.data.results)) { all = res.data.results; }
-      else { const arr = Object.values(res.data).find((v) => Array.isArray(v)); if (arr) all = arr; }
+      if (propsRes.status === "fulfilled" && propsRes.value?.data) {
+        const res = propsRes.value;
+        if (Array.isArray(res.data)) all = res.data;
+        else if (Array.isArray(res.data.data)) all = res.data.data;
+        else if (Array.isArray(res.data.results)) all = res.data.results;
+        else { const arr = Object.values(res.data).find((v) => Array.isArray(v)); if (arr) all = arr; }
+      }
+
+      let hotels = [];
+      if (hotelsRes.status === "fulfilled" && Array.isArray(hotelsRes.value?.data?.data)) {
+        hotels = hotelsRes.value.data.data.map(normalizeHotelForDashboard);
+      }
+
       const filtered = all.filter((p) => {
         if (!p || typeof p !== "object") return false;
         const candidates = [p.owner_id, p.ownerId, p.user_id, p.userId, (p.meta && (p.meta.ownerId || p.meta.owner_id)), p.owner].filter(Boolean);
         return candidates.some((c) => String(c) === String(resolvedOwnerId));
       });
-      setProperties(filtered);
+      setProperties([...filtered, ...hotels]);
     } catch (err) {
       console.error("DashBoardAdmin: Failed to load properties:", err);
       setError("Failed to load properties (see console).");
@@ -436,12 +476,18 @@ export default function DashBoardAdmin() {
         photoUrl={photoUrl} name={name} location={location} details={details} priceText={priceText}
         propertyId={prop.id || prop._id}
         onView={() => navigate(`/property/${prop.id || prop._id}${isMonthly ? '?rentalType=long' : '?rentalType=short'}`)}
-        onEdit={() => { if (isMonthly) { setEditingMonthlyProperty(prop); } else { setEditingProperty(prop); } }}
+        onEdit={() => {
+          if (prop._isHotel) { navigate(`/update-hotel/${prop._hotelId}`); return; }
+          if (isMonthly) { setEditingMonthlyProperty(prop); } else { setEditingProperty(prop); }
+        }}
         onDelete={async () => {
           if (!window.confirm("Are you sure you want to delete this property?")) return;
           try {
             const id = prop.id || prop._id;
-            await axios.delete(`https://www.townmanor.ai/api/ovika/properties/${id}`);
+            const deleteUrl = prop._isHotel
+              ? `https://www.townmanor.ai/api/ovika/hotels/${prop._hotelId}`
+              : `https://www.townmanor.ai/api/ovika/properties/${id}`;
+            await axios.delete(deleteUrl);
             setProperties(prev => prev.filter(p => (p.id || p._id) !== id));
           } catch (e) { alert("Failed to delete property"); console.error(e); }
         }}

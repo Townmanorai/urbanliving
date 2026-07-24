@@ -31,6 +31,7 @@ import Support from "./compoent/AdminDashBoard/AdminDashBoardPages/Support";
 import { HomeMain } from "./compoent/HomePageNew/HomeMain";
 import PropertyListingForm from "./compoent/PropertyListingForm/PropertyListingForm";
 import Tmx9PropertyForm from "./compoent/ovikalistingform/Tmx9PropertyForm";
+import HotelListingForm from "./compoent/ovikalistingform/HotelListingForm";
 import PGListingForm from "./compoent/ovikalistingform/PGListingForm";
 import PropertyListPage from "./compoent/ovikalistingform/PropertyListPage";
 import PropertyDetailPage from "./compoent/ovikalistingform/PropertyDetailPage";
@@ -181,6 +182,22 @@ function App() {
             element={
               <RequireAuth>
                 <Tmx9PropertyForm />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/list-hotel"
+            element={
+              <RequireAuth>
+                <HotelListingForm />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/update-hotel/:id"
+            element={
+              <RequireAuth>
+                <HotelListingForm />
               </RequireAuth>
             }
           />

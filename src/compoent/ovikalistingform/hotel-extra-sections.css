@@ -1,0 +1,38 @@
+/* Formatting for genuinely NEW hotel-only data (room types w/ meal plans, hotel
+   policies) that has no equivalent block in the regular property detail page.
+   Uses the same theme tokens as the rest of the site (#8b0000 primary /
+   #c98b3e gold, same card radius/shadow language) but its own layout —
+   appended below the reused (unchanged) property-detail sections. */
+
+.hxs-section { margin-top: 8px; }
+.hxs-section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.hxs-pill { background: #fdf1e2; color: #a67332; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: 4px 10px; border-radius: 999px; }
+.hxs-title { font-size: 1.05rem; font-weight: 700; color: #1e293b; margin: 0; }
+
+/* ── Room type cards ── */
+.hxs-room-list { display: flex; flex-direction: column; gap: 14px; }
+.hxs-room-card { border: 1.5px solid #f0e8da; border-radius: 14px; padding: 16px; background: #fffdfa; }
+.hxs-room-top { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: flex-start; margin-bottom: 8px; }
+.hxs-room-name { font-size: 1rem; font-weight: 700; color: #1e293b; }
+.hxs-room-price { text-align: right; }
+.hxs-room-price-amt { font-size: 1.05rem; font-weight: 800; color: #8b0000; }
+.hxs-room-price-unit { font-size: 0.72rem; color: #94a3b8; }
+.hxs-room-extra { font-size: 0.7rem; color: #94a3b8; margin-top: 2px; }
+.hxs-room-meta { display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.8rem; color: #64748b; margin-bottom: 8px; }
+.hxs-room-meal { display: inline-flex; align-items: center; gap: 5px; font-size: 0.76rem; font-weight: 600; color: #a67332; background: #fdf6ec; border: 1px solid #f1e4d0; padding: 3px 10px; border-radius: 999px; margin-bottom: 8px; }
+.hxs-room-toggle { background: none; border: none; color: #8b0000; font-weight: 700; font-size: 0.76rem; cursor: pointer; padding: 0; }
+.hxs-room-amenities { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.hxs-chip { font-size: 0.72rem; color: #475569; background: #f8fafc; border: 1px solid #e2e8f0; padding: 3px 9px; border-radius: 999px; }
+
+/* ── Policies ── */
+.hxs-policy-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0 20px; }
+.hxs-policy-row { display: flex; justify-content: space-between; gap: 10px; font-size: 0.82rem; color: #334155; padding: 9px 0; border-bottom: 1px solid #f4ede0; }
+.hxs-policy-row span:first-child { color: #94836f; }
+.hxs-policy-row span:last-child { font-weight: 600; text-align: right; }
+.hxs-policy-note { margin-top: 14px; font-size: 0.8rem; color: #64748b; background: #fdf6ec; border: 1px solid #f1e4d0; border-radius: 10px; padding: 10px 14px; }
+
+@media (max-width: 640px) {
+  .hxs-policy-grid { grid-template-columns: 1fr; }
+  .hxs-room-price { text-align: left; }
+  .hxs-room-top { flex-direction: column; }
+}

@@ -92,6 +92,7 @@ import Cookies from 'js-cookie';
 import { format } from 'date-fns';
 import './PropertyDetailPage.css';
 import { AuthContext } from '../Login/AuthContext';
+import HotelDetailView from './HotelDetailView';
 
 // ─── AMENITY ICONS MAP ────────────────────────────────────────────────────────
 const AMENITY_ICONS = {
@@ -434,6 +435,53 @@ const transformPropertyData = (data) => {
       if (typeof raw === 'string') { try { return JSON.parse(raw); } catch { return {}; } }
       return raw;
     })()
+  };
+};
+
+// Hotels live in a separate resource (/ovika/hotels/:id) with a different shape
+// (rooms[] with per-room rates/bed-arrangements) than the legacy properties API.
+// Reshape a hotel record into the same raw shape /ovika/properties/:id returns so
+// it can go through the existing transformPropertyData() and the rest of this
+// page's rendering without a parallel hotel-only UI.
+const hotelToPropertyShape = (h) => {
+  const rooms = Array.isArray(h.rooms) ? h.rooms : [];
+  const rates = rooms.map(r => Number(r.baseRate4Adults)).filter(n => !isNaN(n) && n > 0);
+  const minPrice = rates.length ? Math.min(...rates) : 0;
+  const maxOcc = rooms.reduce((m, r) => Math.max(m, Number(r.occupancy?.maxOccupancy) || 0), 0);
+  return {
+    id: h.id,
+    property_name: h.property_name,
+    description: h.description,
+    address: h.address,
+    city: h.city,
+    state: h.state,
+    country: h.country || 'India',
+    latitude: h.latitude,
+    longitude: h.longitude,
+    price: minPrice,
+    rental_type: 'short',
+    property_type: h.hotel_type,
+    property_category: 'Hotel Stays',
+    photos: h.photos || [],
+    cover_photo_index: h.cover_photo_index || 0,
+    bedrooms: rooms.map(r => ({
+      type: r.roomType,
+      count: r.numberOfRooms,
+      bedType: r.bedArrangement?.[0]?.bedType,
+      areaSqFt: r.areaValue,
+      price: r.baseRate4Adults,
+      attachedBathroom: true,
+    })),
+    bathrooms: rooms.map(r => ({ type: 'Attached', count: r.bathroomCount || 1 })),
+    max_guests: maxOcc || undefined,
+    amenities: Array.isArray(h.amenities) ? h.amenities : [],
+    booking_type: 0,
+    guest_policy: {
+      family_allowed: !!h.guest_profile?.unmarried_couples === false,
+      unmarried_couple_allowed: !!h.guest_profile?.unmarried_couples,
+      bachelors_allowed: !!h.guest_profile?.male_only_groups,
+    },
+    meta: { hotelRooms: rooms, checkInTime: h.check_in_time, checkOutTime: h.check_out_time, cancellationPolicy: h.cancellation_policy },
   };
 };
 
@@ -1583,6 +1631,7 @@ const PropertyDetailPage = () => {
   const { user } = useContext(AuthContext);
   
   const [property, setProperty] = useState(null);
+  const [rawHotel, setRawHotel] = useState(null); // full-fidelity raw record for hotel listings (new /ovika/hotels resource)
   const [loading, setLoading] = useState(true);
   const [activeImg, setActiveImg] = useState(0);
   const [showMapModal, setShowMapModal] = useState(false);
@@ -1732,9 +1781,15 @@ const PropertyDetailPage = () => {
     if (id) {
       const fetchProperty = async () => {
         try {
-          const response = await axios.get(`${API_BASE_URL}/properties/${id}`);
+          const isHotel = String(id).startsWith('hotel-');
+          const realId = isHotel ? String(id).replace(/^hotel-/, '') : id;
+          const response = isHotel
+            ? await axios.get(`${API_BASE_URL}/hotels/${realId}`)
+            : await axios.get(`${API_BASE_URL}/properties/${realId}`);
           const data = response.data;
-          const transformed = transformPropertyData(data?.data || data);
+          const rawRecord = data?.data || data;
+          if (isHotel) setRawHotel(rawRecord);
+          const transformed = transformPropertyData(isHotel ? hotelToPropertyShape(rawRecord) : rawRecord);
           const coverIdx = Number(transformed.cover_photo_index);
           if (!isNaN(coverIdx) && coverIdx > 0 && Array.isArray(transformed.photos) && coverIdx < transformed.photos.length) {
             const reordered = [...transformed.photos];
@@ -2391,6 +2446,7 @@ const PropertyDetailPage = () => {
 
   if (loading) return <div className="loader-screen"><div className="spinner"></div></div>;
   if (!property) return <div className="error-screen">Property not found</div>;
+  const isHotelListing = String(id).startsWith('hotel-') && !!rawHotel;
 
   const photos = property.photos || [];
   const isPG = property.property_category === 'PG' || property.property_category === 'PG & Co-Living' || (property.property_category || '').toLowerCase().includes('pg');
@@ -2473,6 +2529,8 @@ const PropertyDetailPage = () => {
     if (r >= 4.0) return [45, 32, 14, 6, 3];
     return [30, 30, 20, 12, 8];
   })();
+
+  if (isHotelListing) return <HotelDetailView hotel={rawHotel} />;
 
   return (
     <div className="detail-page-wrapper">
