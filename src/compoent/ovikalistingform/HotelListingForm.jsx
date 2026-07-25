@@ -446,7 +446,7 @@ const HotelListingForm = ({ propId: passedId, onComplete } = {}) => {
       if (form.rooms.length === 0) newErrors.rooms = "Add at least one room type";
     }
     if (s === 4) {
-      if (existingPhotos.length + photoPreviews.previews.length < 10) newErrors.photos = "At least 10 photos are required";
+      if (existingPhotos.length + photoPreviews.previews.length < 5) newErrors.photos = "At least 5 photos are required";
     }
     if (s === 5) {
       if (!form.check_in_time) newErrors.check_in_time = "Check-in time is required";
@@ -1038,7 +1038,7 @@ const HotelListingForm = ({ propId: passedId, onComplete } = {}) => {
           {step === 4 && (
             <section className="tmx9pf-section">
               <h2 className="tmx9pf-section-title">Upload Photos & Videos</h2>
-              <p style={{ color: "#6b7280", fontSize: 14, marginBottom: 16, marginTop: -8 }}>Upload minimum 10 photos (JPEG/PNG, up to 30MB each), including at least 1 landscape photo.</p>
+              <p style={{ color: "#6b7280", fontSize: 14, marginBottom: 16, marginTop: -8 }}>Upload minimum 5 photos (JPEG/PNG, up to 30MB each), including at least 1 landscape photo.</p>
 
               {isEditMode && existingPhotos.length > 0 && (
                 <>
