@@ -236,9 +236,12 @@ function BookingDetail() {
       doc.setFont(undefined, "bold");
       doc.text("Payment Details", x, y);
       y += 7;
-      const subtotal = Number(b.display_price) || 0;
-      const gst = subtotal > 0 ? (subtotal * 0.05) : 0;
-      const finalTotal = subtotal + gst;
+      // b.display_price (= total_price) is already GST-inclusive — use the stored
+      // subtotal/gst_amount directly instead of re-deriving from it, otherwise GST
+      // gets applied twice (once at booking creation, once again here).
+      const finalTotal = Number(b.display_price) || 0;
+      const subtotal = b.subtotal != null ? Number(b.subtotal) : (finalTotal > 0 ? finalTotal / 1.05 : 0);
+      const gst = b.gst_amount != null ? Number(b.gst_amount) : (finalTotal - subtotal);
 
       row("Subtotal:", `Rs. ${subtotal.toFixed(2)}`);
       row("GST (5%):", `Rs. ${gst.toFixed(2)}`);

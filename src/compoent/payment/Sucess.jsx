@@ -141,9 +141,12 @@ function Sucess() {
       y += 5;
 
       sectionTitle("Billing Information");
-      const subtotal = Number(booking.total_price) || 0;
-      const gst = subtotal * 0.05;
-      const finalTotal = subtotal + gst;
+      // booking.total_price is already GST-inclusive (saved that way at booking creation) —
+      // use the stored subtotal/gst_amount directly instead of re-deriving from total_price,
+      // otherwise GST gets applied twice.
+      const finalTotal = Number(booking.total_price) || 0;
+      const subtotal = booking.subtotal != null ? Number(booking.subtotal) : finalTotal / 1.05;
+      const gst = booking.gst_amount != null ? Number(booking.gst_amount) : finalTotal - subtotal;
 
       row("Base fare:", `₹${subtotal.toFixed(2)}`);
       row("Taxes & fees (5%):", `₹${gst.toFixed(2)}`);
@@ -219,9 +222,10 @@ function Sucess() {
         property_name: property?.property_name || property?.name || 'Property',
         check_in_date: format(new Date(booking.start_date), 'dd MMM yyyy'),
         check_out_date: format(new Date(booking.end_date), 'dd MMM yyyy'),
-        total_amount: (Number(booking.total_price || 0) * 1.05).toFixed(2),
-        subtotal: Number(booking.total_price || 0).toFixed(2),
-        gst: (Number(booking.total_price || 0) * 0.05).toFixed(2),
+        // booking.total_price is already GST-inclusive — don't re-apply 5% on top of it.
+        total_amount: Number(booking.total_price || 0).toFixed(2),
+        subtotal: (booking.subtotal != null ? Number(booking.subtotal) : Number(booking.total_price || 0) / 1.05).toFixed(2),
+        gst: (booking.gst_amount != null ? Number(booking.gst_amount) : Number(booking.total_price || 0) - Number(booking.total_price || 0) / 1.05).toFixed(2),
         booking_id: bookingId || 'N/A',
         phone_number: booking.phone_number || '',
         property_address: property?.address || '',
