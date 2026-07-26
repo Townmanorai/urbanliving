@@ -51,7 +51,7 @@ const CATEGORIES = [
     label: 'Apartments & Villas',
     tag: 'Monthly',
     tagClass: 'monthly',
-    path: '/list-pg?category=Apartments+%26+Villas',
+    path: '/list-apartment',
     subtitle: 'Apartments, villas, studio, penthouse & duplex',
     about:
       'List your apartment, villa, studio, or independent house for long-term monthly rental. This category covers all residential properties rented on a monthly basis — perfect for working professionals, families, and students looking for furnished or semi-furnished accommodation.',

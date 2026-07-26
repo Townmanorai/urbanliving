@@ -38,6 +38,30 @@ function normalizeHotelForDashboard(h) {
   };
 }
 
+// Apartments & Villas also live in their own resource (/ovika/apartments) —
+// same normalization idea as hotels above. id is prefixed with "apt-" so
+// onView/onDelete/onEdit route to the apartments endpoint.
+function normalizeApartmentForDashboard(a) {
+  const asArr = (v) => { if (Array.isArray(v)) return v; if (typeof v === "string") { try { const p = JSON.parse(v); return Array.isArray(p) ? p : []; } catch { return []; } } return []; };
+  return {
+    id: `apt-${a.id}`,
+    _apartmentId: a.id,
+    _isApartment: true,
+    owner_id: a.owner_id,
+    property_name: a.property_name,
+    city: a.city,
+    country: a.country || "India",
+    price: Number(a.price) || 0,
+    rental_type: "long",
+    property_type: a.property_type,
+    property_category: "Apartments & Villas",
+    photos: asArr(a.photos),
+    cover_photo_index: a.cover_photo_index || 0,
+    bedrooms: [{ type: "Bedroom", count: Number(a.bedrooms) || 0 }],
+    bathrooms: [{ type: "Attached", count: Number(a.bathrooms) || 0 }],
+  };
+}
+
 function KeyItem({ text, filetype = "pdf" }) {
   const isXlsx = filetype === "xlsx";
   return (
@@ -323,9 +347,10 @@ export default function DashBoardAdmin() {
     setLoading(true);
     setError(null);
     try {
-      const [propsRes, hotelsRes] = await Promise.allSettled([
+      const [propsRes, hotelsRes, apartmentsRes] = await Promise.allSettled([
         axios.get("https://www.townmanor.ai/api/ovika/properties", { timeout: 10000 }),
         axios.get(`https://www.townmanor.ai/api/ovika/hotels/owner/${resolvedOwnerId}`, { timeout: 10000 }),
+        axios.get(`https://www.townmanor.ai/api/ovika/apartments/owner/${resolvedOwnerId}`, { timeout: 10000 }),
       ]);
 
       let all = [];
@@ -342,12 +367,17 @@ export default function DashBoardAdmin() {
         hotels = hotelsRes.value.data.data.map(normalizeHotelForDashboard);
       }
 
+      let apartments = [];
+      if (apartmentsRes.status === "fulfilled" && Array.isArray(apartmentsRes.value?.data?.data)) {
+        apartments = apartmentsRes.value.data.data.map(normalizeApartmentForDashboard);
+      }
+
       const filtered = all.filter((p) => {
         if (!p || typeof p !== "object") return false;
         const candidates = [p.owner_id, p.ownerId, p.user_id, p.userId, (p.meta && (p.meta.ownerId || p.meta.owner_id)), p.owner].filter(Boolean);
         return candidates.some((c) => String(c) === String(resolvedOwnerId));
       });
-      setProperties([...filtered, ...hotels]);
+      setProperties([...filtered, ...hotels, ...apartments]);
     } catch (err) {
       console.error("DashBoardAdmin: Failed to load properties:", err);
       setError("Failed to load properties (see console).");
@@ -478,6 +508,7 @@ export default function DashBoardAdmin() {
         onView={() => navigate(`/property/${prop.id || prop._id}${isMonthly ? '?rentalType=long' : '?rentalType=short'}`)}
         onEdit={() => {
           if (prop._isHotel) { navigate(`/update-hotel/${prop._hotelId}`); return; }
+          if (prop._isApartment) { navigate(`/update-apartment/${prop._apartmentId}`); return; }
           if (isMonthly) { setEditingMonthlyProperty(prop); } else { setEditingProperty(prop); }
         }}
         onDelete={async () => {
@@ -486,7 +517,9 @@ export default function DashBoardAdmin() {
             const id = prop.id || prop._id;
             const deleteUrl = prop._isHotel
               ? `https://www.townmanor.ai/api/ovika/hotels/${prop._hotelId}`
-              : `https://www.townmanor.ai/api/ovika/properties/${id}`;
+              : prop._isApartment
+                ? `https://www.townmanor.ai/api/ovika/apartments/${prop._apartmentId}`
+                : `https://www.townmanor.ai/api/ovika/properties/${id}`;
             await axios.delete(deleteUrl);
             setProperties(prev => prev.filter(p => (p.id || p._id) !== id));
           } catch (e) { alert("Failed to delete property"); console.error(e); }

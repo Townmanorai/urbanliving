@@ -72,6 +72,35 @@ function normalizeHotel(h) {
   };
 }
 
+// Apartments & Villas also now live in their own resource (/ovika/apartments),
+// same idea as hotels above — normalize into the shared card/filter shape and
+// prefix the id with "apt-" so PropertyDetailPage can route to the right fetch.
+function normalizeApartment(a) {
+  const asArr = (v) => { if (Array.isArray(v)) return v; if (typeof v === 'string') { try { const p = JSON.parse(v); return Array.isArray(p) ? p : []; } catch { return []; } } return []; };
+  return {
+    id: `apt-${a.id}`,
+    property_name: a.property_name,
+    description: a.description,
+    address: a.address,
+    city: a.city,
+    state: a.state,
+    country: a.country || 'India',
+    latitude: a.latitude,
+    longitude: a.longitude,
+    price: Number(a.price) || 0,
+    rental_type: 'long',
+    property_type: a.property_type,
+    property_category: 'Apartments & Villas',
+    photos: asArr(a.photos),
+    cover_photo_index: a.cover_photo_index || 0,
+    bedrooms: [{ type: 'Bedroom', count: Number(a.bedrooms) || 0 }],
+    bathrooms: [{ type: 'Attached', count: Number(a.bathrooms) || 0 }],
+    area: a.carpet_area,
+    amenities: asArr(a.amenities),
+    is_active: true,
+  };
+}
+
 const CITIES = [
   'Delhi','Noida','Greater Noida','Ghaziabad','Gurugram','Faridabad',
   'Agra','Lucknow','Kanpur','Prayagraj','Varanasi','Mathura','Vrindavan',
@@ -1657,9 +1686,10 @@ const PropertyListPage = () => {
   const fetchProperties = async () => {
     try {
       setLoading(true);
-      const [propsRes, hotelsRes] = await Promise.allSettled([
+      const [propsRes, hotelsRes, apartmentsRes] = await Promise.allSettled([
         fetch(`${API_BASE_URL}/properties`),
         fetch(`${API_BASE_URL}/hotels`),
+        fetch(`${API_BASE_URL}/apartments`),
       ]);
 
       let rawProps = [];
@@ -1674,7 +1704,13 @@ const PropertyListPage = () => {
         rawHotels = (data?.data || []).map(normalizeHotel);
       }
 
-      const raw = [...rawProps, ...rawHotels];
+      let rawApartments = [];
+      if (apartmentsRes.status === 'fulfilled' && apartmentsRes.value.ok) {
+        const data = await apartmentsRes.value.json();
+        rawApartments = (data?.data || []).map(normalizeApartment);
+      }
+
+      const raw = [...rawProps, ...rawHotels, ...rawApartments];
       const seenIds = new Set();
       const list = raw.filter(p => {
         // Remove explicitly inactive properties — if field absent, treat as active

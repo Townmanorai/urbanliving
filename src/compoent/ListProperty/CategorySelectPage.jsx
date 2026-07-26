@@ -36,7 +36,7 @@ const ALL_CATS = [
     label: 'Apartments & Villas',
     sub: 'Apartments, villas, studio, penthouse & duplex',
     tag: 'Monthly',
-    path: '/list-pg?category=Apartments+%26+Villas',
+    path: '/list-apartment',
   },
   {
     id: 'pg',

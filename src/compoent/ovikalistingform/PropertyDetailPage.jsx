@@ -93,6 +93,7 @@ import { format } from 'date-fns';
 import './PropertyDetailPage.css';
 import { AuthContext } from '../Login/AuthContext';
 import HotelDetailView from './HotelDetailView';
+import ApartmentVillaDetailView from './ApartmentVillaDetailView';
 
 // ─── AMENITY ICONS MAP ────────────────────────────────────────────────────────
 const AMENITY_ICONS = {
@@ -1632,6 +1633,7 @@ const PropertyDetailPage = () => {
   
   const [property, setProperty] = useState(null);
   const [rawHotel, setRawHotel] = useState(null); // full-fidelity raw record for hotel listings (new /ovika/hotels resource)
+  const [rawApartment, setRawApartment] = useState(null); // full-fidelity raw record for apartment/villa listings (new /ovika/apartments resource)
   const [loading, setLoading] = useState(true);
   const [activeImg, setActiveImg] = useState(0);
   const [showMapModal, setShowMapModal] = useState(false);
@@ -1782,14 +1784,20 @@ const PropertyDetailPage = () => {
       const fetchProperty = async () => {
         try {
           const isHotel = String(id).startsWith('hotel-');
-          const realId = isHotel ? String(id).replace(/^hotel-/, '') : id;
+          const isApartment = String(id).startsWith('apt-');
+          const realId = isHotel ? String(id).replace(/^hotel-/, '') : isApartment ? String(id).replace(/^apt-/, '') : id;
           const response = isHotel
             ? await axios.get(`${API_BASE_URL}/hotels/${realId}`)
-            : await axios.get(`${API_BASE_URL}/properties/${realId}`);
+            : isApartment
+              ? await axios.get(`${API_BASE_URL}/apartments/${realId}`)
+              : await axios.get(`${API_BASE_URL}/properties/${realId}`);
           const data = response.data;
           const rawRecord = data?.data || data;
           if (isHotel) setRawHotel(rawRecord);
-          const transformed = transformPropertyData(isHotel ? hotelToPropertyShape(rawRecord) : rawRecord);
+          if (isApartment) setRawApartment(rawRecord);
+          const transformed = isApartment
+            ? { ...rawRecord, property_category: 'Apartments & Villas' }
+            : transformPropertyData(isHotel ? hotelToPropertyShape(rawRecord) : rawRecord);
           const coverIdx = Number(transformed.cover_photo_index);
           if (!isNaN(coverIdx) && coverIdx > 0 && Array.isArray(transformed.photos) && coverIdx < transformed.photos.length) {
             const reordered = [...transformed.photos];
@@ -2527,6 +2535,7 @@ const PropertyDetailPage = () => {
   })();
 
   if (isHotelListing) return <HotelDetailView hotel={rawHotel} />;
+  if (String(id).startsWith('apt-') && rawApartment) return <ApartmentVillaDetailView property={rawApartment} />;
 
   return (
     <div className="detail-page-wrapper">

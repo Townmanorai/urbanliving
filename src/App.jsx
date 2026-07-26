@@ -33,6 +33,7 @@ import PropertyListingForm from "./compoent/PropertyListingForm/PropertyListingF
 import Tmx9PropertyForm from "./compoent/ovikalistingform/Tmx9PropertyForm";
 import HotelListingForm from "./compoent/ovikalistingform/HotelListingForm";
 import PGListingForm from "./compoent/ovikalistingform/PGListingForm";
+import ApartmentVillaListingForm from "./compoent/ovikalistingform/ApartmentVillaListingForm";
 import PropertyListPage from "./compoent/ovikalistingform/PropertyListPage";
 import PropertyDetailPage from "./compoent/ovikalistingform/PropertyDetailPage";
 import PrivacyPolicy from "./compoent/PrivacyPolicy/PrivacyPolicy";
@@ -214,6 +215,22 @@ function App() {
             element={
               <RequireAuth>
                 <PGUpdateForm />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/list-apartment"
+            element={
+              <RequireAuth>
+                <ApartmentVillaListingForm />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/update-apartment/:id"
+            element={
+              <RequireAuth>
+                <ApartmentVillaListingForm />
               </RequireAuth>
             }
           />
