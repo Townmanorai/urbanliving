@@ -3756,10 +3756,17 @@ const PropertyDetailPage = () => {
                     <span className="pdp-sd-label">CHECK-OUT</span>
                     <span className="pdp-sd-value">{formatTime12h(property.check_out_time || property.meta?.check_out_time || '11:00') || '11:00 AM'}</span>
                   </div>
-                  <div className="pdp-stay-detail-item">
-                    <span className="pdp-sd-label">GUESTS</span>
-                    <span className="pdp-sd-value">{property.guests || property.max_guests || 2} Adults</span>
-                  </div>
+                  {isHotelStaysCategory ? (
+                    <div className="pdp-stay-detail-item">
+                      <span className="pdp-sd-label">ROOM TYPES</span>
+                      <span className="pdp-sd-value">{bedCount} Available</span>
+                    </div>
+                  ) : (
+                    <div className="pdp-stay-detail-item">
+                      <span className="pdp-sd-label">GUESTS</span>
+                      <span className="pdp-sd-value">{property.guests || property.max_guests || 2} Adults</span>
+                    </div>
+                  )}
                   <div className="pdp-stay-detail-item">
                     <span className="pdp-sd-label">CANCELLATION</span>
                     <span className="pdp-sd-value pdp-sd-green">Free</span>
@@ -3774,7 +3781,7 @@ const PropertyDetailPage = () => {
                 <span className="pdp-stay-spec-pill"><BiBath size={15}/> {bathCount} Bathroom{bathCount !== 1 ? 's' : ''}</span>
                 {property.balconies > 0 && <span className="pdp-stay-spec-pill"><FiWind size={14}/> {property.balconies} Balcony</span>}
                 {!isHotelStaysCategory && <span className="pdp-stay-spec-pill"><BiArea size={15}/> {property.area || 'N/A'} sq ft</span>}
-                {property.max_guests > 0 && !isPG && <span className="pdp-stay-spec-pill"><FiUser size={14}/> {property.max_guests} Guests</span>}
+                {property.max_guests > 0 && !isPG && !isHotelStaysCategory && <span className="pdp-stay-spec-pill"><FiUser size={14}/> {property.max_guests} Guests</span>}
                 {property.facing && <span className="pdp-stay-spec-pill"><FiCompass size={14}/> {property.facing} Facing</span>}
                 {isOvikaOwnProperty && !isNightlyOfferProperty && pricingMode !== 'monthly' && (
                   <span className="pdp-stay-spec-pill" style={{ color: '#16a34a', borderColor: '#bbf7d0', background: '#f0fdf4' }}>
