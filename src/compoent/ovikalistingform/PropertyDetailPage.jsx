@@ -3715,20 +3715,37 @@ const PropertyDetailPage = () => {
             <h3 className="pdp-stay-details-title">Stay details</h3>
             <div className={`pdp-stay-details-grid${pricingMode === 'monthly' ? ' pdp-stay-details-grid--monthly' : ''}`}>
               {pricingMode === 'monthly' ? (
-                <>
-                  <div className="pdp-stay-detail-item">
-                    <span className="pdp-sd-label">CHECK-IN TIME</span>
-                    <span className="pdp-sd-value">{formData.checkInDate ? new Date(formData.checkInDate).toLocaleDateString() : (formatTime12h(property.check_in_time) || 'Select Date')}</span>
-                  </div>
-                  <div className="pdp-stay-detail-item">
-                    <span className="pdp-sd-label">NOTICE PERIOD</span>
-                    <span className="pdp-sd-value">{(() => { const np = property.noticePeriod ?? property.meta?.noticePeriod; return (property.property_name?.toLowerCase().includes('signature') || Number(np) === 0) ? 'Nil' : `${np || 30} Days`; })()}</span>
-                  </div>
-                  <div className="pdp-stay-detail-item">
-                    <span className="pdp-sd-label">GUESTS</span>
-                    <span className="pdp-sd-value">{property.guests || property.max_guests || 2} Adults</span>
-                  </div>
-                </>
+                isPG ? (
+                  <>
+                    <div className="pdp-stay-detail-item">
+                      <span className="pdp-sd-label">PG TYPE</span>
+                      <span className="pdp-sd-value">{property.property_type || 'Co-living'}</span>
+                    </div>
+                    <div className="pdp-stay-detail-item">
+                      <span className="pdp-sd-label">ROOM TYPES</span>
+                      <span className="pdp-sd-value">{bedCount} Available</span>
+                    </div>
+                    <div className="pdp-stay-detail-item">
+                      <span className="pdp-sd-label">NOTICE PERIOD</span>
+                      <span className="pdp-sd-value">{(() => { const np = property.noticePeriod ?? property.meta?.noticePeriod; return Number(np) === 0 ? 'Nil' : `${np || 30} Days`; })()}</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="pdp-stay-detail-item">
+                      <span className="pdp-sd-label">CHECK-IN TIME</span>
+                      <span className="pdp-sd-value">{formData.checkInDate ? new Date(formData.checkInDate).toLocaleDateString() : (formatTime12h(property.check_in_time) || 'Select Date')}</span>
+                    </div>
+                    <div className="pdp-stay-detail-item">
+                      <span className="pdp-sd-label">NOTICE PERIOD</span>
+                      <span className="pdp-sd-value">{(() => { const np = property.noticePeriod ?? property.meta?.noticePeriod; return (property.property_name?.toLowerCase().includes('signature') || Number(np) === 0) ? 'Nil' : `${np || 30} Days`; })()}</span>
+                    </div>
+                    <div className="pdp-stay-detail-item">
+                      <span className="pdp-sd-label">GUESTS</span>
+                      <span className="pdp-sd-value">{property.guests || property.max_guests || 2} Adults</span>
+                    </div>
+                  </>
+                )
               ) : (
                 <>
                   <div className="pdp-stay-detail-item">
