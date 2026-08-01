@@ -688,20 +688,44 @@ export default function HomePageNew1() {
     return () => clearInterval(t);
   }, [activeCategory]);
 
-  /* ── Local NCR locality search ── */
+  /* ── Live location suggestions: real place search (Nominatim/OSM geocoder),
+     biased to the selected city, with local NCR locality list as instant fallback ── */
   useEffect(() => {
     if (nominatimTimer.current) clearTimeout(nominatimTimer.current);
     const q = searchText.trim();
     if (q.length < 2) { setLiveResults([]); return; }
-    nominatimTimer.current = setTimeout(() => {
-      const cityLocalities = NCR_LOCALITIES[selectedCity] || [];
-      const lower = q.toLowerCase();
-      const matches = cityLocalities
-        .filter(loc => loc.toLowerCase().includes(lower))
-        .slice(0, 6)
-        .map(loc => ({ label: loc, sublabel: selectedCity }));
-      setLiveResults(matches);
-    }, 120);
+
+    const cityLocalities = NCR_LOCALITIES[selectedCity] || [];
+    const lower = q.toLowerCase();
+    const localMatches = cityLocalities
+      .filter(loc => loc.toLowerCase().includes(lower))
+      .slice(0, 6)
+      .map(loc => ({ label: loc, sublabel: selectedCity }));
+    // Show instant local matches immediately while the live API call is in flight.
+    setLiveResults(localMatches);
+
+    nominatimTimer.current = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(`${q}, ${selectedCity}, India`)}&format=json&addressdetails=1&limit=6&countrycodes=in`,
+          { headers: { 'Accept-Language': 'en' } }
+        );
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          const apiMatches = data.map(item => {
+            const a = item.address || {};
+            const label = a.suburb || a.neighbourhood || a.road || item.display_name.split(',')[0];
+            const sublabel = a.city || a.town || a.county || selectedCity;
+            return { label, sublabel, lat: item.lat, lon: item.lon };
+          });
+          setLiveResults(apiMatches);
+        } else if (localMatches.length === 0) {
+          setLiveResults([]);
+        }
+      } catch (_) {
+        // Network/API failure — keep whatever local matches were already shown.
+      }
+    }, 300);
     return () => clearTimeout(nominatimTimer.current);
   }, [searchText, selectedCity]);
 
@@ -798,6 +822,13 @@ export default function HomePageNew1() {
       else if (pgType === 'Nightly') p.set('rentalType', 'short');
     }
 
+    // ── Pass Check-in/Check-out/Guests for Hotels and Homestay & BnB ──
+    if (cat?.id === 'hotels' || cat?.id === 'homestay') {
+      if (checkIn) p.set('checkIn', checkIn);
+      if (checkOut) p.set('checkOut', checkOut);
+      if (guests) p.set('guests', String(guests));
+    }
+
     navigate(`/properties?${p}`);
     setShowSuggestions(false);
   };
@@ -844,6 +875,16 @@ export default function HomePageNew1() {
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') handleSearch(null);
+  };
+
+  const selectCategory = (i) => {
+    setActiveCategory(i);
+    setSearchText('');
+    setShowSuggestions(false);
+    setPgType('');
+    setCheckIn('');
+    setCheckOut('');
+    setGuests(1);
   };
 
   // Quick-nav chips: each maps to a specific /properties URL
@@ -910,7 +951,7 @@ export default function HomePageNew1() {
           <div style={{ display:'flex', borderBottom:'1px solid #f0f0f0' }}>
             {CATEGORIES.map((c, i) => (
               <button key={c.id} className="mob-tab-btn"
-                onClick={() => { setActiveCategory(i); setSearchText(''); }}
+                onClick={() => selectCategory(i)}
                 style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:3, padding:'12px 2px 10px', border:'none', background:'#fff', borderBottom:`2.5px solid ${i===activeCategory?'#c98429':'transparent'}`, color:i===activeCategory?'#c98429':'#374151', fontSize:'10px', fontWeight:i===activeCategory?700:600, cursor:'pointer', fontFamily:"'Poppins',sans-serif", outline:'none', lineHeight:1.2 }}>
                 <span style={{ fontSize:'16px', lineHeight:1 }}>{CAT_ICONS[c.id]?.(i===activeCategory)}</span>
                 {MOB_SHORT[c.id]}
@@ -988,6 +1029,34 @@ export default function HomePageNew1() {
               </div>
             )}
 
+            {/* Hotels / Homestay & BnB: Check-in, Check-out, Guests */}
+            {(cat.id === 'hotels' || cat.id === 'homestay') && (
+              <div style={{ display:'flex', alignItems:'flex-end', gap:8, marginBottom:12 }}>
+                <label style={{ flex:1, display:'flex', flexDirection:'column', gap:2, background:'#f5f7fa', borderRadius:10, padding:'7px 10px' }}>
+                  <span style={{ fontSize:'8.5px', fontWeight:700, color:'#6b7280', letterSpacing:'0.05em' }}>CHECK-IN</span>
+                  <input type="date" value={checkIn} min={new Date().toISOString().slice(0,10)}
+                    onChange={e=>setCheckIn(e.target.value)}
+                    style={{ border:'none', outline:'none', fontSize:'12px', fontWeight:600, color:'#111827', background:'transparent', fontFamily:"'Poppins',sans-serif", width:'100%' }} />
+                </label>
+                <label style={{ flex:1, display:'flex', flexDirection:'column', gap:2, background:'#f5f7fa', borderRadius:10, padding:'7px 10px' }}>
+                  <span style={{ fontSize:'8.5px', fontWeight:700, color:'#6b7280', letterSpacing:'0.05em' }}>CHECK-OUT</span>
+                  <input type="date" value={checkOut} min={checkIn || new Date().toISOString().slice(0,10)}
+                    onChange={e=>setCheckOut(e.target.value)}
+                    style={{ border:'none', outline:'none', fontSize:'12px', fontWeight:600, color:'#111827', background:'transparent', fontFamily:"'Poppins',sans-serif", width:'100%' }} />
+                </label>
+                <div style={{ display:'flex', flexDirection:'column', gap:2, background:'#f5f7fa', borderRadius:10, padding:'7px 10px' }}>
+                  <span style={{ fontSize:'8.5px', fontWeight:700, color:'#6b7280', letterSpacing:'0.05em' }}>GUESTS</span>
+                  <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                    <button type="button" onClick={() => setGuests(g => Math.max(1, g - 1))}
+                      style={{ width:18, height:18, borderRadius:5, border:'1px solid #d1d5db', background:'#fff', color:'#374151', fontSize:12, fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', lineHeight:1, padding:0 }}>−</button>
+                    <span style={{ fontSize:'12px', fontWeight:600, color:'#111827' }}>{guests}</span>
+                    <button type="button" onClick={() => setGuests(g => Math.min(20, g + 1))}
+                      style={{ width:18, height:18, borderRadius:5, border:'1px solid #d1d5db', background:'#fff', color:'#374151', fontSize:12, fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', lineHeight:1, padding:0 }}>+</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Search button */}
             <button onClick={() => handleSearch(cat.rentalType)}
               style={{ width:'100%', padding:'14px', borderRadius:12, background:'#22c55e', border:'none', color:'#fff', fontSize:'15px', fontWeight:700, cursor:'pointer', fontFamily:"'Poppins',sans-serif", display:'flex', alignItems:'center', justifyContent:'center', gap:8, boxShadow:'0 4px 16px rgba(34,197,94,0.35)', letterSpacing:0.2 }}>
@@ -1048,7 +1117,7 @@ export default function HomePageNew1() {
             {/* Category tabs */}
             <div style={{ display:'flex', borderBottom:'1px solid #f0f0f0', background:'#fff' }}>
               {CATEGORIES.map((c,i) => (
-                <button key={c.id} onClick={() => { setActiveCategory(i); setSearchText(''); }}
+                <button key={c.id} onClick={() => selectCategory(i)}
                   style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:2, padding:'10px 2px 8px', border:'none', background:'#fff', borderBottom:`2.5px solid ${i===activeCategory?'#c98429':'transparent'}`, color:i===activeCategory?'#c98429':'#9ca3af', fontSize:'9.5px', fontWeight:i===activeCategory?700:500, cursor:'pointer', fontFamily:"'Poppins',sans-serif", outline:'none' }}>
                   <span style={{ fontSize:'15px' }}>{CAT_ICONS[c.id]?.(i===activeCategory)}</span>
                   {MOB_SHORT[c.id]}
@@ -1242,7 +1311,7 @@ export default function HomePageNew1() {
           {/* Tabs */}
           <div style={{ display:'flex', gap:6, overflowX:'auto', scrollbarWidth:'none', marginBottom:24, paddingBottom:2 }}>
             {CATEGORIES.map((c, i) => (
-              <button key={c.id} onClick={() => { setActiveCategory(i); setSearchText(''); }}
+              <button key={c.id} onClick={() => selectCategory(i)}
                 style={{ display:'flex', alignItems:'center', gap:5, padding:'7px 14px', borderRadius:100, border:`1.5px solid ${i===activeCategory?'#fff':'rgba(255,255,255,0.22)'}`, background:i===activeCategory?'#fff':'rgba(255,255,255,0.08)', color:i===activeCategory?'#2a0f05':'rgba(255,255,255,0.78)', fontSize:'12px', fontWeight:i===activeCategory?600:500, cursor:'pointer', whiteSpace:'nowrap', flexShrink:0, fontFamily:"'Poppins',sans-serif", outline:'none' }}>
                 {CAT_ICONS[c.id]?.(i === activeCategory)}<span>{c.label}</span>
               </button>
@@ -1318,7 +1387,7 @@ export default function HomePageNew1() {
           <div style={{ display:'flex', background:'#1a2332', borderRadius:'16px 16px 0 0', overflow:'hidden' }}>
             {CATEGORIES.map((c, i) => (
               <button key={c.id}
-                onClick={() => { setActiveCategory(i); setSearchText(''); setShowSuggestions(false); setPgType(''); }}
+                onClick={() => selectCategory(i)}
                 style={{
                   flex:1, display:'flex', alignItems:'center', justifyContent:'center', gap:6,
                   padding:'13px 6px',
@@ -1404,13 +1473,44 @@ export default function HomePageNew1() {
                 <div style={{ display:'flex', alignItems:'center', gap:10, flexShrink:0 }}>
                   {['Nightly', 'Long Stay'].map(opt => (
                     <label key={opt} style={{ display:'flex', alignItems:'center', gap:5, cursor:'pointer', userSelect:'none' }}>
-                      <span style={{ width:15, height:15, borderRadius:'50%', border:`2px solid ${checkIn===opt?'#7c3aed':'#d1d5db'}`, background:checkIn===opt?'#7c3aed':'#fff', display:'inline-block', flexShrink:0, position:'relative', transition:'all 0.15s', boxShadow:checkIn===opt?'0 0 0 3px rgba(124,58,237,0.15)':'none' }}
-                        onClick={()=>setCheckIn(v=>v===opt?'':opt)}>
-                        {checkIn===opt && <span style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:5, height:5, borderRadius:'50%', background:'#fff', display:'block' }}/>}
+                      <span style={{ width:15, height:15, borderRadius:'50%', border:`2px solid ${pgType===opt?'#7c3aed':'#d1d5db'}`, background:pgType===opt?'#7c3aed':'#fff', display:'inline-block', flexShrink:0, position:'relative', transition:'all 0.15s', boxShadow:pgType===opt?'0 0 0 3px rgba(124,58,237,0.15)':'none' }}
+                        onClick={()=>setPgType(v=>v===opt?'':opt)}>
+                        {pgType===opt && <span style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:5, height:5, borderRadius:'50%', background:'#fff', display:'block' }}/>}
                       </span>
                       <span style={{ fontSize:13, fontWeight:500, color:'#374151', whiteSpace:'nowrap' }}>{opt}</span>
                     </label>
                   ))}
+                </div>
+              </>
+            )}
+
+            {/* Hotels / Homestay & BnB: Check-in, Check-out, Guests */}
+            {(cat.id === 'hotels' || cat.id === 'homestay') && (
+              <>
+                <div style={{ width:1, height:28, background:'#e5e7eb', flexShrink:0, margin:'0 14px' }} />
+                <div style={{ display:'flex', alignItems:'center', gap:14, flexShrink:0 }}>
+                  <label style={{ display:'flex', flexDirection:'column', gap:1, cursor:'pointer' }}>
+                    <span style={{ fontSize:9, fontWeight:700, color:'#9ca3af', letterSpacing:'0.05em' }}>CHECK-IN</span>
+                    <input type="date" value={checkIn} min={new Date().toISOString().slice(0,10)}
+                      onChange={e=>setCheckIn(e.target.value)}
+                      style={{ border:'none', outline:'none', fontSize:12.5, fontWeight:600, color:'#1e293b', fontFamily:"'Poppins',sans-serif", background:'transparent', cursor:'pointer', width:104 }} />
+                  </label>
+                  <label style={{ display:'flex', flexDirection:'column', gap:1, cursor:'pointer' }}>
+                    <span style={{ fontSize:9, fontWeight:700, color:'#9ca3af', letterSpacing:'0.05em' }}>CHECK-OUT</span>
+                    <input type="date" value={checkOut} min={checkIn || new Date().toISOString().slice(0,10)}
+                      onChange={e=>setCheckOut(e.target.value)}
+                      style={{ border:'none', outline:'none', fontSize:12.5, fontWeight:600, color:'#1e293b', fontFamily:"'Poppins',sans-serif", background:'transparent', cursor:'pointer', width:104 }} />
+                  </label>
+                  <div style={{ display:'flex', flexDirection:'column', gap:1 }}>
+                    <span style={{ fontSize:9, fontWeight:700, color:'#9ca3af', letterSpacing:'0.05em' }}>GUESTS</span>
+                    <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                      <button type="button" onClick={()=>setGuests(g=>Math.max(1,g-1))}
+                        style={{ width:18, height:18, borderRadius:5, border:'1px solid #d1d5db', background:'#f9fafb', color:'#374151', fontSize:12, fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', lineHeight:1, padding:0 }}>−</button>
+                      <span style={{ fontSize:12.5, fontWeight:600, color:'#1e293b', minWidth:12, textAlign:'center' }}>{guests}</span>
+                      <button type="button" onClick={()=>setGuests(g=>Math.min(20,g+1))}
+                        style={{ width:18, height:18, borderRadius:5, border:'1px solid #d1d5db', background:'#f9fafb', color:'#374151', fontSize:12, fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', lineHeight:1, padding:0 }}>+</button>
+                    </div>
+                  </div>
                 </div>
               </>
             )}

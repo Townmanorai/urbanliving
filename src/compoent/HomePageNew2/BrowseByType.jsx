@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, Building2, Home, Hotel, LayoutGrid, TreePine, ArrowRight } from 'lucide-react';
+import { FiStar } from 'react-icons/fi';
+import { Building2, Home, Building, Users, ArrowRight } from 'lucide-react';
 import { navClick } from '../../utils/navClick';
 
 const API_BASE = 'https://www.townmanor.ai/api/ovika';
@@ -9,34 +10,29 @@ function low(s) { return (s || '').toLowerCase(); }
 
 const TYPES = [
   {
-    key: 'pg', label: 'PG & Co-Living', unit: '/month', icon: Users, floor: 1500,
-    match: p => low(p.property_category).includes('pg') || low(p.property_category).includes('co-living'),
-    categoryParam: 'PG & Co-Living',
+    key: 'signature', label: 'Signature Stays', unit: '/night', icon: FiStar, floor: 1000,
+    match: p => low(p.property_category).includes('signature'),
+    categoryParam: 'Signature Stays',
   },
   {
-    key: 'apartments', label: 'Apartments', unit: '/month', icon: Building2, floor: 1500,
-    match: p => low(p.property_category) === 'apartment' || low(p.property_category) === 'flat' || low(p.property_type).includes('apartment'),
-    categoryParam: 'Apartments & Villas',
-  },
-  {
-    key: 'villas', label: 'Villas', unit: '/night', icon: Home, floor: 1000,
-    match: p => low(p.property_category) === 'villa' || low(p.property_type).includes('villa'),
-    categoryParam: 'Apartments & Villas',
-  },
-  {
-    key: 'hotels', label: 'Hotels', unit: '/night', icon: Hotel, floor: 500,
+    key: 'hotel', label: 'Hotel Stays', unit: '/night', icon: Building2, floor: 500,
     match: p => low(p.property_category).includes('hotel'),
     categoryParam: 'Hotel Stays',
   },
   {
-    key: 'studio', label: 'Studio Apartments', unit: '/month', icon: LayoutGrid, floor: 1500,
-    match: p => low(p.property_category) === 'studio' || low(p.property_type).includes('studio'),
+    key: 'homestay', label: 'Homestays & BnB', unit: '/night', icon: Home, floor: 500,
+    match: p => low(p.property_category).includes('homestay') || low(p.property_category).includes('bnb'),
+    categoryParam: 'Homestays & BnB',
+  },
+  {
+    key: 'apartments', label: 'Apartments & Villas', unit: '/month', icon: Building, floor: 1500,
+    match: p => low(p.property_category).includes('apartment') || low(p.property_category).includes('villa'),
     categoryParam: 'Apartments & Villas',
   },
   {
-    key: 'homestays', label: 'Homestays', unit: '/night', icon: TreePine, floor: 500,
-    match: p => low(p.property_category).includes('homestay') || low(p.property_category).includes('bnb'),
-    categoryParam: 'Homestays & BnB',
+    key: 'pg', label: 'PG & Co-Living', unit: '/month', icon: Users, floor: 1500,
+    match: p => low(p.property_category).includes('pg') || low(p.property_category).includes('co-living'),
+    categoryParam: 'PG & Co-Living',
   },
 ];
 
@@ -89,7 +85,7 @@ const css = `
 .bbt-viewall:hover { background: #c2772b; color: #fff; }
 .bbt-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 16px;
 }
 .bbt-card {

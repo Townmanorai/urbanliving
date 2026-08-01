@@ -1971,11 +1971,12 @@ const PropertyListPage = () => {
     }
 
     const cId = params.get('category');
+    let matchedCat = null;
     if (cId) {
-      const match = CATEGORIES.find(c =>
+      matchedCat = CATEGORIES.find(c =>
         c.id.toLowerCase() === cId.toLowerCase() || c.title.toLowerCase() === cId.toLowerCase()
       );
-      if (match) setActiveCat(match);
+      if (matchedCat) setActiveCat(matchedCat);
     }
 
     // Locked route overrides everything
@@ -1984,10 +1985,29 @@ const PropertyListPage = () => {
       sessionStorage.setItem('ovika_rental_type', lockedRental);
     } else {
       const rType = params.get('rentalType');
-      if (rType) { setRentalType(rType); sessionStorage.setItem('ovika_rental_type', rType); }
-      else {
-        const stored = sessionStorage.getItem('ovika_rental_type');
-        if (stored) setRentalType(stored);
+      if (rType) {
+        setRentalType(rType);
+        sessionStorage.setItem('ovika_rental_type', rType);
+      } else {
+        // Categories with a fixed rental type (PG/Apartments = monthly, Hotel/Homestay =
+        // nightly) must always search as that type when landing on them via a category
+        // link, so the search bar's fields (Check-in/Check-out/Guests vs. Monthly) match
+        // the category — even if sessionStorage still holds a rental type left over from
+        // a previously browsed category.
+        const FIXED_RENTAL_TYPE = {
+          'PG & Co-Living': 'long',
+          'Apartments & Villas': 'long',
+          'Hotel Stays': 'short',
+          'Homestays & BnB': 'short',
+        };
+        const forced = matchedCat && FIXED_RENTAL_TYPE[matchedCat.id];
+        if (forced) {
+          setRentalType(forced);
+          sessionStorage.setItem('ovika_rental_type', forced);
+        } else {
+          const stored = sessionStorage.getItem('ovika_rental_type');
+          if (stored) setRentalType(stored);
+        }
       }
     }
 
