@@ -8,6 +8,34 @@ const API_BASE_URL = 'https://www.townmanor.ai/api/ovika';
 const SHORT_TERM_TYPES = ['entire place', 'private room', 'shared room', 'hotel room', 'homestay'];
 const isLongTermProperty = (p) => !SHORT_TERM_TYPES.includes((p.property_type || '').toLowerCase());
 
+// Same Google-Maps-compatible provider (MapThrust) already used for the interactive
+// maps on Hotel/Apartment detail pages, loaded here with the Places library so the
+// search bar can get real live location suggestions as the user types. A plain
+// browser fetch() to a public geocoder (e.g. Nominatim) doesn't work here because
+// that API doesn't send CORS headers, so it's silently blocked by the browser —
+// loading the provider as a <script> and calling its JS SDK avoids that entirely.
+const MAPTHRUST_API_KEY = 'AlzaSyMPwhjsTA8V3WjSO0SMbMsxq98NZIMXGAK';
+function useMapThrustPlaces() {
+  const [isLoaded, setIsLoaded] = useState(() => !!(window.google && window.google.maps && window.google.maps.places));
+  useEffect(() => {
+    if (window.google && window.google.maps && window.google.maps.places) { setIsLoaded(true); return; }
+    const markLoaded = () => {
+      const t = setInterval(() => {
+        if (window.google && window.google.maps && window.google.maps.places) { setIsLoaded(true); clearInterval(t); }
+      }, 150);
+      setTimeout(() => clearInterval(t), 10000);
+    };
+    if (document.getElementById('mapthrust-places-script')) { markLoaded(); return; }
+    const s = document.createElement('script');
+    s.id = 'mapthrust-places-script';
+    s.src = `https://maps.mapthrust.io/maps/api/js?key=${MAPTHRUST_API_KEY}&libraries=places`;
+    s.async = true;
+    s.onload = markLoaded;
+    document.head.appendChild(s);
+  }, []);
+  return isLoaded;
+}
+
 
 
 function fmt(n) {
@@ -608,6 +636,8 @@ const CATEGORIES = [
 
 export default function HomePageNew1() {
   const navigate = useNavigate();
+  const placesLoaded = useMapThrustPlaces();
+  const autocompleteServiceRef = useRef(null);
   const [searchText, setSearchText] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [bp, setBp] = useState(getBreakpoint());
@@ -688,8 +718,9 @@ export default function HomePageNew1() {
     return () => clearInterval(t);
   }, [activeCategory]);
 
-  /* ── Live location suggestions: real place search (Nominatim/OSM geocoder),
-     biased to the selected city, with local NCR locality list as instant fallback ── */
+  /* ── Live location suggestions: MapThrust (Google-Maps-compatible) Places Autocomplete,
+     biased to the selected city, with the local NCR locality list as an instant fallback
+     while it loads/if it has no match ── */
   useEffect(() => {
     if (nominatimTimer.current) clearTimeout(nominatimTimer.current);
     const q = searchText.trim();
@@ -704,30 +735,34 @@ export default function HomePageNew1() {
     // Show instant local matches immediately while the live API call is in flight.
     setLiveResults(localMatches);
 
-    nominatimTimer.current = setTimeout(async () => {
-      try {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(`${q}, ${selectedCity}, India`)}&format=json&addressdetails=1&limit=6&countrycodes=in`,
-          { headers: { 'Accept-Language': 'en' } }
-        );
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
-          const apiMatches = data.map(item => {
-            const a = item.address || {};
-            const label = a.suburb || a.neighbourhood || a.road || item.display_name.split(',')[0];
-            const sublabel = a.city || a.town || a.county || selectedCity;
-            return { label, sublabel, lat: item.lat, lon: item.lon };
-          });
-          setLiveResults(apiMatches);
-        } else if (localMatches.length === 0) {
-          setLiveResults([]);
-        }
-      } catch (_) {
-        // Network/API failure — keep whatever local matches were already shown.
+    if (!placesLoaded || !window.google?.maps?.places) return;
+
+    nominatimTimer.current = setTimeout(() => {
+      if (!autocompleteServiceRef.current) {
+        autocompleteServiceRef.current = new window.google.maps.places.AutocompleteService();
       }
-    }, 300);
+      autocompleteServiceRef.current.getPlacePredictions(
+        {
+          input: `${q}, ${selectedCity}`,
+          componentRestrictions: { country: 'in' },
+          types: ['geocode'],
+        },
+        (predictions, status) => {
+          if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions?.length) {
+            const apiMatches = predictions.map(p => ({
+              label: p.structured_formatting?.main_text || p.description,
+              sublabel: p.structured_formatting?.secondary_text || selectedCity,
+              placeId: p.place_id,
+            }));
+            setLiveResults(apiMatches);
+          } else if (localMatches.length === 0) {
+            setLiveResults([]);
+          }
+        }
+      );
+    }, 250);
     return () => clearTimeout(nominatimTimer.current);
-  }, [searchText, selectedCity]);
+  }, [searchText, selectedCity, placesLoaded]);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/properties`)
