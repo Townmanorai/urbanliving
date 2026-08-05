@@ -1559,6 +1559,24 @@ const Calendar = ({ selectedDates, onDateSelect, minDate = new Date(), disabledD
   );
 };
 
+// ─── External lead CRM forwarding (Supabase ingest-lead function) ─────────────
+const LEAD_INGEST_URL = 'https://ltxrufpovgsapunjdmwp.supabase.co/functions/v1/ingest-lead';
+const LEAD_INGEST_TENANT_TOKEN = '392af738ee89f213764df32b1d1bdbe5ef5bd1ca511cd5f3';
+
+function forwardLeadToIngestEndpoint({ name, phone, email, source }) {
+  if (!phone && !email) return; // endpoint requires at least one of phone/email
+  fetch(LEAD_INGEST_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-tenant-token': LEAD_INGEST_TENANT_TOKEN,
+    },
+    body: JSON.stringify({ name, phone, email, source }),
+  }).catch(() => {
+    // Non-blocking: this is a secondary CRM feed, never surface its failures to the user.
+  });
+}
+
 // ─── LEAD MODAL ───────────────────────────────────────────────────────────────
 const LeadGenerationModal = ({ isOpen, onClose, propertyName, propertyId, user, roomType }) => {
   const [loading, setLoading] = useState(false);
@@ -1593,6 +1611,16 @@ const LeadGenerationModal = ({ isOpen, onClose, propertyName, propertyId, user, 
     } catch (error) {
       alert('Failed to submit request.');
     } finally {
+      // Fire-and-forget: also forward this lead to the external CRM ingest endpoint.
+      // Kept separate from the try/catch above so a failure here never blocks the
+      // user-facing success/failure flow of the primary internal lead API.
+      const digits = (form.phone || '').replace(/\D/g, '').slice(-10);
+      forwardLeadToIngestEndpoint({
+        name: form.name,
+        phone: digits ? `+91${digits}` : undefined,
+        email: form.email || undefined,
+        source: 'website_direct',
+      });
       setLoading(false);
     }
   };
