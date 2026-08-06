@@ -87,8 +87,9 @@ const Home3 = () => {
     if (tab === "renters") {
       navigate("/properties");
     } else {
-      // Trigger the Listing Category popup in Navbar.jsx via custom event
-      window.dispatchEvent(new CustomEvent("openRentalCategoryPopup"));
+      // Same behaviour as "List Your Property" in the navbar — go straight to
+      // the category picker page, no popup.
+      navigate("/list-category");
     }
   };
 

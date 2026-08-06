@@ -13,6 +13,7 @@ const TYPES = [
     key: 'signature', label: 'Signature Stays', unit: '/night', icon: FiStar, floor: 1000,
     match: p => low(p.property_category).includes('signature'),
     categoryParam: 'Signature Stays',
+    fixedPrice: 2499,
   },
   {
     key: 'hotel', label: 'Hotel Stays', unit: '/night', icon: Building2, floor: 500,
@@ -170,6 +171,7 @@ export default function BrowseByType() {
         const props = Array.isArray(data) ? data : (data.data || data.properties || []);
         const result = {};
         TYPES.forEach(t => {
+          if (t.fixedPrice) { result[t.key] = t.fixedPrice; return; }
           const inType = props.filter(t.match);
           const vals = inType
             .map(p => Number(p.price) || Number(p.base_rate) || 0)

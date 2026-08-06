@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const styles = {
   root: {
@@ -312,6 +313,7 @@ const styles = {
 };
 
 export default function OvikaLiving() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({ name: "", phone_number: "", message: "" });
   const [submitStatus, setSubmitStatus] = useState("");
   const [showPartnerModal, setShowPartnerModal] = useState(false);
@@ -473,7 +475,7 @@ export default function OvikaLiving() {
           </p>
           <div style={styles.heroBtns} className="rs-hero-btns">
             <button style={styles.btnPrimary}>Get Early Access</button>
-            <button style={styles.btnOutline} onClick={() => window.dispatchEvent(new Event("openRentalCategoryPopup"))}>List Your Property</button>
+            <button style={styles.btnOutline} onClick={() => navigate("/list-category")}>List Your Property</button>
           </div>
         </div>
         <div style={styles.heroImageWrap} className="rs-hero-img-wrap">
