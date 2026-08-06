@@ -28,6 +28,7 @@ const Icons = {
   Settings: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>,
   Leads: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></svg>,
   MetaLeads: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>,
+  LandingLeads: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"></rect><path d="M3 8h18"></path><path d="M7 14h3"></path></svg>,
   Reviews: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
 };
 
@@ -191,6 +192,21 @@ export default function SuperAdminDashboard() {
   const META_LEADS_LIMIT = 20;
   const META_LEADS_API = "https://townmanor.ai/api/meta-leads";
 
+  // Landing Page Leads State (ads landing page — /get-started — lead form)
+  const [landingLeads, setLandingLeads] = useState([]);
+  const [landingLeadsLoading, setLandingLeadsLoading] = useState(false);
+  const [landingLeadPage, setLandingLeadPage] = useState(1);
+  const [landingLeadSearch, setLandingLeadSearch] = useState("");
+  const [landingLeadCityFilter, setLandingLeadCityFilter] = useState("ALL");
+  const [landingLeadCategoryFilter, setLandingLeadCategoryFilter] = useState("ALL");
+  const [landingLeadsTotal, setLandingLeadsTotal] = useState(0);
+  const [landingLeadLastRefresh, setLandingLeadLastRefresh] = useState(null);
+  const [landingLeadDeletingId, setLandingLeadDeletingId] = useState(null);
+  const LANDING_LEADS_LIMIT = 20;
+  const LANDING_LEADS_API = "https://www.townmanor.ai/api/ovika/landing-leads";
+  const LANDING_LEAD_CITIES = ['Noida', 'Greater Noida', 'Gurugram', 'Delhi', 'Ghaziabad'];
+  const LANDING_LEAD_CATEGORIES = ['Signature Stays', 'Hotel Stays', 'Homestays & BnB', 'Apartments & Villas', 'PG & Co-Living'];
+
   // Reviews State
   const [reviewsList, setReviewsList] = useState([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
@@ -348,6 +364,61 @@ export default function SuperAdminDashboard() {
     const interval = setInterval(() => {
         fetchMetaLeads(metaLeadPage, metaLeadSearch, metaLeadStatusFilter);
         fetchMetaLeadsStats();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [view]);
+
+  // Landing Page Leads — fetch (GET /ovika/landing-leads, per backend spec: page/limit/city/category filters)
+  const fetchLandingLeads = async (page = landingLeadPage, search = landingLeadSearch, city = landingLeadCityFilter, category = landingLeadCategoryFilter) => {
+    setLandingLeadsLoading(true);
+    try {
+        const params = { page, limit: LANDING_LEADS_LIMIT };
+        if (search) params.search = search;
+        if (city !== 'ALL') params.city = city;
+        if (category !== 'ALL') params.category = category;
+        const res = await axios.get(LANDING_LEADS_API, { params, validateStatus: false });
+        if (res.data && res.data.success !== false) {
+            setLandingLeads(res.data.data || []);
+            setLandingLeadsTotal(res.data.pagination?.total ?? res.data.total ?? (res.data.data || []).length);
+        } else {
+            setLandingLeads([]);
+            setLandingLeadsTotal(0);
+        }
+        setLandingLeadLastRefresh(new Date());
+    } catch (e) {
+        console.error("Fetch landing page leads failed", e);
+        setLandingLeads([]);
+    } finally {
+        setLandingLeadsLoading(false);
+    }
+  };
+
+  const deleteLandingLead = async (leadId) => {
+    if (!window.confirm('Delete this lead permanently?')) return;
+    setLandingLeadDeletingId(leadId);
+    try {
+        await axios.delete(`${LANDING_LEADS_API}/${leadId}`);
+        fetchLandingLeads(landingLeadPage, landingLeadSearch, landingLeadCityFilter, landingLeadCategoryFilter);
+    } catch (e) {
+        console.error("Delete landing lead failed", e);
+        alert('Failed to delete lead. Please try again.');
+    } finally {
+        setLandingLeadDeletingId(null);
+    }
+  };
+
+  // Fetch when page/search/filters change
+  useEffect(() => {
+    if (view !== 'landing-leads') return;
+    fetchLandingLeads(landingLeadPage, landingLeadSearch, landingLeadCityFilter, landingLeadCategoryFilter);
+  }, [landingLeadPage, landingLeadSearch, landingLeadCityFilter, landingLeadCategoryFilter]);
+
+  // Auto-refresh every 30s while this view is active
+  useEffect(() => {
+    if (view !== 'landing-leads') return;
+    fetchLandingLeads(1, '', 'ALL', 'ALL');
+    const interval = setInterval(() => {
+        fetchLandingLeads(landingLeadPage, landingLeadSearch, landingLeadCityFilter, landingLeadCategoryFilter);
     }, 30000);
     return () => clearInterval(interval);
   }, [view]);
@@ -1180,6 +1251,9 @@ export default function SuperAdminDashboard() {
                 <button className={view === 'meta-leads' ? 'active' : ''} onClick={() => setView('meta-leads')} style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '4px', paddingTop: '12px' }}>
                     <span className="sa-nav-icon"><Icons.MetaLeads /></span> Meta Leads
                 </button>
+                <button className={view === 'landing-leads' ? 'active' : ''} onClick={() => setView('landing-leads')}>
+                    <span className="sa-nav-icon"><Icons.LandingLeads /></span> Landing Page Leads
+                </button>
                 <button className={view === 'reviews' ? 'active' : ''} onClick={() => setView('reviews')}>
                     <span className="sa-nav-icon"><Icons.Reviews /></span> Review Feedback
                 </button>
@@ -1220,6 +1294,7 @@ export default function SuperAdminDashboard() {
                 {view === 'leads' && 'Lead Generation Management'}
                 {view === 'settings' && 'Platform Settings'}
                 {view === 'meta-leads' && 'Meta Ads Leads (Real-Time)'}
+                {view === 'landing-leads' && 'Landing Page Leads (/get-started)'}
                 {view === 'reviews' && 'Review Feedback Management'}
                 {view === 'verification' && 'Verification Badge Management'}
                 {view === 'self-verification' && 'Self Verification Submissions'}
@@ -2510,6 +2585,144 @@ export default function SuperAdminDashboard() {
                                         disabled={metaLeadPage >= totalPages}
                                         onClick={() => setMetaLeadPage(p => p + 1)}
                                         style={{ backgroundColor: metaLeadPage >= totalPages ? '#e2e8f0' : '#6366f1', color: metaLeadPage >= totalPages ? '#94a3b8' : '#fff', cursor: metaLeadPage >= totalPages ? 'not-allowed' : 'pointer' }}
+                                    >Next</button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+                );
+            })()}
+
+            {/* VIEW: LANDING PAGE LEADS — from the ads landing page (/get-started) lead form only */}
+            {view === 'landing-leads' && (() => {
+                const totalPages = Math.ceil(landingLeadsTotal / LANDING_LEADS_LIMIT);
+                return (
+                <div>
+                    <div className="sa-table-container">
+                        <div className="sa-table-header-row">
+                            <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                Landing Page Leads
+                                <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 400 }}>Total: {landingLeadsTotal}</span>
+                                {landingLeadsLoading && <span style={{ fontSize: '12px', color: '#6366f1', fontWeight: 400 }}>Refreshing...</span>}
+                                {landingLeadLastRefresh && !landingLeadsLoading && (
+                                    <span style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 400 }}>
+                                        Last updated: {landingLeadLastRefresh.toLocaleTimeString()}
+                                    </span>
+                                )}
+                            </h3>
+                            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                <select
+                                    className="sa-search-input"
+                                    style={{ width: '150px' }}
+                                    value={landingLeadCityFilter}
+                                    onChange={(e) => { setLandingLeadCityFilter(e.target.value); setLandingLeadPage(1); }}
+                                >
+                                    <option value="ALL">All Cities</option>
+                                    {LANDING_LEAD_CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+                                </select>
+                                <select
+                                    className="sa-search-input"
+                                    style={{ width: '180px' }}
+                                    value={landingLeadCategoryFilter}
+                                    onChange={(e) => { setLandingLeadCategoryFilter(e.target.value); setLandingLeadPage(1); }}
+                                >
+                                    <option value="ALL">All Categories</option>
+                                    {LANDING_LEAD_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                                </select>
+                                <input
+                                    type="text"
+                                    placeholder="Search name or phone..."
+                                    className="sa-search-input"
+                                    value={landingLeadSearch}
+                                    onChange={(e) => { setLandingLeadSearch(e.target.value); setLandingLeadPage(1); }}
+                                />
+                                <button className="sa-btn-primary" onClick={() => fetchLandingLeads(landingLeadPage, landingLeadSearch, landingLeadCityFilter, landingLeadCategoryFilter)} disabled={landingLeadsLoading}>
+                                    {landingLeadsLoading ? 'Loading...' : '↻ Refresh'}
+                                </button>
+                            </div>
+                        </div>
+
+                        {landingLeads.length === 0 && !landingLeadsLoading ? (
+                            <div style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
+                                <div style={{ fontSize: '48px', marginBottom: '16px' }}>📋</div>
+                                <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>No Landing Page Leads Yet</div>
+                                <div style={{ fontSize: '13px', color: '#94a3b8' }}>
+                                    Leads submitted from the /get-started ads landing page will appear here.
+                                </div>
+                            </div>
+                        ) : (
+                            <table className="sa-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Name</th>
+                                        <th>Phone</th>
+                                        <th>Email</th>
+                                        <th>Category</th>
+                                        <th>City</th>
+                                        <th>Timeframe</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {landingLeads.map((lead, idx) => (
+                                        <tr key={lead.id || lead._id || idx}>
+                                            <td style={{ whiteSpace: 'nowrap', fontSize: '11px', color: '#64748b' }}>
+                                                {lead.created_at ? new Date(lead.created_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
+                                            </td>
+                                            <td style={{ fontWeight: '600', whiteSpace: 'nowrap' }}>{lead.name || '—'}</td>
+                                            <td>
+                                                <a href={`tel:${lead.phone}`} style={{ fontFamily: 'monospace', fontSize: '13px', color: '#0f172a', textDecoration: 'none' }}>
+                                                    {lead.phone || '—'}
+                                                </a>
+                                            </td>
+                                            <td style={{ fontSize: '12px', maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={lead.email}>
+                                                {lead.email ? <a href={`mailto:${lead.email}`} style={{ color: '#6366f1', textDecoration: 'none' }}>{lead.email}</a> : '—'}
+                                            </td>
+                                            <td>
+                                                {lead.category
+                                                    ? <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: '11px', fontWeight: 600, background: '#f0fdf4', color: '#166534', border: '1px solid #dcfce7' }}>{lead.category}</span>
+                                                    : '—'}
+                                            </td>
+                                            <td>{lead.city || '—'}</td>
+                                            <td style={{ fontSize: '12px', color: '#374151' }}>{lead.timeframe || '—'}</td>
+                                            <td>
+                                                <button
+                                                    onClick={() => deleteLandingLead(lead.id || lead._id)}
+                                                    disabled={landingLeadDeletingId === (lead.id || lead._id)}
+                                                    style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid #fecaca', background: '#fef2f2', color: '#dc2626', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+                                                >
+                                                    {landingLeadDeletingId === (lead.id || lead._id) ? 'Deleting...' : 'Delete'}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+
+                        {/* Pagination */}
+                        {landingLeadsTotal > LANDING_LEADS_LIMIT && (
+                            <div style={{ padding: '20px', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ fontSize: '13px', color: '#64748b' }}>
+                                    Showing {((landingLeadPage - 1) * LANDING_LEADS_LIMIT) + 1}–{Math.min(landingLeadPage * LANDING_LEADS_LIMIT, landingLeadsTotal)} of {landingLeadsTotal} leads
+                                </div>
+                                <div style={{ display: 'flex', gap: '10px' }}>
+                                    <button
+                                        className="sa-btn-primary"
+                                        disabled={landingLeadPage === 1}
+                                        onClick={() => setLandingLeadPage(p => p - 1)}
+                                        style={{ backgroundColor: landingLeadPage === 1 ? '#e2e8f0' : '#6366f1', color: landingLeadPage === 1 ? '#94a3b8' : '#fff', cursor: landingLeadPage === 1 ? 'not-allowed' : 'pointer' }}
+                                    >Previous</button>
+                                    <span style={{ padding: '6px 14px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '6px', fontSize: '13px', fontWeight: '600' }}>
+                                        {landingLeadPage} / {totalPages}
+                                    </span>
+                                    <button
+                                        className="sa-btn-primary"
+                                        disabled={landingLeadPage >= totalPages}
+                                        onClick={() => setLandingLeadPage(p => p + 1)}
+                                        style={{ backgroundColor: landingLeadPage >= totalPages ? '#e2e8f0' : '#6366f1', color: landingLeadPage >= totalPages ? '#94a3b8' : '#fff', cursor: landingLeadPage >= totalPages ? 'not-allowed' : 'pointer' }}
                                     >Next</button>
                                 </div>
                             </div>
