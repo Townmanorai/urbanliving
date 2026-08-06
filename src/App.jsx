@@ -65,6 +65,7 @@ import OwnerLeads from "./compoent/AdminDashBoard/Leads/OwnerLeads";
 import LeadInvoices from "./compoent/AdminDashBoard/Leads/LeadInvoices";
 import LeadsSuccess from "./compoent/SubsriptionNew/LeadsSuccess";
 import MobileBottomNav from "./compoent/MobileBottomNav/MobileBottomNav";
+import LandingPage from "./compoent/LandingPage/LandingPage";
 function RequireAuth({ children }) {
   const { user } = useContext(AuthContext);
   const location = useLocation();
@@ -108,12 +109,25 @@ useEffect(() => {
   }, [key]);
   return null;
 }
-const NO_FOOTER_PATHS = ['/properties', '/nightly-stays', '/monthly-rentals'];
+const NO_FOOTER_PATHS = ['/properties', '/nightly-stays', '/monthly-rentals', '/get-started'];
 function ConditionalFooter() {
   const location = useLocation();
   const hide = NO_FOOTER_PATHS.includes(location.pathname) || location.pathname.startsWith('/property/');
   if (hide) return null;
   return <HoomieFooter />;
+}
+// Ads landing page ships its own minimal top bar/footer built for conversion —
+// the full site navbar would just distract from the lead form.
+const NO_NAVBAR_PATHS = ['/get-started'];
+function ConditionalNavbar() {
+  const location = useLocation();
+  if (NO_NAVBAR_PATHS.includes(location.pathname)) return null;
+  return <Navbar />;
+}
+function ConditionalMobileBottomNav() {
+  const location = useLocation();
+  if (NO_NAVBAR_PATHS.includes(location.pathname)) return null;
+  return <MobileBottomNav />;
 }
 function WhatsAppButton() {
   const location = useLocation();
@@ -149,12 +163,13 @@ function App() {
         <ScrollRestoration />
         <AnalyticsTracker />
         <SeoManager />
-        <Navbar />
+        <ConditionalNavbar />
         <div className="app-routes-wrapper">
         <Routes>
           <Route path="/home" element={<Home />} />
           <Route path="/home-main" element={<HomeMain />} />
           <Route path="/" element={<HomePageNewMain />} />
+          <Route path="/get-started" element={<LandingPage />} />
           <Route path="/tmluxe" element={<LuxeMain />} />
           <Route path="/tmluxespecific/:id" element={<ThirdMain />} />
           <Route path="/payment" element={<Payment />} />
@@ -274,7 +289,7 @@ function App() {
         </Routes>
         </div>
         <ConditionalFooter />
-        <MobileBottomNav />
+        <ConditionalMobileBottomNav />
         <CookieConsent />
         <WhatsAppButton />
       </Router>
