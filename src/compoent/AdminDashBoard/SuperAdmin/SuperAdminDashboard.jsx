@@ -201,7 +201,6 @@ export default function SuperAdminDashboard() {
   const [landingLeadCategoryFilter, setLandingLeadCategoryFilter] = useState("ALL");
   const [landingLeadsTotal, setLandingLeadsTotal] = useState(0);
   const [landingLeadLastRefresh, setLandingLeadLastRefresh] = useState(null);
-  const [landingLeadDeletingId, setLandingLeadDeletingId] = useState(null);
   const LANDING_LEADS_LIMIT = 20;
   const LANDING_LEADS_API = "https://www.townmanor.ai/api/ovika/landing-leads";
   const LANDING_LEAD_CITIES = ['Noida', 'Greater Noida', 'Gurugram', 'Delhi', 'Ghaziabad'];
@@ -390,20 +389,6 @@ export default function SuperAdminDashboard() {
         setLandingLeads([]);
     } finally {
         setLandingLeadsLoading(false);
-    }
-  };
-
-  const deleteLandingLead = async (leadId) => {
-    if (!window.confirm('Delete this lead permanently?')) return;
-    setLandingLeadDeletingId(leadId);
-    try {
-        await axios.delete(`${LANDING_LEADS_API}/${leadId}`);
-        fetchLandingLeads(landingLeadPage, landingLeadSearch, landingLeadCityFilter, landingLeadCategoryFilter);
-    } catch (e) {
-        console.error("Delete landing lead failed", e);
-        alert('Failed to delete lead. Please try again.');
-    } finally {
-        setLandingLeadDeletingId(null);
     }
   };
 
@@ -2662,7 +2647,6 @@ export default function SuperAdminDashboard() {
                                         <th>Category</th>
                                         <th>City</th>
                                         <th>Timeframe</th>
-                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -2687,15 +2671,6 @@ export default function SuperAdminDashboard() {
                                             </td>
                                             <td>{lead.city || '—'}</td>
                                             <td style={{ fontSize: '12px', color: '#374151' }}>{lead.timeframe || '—'}</td>
-                                            <td>
-                                                <button
-                                                    onClick={() => deleteLandingLead(lead.id || lead._id)}
-                                                    disabled={landingLeadDeletingId === (lead.id || lead._id)}
-                                                    style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid #fecaca', background: '#fef2f2', color: '#dc2626', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
-                                                >
-                                                    {landingLeadDeletingId === (lead.id || lead._id) ? 'Deleting...' : 'Delete'}
-                                                </button>
-                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
