@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { FiCheckCircle, FiLoader } from 'react-icons/fi';
+import { FiCheckCircle, FiLoader, FiUser, FiPhone, FiMail, FiMapPin, FiCalendar, FiHome } from 'react-icons/fi';
 import { forwardLeadToIngestEndpoint, toIndianPhone } from '../../utils/leadIngest';
 
 const CATEGORY_CHIPS = [
@@ -84,35 +84,51 @@ export default function LeadForm({ id, compact = false }) {
   return (
     <form id={id} className={`lp-form-card ${compact ? 'lp-form-card--compact' : ''}`} onSubmit={handleSubmit}>
       <div className="lp-form-head">
-        <h3>Get Free Assistance</h3>
-        <p>Tell us what you're looking for — our team calls you back in 30 minutes.</p>
+        <div className="lp-form-head-icon"><FiHome size={18} /></div>
+        <div>
+          <h3>Find Your Stay with Ease</h3>
+          <p>Search effortlessly — get a free callback in 30 minutes.</p>
+        </div>
       </div>
 
-      <div className="lp-form-row">
-        <input
-          type="text" placeholder="Your Name" value={form.name}
-          onChange={e => setField('name', e.target.value)} className="lp-input" required
-        />
-      </div>
-      <div className="lp-form-row">
-        <div className="lp-phone-wrap">
-          <span className="lp-phone-prefix">+91</span>
+      <div className="lp-field-box">
+        <span className="lp-field-label">Full Name</span>
+        <div className="lp-field-row">
+          <FiUser className="lp-field-icon" />
           <input
-            type="tel" placeholder="10-digit mobile number" value={form.phone}
-            onChange={e => setField('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
-            className="lp-input lp-input--phone" required
+            type="text" placeholder="Your Name" value={form.name}
+            onChange={e => setField('name', e.target.value)} className="lp-field-input" required
           />
         </div>
       </div>
-      <div className="lp-form-row">
-        <input
-          type="email" placeholder="Email address (optional)" value={form.email}
-          onChange={e => setField('email', e.target.value)} className="lp-input"
-        />
+
+      <div className="lp-field-grid">
+        <div className="lp-field-box">
+          <span className="lp-field-label">Mobile Number</span>
+          <div className="lp-field-row">
+            <FiPhone className="lp-field-icon" />
+            <span className="lp-field-prefix">+91</span>
+            <input
+              type="tel" placeholder="10-digit number" value={form.phone}
+              onChange={e => setField('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
+              className="lp-field-input" required
+            />
+          </div>
+        </div>
+        <div className="lp-field-box">
+          <span className="lp-field-label">Email (Optional)</span>
+          <div className="lp-field-row">
+            <FiMail className="lp-field-icon" />
+            <input
+              type="email" placeholder="you@email.com" value={form.email}
+              onChange={e => setField('email', e.target.value)} className="lp-field-input"
+            />
+          </div>
+        </div>
       </div>
 
-      <div className="lp-form-row">
-        <label className="lp-form-label">Looking for</label>
+      <div className="lp-field-box">
+        <span className="lp-field-label">Looking For</span>
         <div className="lp-chip-row">
           {CATEGORY_CHIPS.map(c => (
             <button
@@ -126,19 +142,25 @@ export default function LeadForm({ id, compact = false }) {
         </div>
       </div>
 
-      <div className="lp-form-row lp-form-row--split">
-        <div className="lp-select-wrap">
-          <label className="lp-form-label">City</label>
-          <select value={form.city} onChange={e => setField('city', e.target.value)} className="lp-input">
-            {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
+      <div className="lp-field-grid">
+        <div className="lp-field-box">
+          <span className="lp-field-label">City</span>
+          <div className="lp-field-row">
+            <FiMapPin className="lp-field-icon" />
+            <select value={form.city} onChange={e => setField('city', e.target.value)} className="lp-field-input lp-field-input--select">
+              {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
         </div>
-        <div className="lp-select-wrap">
-          <label className="lp-form-label">Move-in timeframe</label>
-          <select value={form.timeframe} onChange={e => setField('timeframe', e.target.value)} className="lp-input">
-            <option value="">Select</option>
-            {TIMEFRAMES.map(t => <option key={t} value={t}>{t}</option>)}
-          </select>
+        <div className="lp-field-box">
+          <span className="lp-field-label">Move-in Timeframe</span>
+          <div className="lp-field-row">
+            <FiCalendar className="lp-field-icon" />
+            <select value={form.timeframe} onChange={e => setField('timeframe', e.target.value)} className="lp-field-input lp-field-input--select">
+              <option value="">Select</option>
+              {TIMEFRAMES.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -150,7 +172,7 @@ export default function LeadForm({ id, compact = false }) {
         type="submit" className="lp-submit-btn" disabled={status === 'submitting'}
         whileTap={{ scale: 0.97 }}
       >
-        {status === 'submitting' ? (<><FiLoader className="lp-spin" /> Sending...</>) : 'Get Free Callback →'}
+        {status === 'submitting' ? (<><FiLoader className="lp-spin" /> Sending...</>) : 'Search My Stay →'}
       </motion.button>
       <p className="lp-form-note">Zero brokerage · No spam · 100% free assistance</p>
     </form>
