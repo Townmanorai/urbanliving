@@ -18,7 +18,7 @@ const TIMEFRAMES = ['Immediately', 'Within 15 days', 'Within a month', 'Just exp
 
 const LANDING_LEADS_API = 'https://www.townmanor.ai/api/ovika/landing-leads';
 
-export default function LeadForm({ id, compact = false }) {
+export default function LeadForm({ id }) {
   const [form, setForm] = useState({
     name: '', phone: '', email: '', category: '', city: 'Noida', timeframe: '',
   });
@@ -56,7 +56,6 @@ export default function LeadForm({ id, compact = false }) {
       setStatus('error');
       return;
     } finally {
-      // Secondary external CRM feed — non-blocking, independent of the primary API above.
       forwardLeadToIngestEndpoint({
         name: form.name,
         phone: toIndianPhone(form.phone),
@@ -69,12 +68,10 @@ export default function LeadForm({ id, compact = false }) {
   if (status === 'success') {
     return (
       <motion.div
-        className="lp-form-card lp-form-success"
-        initial={{ opacity: 0, scale: 0.96 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.4 }}
+        className="lp-search-card lp-search-success"
+        initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }}
       >
-        <FiCheckCircle size={44} color="#22c55e" />
+        <FiCheckCircle size={40} color="#22c55e" />
         <h3>Thanks, {form.name.split(' ')[0]}!</h3>
         <p>Our team will call you within 30 minutes to help you find the perfect stay.</p>
       </motion.div>
@@ -82,58 +79,45 @@ export default function LeadForm({ id, compact = false }) {
   }
 
   return (
-    <form id={id} className={`lp-form-card ${compact ? 'lp-form-card--compact' : ''}`} onSubmit={handleSubmit}>
-      <div className="lp-form-head">
-        <div className="lp-form-head-icon"><FiHome size={18} /></div>
-        <div>
-          <h3>Find Your Stay with Ease</h3>
-          <p>Search effortlessly — get a free callback in 30 minutes.</p>
+    <form id={id} className="lp-search-card" onSubmit={handleSubmit}>
+      <div className="lp-search-head">
+        <h3>Find Your Stay with Ease</h3>
+        <p>Share your details — get a free callback in 30 minutes.</p>
+      </div>
+
+      <div className="lp-search-field">
+        <label>Full Name</label>
+        <div className="lp-search-field-row">
+          <FiUser size={14} />
+          <input type="text" placeholder="Your Name" value={form.name} onChange={e => setField('name', e.target.value)} required />
         </div>
       </div>
 
-      <div className="lp-field-box">
-        <span className="lp-field-label">Full Name</span>
-        <div className="lp-field-row">
-          <FiUser className="lp-field-icon" />
-          <input
-            type="text" placeholder="Your Name" value={form.name}
-            onChange={e => setField('name', e.target.value)} className="lp-field-input" required
-          />
-        </div>
-      </div>
-
-      <div className="lp-field-grid">
-        <div className="lp-field-box">
-          <span className="lp-field-label">Mobile Number</span>
-          <div className="lp-field-row">
-            <FiPhone className="lp-field-icon" />
-            <span className="lp-field-prefix">+91</span>
-            <input
-              type="tel" placeholder="10-digit number" value={form.phone}
-              onChange={e => setField('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
-              className="lp-field-input" required
-            />
+      <div className="lp-search-grid">
+        <div className="lp-search-field">
+          <label>Mobile Number</label>
+          <div className="lp-search-field-row">
+            <FiPhone size={14} />
+            <span className="lp-search-prefix">+91</span>
+            <input type="tel" placeholder="10-digit number" value={form.phone} onChange={e => setField('phone', e.target.value.replace(/\D/g, '').slice(0, 10))} required />
           </div>
         </div>
-        <div className="lp-field-box">
-          <span className="lp-field-label">Email (Optional)</span>
-          <div className="lp-field-row">
-            <FiMail className="lp-field-icon" />
-            <input
-              type="email" placeholder="you@email.com" value={form.email}
-              onChange={e => setField('email', e.target.value)} className="lp-field-input"
-            />
+        <div className="lp-search-field">
+          <label>Email (Optional)</label>
+          <div className="lp-search-field-row">
+            <FiMail size={14} />
+            <input type="email" placeholder="you@email.com" value={form.email} onChange={e => setField('email', e.target.value)} />
           </div>
         </div>
       </div>
 
-      <div className="lp-field-box">
-        <span className="lp-field-label">Looking For</span>
-        <div className="lp-chip-row">
+      <div className="lp-search-field">
+        <label>Looking For</label>
+        <div className="lp-search-chip-row">
           {CATEGORY_CHIPS.map(c => (
             <button
               type="button" key={c}
-              className={`lp-chip ${form.category === c ? 'lp-chip--active' : ''}`}
+              className={`lp-search-chip ${form.category === c ? 'lp-search-chip--active' : ''}`}
               onClick={() => setField('category', form.category === c ? '' : c)}
             >
               {c}
@@ -142,21 +126,21 @@ export default function LeadForm({ id, compact = false }) {
         </div>
       </div>
 
-      <div className="lp-field-grid">
-        <div className="lp-field-box">
-          <span className="lp-field-label">City</span>
-          <div className="lp-field-row">
-            <FiMapPin className="lp-field-icon" />
-            <select value={form.city} onChange={e => setField('city', e.target.value)} className="lp-field-input lp-field-input--select">
+      <div className="lp-search-grid">
+        <div className="lp-search-field">
+          <label>City</label>
+          <div className="lp-search-field-row">
+            <FiMapPin size={14} />
+            <select value={form.city} onChange={e => setField('city', e.target.value)}>
               {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
         </div>
-        <div className="lp-field-box">
-          <span className="lp-field-label">Move-in Timeframe</span>
-          <div className="lp-field-row">
-            <FiCalendar className="lp-field-icon" />
-            <select value={form.timeframe} onChange={e => setField('timeframe', e.target.value)} className="lp-field-input lp-field-input--select">
+        <div className="lp-search-field">
+          <label>Move-in Timeframe</label>
+          <div className="lp-search-field-row">
+            <FiCalendar size={14} />
+            <select value={form.timeframe} onChange={e => setField('timeframe', e.target.value)}>
               <option value="">Select</option>
               {TIMEFRAMES.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
@@ -164,17 +148,17 @@ export default function LeadForm({ id, compact = false }) {
         </div>
       </div>
 
-      {status === 'error' && (
-        <div className="lp-form-error">{errorMsg}</div>
-      )}
+      {status === 'error' && <div className="lp-search-error">{errorMsg}</div>}
 
-      <motion.button
-        type="submit" className="lp-submit-btn" disabled={status === 'submitting'}
-        whileTap={{ scale: 0.97 }}
-      >
-        {status === 'submitting' ? (<><FiLoader className="lp-spin" /> Sending...</>) : 'Search My Stay →'}
+      <motion.button type="submit" className="lp-search-btn" disabled={status === 'submitting'} whileTap={{ scale: 0.97 }}>
+        {status === 'submitting' ? (<><FiLoader className="lp-spin" /> Sending...</>) : (<>Get Free Callback <FiHome size={15} /></>)}
       </motion.button>
-      <p className="lp-form-note">Zero brokerage · No spam · 100% free assistance</p>
+
+      <div className="lp-search-trust">
+        <span><FiCheckCircle size={12} /> No Booking Fees</span>
+        <span><FiCheckCircle size={12} /> Instant Confirmation</span>
+        <span><FiCheckCircle size={12} /> 24x7 Support</span>
+      </div>
     </form>
   );
 }
