@@ -37,11 +37,11 @@ const HERO_BADGES = [
 ];
 
 const HERO_BG_SLIDES = [
-  { label: 'Signature Stays', img: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1800&q=80' },
-  { label: 'Hotel Stays', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1800&q=80' },
-  { label: 'Homestays & BnB', img: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1800&q=80' },
-  { label: 'Apartments & Villas', img: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1800&q=80' },
-  { label: 'PG & Co-Living', img: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1800&q=80' },
+  { label: 'Signature Stays', img: 'https://images.unsplash.com/photo-1607567618395-62fc2d132c3e?auto=format&fit=crop&w=1800&q=80' },
+  { label: 'Hotel Stays', img: 'https://images.unsplash.com/photo-1641803188474-f6e23844b98f?auto=format&fit=crop&w=1800&q=80' },
+  { label: 'Homestays & BnB', img: 'https://images.unsplash.com/photo-1553444836-bc6c8d340ba7?auto=format&fit=crop&w=1800&q=80' },
+  { label: 'Apartments & Villas', img: 'https://images.unsplash.com/photo-1559998852-f8ab898d889e?auto=format&fit=crop&w=1800&q=80' },
+  { label: 'PG & Co-Living', img: 'https://images.unsplash.com/photo-1553444870-8efadc4b31f8?auto=format&fit=crop&w=1800&q=80' },
 ];
 
 const CATEGORIES = [
