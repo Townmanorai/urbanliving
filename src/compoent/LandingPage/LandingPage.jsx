@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   FiShield, FiTag, FiHeadphones, FiUsers,
-  FiTrendingUp, FiClock, FiArrowRight, FiPhoneCall, FiStar,
-  FiGift, FiCreditCard, FiEyeOff, FiHome,
+  FiTrendingUp, FiArrowRight, FiPhoneCall, FiStar,
+  FiGift, FiCreditCard, FiEyeOff, FiEye, FiHome,
 } from 'react-icons/fi';
-import { FaRupeeSign } from 'react-icons/fa';
+import { FaRupeeSign, FaHotel } from 'react-icons/fa';
 import LeadForm from './LeadForm';
 import CountdownTimer from './CountdownTimer';
 import StatCounter from './StatCounter';
@@ -39,31 +39,33 @@ const HERO_BADGES = [
 const HERO_BG_SLIDES = [
   { label: 'Signature Stays', img: 'https://images.unsplash.com/photo-1607567618395-62fc2d132c3e?auto=format&fit=crop&w=1800&q=80' },
   { label: 'Hotel Stays', img: 'https://images.unsplash.com/photo-1641803188474-f6e23844b98f?auto=format&fit=crop&w=1800&q=80' },
-  { label: 'Homestays & BnB', img: 'https://images.unsplash.com/photo-1553444836-bc6c8d340ba7?auto=format&fit=crop&w=1800&q=80' },
+  { label: 'Homestays & BnB', img: 'https://images.unsplash.com/photo-1564078516393-cf04bd966897?auto=format&fit=crop&w=1800&q=80' },
   { label: 'Apartments & Villas', img: 'https://images.unsplash.com/photo-1559998852-f8ab898d889e?auto=format&fit=crop&w=1800&q=80' },
-  { label: 'PG & Co-Living', img: 'https://images.unsplash.com/photo-1553444870-8efadc4b31f8?auto=format&fit=crop&w=1800&q=80' },
+  { label: 'PG & Co-Living', img: 'https://images.unsplash.com/photo-1627042493632-fa4d12ff3b01?auto=format&fit=crop&w=1800&q=80' },
 ];
 
-const CATEGORIES = [
-  { label: '1 BHK Apartments', price: 'Starting ₹8,000/mo', img: 'https://images.unsplash.com/photo-1502672023488-70e25813eb80?auto=format&fit=crop&w=500&q=75', hue: 'orange' },
-  { label: '2 BHK Apartments', price: 'Starting ₹12,000/mo', img: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=500&q=75', hue: 'blue' },
-  { label: '3 BHK Apartments', price: 'Starting ₹18,000/mo', img: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=500&q=75', hue: 'violet' },
-  { label: 'PG & Co-living', price: 'Starting ₹5,000/mo', img: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=500&q=75', hue: 'teal' },
-  { label: 'Homestays', price: 'Starting ₹1,000/night', img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=500&q=75', hue: 'rose' },
-  { label: 'Hotels', price: 'Up to 50% OFF', img: 'https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=500&q=75', hue: 'amber' },
-  { label: 'Villas', price: 'Starting ₹15,000/night', img: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=500&q=75', hue: 'orange' },
-  { label: 'Studio Apartments', price: 'Starting ₹9,000/mo', img: 'https://images.unsplash.com/photo-1502672023488-70e25813eb80?auto=format&fit=crop&w=500&q=75', hue: 'blue' },
-  { label: 'Independent Houses', price: 'Starting ₹20,000/mo', img: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=500&q=75', hue: 'teal' },
-  { label: 'Guest Houses', price: 'Starting ₹1,200/night', img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=500&q=75', hue: 'violet' },
-  { label: 'Farmhouses', price: 'Starting ₹25,000/night', img: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=500&q=75', hue: 'rose' },
+const FEATURE_STAYS = [
+  {
+    label: 'Hotels', hue: 'orange', icon: FaHotel,
+    desc: 'Luxury rooms. Great experiences.',
+    img: 'https://images.unsplash.com/photo-1629140727571-9b5c6f6267b4?auto=format&fit=crop&w=900&q=80',
+  },
+  {
+    label: 'PG & Co-living', hue: 'violet', icon: FiUsers,
+    desc: 'Comfortable stays. Better community.',
+    img: 'https://images.unsplash.com/photo-1622127922040-13cab637ee78?auto=format&fit=crop&w=900&q=80',
+  },
+  {
+    label: 'Homestays & BnB', hue: 'teal', icon: FiHome,
+    desc: 'Feel at home, wherever you go.',
+    img: 'https://images.unsplash.com/photo-1632829882891-5047ccc421bc?auto=format&fit=crop&w=900&q=80',
+  },
 ];
 
-const OWNER_FEATURES = [
-  { icon: FiTrendingUp, title: 'Higher Earnings', desc: 'Get more bookings & earn up to 2x more returns.', hue: 'teal' },
-  { icon: FiEyeOff, title: 'Zero Brokerage', desc: 'Keep 100% of what you earn. No hidden deductions.', hue: 'orange' },
-  { icon: FiShield, title: 'Verified Tenants', desc: 'We verify every tenant for a safe and secure stay.', hue: 'violet' },
-  { icon: FiClock, title: 'Timely Payouts', desc: 'Get paid on time, every time. No delays.', hue: 'blue' },
-  { icon: FiUsers, title: 'Hassle-free Support', desc: 'We handle everything from bookings to support.', hue: 'rose' },
+const OWNER_BADGES = [
+  { icon: FiTag, label: 'Free Listing', sub: 'No hidden charges' },
+  { icon: FiEye, label: 'More Visibility', sub: 'Quality visitors & guests' },
+  { icon: FiTrendingUp, label: 'Higher Occupancy', sub: 'Better bookings & earnings' },
 ];
 
 const HERO_STATS = [
@@ -131,9 +133,8 @@ export default function LandingPage() {
                 })}
               </div>
               <div className="lp-hero-rating">
-                <FiStar size={14} className="lp-hero-rating-star" />
                 <div>
-                  <strong>4.8/5</strong>
+                  <strong><FiStar size={12} className="lp-hero-rating-star" /> 4.8/5</strong>
                   <span>10,000+ Reviews</span>
                 </div>
               </div>
@@ -163,7 +164,7 @@ export default function LandingPage() {
                   })}
                 </motion.div>
                 <motion.div className="lp-hero-trustrow" variants={fadeUp}>
-                  <FiUsers size={16} />
+                  <FiUsers size={15} />
                   <span>Trusted by 2,000+ properties</span>
                   <span className="lp-hero-trustrow-stars">★★★★★ <b>4.8/5</b></span>
                 </motion.div>
@@ -208,24 +209,40 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Explore by Category ── */}
+      {/* ── Find Your Perfect Stay ── */}
       <section className="lp-section lp-section--tight">
         <motion.h2 className="lp-cat-heading" initial="hidden" whileInView="show" viewport={{ once: true, margin: '-60px' }} variants={fadeUp}>
-          Explore by Category
+          Find Your <span className="lp-script-accent">Perfect Stay<i className="lp-sparkle">✦</i></span>
         </motion.h2>
-        <div className="lp-cat-scroll">
-          <div className="lp-cat-track">
-            {[...CATEGORIES, ...CATEGORIES].map((c, i) => (
-              <button key={`${c.label}-${i}`} className="lp-cat-card2" onClick={scrollToForm}>
-                <div className="lp-cat-card2-img" style={{ backgroundImage: `url(${c.img})` }}>
-                  <span className={`lp-cat-card2-icon lp-hue--${c.hue}`}><FiHome size={14} /></span>
+        <motion.div
+          className="lp-feature-grid"
+          initial="hidden" whileInView="show" viewport={{ once: true, margin: '-60px' }} variants={staggerParent}
+        >
+          {FEATURE_STAYS.map(f => {
+            const Icon = f.icon;
+            return (
+              <motion.div
+                key={f.label} className="lp-feature-card" variants={fadeUp}
+                style={{ backgroundImage: `url(${f.img})` }}
+              >
+                <div className="lp-feature-overlay" />
+                <div className="lp-feature-content">
+                  <span className={`lp-feature-icon-circle lp-hue--${f.hue}`}><Icon size={19} /></span>
+                  <h3>{f.label.toUpperCase()}</h3>
+                  <p>{f.desc}</p>
+                  <div className={`lp-feature-discount lp-hue--${f.hue}`}>
+                    <span className="lp-feature-discount-tag">Up to</span>
+                    <div className="lp-feature-discount-value">50% <b>OFF</b></div>
+                    <span className="lp-feature-discount-sub">On First Booking</span>
+                  </div>
+                  <button className={`lp-feature-cta lp-hue--${f.hue}`} onClick={scrollToForm}>
+                    Explore Now <FiArrowRight size={14} />
+                  </button>
                 </div>
-                <div className="lp-cat-card2-label">{c.label}</div>
-                <div className="lp-cat-card2-price">{c.price}</div>
-              </button>
-            ))}
-          </div>
-        </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
       </section>
 
 
@@ -233,15 +250,29 @@ export default function LandingPage() {
       <section className="lp-owner-section">
         <div className="lp-owner-inner">
           <motion.div className="lp-owner-copy" initial="hidden" whileInView="show" viewport={{ once: true, margin: '-80px' }} variants={staggerParent}>
-            <motion.div className="lp-eyebrow lp-eyebrow--red" variants={fadeUp}>For Property Owners</motion.div>
+            <motion.div className="lp-eyebrow lp-eyebrow--red" variants={fadeUp}>For Owners</motion.div>
             <motion.h2 className="lp-owner-heading" variants={fadeUp}>
-              List Once. <span className="lp-accent-gradient">Earn More.</span> Worry Less.
+              Your Property <span className="lp-accent-gradient">Deserves More.</span>
             </motion.h2>
             <motion.p variants={fadeUp}>
-              Join thousands of owners earning more, hassle-free.
+              List it on OvikaLiving and reach people actively looking for a place to stay.
+              Whether you own a hotel, homestay, apartment, PG, or premium property,
+              OvikaLiving helps put your property in front of the right audience.
             </motion.p>
+            <motion.div className="lp-owner-badges-row" variants={staggerParent}>
+              {OWNER_BADGES.map(b => {
+                const Icon = b.icon;
+                return (
+                  <motion.div key={b.label} className="lp-owner-badge" variants={fadeUp}>
+                    <span className="lp-owner-badge-icon"><Icon size={16} /></span>
+                    <strong>{b.label}</strong>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+
             <motion.button className="lp-owner-cta" variants={fadeUp} onClick={goListProperty} whileTap={{ scale: 0.97 }}>
-              List Your Property Now <FiArrowRight size={15} />
+              List My Property Free <FiArrowRight size={15} />
             </motion.button>
 
             <motion.div className="lp-owner-trust" variants={fadeUp}>
@@ -249,17 +280,15 @@ export default function LandingPage() {
             </motion.div>
           </motion.div>
 
-          <motion.div className="lp-owner-grid" initial="hidden" whileInView="show" viewport={{ once: true, margin: '-60px' }} variants={staggerParent}>
-            {OWNER_FEATURES.map(f => {
-              const Icon = f.icon;
-              return (
-                <motion.div key={f.title} className={`lp-owner-card lp-hue--${f.hue}`} variants={fadeUp}>
-                  <span className="lp-owner-card-icon"><Icon size={18} /></span>
-                  <strong>{f.title}</strong>
-                  <p>{f.desc}</p>
-                </motion.div>
-              );
-            })}
+          <motion.div
+            className="lp-owner-photo-wrap"
+            initial={{ opacity: 0, x: 24 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div
+              className="lp-owner-photo"
+              style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1640622304326-db5e15903ab4?auto=format&fit=crop&w=900&q=80)' }}
+            />
           </motion.div>
         </div>
       </section>
