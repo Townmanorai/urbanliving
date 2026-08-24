@@ -91,6 +91,24 @@ export default function SuperAdminDashboard() {
   const [biSearch, setBiSearch] = useState('');
   const [biPhotoModal, setBiPhotoModal] = useState(null);
 
+  // ── Airbnb Data Maintain states (manually-entered Airbnb bookings) ──
+  const [abList, setAbList] = useState([]);
+  const [abLoading, setAbLoading] = useState(false);
+  const [abSearch, setAbSearch] = useState('');
+  const [abPhotoModal, setAbPhotoModal] = useState(null);
+  const [abAddOpen, setAbAddOpen] = useState(false);
+  const [abSaving, setAbSaving] = useState(false);
+  const [abPhotoFile, setAbPhotoFile] = useState(null); // File object for upload
+  const [abPhotoPreview, setAbPhotoPreview] = useState(''); // local object URL for preview
+  const AB_EMPTY_FORM = {
+    username: '', phone_number: '', property_name: '', city: '', property_id: '',
+    start_date: '', end_date: '',
+    id_type: 'aadhaar', aadhar_number: '', passport_number: '', passport_name: '', passport_dob: '',
+    subtotal: '', discount_amount: '', gst_amount: '', total_price: '',
+    booking_status: 'confirmed', payment_status: 'paid',
+  };
+  const [abForm, setAbForm] = useState(AB_EMPTY_FORM);
+
   // ── Owner Details states ──
   const [ownersList, setOwnersList] = useState([]);
   const [ownersLoading, setOwnersLoading] = useState(false);
@@ -486,6 +504,7 @@ export default function SuperAdminDashboard() {
     if (view === 'self-verification') fetchSelfVerifications();
     if (view === 'lead-purchases') fetchLeadPurchases();
     if (view === 'booking-inquiries') fetchBookingInquiries();
+    if (view === 'airbnb-data') fetchAirbnbData();
     if (view === 'owners') fetchOwners();
   }, [view]);
 
@@ -544,6 +563,57 @@ export default function SuperAdminDashboard() {
       setBiList([]);
     } finally {
       setBiLoading(false);
+    }
+  };
+
+  // ── Airbnb Data Maintain — GET list ──
+  const fetchAirbnbData = async () => {
+    setAbLoading(true);
+    try {
+      const res = await axios.get('https://www.townmanor.ai/api/airbnb-bookings');
+      const list = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+      setAbList(list.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)));
+    } catch (e) {
+      console.error('Airbnb data fetch failed', e);
+      setAbList([]);
+    } finally {
+      setAbLoading(false);
+    }
+  };
+
+  // ── Airbnb Data Maintain — POST new record (manual entry from the Add popup, multipart with optional photo file) ──
+  const handleAirbnbAddSubmit = async (e) => {
+    e.preventDefault();
+    if (abForm.phone_number.replace(/\D/g, '').length !== 10) {
+      alert('Please enter a valid 10-digit phone number.');
+      return;
+    }
+    setAbSaving(true);
+    try {
+      const fd = new FormData();
+      Object.entries(abForm).forEach(([key, val]) => {
+        if (val !== '' && val !== null && val !== undefined) fd.append(key, val);
+      });
+      if (abPhotoFile) fd.append('user_photo', abPhotoFile);
+
+      const res = await axios.post('https://www.townmanor.ai/api/airbnb-bookings', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const created = res.data?.data || res.data;
+      if (created && typeof created === 'object') {
+        setAbList(prev => [created, ...prev]);
+      } else {
+        fetchAirbnbData();
+      }
+      setAbAddOpen(false);
+      setAbForm(AB_EMPTY_FORM);
+      setAbPhotoFile(null);
+      setAbPhotoPreview('');
+    } catch (e) {
+      console.error('Airbnb data create failed', e);
+      alert(e.response?.data?.message || 'Could not save this record. Please try again.');
+    } finally {
+      setAbSaving(false);
     }
   };
 
@@ -1254,6 +1324,9 @@ export default function SuperAdminDashboard() {
                 <button className={view === 'booking-inquiries' ? 'active' : ''} onClick={() => setView('booking-inquiries')}>
                     <span className="sa-nav-icon">🏨</span> Booking Inquiries
                 </button>
+                <button className={view === 'airbnb-data' ? 'active' : ''} onClick={() => setView('airbnb-data')}>
+                    <span className="sa-nav-icon">🏡</span> Airbnb Data Maintain
+                </button>
                 <button className={view === 'owners' ? 'active' : ''} onClick={() => setView('owners')} style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '4px', paddingTop: '12px' }}>
                     <span className="sa-nav-icon">👤</span> Owner Details
                 </button>
@@ -1285,6 +1358,7 @@ export default function SuperAdminDashboard() {
                 {view === 'self-verification' && 'Self Verification Submissions'}
                 {view === 'lead-purchases' && 'Lead Purchases'}
                 {view === 'booking-inquiries' && 'Booking Inquiries'}
+                {view === 'airbnb-data' && 'Airbnb Data Maintain'}
                 {view === 'listings-data' && 'Listings Data'}
             </h2>
             <div className="sa-user-controls">
@@ -3743,6 +3817,379 @@ export default function SuperAdminDashboard() {
                   {biPhotoModal && (
                     <div onClick={() => setBiPhotoModal(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, cursor: 'zoom-out' }}>
                       <img src={biPhotoModal} alt="Customer" style={{ maxWidth: '90vw', maxHeight: '85vh', borderRadius: 12, objectFit: 'contain', boxShadow: '0 8px 40px rgba(0,0,0,0.4)' }} />
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
+            {/* VIEW: AIRBNB DATA MAINTAIN — manually-entered Airbnb bookings, same shape as Booking Inquiries */}
+            {view === 'airbnb-data' && (() => {
+              const fmtD = (d) => d ? new Date(d).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—';
+              const q = abSearch.toLowerCase();
+              const filtered = abList.filter(b =>
+                !q ||
+                (b.username || '').toLowerCase().includes(q) ||
+                (b.phone_number || '').toLowerCase().includes(q) ||
+                (b.property_name || '').toLowerCase().includes(q) ||
+                String(b.property_id || '').includes(q) ||
+                String(b.id || '').includes(q) ||
+                (b.aadhar_number || '').toLowerCase().includes(q)
+              );
+              const totalAmount = abList.reduce((s, b) => s + Number(b.total_price || b.total_amount || b.amount || 0), 0);
+              const confirmed = abList.filter(b => (b.booking_status || b.status || '').toLowerCase() === 'confirmed').length;
+
+              const setAbField = (name, value) => setAbForm(f => ({ ...f, [name]: value }));
+              const closeAbAdd = () => { setAbAddOpen(false); setAbPhotoFile(null); setAbPhotoPreview(''); };
+              const inputStyle = { width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid #e2e8f0', fontSize: 13, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' };
+              const labelStyle = { display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.03em' };
+              const fieldWrap = { marginBottom: 14 };
+
+              return (
+                <div style={{ padding: '24px' }}>
+                  {/* Stats */}
+                  <div style={{ display: 'flex', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
+                    {[
+                      { label: 'Total Airbnb Bookings', value: abList.length, color: '#3b82f6' },
+                      { label: 'Confirmed', value: confirmed, color: '#16a34a' },
+                      { label: 'Total Revenue', value: `₹${totalAmount.toLocaleString('en-IN')}`, color: '#c2772b' },
+                    ].map(s => (
+                      <div key={s.label} style={{ background: '#fff', border: '1.5px solid #e2e8f0', borderRadius: 14, padding: '16px 24px', flex: '1 1 160px', minWidth: 160 }}>
+                        <div style={{ fontSize: 12, color: '#64748b', fontWeight: 600, marginBottom: 6 }}>{s.label}</div>
+                        <div style={{ fontSize: 24, fontWeight: 800, color: s.color }}>{s.value}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Search + Add + Refresh */}
+                  <div style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'center', flexWrap: 'wrap' }}>
+                    <input
+                      placeholder="Search by name, phone, property, Aadhaar, booking ID..."
+                      value={abSearch}
+                      onChange={e => setAbSearch(e.target.value)}
+                      style={{ flex: 1, minWidth: 260, padding: '9px 14px', borderRadius: 9, border: '1.5px solid #e2e8f0', fontSize: 13, outline: 'none' }}
+                    />
+                    <button onClick={() => { setAbForm(AB_EMPTY_FORM); setAbPhotoFile(null); setAbPhotoPreview(''); setAbAddOpen(true); }}
+                      style={{ padding: '9px 18px', borderRadius: 9, border: 'none', background: '#16a34a', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
+                      + Add
+                    </button>
+                    <button onClick={fetchAirbnbData} disabled={abLoading}
+                      style={{ padding: '9px 18px', borderRadius: 9, border: 'none', background: '#c2772b', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
+                      {abLoading ? 'Loading...' : '↻ Refresh'}
+                    </button>
+                  </div>
+
+                  {/* Table */}
+                  {abLoading ? (
+                    <div style={{ textAlign: 'center', padding: 60, color: '#94a3b8', fontSize: 15 }}>Loading Airbnb data...</div>
+                  ) : filtered.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: 60, color: '#94a3b8', fontSize: 15 }}>
+                      {abSearch ? 'No results found.' : 'No Airbnb records yet. Click "+ Add" to create one.'}
+                    </div>
+                  ) : (
+                    <div style={{ overflowX: 'auto', borderRadius: 14, border: '1.5px solid #e2e8f0' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                        <thead>
+                          <tr style={{ background: '#f8fafc' }}>
+                            {['#ID','Photo ID','Customer','Phone','Property','Dates','Aadhaar / Passport','Amount','Status','Submitted'].map(h => (
+                              <th key={h} style={{ padding: '12px 14px', textAlign: 'left', fontWeight: 700, fontSize: 11, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1.5px solid #e2e8f0', whiteSpace: 'nowrap' }}>{h}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filtered.map((b, i) => {
+                            const status = (b.booking_status || b.status || 'pending').toLowerCase();
+                            const statusStyle = {
+                              confirmed: { bg: '#dcfce7', color: '#166534' },
+                              paid:      { bg: '#dcfce7', color: '#166534' },
+                              pending:   { bg: '#fef9c3', color: '#854d0e' },
+                              accepted:  { bg: '#dbeafe', color: '#1e40af' },
+                              cancelled: { bg: '#fee2e2', color: '#991b1b' },
+                              rejected:  { bg: '#fee2e2', color: '#991b1b' },
+                            }[status] || { bg: '#f3f4f6', color: '#374151' };
+
+                            const amount   = calculateBookingAmount(b);
+                            const subtotal = Number(b.subtotal || 0);
+                            const disc     = Number(b.discount_amount || 0);
+                            const gst      = Number(b.gst_amount || 0);
+                            const nights   = b.start_date && b.end_date
+                              ? Math.ceil(Math.abs(new Date(b.end_date) - new Date(b.start_date)) / 86400000)
+                              : null;
+                            const rawPhoto = b.user_photo || b.photo || b.profile_photo || b.image || b.id_photo || b.document_photo || '';
+                            const photoUrl = rawPhoto
+                              ? (rawPhoto.startsWith('http') ? rawPhoto : `https://www.townmanor.ai${rawPhoto}`)
+                              : null;
+
+                            return (
+                              <tr key={b.id || i} style={{ borderBottom: '1px solid #f1f5f9', background: i % 2 === 0 ? '#fff' : '#fafafa' }}>
+
+                                {/* ID */}
+                                <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontSize: 12, color: '#64748b', whiteSpace: 'nowrap' }}>
+                                  #{b.id || '—'}
+                                </td>
+
+                                {/* Photo ID */}
+                                <td style={{ padding: '10px 14px' }}>
+                                  {photoUrl ? (
+                                    <div style={{ position: 'relative', display: 'inline-block' }}>
+                                      <img
+                                        src={photoUrl}
+                                        alt="ID Photo"
+                                        onClick={() => setAbPhotoModal(photoUrl)}
+                                        onError={e => { e.target.style.display='none'; e.target.nextSibling && (e.target.nextSibling.style.display='flex'); }}
+                                        style={{ width: 64, height: 44, borderRadius: 6, objectFit: 'cover', cursor: 'zoom-in', border: '1.5px solid #e2e8f0', display: 'block' }}
+                                      />
+                                      <div style={{ display:'none', width: 64, height: 44, borderRadius: 6, background: '#f1f5f9', border: '1.5px dashed #cbd5e1', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+                                        <span style={{ fontSize: 18, color: '#94a3b8' }}>🪪</span>
+                                        <span style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600 }}>LOAD ERR</span>
+                                      </div>
+                                      <div style={{ fontSize: 9, color: '#94a3b8', textAlign: 'center', marginTop: 3, fontWeight: 600, letterSpacing: '0.04em' }}>CLICK TO VIEW</div>
+                                    </div>
+                                  ) : (
+                                    <div style={{ width: 64, height: 44, borderRadius: 6, background: '#f1f5f9', border: '1.5px dashed #cbd5e1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+                                      <span style={{ fontSize: 18, color: '#94a3b8' }}>🪪</span>
+                                      <span style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600 }}>NO PHOTO</span>
+                                    </div>
+                                  )}
+                                </td>
+
+                                {/* Customer */}
+                                <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                                  <div style={{ fontWeight: 700, color: '#1e293b' }}>{b.username || '—'}</div>
+                                </td>
+
+                                {/* Phone */}
+                                <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                                  <div style={{ fontFamily: 'monospace', fontSize: 13, color: '#0f172a' }}>{b.phone_number || '—'}</div>
+                                </td>
+
+                                {/* Property */}
+                                <td style={{ padding: '12px 14px', maxWidth: 200 }}>
+                                  <div style={{ fontWeight: 600, color: '#1e293b', fontSize: 12 }}>{b.property?.name || b.property_name || `Property #${b.property_id}`}</div>
+                                  {(b.property?.city || b.city) && <div style={{ fontSize: 11, color: '#64748b', marginTop: 1 }}>{b.property?.city || b.city}</div>}
+                                  {b.property_id ? <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>ID: {b.property_id}</div> : null}
+                                </td>
+
+                                {/* Dates */}
+                                <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                                  <div style={{ fontSize: 12, color: '#334155' }}>{fmtD(b.start_date)} →</div>
+                                  <div style={{ fontSize: 12, color: '#334155' }}>{fmtD(b.end_date)}</div>
+                                  {nights && <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>{nights} night{nights !== 1 ? 's' : ''}</div>}
+                                </td>
+
+                                {/* Aadhaar / Passport */}
+                                <td style={{ padding: '12px 14px', fontSize: 12, minWidth: 160 }}>
+                                  {b.id_type === 'passport' || b.passport_number ? (
+                                    <>
+                                      <div style={{ marginBottom: 2 }}>
+                                        <span style={{ background: '#dbeafe', color: '#1e40af', fontWeight: 700, fontSize: 10, padding: '1px 7px', borderRadius: 10 }}>PASSPORT</span>
+                                      </div>
+                                      <div style={{ fontFamily: 'monospace', color: '#0f172a' }}>{b.passport_number || '—'}</div>
+                                      {b.passport_name && <div style={{ color: '#475569', marginTop: 1 }}>{b.passport_name}</div>}
+                                      {b.passport_dob && <div style={{ color: '#94a3b8', fontSize: 11 }}>DOB: {b.passport_dob}</div>}
+                                    </>
+                                  ) : b.aadhar_number && b.aadhar_number !== 'NOT_PROVIDED' ? (
+                                    <>
+                                      <div style={{ marginBottom: 2 }}>
+                                        <span style={{ background: '#dcfce7', color: '#166534', fontWeight: 700, fontSize: 10, padding: '1px 7px', borderRadius: 10 }}>AADHAAR</span>
+                                      </div>
+                                      <div style={{ fontFamily: 'monospace', color: '#0f172a' }}>{b.aadhar_number}</div>
+                                    </>
+                                  ) : (
+                                    <span style={{ color: '#cbd5e1' }}>—</span>
+                                  )}
+                                </td>
+
+                                {/* Amount */}
+                                <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                                  {amount > 0 ? (
+                                    <>
+                                      <div style={{ fontWeight: 800, color: '#16a34a', fontSize: 14 }}>₹{amount.toLocaleString('en-IN')}</div>
+                                      {subtotal > 0 && <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 1 }}>Sub: ₹{subtotal.toLocaleString('en-IN')}{disc > 0 ? ` · −₹${disc.toLocaleString('en-IN')}` : ''}{gst > 0 ? ` · GST ₹${gst.toLocaleString('en-IN')}` : ''}</div>}
+                                    </>
+                                  ) : <span style={{ color: '#cbd5e1' }}>—</span>}
+                                </td>
+
+                                {/* Status */}
+                                <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                                  <span style={{ background: statusStyle.bg, color: statusStyle.color, fontWeight: 700, fontSize: 11, padding: '3px 10px', borderRadius: 20, textTransform: 'capitalize' }}>
+                                    {status}
+                                  </span>
+                                  {b.payment_status === 'paid' && (
+                                    <div style={{ marginTop: 4 }}>
+                                      <span style={{ background: '#dcfce7', color: '#166534', fontWeight: 700, fontSize: 10, padding: '2px 8px', borderRadius: 20 }}>💳 Paid</span>
+                                    </div>
+                                  )}
+                                </td>
+
+                                {/* Submitted */}
+                                <td style={{ padding: '12px 14px', color: '#64748b', fontSize: 12, whiteSpace: 'nowrap' }}>
+                                  {b.created_at ? new Date(b.created_at).toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12: true }) : '—'}
+                                </td>
+
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
+                  {/* Photo lightbox */}
+                  {abPhotoModal && (
+                    <div onClick={() => setAbPhotoModal(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, cursor: 'zoom-out' }}>
+                      <img src={abPhotoModal} alt="Customer" style={{ maxWidth: '90vw', maxHeight: '85vh', borderRadius: 12, objectFit: 'contain', boxShadow: '0 8px 40px rgba(0,0,0,0.4)' }} />
+                    </div>
+                  )}
+
+                  {/* Add popup — manual entry form */}
+                  {abAddOpen && (
+                    <div onClick={() => !abSaving && closeAbAdd()} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.55)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 9999, padding: '40px 16px', overflowY: 'auto' }}>
+                      <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: 16, padding: '28px 28px 24px', width: '100%', maxWidth: 640, boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                          <h3 style={{ margin: 0, fontSize: 19, fontWeight: 800, color: '#1e293b' }}>Add Airbnb Booking</h3>
+                          <button onClick={closeAbAdd} style={{ border: 'none', background: 'none', fontSize: 20, color: '#94a3b8', cursor: 'pointer', lineHeight: 1 }}>✕</button>
+                        </div>
+                        <p style={{ margin: '0 0 20px', fontSize: 12.5, color: '#64748b' }}>Manually add a booking that came in through Airbnb — it'll appear in the table above.</p>
+
+                        <form onSubmit={handleAirbnbAddSubmit}>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>Customer Name *</label>
+                              <input required style={inputStyle} value={abForm.username} onChange={e => setAbField('username', e.target.value)} placeholder="Guest full name" />
+                            </div>
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>Phone *</label>
+                              <input required style={inputStyle} value={abForm.phone_number} onChange={e => setAbField('phone_number', e.target.value)} placeholder="10-digit mobile" />
+                            </div>
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>Property Name *</label>
+                              <input required style={inputStyle} value={abForm.property_name} onChange={e => setAbField('property_name', e.target.value)} placeholder="e.g. Ovika Signature 5" />
+                            </div>
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>City</label>
+                              <input style={inputStyle} value={abForm.city} onChange={e => setAbField('city', e.target.value)} placeholder="e.g. Noida" />
+                            </div>
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>Property ID</label>
+                              <input type="number" style={inputStyle} value={abForm.property_id} onChange={e => setAbField('property_id', e.target.value)} placeholder="Optional" />
+                            </div>
+                            <div />
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>Check-in *</label>
+                              <input required type="date" style={inputStyle} value={abForm.start_date} onChange={e => setAbField('start_date', e.target.value)} />
+                            </div>
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>Check-out *</label>
+                              <input required type="date" style={inputStyle} value={abForm.end_date} onChange={e => setAbField('end_date', e.target.value)} />
+                            </div>
+
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>ID Type</label>
+                              <select style={inputStyle} value={abForm.id_type} onChange={e => setAbField('id_type', e.target.value)}>
+                                <option value="aadhaar">Aadhaar</option>
+                                <option value="passport">Passport</option>
+                              </select>
+                            </div>
+                            {abForm.id_type === 'aadhaar' ? (
+                              <div style={fieldWrap}>
+                                <label style={labelStyle}>Aadhaar Number</label>
+                                <input style={inputStyle} value={abForm.aadhar_number} onChange={e => setAbField('aadhar_number', e.target.value)} placeholder="12-digit Aadhaar" />
+                              </div>
+                            ) : (
+                              <div style={fieldWrap}>
+                                <label style={labelStyle}>Passport Number</label>
+                                <input style={inputStyle} value={abForm.passport_number} onChange={e => setAbField('passport_number', e.target.value)} placeholder="Passport number" />
+                              </div>
+                            )}
+                            {abForm.id_type === 'passport' && (
+                              <>
+                                <div style={fieldWrap}>
+                                  <label style={labelStyle}>Passport Name</label>
+                                  <input style={inputStyle} value={abForm.passport_name} onChange={e => setAbField('passport_name', e.target.value)} placeholder="As on passport" />
+                                </div>
+                                <div style={fieldWrap}>
+                                  <label style={labelStyle}>Passport DOB</label>
+                                  <input type="date" style={inputStyle} value={abForm.passport_dob} onChange={e => setAbField('passport_dob', e.target.value)} />
+                                </div>
+                              </>
+                            )}
+
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>Subtotal (₹)</label>
+                              <input type="number" style={inputStyle} value={abForm.subtotal} onChange={e => setAbField('subtotal', e.target.value)} placeholder="0" />
+                            </div>
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>Discount (₹)</label>
+                              <input type="number" style={inputStyle} value={abForm.discount_amount} onChange={e => setAbField('discount_amount', e.target.value)} placeholder="0" />
+                            </div>
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>GST (₹)</label>
+                              <input type="number" style={inputStyle} value={abForm.gst_amount} onChange={e => setAbField('gst_amount', e.target.value)} placeholder="0" />
+                            </div>
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>Total Amount (₹) *</label>
+                              <input required type="number" style={inputStyle} value={abForm.total_price} onChange={e => setAbField('total_price', e.target.value)} placeholder="0" />
+                            </div>
+
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>Booking Status</label>
+                              <select style={inputStyle} value={abForm.booking_status} onChange={e => setAbField('booking_status', e.target.value)}>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="pending">Pending</option>
+                                <option value="accepted">Accepted</option>
+                                <option value="cancelled">Cancelled</option>
+                                <option value="rejected">Rejected</option>
+                              </select>
+                            </div>
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>Payment Status</label>
+                              <select style={inputStyle} value={abForm.payment_status} onChange={e => setAbField('payment_status', e.target.value)}>
+                                <option value="paid">Paid</option>
+                                <option value="pending">Pending</option>
+                              </select>
+                            </div>
+
+                            <div style={{ ...fieldWrap, gridColumn: '1 / -1' }}>
+                              <label style={labelStyle}>Photo ID (optional)</label>
+                              {abPhotoPreview ? (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                  <img src={abPhotoPreview} alt="Preview" style={{ width: 84, height: 58, objectFit: 'cover', borderRadius: 8, border: '1.5px solid #e2e8f0' }} />
+                                  <div style={{ flex: 1, fontSize: 12.5, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{abPhotoFile?.name}</div>
+                                  <button type="button" onClick={() => { setAbPhotoFile(null); setAbPhotoPreview(''); }}
+                                    style={{ padding: '6px 12px', borderRadius: 7, border: '1.5px solid #e2e8f0', background: '#fff', color: '#dc2626', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
+                                    Remove
+                                  </button>
+                                </div>
+                              ) : (
+                                <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '14px', borderRadius: 8, border: '1.5px dashed #cbd5e1', background: '#f8fafc', color: '#64748b', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                                  🪪 Click to upload ID photo (JPG/PNG)
+                                  <input
+                                    type="file" accept="image/*" style={{ display: 'none' }}
+                                    onChange={e => {
+                                      const file = e.target.files?.[0];
+                                      if (!file) return;
+                                      setAbPhotoFile(file);
+                                      setAbPhotoPreview(URL.createObjectURL(file));
+                                    }}
+                                  />
+                                </label>
+                              )}
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 8 }}>
+                            <button type="button" onClick={closeAbAdd} disabled={abSaving}
+                              style={{ padding: '10px 20px', borderRadius: 9, border: '1.5px solid #e2e8f0', background: '#fff', color: '#475569', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
+                              Cancel
+                            </button>
+                            <button type="submit" disabled={abSaving}
+                              style={{ padding: '10px 22px', borderRadius: 9, border: 'none', background: '#16a34a', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', opacity: abSaving ? 0.7 : 1 }}>
+                              {abSaving ? 'Saving...' : 'Add Booking'}
+                            </button>
+                          </div>
+                        </form>
+                      </div>
                     </div>
                   )}
                 </div>
