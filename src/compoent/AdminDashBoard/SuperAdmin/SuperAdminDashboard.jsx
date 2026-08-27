@@ -97,11 +97,14 @@ export default function SuperAdminDashboard() {
   const [abSearch, setAbSearch] = useState('');
   const [abPhotoModal, setAbPhotoModal] = useState(null);
   const [abAddOpen, setAbAddOpen] = useState(false);
+  const [abEditingId, setAbEditingId] = useState(null); // null = Add mode, else id of record being edited
   const [abSaving, setAbSaving] = useState(false);
+  const [abDeletingId, setAbDeletingId] = useState(null);
   const [abPhotoFile, setAbPhotoFile] = useState(null); // File object for upload
-  const [abPhotoPreview, setAbPhotoPreview] = useState(''); // local object URL for preview
+  const [abPhotoPreview, setAbPhotoPreview] = useState(''); // local object URL (new file) or existing photo URL (edit mode)
   const AB_EMPTY_FORM = {
     username: '', phone_number: '', property_name: '', city: '', property_id: '',
+    confirmation_code: '',
     start_date: '', end_date: '',
     id_type: 'aadhaar', aadhar_number: '', passport_number: '', passport_name: '', passport_dob: '',
     subtotal: '', discount_amount: '', gst_amount: '', total_price: '',
@@ -581,7 +584,7 @@ export default function SuperAdminDashboard() {
     }
   };
 
-  // ── Airbnb Data Maintain — POST new record (manual entry from the Add popup, multipart with optional photo file) ──
+  // ── Airbnb Data Maintain — POST new / PUT existing record (Add or Edit popup, multipart with optional photo file) ──
   const handleAirbnbAddSubmit = async (e) => {
     e.preventDefault();
     if (abForm.phone_number.replace(/\D/g, '').length !== 10) {
@@ -596,24 +599,47 @@ export default function SuperAdminDashboard() {
       });
       if (abPhotoFile) fd.append('user_photo', abPhotoFile);
 
-      const res = await axios.post('https://www.townmanor.ai/api/airbnb-bookings', fd, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      const created = res.data?.data || res.data;
-      if (created && typeof created === 'object') {
-        setAbList(prev => [created, ...prev]);
+      const isEdit = !!abEditingId;
+      const url = isEdit
+        ? `https://www.townmanor.ai/api/airbnb-bookings/${abEditingId}`
+        : 'https://www.townmanor.ai/api/airbnb-bookings';
+      const res = isEdit
+        ? await axios.put(url, fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+        : await axios.post(url, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+
+      const saved = res.data?.data || res.data;
+      if (saved && typeof saved === 'object') {
+        setAbList(prev => isEdit
+          ? prev.map(b => (b.id === abEditingId ? saved : b))
+          : [saved, ...prev]);
       } else {
         fetchAirbnbData();
       }
       setAbAddOpen(false);
+      setAbEditingId(null);
       setAbForm(AB_EMPTY_FORM);
       setAbPhotoFile(null);
       setAbPhotoPreview('');
     } catch (e) {
-      console.error('Airbnb data create failed', e);
+      console.error('Airbnb data save failed', e);
       alert(e.response?.data?.message || 'Could not save this record. Please try again.');
     } finally {
       setAbSaving(false);
+    }
+  };
+
+  // ── Airbnb Data Maintain — DELETE a record ──
+  const handleAirbnbDelete = async (id) => {
+    if (!window.confirm('Delete this Airbnb booking record? This cannot be undone.')) return;
+    setAbDeletingId(id);
+    try {
+      await axios.delete(`https://www.townmanor.ai/api/airbnb-bookings/${id}`);
+      setAbList(prev => prev.filter(b => b.id !== id));
+    } catch (e) {
+      console.error('Airbnb data delete failed', e);
+      alert(e.response?.data?.message || 'Could not delete this record. Please try again.');
+    } finally {
+      setAbDeletingId(null);
     }
   };
 
@@ -3834,13 +3860,38 @@ export default function SuperAdminDashboard() {
                 (b.property_name || '').toLowerCase().includes(q) ||
                 String(b.property_id || '').includes(q) ||
                 String(b.id || '').includes(q) ||
-                (b.aadhar_number || '').toLowerCase().includes(q)
+                (b.aadhar_number || '').toLowerCase().includes(q) ||
+                (b.confirmation_code || '').toLowerCase().includes(q)
               );
               const totalAmount = abList.reduce((s, b) => s + Number(b.total_price || b.total_amount || b.amount || 0), 0);
               const confirmed = abList.filter(b => (b.booking_status || b.status || '').toLowerCase() === 'confirmed').length;
 
               const setAbField = (name, value) => setAbForm(f => ({ ...f, [name]: value }));
-              const closeAbAdd = () => { setAbAddOpen(false); setAbPhotoFile(null); setAbPhotoPreview(''); };
+              const closeAbAdd = () => { setAbAddOpen(false); setAbEditingId(null); setAbPhotoFile(null); setAbPhotoPreview(''); };
+              const openAbAdd = () => { setAbForm(AB_EMPTY_FORM); setAbEditingId(null); setAbPhotoFile(null); setAbPhotoPreview(''); setAbAddOpen(true); };
+              const openAbEdit = (b) => {
+                setAbForm({
+                  username: b.username || '', phone_number: b.phone_number || '',
+                  property_name: b.property_name || b.property?.name || '', city: b.city || b.property?.city || '',
+                  property_id: b.property_id ?? '',
+                  confirmation_code: b.confirmation_code || '',
+                  start_date: b.start_date ? String(b.start_date).slice(0, 10) : '',
+                  end_date: b.end_date ? String(b.end_date).slice(0, 10) : '',
+                  id_type: b.id_type || (b.passport_number ? 'passport' : 'aadhaar'),
+                  aadhar_number: b.aadhar_number || '', passport_number: b.passport_number || '',
+                  passport_name: b.passport_name || '',
+                  passport_dob: b.passport_dob ? String(b.passport_dob).slice(0, 10) : '',
+                  subtotal: b.subtotal ?? '', discount_amount: b.discount_amount ?? '',
+                  gst_amount: b.gst_amount ?? '', total_price: b.total_price ?? '',
+                  booking_status: b.booking_status || b.status || 'pending',
+                  payment_status: b.payment_status || 'pending',
+                });
+                const rawPhoto = b.user_photo || '';
+                setAbPhotoFile(null);
+                setAbPhotoPreview(rawPhoto ? (rawPhoto.startsWith('http') ? rawPhoto : `https://www.townmanor.ai${rawPhoto}`) : '');
+                setAbEditingId(b.id);
+                setAbAddOpen(true);
+              };
               const inputStyle = { width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid #e2e8f0', fontSize: 13, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' };
               const labelStyle = { display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.03em' };
               const fieldWrap = { marginBottom: 14 };
@@ -3864,12 +3915,12 @@ export default function SuperAdminDashboard() {
                   {/* Search + Add + Refresh */}
                   <div style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'center', flexWrap: 'wrap' }}>
                     <input
-                      placeholder="Search by name, phone, property, Aadhaar, booking ID..."
+                      placeholder="Search by name, phone, property, Aadhaar, confirmation code, booking ID..."
                       value={abSearch}
                       onChange={e => setAbSearch(e.target.value)}
                       style={{ flex: 1, minWidth: 260, padding: '9px 14px', borderRadius: 9, border: '1.5px solid #e2e8f0', fontSize: 13, outline: 'none' }}
                     />
-                    <button onClick={() => { setAbForm(AB_EMPTY_FORM); setAbPhotoFile(null); setAbPhotoPreview(''); setAbAddOpen(true); }}
+                    <button onClick={openAbAdd}
                       style={{ padding: '9px 18px', borderRadius: 9, border: 'none', background: '#16a34a', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
                       + Add
                     </button>
@@ -3891,9 +3942,10 @@ export default function SuperAdminDashboard() {
                       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                         <thead>
                           <tr style={{ background: '#f8fafc' }}>
-                            {['#ID','Photo ID','Customer','Phone','Property','Dates','Aadhaar / Passport','Amount','Status','Submitted'].map(h => (
+                            {['#ID','Photo ID','Customer','Phone','Property','Confirmation Code','Dates','Aadhaar / Passport','Amount','Status','Submitted'].map(h => (
                               <th key={h} style={{ padding: '12px 14px', textAlign: 'left', fontWeight: 700, fontSize: 11, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1.5px solid #e2e8f0', whiteSpace: 'nowrap' }}>{h}</th>
                             ))}
+                            <th style={{ padding: '12px 14px', textAlign: 'left', fontWeight: 700, fontSize: 11, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1.5px solid #e2e8f0', borderLeft: '1.5px solid #e2e8f0', whiteSpace: 'nowrap', position: 'sticky', right: 0, background: '#f8fafc', zIndex: 2 }}>Actions</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -3970,6 +4022,13 @@ export default function SuperAdminDashboard() {
                                   {b.property_id ? <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>ID: {b.property_id}</div> : null}
                                 </td>
 
+                                {/* Confirmation Code */}
+                                <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                                  {b.confirmation_code
+                                    ? <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: 12, color: '#334155', background: '#f1f5f9', padding: '3px 8px', borderRadius: 6 }}>{b.confirmation_code}</span>
+                                    : <span style={{ color: '#cbd5e1' }}>—</span>}
+                                </td>
+
                                 {/* Dates */}
                                 <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
                                   <div style={{ fontSize: 12, color: '#334155' }}>{fmtD(b.start_date)} →</div>
@@ -4027,6 +4086,20 @@ export default function SuperAdminDashboard() {
                                   {b.created_at ? new Date(b.created_at).toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12: true }) : '—'}
                                 </td>
 
+                                {/* Actions */}
+                                <td style={{ padding: '12px 14px', whiteSpace: 'nowrap', position: 'sticky', right: 0, background: i % 2 === 0 ? '#fff' : '#fafafa', borderLeft: '1.5px solid #e2e8f0' }}>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: 5, width: 74 }}>
+                                    <button onClick={() => openAbEdit(b)}
+                                      style={{ padding: '5px 8px', borderRadius: 7, border: '1.5px solid #c2772b', background: '#fff', color: '#c2772b', fontWeight: 700, fontSize: 11, cursor: 'pointer', width: '100%' }}>
+                                      ✎ Edit
+                                    </button>
+                                    <button onClick={() => handleAirbnbDelete(b.id)} disabled={abDeletingId === b.id}
+                                      style={{ padding: '5px 8px', borderRadius: 7, border: '1.5px solid #dc2626', background: '#fff', color: '#dc2626', fontWeight: 700, fontSize: 11, cursor: 'pointer', opacity: abDeletingId === b.id ? 0.6 : 1, width: '100%' }}>
+                                      {abDeletingId === b.id ? '...' : '🗑 Del'}
+                                    </button>
+                                  </div>
+                                </td>
+
                               </tr>
                             );
                           })}
@@ -4044,13 +4117,15 @@ export default function SuperAdminDashboard() {
 
                   {/* Add popup — manual entry form */}
                   {abAddOpen && (
-                    <div onClick={() => !abSaving && closeAbAdd()} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.55)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 9999, padding: '40px 16px', overflowY: 'auto' }}>
-                      <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: 16, padding: '28px 28px 24px', width: '100%', maxWidth: 640, boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
+                    <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.55)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 9999, padding: '40px 16px', overflowY: 'auto' }}>
+                      <div style={{ background: '#fff', borderRadius: 16, padding: '28px 28px 24px', width: '100%', maxWidth: 640, boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                          <h3 style={{ margin: 0, fontSize: 19, fontWeight: 800, color: '#1e293b' }}>Add Airbnb Booking</h3>
+                          <h3 style={{ margin: 0, fontSize: 19, fontWeight: 800, color: '#1e293b' }}>{abEditingId ? `Edit Airbnb Booking #${abEditingId}` : 'Add Airbnb Booking'}</h3>
                           <button onClick={closeAbAdd} style={{ border: 'none', background: 'none', fontSize: 20, color: '#94a3b8', cursor: 'pointer', lineHeight: 1 }}>✕</button>
                         </div>
-                        <p style={{ margin: '0 0 20px', fontSize: 12.5, color: '#64748b' }}>Manually add a booking that came in through Airbnb — it'll appear in the table above.</p>
+                        <p style={{ margin: '0 0 20px', fontSize: 12.5, color: '#64748b' }}>
+                          {abEditingId ? 'Update the details below — changes save straight to this record.' : "Manually add a booking that came in through Airbnb — it'll appear in the table above."}
+                        </p>
 
                         <form onSubmit={handleAirbnbAddSubmit}>
                           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
@@ -4074,7 +4149,10 @@ export default function SuperAdminDashboard() {
                               <label style={labelStyle}>Property ID</label>
                               <input type="number" style={inputStyle} value={abForm.property_id} onChange={e => setAbField('property_id', e.target.value)} placeholder="Optional" />
                             </div>
-                            <div />
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>Confirmation Code</label>
+                              <input style={inputStyle} value={abForm.confirmation_code} onChange={e => setAbField('confirmation_code', e.target.value)} placeholder="Airbnb confirmation code, e.g. HMABCD1234" />
+                            </div>
                             <div style={fieldWrap}>
                               <label style={labelStyle}>Check-in *</label>
                               <input required type="date" style={inputStyle} value={abForm.start_date} onChange={e => setAbField('start_date', e.target.value)} />
@@ -4155,7 +4233,7 @@ export default function SuperAdminDashboard() {
                               {abPhotoPreview ? (
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                                   <img src={abPhotoPreview} alt="Preview" style={{ width: 84, height: 58, objectFit: 'cover', borderRadius: 8, border: '1.5px solid #e2e8f0' }} />
-                                  <div style={{ flex: 1, fontSize: 12.5, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{abPhotoFile?.name}</div>
+                                  <div style={{ flex: 1, fontSize: 12.5, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{abPhotoFile?.name || 'Current photo (upload a new one to replace it)'}</div>
                                   <button type="button" onClick={() => { setAbPhotoFile(null); setAbPhotoPreview(''); }}
                                     style={{ padding: '6px 12px', borderRadius: 7, border: '1.5px solid #e2e8f0', background: '#fff', color: '#dc2626', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
                                     Remove
@@ -4185,7 +4263,7 @@ export default function SuperAdminDashboard() {
                             </button>
                             <button type="submit" disabled={abSaving}
                               style={{ padding: '10px 22px', borderRadius: 9, border: 'none', background: '#16a34a', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', opacity: abSaving ? 0.7 : 1 }}>
-                              {abSaving ? 'Saving...' : 'Add Booking'}
+                              {abSaving ? 'Saving...' : (abEditingId ? 'Save Changes' : 'Add Booking')}
                             </button>
                           </div>
                         </form>

@@ -1,54 +1,54 @@
 # Airbnb Data Maintain — Backend TODO
 
-Admin panel mein ek naya section "Airbnb Data Maintain" add kiya gaya hai (Booking Inquiries jaisa hi table, bas manually Airbnb bookings add karne ke liye). Frontend ready hai, sirf ye 2 APIs banani hain — bilkul `booking-request` jaisi hi shape mein.
+Admin panel ke "Airbnb Data Maintain" section mein ab table ke har row pe **Edit** aur **Delete** button bhi hain (GET/POST already ban chuke hain aur kaam kar rahe hain — un mein koi change nahi). Iske liye 2 naye endpoints chahiye: **PUT** (update) aur **DELETE** (remove), same table (`airbnb_bookings`) pe.
 
-## 1. GET — list
+Ek naya field bhi add hua hai — **`confirmation_code`** (Airbnb ka booking confirmation code, jaise `HMABCD1234` — alphanumeric, letters aur numbers dono ho sakte hain). Ye field GET, POST, aur PUT — teeno mein hai. DB table mein ek column add karna hoga:
+
+```sql
+ALTER TABLE airbnb_bookings ADD COLUMN confirmation_code VARCHAR(50) NULL;
+```
+
+Base URL: `https://www.townmanor.ai/api/airbnb-bookings`
+
+---
+
+## 1. PUT — record update karo (Edit popup se)
 
 ```
-GET https://www.townmanor.ai/api/airbnb-bookings
-```
-
-Response: array of records (ya `{ data: [...] }`), same fields jo neeche di hain. Sort by `created_at` desc frontend khud kar leta hai.
-
-## 2. POST — create (Add popup se)
-
-Ye request ab **`multipart/form-data`** hai (JSON nahi), kyunki Photo ID ab ek text URL field nahi hai — admin seedha apne computer se photo file upload karta hai.
-
-```
-POST https://www.townmanor.ai/api/airbnb-bookings
+PUT https://www.townmanor.ai/api/airbnb-bookings/:id
 Content-Type: multipart/form-data
 ```
 
-Form fields (jo bhi khaali chhoda gaya wo bilkul bheja hi nahi jaata, field missing samjho):
+POST jaisi hi body hai (same fields, same multer setup reuse ho sakta hai) — bas URL mein record ka `id` jaata hai. Fields wahi hain jo POST mein hain:
 
-| Field | Type | Notes |
-|---|---|---|
-| `username` | text | Guest full name |
-| `phone_number` | text | 10-digit mobile |
-| `property_name` | text | e.g. "Ovika Signature 5" |
-| `city` | text | e.g. "Noida" |
-| `property_id` | text (number) | optional |
-| `start_date` | text (`YYYY-MM-DD`) | check-in |
-| `end_date` | text (`YYYY-MM-DD`) | check-out |
-| `id_type` | text | `"aadhaar"` or `"passport"` |
-| `aadhar_number` | text | if id_type = aadhaar |
-| `passport_number` | text | if id_type = passport |
-| `passport_name` | text | if id_type = passport |
-| `passport_dob` | text | if id_type = passport |
-| `subtotal` | text (number) | ₹ |
-| `discount_amount` | text (number) | ₹ |
-| `gst_amount` | text (number) | ₹ |
-| `total_price` | text (number) | ₹ |
-| `booking_status` | text | `confirmed \| pending \| accepted \| cancelled \| rejected` |
-| `payment_status` | text | `paid \| pending` |
-| `user_photo` | **file** (image, jpg/png) | optional — actual uploaded photo, present only if admin ne file choose ki ho |
+`username`, `phone_number`, `property_name`, `city`, `property_id`, `confirmation_code`, `start_date`, `end_date`, `id_type`, `aadhar_number`, `passport_number`, `passport_name`, `passport_dob`, `subtotal`, `discount_amount`, `gst_amount`, `total_price`, `booking_status`, `payment_status`, aur optional file `user_photo`.
 
-Notes:
-- Backend ko multipart parser lagana hoga (e.g. `multer` Node mein). `user_photo` file ko apne storage (S3 / local `/uploads`) mein save karke uska URL/path DB mein store karna hai.
-- `id_type` ya to `"aadhaar"` ya `"passport"` — usi ke hisaab se `aadhar_number` ya `passport_number`/`passport_name`/`passport_dob` bhare honge.
-- Response mein created record wapas bhej do (poora object with `id`, `created_at`, aur `user_photo` ki final saved **URL** ya relative path) — agar nahi bheja to frontend list dubara GET kar lega, lekin turant table mein dikhane ke liye best hai ki bana hua record hi return ho.
+**Important:** `user_photo` field **sirf tab aayegi jab admin ne naya photo select kiya ho**. Agar admin sirf naam/status jaisi cheez edit kar raha hai aur photo nahi chhedi, to `user_photo` field is request mein bilkul nahi aayegi — us case mein **purani photo waisi hi rehni chahiye** (overwrite/delete mat karo).
 
-## Response record shape (dono GET aur POST ke liye)
+Success (200): updated record wapas bhejo, poora object (jaisa GET/POST mein aata hai — `data` ke andar ya seedha, dono chalega frontend handle kar leta hai).
+
+Error (400/404): 
+```json
+{ "success": false, "message": "Booking not found" }
+```
+
+## 2. DELETE — record delete karo
+
+```
+DELETE https://www.townmanor.ai/api/airbnb-bookings/:id
+```
+
+Success (200): kuch bhi bhej do, frontend list se hata deta hai apne aap. Agar record na mile to 404 + `{ "success": false, "message": "..." }`.
+
+---
+
+## Reference — GET aur POST already bane hue hain (recap, koi change nahi)
+
+**GET** `https://www.townmanor.ai/api/airbnb-bookings` → `{ success: true, data: [ ...records ] }`
+
+**POST** `https://www.townmanor.ai/api/airbnb-bookings` (multipart/form-data) → same fields jo upar likhe hain, `user_photo` file optional, response mein poora saved record (201).
+
+Record shape (GET, POST, PUT teeno mein same):
 
 ```json
 {
@@ -58,6 +58,7 @@ Notes:
   "property_name": "string",
   "city": "string",
   "property_id": 81,
+  "confirmation_code": "HMABCD1234",
   "start_date": "2026-10-07",
   "end_date": "2026-10-10",
   "id_type": "aadhaar",
@@ -71,9 +72,10 @@ Notes:
   "total_price": 8186.85,
   "booking_status": "confirmed",
   "payment_status": "paid",
-  "user_photo": "",
-  "created_at": "2026-10-01T10:30:00Z"
+  "user_photo": "/files/airbnb-bookings/1787566840523-user_photo.jpg",
+  "created_at": "2026-08-24T10:20:13.000Z",
+  "updated_at": "2026-08-24T10:20:13.000Z"
 }
 ```
 
-Yehi table `booking-request` API se milta-julta hai, bas ek naya table/collection banega (kyunki ye Airbnb se aayi hui bookings hain jo manually enter ki ja rahi hain, real property bookings se alag rakhni hain).
+Bas itna hi karna hai — PUT aur DELETE dono short hain, existing GET/POST code (multer setup, validation) largely reuse ho jayega.
