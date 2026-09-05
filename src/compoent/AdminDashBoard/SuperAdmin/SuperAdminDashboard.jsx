@@ -70,6 +70,14 @@ export default function SuperAdminDashboard() {
   });
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [loginError, setLoginError] = useState('');
+  const [saLoginStep, setSaLoginStep] = useState('credentials'); // 'credentials' | 'otp'
+  const [saMobileNumber, setSaMobileNumber] = useState('');
+  const [saOtpInput, setSaOtpInput] = useState('');
+  const [saOtpSent, setSaOtpSent] = useState(false);
+  const [saOtpClientId, setSaOtpClientId] = useState('');
+  const [saOtpLoading, setSaOtpLoading] = useState(false);
+  const [saOtpVerifying, setSaOtpVerifying] = useState(false);
+  const [saOtpError, setSaOtpError] = useState('');
 
   const [view, setView] = useState('dashboard'); // 'dashboard', 'properties', 'users', 'bookings', 'finance', 'settings', 'leads', 'meta-leads', 'reviews', 'verification', 'self-verification'
 
@@ -822,17 +830,85 @@ export default function SuperAdminDashboard() {
     const ADMIN_PASS = "ankushmishra@2609";
 
     if (loginForm.email === ADMIN_EMAIL && loginForm.password === ADMIN_PASS) {
-      setIsSuperAdminAuthenticated(true);
-      sessionStorage.setItem('sa_auth', 'true');
       setLoginError('');
+      setSaLoginStep('otp'); // move to mobile OTP step instead of granting access directly
     } else {
       setLoginError('Invalid Email or Password');
+    }
+  };
+
+  // Only this exact number is allowed for the admin panel's second security layer.
+  const ALLOWED_ADMIN_MOBILE = '6392058759';
+  const SUREPASS_AUTH_HEADER = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxMDE0NjA5NiwianRpIjoiNmM0YWMxNTMtNDE2MS00YzliLWI4N2EtZWIxYjhmNDRiOTU5IiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LnVzZXJuYW1lXzJ5MTV1OWk0MW10bjR3eWpsaTh6b2p6eXZiZEBzdXJlcGFzcy5pbyIsIm5iZiI6MTcxMDE0NjA5NiwiZXhwIjoyMzQwODY2MDk2LCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsidXNlciJdfX0.DfipEQt4RqFBQbOK29jbQju3slpn0wF9aoccdmtIsPg';
+
+  const handleSendAdminOTP = async (e) => {
+    e.preventDefault();
+    setSaOtpError('');
+    if (saMobileNumber !== ALLOWED_ADMIN_MOBILE) {
+      setSaOtpError('Invalid mobile number.');
+      return;
+    }
+    setSaOtpLoading(true);
+    try {
+      const response = await axios.post(
+        'https://kyc-api.surepass.app/api/v1/telecom/generate-otp',
+        { id_number: saMobileNumber },
+        { headers: { 'Authorization': SUREPASS_AUTH_HEADER } }
+      );
+      if (response.data?.success && response.data?.data?.client_id) {
+        setSaOtpClientId(response.data.data.client_id);
+        setSaOtpSent(true);
+      } else {
+        throw new Error(response.data?.message || 'Failed to send OTP');
+      }
+    } catch (error) {
+      setSaOtpError(error.response?.data?.message || 'Failed to send OTP. Please try again.');
+    } finally {
+      setSaOtpLoading(false);
+    }
+  };
+
+  const handleVerifyAdminOTP = async (e) => {
+    e.preventDefault();
+    setSaOtpError('');
+    if (!saOtpInput || saOtpInput.length < 4) {
+      setSaOtpError('Please enter a valid OTP.');
+      return;
+    }
+    if (!saOtpClientId) {
+      setSaOtpError('Session expired. Please request OTP again.');
+      return;
+    }
+    setSaOtpVerifying(true);
+    try {
+      const response = await axios.post(
+        'https://kyc-api.surepass.app/api/v1/telecom/submit-otp',
+        { client_id: saOtpClientId, otp: saOtpInput },
+        { headers: { 'Authorization': SUREPASS_AUTH_HEADER } }
+      );
+      if (response.data?.success) {
+        setIsSuperAdminAuthenticated(true);
+        sessionStorage.setItem('sa_auth', 'true');
+      } else {
+        throw new Error(response.data?.message || 'OTP verification failed');
+      }
+    } catch (error) {
+      setSaOtpError(error.response?.data?.message || 'Invalid OTP. Please try again.');
+    } finally {
+      setSaOtpVerifying(false);
     }
   };
 
   const handleSALogout = () => {
     setIsSuperAdminAuthenticated(false);
     sessionStorage.removeItem('sa_auth');
+    setSaLoginStep('credentials');
+    setLoginForm({ email: '', password: '' });
+    setSaMobileNumber('');
+    setSaOtpInput('');
+    setSaOtpSent(false);
+    setSaOtpClientId('');
+    setSaOtpError('');
   };
 
   
@@ -1257,34 +1333,78 @@ export default function SuperAdminDashboard() {
         <div className="sa-login-card">
           <div className="sa-login-header">
             <span className="sa-brand">OvikaLiving<span className="sa-badge">Admin</span></span>
-            <p>Please sign in to access control panel</p>
+            <p>{saLoginStep === 'credentials' ? 'Please sign in to access control panel' : 'Verify your mobile number to continue'}</p>
           </div>
-          <form onSubmit={handleSALogin} className="sa-login-form">
-            <div className="sa-input-group">
-              <label>Email Address</label>
-              <input 
-                type="email" 
-                placeholder="Enter admin email"
-                value={loginForm.email}
-                onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
-                required
-              />
-            </div>
-            <div className="sa-input-group">
-              <label>Password</label>
-              <input 
-                type="password" 
-                placeholder="Enter password"
-                value={loginForm.password}
-                onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-                required
-              />
-            </div>
-            {loginError && <p className="sa-login-error">{loginError}</p>}
-            <button type="submit" className="sa-btn-primary sa-login-btn">
-              Acess Dashboard
-            </button>
-          </form>
+          {saLoginStep === 'credentials' ? (
+            <form onSubmit={handleSALogin} className="sa-login-form">
+              <div className="sa-input-group">
+                <label>Email Address</label>
+                <input
+                  type="email"
+                  placeholder="Enter admin email"
+                  value={loginForm.email}
+                  onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="sa-input-group">
+                <label>Password</label>
+                <input
+                  type="password"
+                  placeholder="Enter password"
+                  value={loginForm.password}
+                  onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                  required
+                />
+              </div>
+              {loginError && <p className="sa-login-error">{loginError}</p>}
+              <button type="submit" className="sa-btn-primary sa-login-btn">
+                Acess Dashboard
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={saOtpSent ? handleVerifyAdminOTP : handleSendAdminOTP} className="sa-login-form">
+              <div className="sa-input-group">
+                <label>Mobile Number</label>
+                <input
+                  type="tel"
+                  placeholder="Enter mobile number"
+                  value={saMobileNumber}
+                  onChange={(e) => setSaMobileNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                  disabled={saOtpSent}
+                  maxLength={10}
+                  required
+                />
+              </div>
+              {saOtpSent && (
+                <div className="sa-input-group">
+                  <label>Enter OTP</label>
+                  <input
+                    type="text"
+                    placeholder="6-digit OTP"
+                    value={saOtpInput}
+                    onChange={(e) => setSaOtpInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    maxLength={6}
+                    required
+                  />
+                </div>
+              )}
+              {saOtpError && <p className="sa-login-error">{saOtpError}</p>}
+              <button type="submit" className="sa-btn-primary sa-login-btn" disabled={saOtpLoading || saOtpVerifying}>
+                {saOtpSent
+                  ? (saOtpVerifying ? 'Verifying...' : 'Verify OTP')
+                  : (saOtpLoading ? 'Sending OTP...' : 'Send OTP')}
+              </button>
+              <button
+                type="button"
+                className="sa-login-error"
+                style={{ background: 'none', border: 'none', textDecoration: 'underline', cursor: 'pointer', marginTop: 8 }}
+                onClick={() => { setSaLoginStep('credentials'); setSaOtpSent(false); setSaOtpInput(''); setSaOtpError(''); setSaMobileNumber(''); }}
+              >
+                Back
+              </button>
+            </form>
+          )}
         </div>
       </div>
     );
