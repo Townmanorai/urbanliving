@@ -120,6 +120,25 @@ export default function SuperAdminDashboard() {
   };
   const [abForm, setAbForm] = useState(AB_EMPTY_FORM);
 
+  // ── Owner Consent Record states ──
+  const OWNER_CONSENT_API = 'https://www.townmanor.ai/api/owner-consent';
+  const [ocList, setOcList] = useState([]);
+  const [ocLoading, setOcLoading] = useState(false);
+  const [ocSearch, setOcSearch] = useState('');
+  const [ocAddOpen, setOcAddOpen] = useState(false);
+  const [ocEditingId, setOcEditingId] = useState(null); // null = Add mode, else id of record being edited
+  const [ocSaving, setOcSaving] = useState(false);
+  const [ocDeletingId, setOcDeletingId] = useState(null);
+  const [ocPhotoFile, setOcPhotoFile] = useState(null); // File object for new upload
+  const [ocPhotoPreview, setOcPhotoPreview] = useState(''); // local preview (new file) or existing stored image URL
+  const [ocPhotoModal, setOcPhotoModal] = useState(null);
+  const ocImageUrl = (path) => path ? (String(path).startsWith('http') ? path : `https://www.townmanor.ai${path}`) : '';
+  const OC_EMPTY_FORM = {
+    owner_name: '', property_name: '', property_id: '', property_location: '',
+    property_link: '', phone_number: '', email: '', consent_remark: '', remark_summary: '',
+  };
+  const [ocForm, setOcForm] = useState(OC_EMPTY_FORM);
+
   // ── Owner Details states ──
   const [ownersList, setOwnersList] = useState([]);
   const [ownersLoading, setOwnersLoading] = useState(false);
@@ -516,6 +535,7 @@ export default function SuperAdminDashboard() {
     if (view === 'lead-purchases') fetchLeadPurchases();
     if (view === 'booking-inquiries') fetchBookingInquiries();
     if (view === 'airbnb-data') fetchAirbnbData();
+    if (view === 'owner-consent') fetchOwnerConsentRecords();
     if (view === 'owners') fetchOwners();
   }, [view]);
 
@@ -648,6 +668,79 @@ export default function SuperAdminDashboard() {
       alert(e.response?.data?.message || 'Could not delete this record. Please try again.');
     } finally {
       setAbDeletingId(null);
+    }
+  };
+
+  // ── Owner Consent Record — GET list ──
+  const fetchOwnerConsentRecords = async () => {
+    setOcLoading(true);
+    try {
+      const res = await axios.get(OWNER_CONSENT_API);
+      const list = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+      setOcList(list);
+    } catch (e) {
+      console.error('Owner consent records fetch failed', e);
+      setOcList([]);
+    } finally {
+      setOcLoading(false);
+    }
+  };
+
+  // ── Owner Consent Record — POST new / PUT existing record (multipart, optional consent_image file) ──
+  const handleOwnerConsentSubmit = async (e) => {
+    e.preventDefault();
+    if (!ocForm.owner_name.trim() || !ocForm.property_name.trim()) {
+      alert('Please fill in at least Owner Name and Property Name.');
+      return;
+    }
+    setOcSaving(true);
+    try {
+      const fd = new FormData();
+      Object.entries(ocForm).forEach(([key, val]) => {
+        if (val !== '' && val !== null && val !== undefined) fd.append(key, val);
+      });
+      // Only send consent_image when a new file was picked — editing without touching the photo keeps the old one.
+      if (ocPhotoFile) fd.append('consent_image', ocPhotoFile);
+
+      const isEdit = !!ocEditingId;
+      const url = isEdit ? `${OWNER_CONSENT_API}/${ocEditingId}` : OWNER_CONSENT_API;
+      const res = isEdit
+        ? await axios.put(url, fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+        : await axios.post(url, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+
+      const saved = res.data?.data || res.data;
+      if (saved && typeof saved === 'object') {
+        setOcList(prev => isEdit
+          ? prev.map(r => (r.id === ocEditingId ? saved : r))
+          : [...prev, saved]); // appended at the end, so it shows up as the last row
+      } else {
+        fetchOwnerConsentRecords();
+      }
+      setOcAddOpen(false);
+      setOcEditingId(null);
+      setOcForm(OC_EMPTY_FORM);
+      setOcPhotoFile(null);
+      setOcPhotoPreview('');
+    } catch (e) {
+      console.error('Owner consent record save failed', e);
+      alert(e.response?.data?.message || 'Could not save this record. Please try again.');
+    } finally {
+      setOcSaving(false);
+    }
+  };
+
+  // ── Owner Consent Record — DELETE a record ──
+  const handleOwnerConsentDelete = async (id) => {
+    if (!window.confirm('Delete this owner consent record? This cannot be undone.')) return;
+    setOcDeletingId(id);
+    try {
+      await axios.delete(`${OWNER_CONSENT_API}/${id}`);
+      setOcList(prev => prev.filter(r => r.id !== id));
+    } catch (e) {
+      console.error('Owner consent record delete failed', e);
+      alert(e.response?.data?.message || 'Could not delete this record. Please try again.');
+    } finally {
+      setOcDeletingId(null);
     }
   };
 
@@ -1473,6 +1566,9 @@ export default function SuperAdminDashboard() {
                 <button className={view === 'airbnb-data' ? 'active' : ''} onClick={() => setView('airbnb-data')}>
                     <span className="sa-nav-icon">🏡</span> Airbnb Data Maintain
                 </button>
+                <button className={view === 'owner-consent' ? 'active' : ''} onClick={() => setView('owner-consent')}>
+                    <span className="sa-nav-icon">📝</span> Owner Consent Record
+                </button>
                 <button className={view === 'owners' ? 'active' : ''} onClick={() => setView('owners')} style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '4px', paddingTop: '12px' }}>
                     <span className="sa-nav-icon">👤</span> Owner Details
                 </button>
@@ -1505,6 +1601,7 @@ export default function SuperAdminDashboard() {
                 {view === 'lead-purchases' && 'Lead Purchases'}
                 {view === 'booking-inquiries' && 'Booking Inquiries'}
                 {view === 'airbnb-data' && 'Airbnb Data Maintain'}
+                {view === 'owner-consent' && 'Owner Consent Record'}
                 {view === 'listings-data' && 'Listings Data'}
             </h2>
             <div className="sa-user-controls">
@@ -4384,6 +4481,232 @@ export default function SuperAdminDashboard() {
                             <button type="submit" disabled={abSaving}
                               style={{ padding: '10px 22px', borderRadius: 9, border: 'none', background: '#16a34a', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', opacity: abSaving ? 0.7 : 1 }}>
                               {abSaving ? 'Saving...' : (abEditingId ? 'Save Changes' : 'Add Booking')}
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
+            {/* VIEW: OWNER CONSENT RECORD — manually-entered owner consent log */}
+            {view === 'owner-consent' && (() => {
+              const q = ocSearch.toLowerCase();
+              const filtered = ocList.filter(r =>
+                !q ||
+                (r.owner_name || '').toLowerCase().includes(q) ||
+                (r.property_name || '').toLowerCase().includes(q) ||
+                String(r.property_id || '').includes(q) ||
+                (r.property_location || '').toLowerCase().includes(q) ||
+                (r.phone_number || '').toLowerCase().includes(q) ||
+                (r.email || '').toLowerCase().includes(q)
+              );
+
+              const setOcField = (name, value) => setOcForm(f => ({ ...f, [name]: value }));
+              const closeOcAdd = () => { setOcAddOpen(false); setOcEditingId(null); setOcPhotoFile(null); setOcPhotoPreview(''); };
+              const openOcAdd = () => { setOcForm(OC_EMPTY_FORM); setOcEditingId(null); setOcPhotoFile(null); setOcPhotoPreview(''); setOcAddOpen(true); };
+              const openOcEdit = (r) => {
+                setOcForm({
+                  owner_name: r.owner_name || '', property_name: r.property_name || '', property_id: r.property_id ?? '',
+                  property_location: r.property_location || '', property_link: r.property_link || '',
+                  phone_number: r.phone_number || '', email: r.email || '',
+                  consent_remark: r.consent_remark || '', remark_summary: r.remark_summary || '',
+                });
+                setOcPhotoFile(null);
+                setOcPhotoPreview(ocImageUrl(r.consent_image));
+                setOcEditingId(r.id);
+                setOcAddOpen(true);
+              };
+              const onOcPhotoChange = (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                setOcPhotoFile(file);
+                const reader = new FileReader();
+                reader.onload = () => setOcPhotoPreview(reader.result);
+                reader.readAsDataURL(file);
+              };
+
+              const inputStyle = { width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid #e2e8f0', fontSize: 13, outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit' };
+              const labelStyle = { display: 'block', fontSize: 11.5, fontWeight: 700, color: '#475569', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.03em' };
+              const fieldWrap = { marginBottom: 14 };
+
+              return (
+                <div style={{ padding: '24px' }}>
+                  {/* Stats */}
+                  <div style={{ display: 'flex', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
+                    <div style={{ background: '#fff', border: '1.5px solid #e2e8f0', borderRadius: 14, padding: '16px 24px', flex: '1 1 160px', minWidth: 160 }}>
+                      <div style={{ fontSize: 12, color: '#64748b', fontWeight: 600, marginBottom: 6 }}>Total Consent Records</div>
+                      <div style={{ fontSize: 24, fontWeight: 800, color: '#3b82f6' }}>{ocList.length}</div>
+                    </div>
+                  </div>
+
+                  {/* Search + Add */}
+                  <div style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'center', flexWrap: 'wrap' }}>
+                    <input
+                      placeholder="Search by owner, property, location, phone, email..."
+                      value={ocSearch}
+                      onChange={e => setOcSearch(e.target.value)}
+                      style={{ flex: 1, minWidth: 260, padding: '9px 14px', borderRadius: 9, border: '1.5px solid #e2e8f0', fontSize: 13, outline: 'none' }}
+                    />
+                    <button onClick={openOcAdd}
+                      style={{ padding: '9px 18px', borderRadius: 9, border: 'none', background: '#16a34a', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
+                      + Add
+                    </button>
+                    <button onClick={fetchOwnerConsentRecords} disabled={ocLoading}
+                      style={{ padding: '9px 18px', borderRadius: 9, border: 'none', background: '#c2772b', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
+                      {ocLoading ? 'Loading...' : '↻ Refresh'}
+                    </button>
+                  </div>
+
+                  {/* Table */}
+                  {ocLoading ? (
+                    <div style={{ textAlign: 'center', padding: 60, color: '#94a3b8', fontSize: 15 }}>Loading consent records...</div>
+                  ) : filtered.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: 60, color: '#94a3b8', fontSize: 15 }}>
+                      {ocSearch ? 'No results found.' : 'No consent records yet. Click "+ Add" to create one.'}
+                    </div>
+                  ) : (
+                    <div style={{ overflowX: 'auto', borderRadius: 14, border: '1.5px solid #e2e8f0' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                        <thead>
+                          <tr style={{ background: '#f8fafc' }}>
+                            {['#ID','Owner Name','Property Name','Property ID','Location','Property Link','Phone','Email','Consent Image','Consent Remark','Remark Summary','Submitted'].map(h => (
+                              <th key={h} style={{ padding: '12px 14px', textAlign: 'left', fontWeight: 700, fontSize: 11, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1.5px solid #e2e8f0', whiteSpace: 'nowrap' }}>{h}</th>
+                            ))}
+                            <th style={{ padding: '12px 14px', textAlign: 'left', fontWeight: 700, fontSize: 11, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '1.5px solid #e2e8f0', borderLeft: '1.5px solid #e2e8f0', whiteSpace: 'nowrap', position: 'sticky', right: 0, background: '#f8fafc', zIndex: 2 }}>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filtered.map((r, i) => (
+                            <tr key={r.id || i} style={{ borderBottom: '1px solid #f1f5f9', background: i % 2 === 0 ? '#fff' : '#fafafa' }}>
+                              <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontSize: 12, color: '#64748b', whiteSpace: 'nowrap' }}>#{r.id}</td>
+                              <td style={{ padding: '12px 14px', fontWeight: 700, color: '#1e293b', whiteSpace: 'nowrap' }}>{r.owner_name || '—'}</td>
+                              <td style={{ padding: '12px 14px', maxWidth: 180 }}>{r.property_name || '—'}</td>
+                              <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>{r.property_id || '—'}</td>
+                              <td style={{ padding: '12px 14px', maxWidth: 160 }}>{r.property_location || '—'}</td>
+                              <td style={{ padding: '12px 14px', maxWidth: 160 }}>
+                                {r.property_link
+                                  ? <a href={r.property_link} target="_blank" rel="noopener noreferrer" style={{ color: '#c2772b', fontWeight: 600 }}>View Link</a>
+                                  : '—'}
+                              </td>
+                              <td style={{ padding: '12px 14px', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>{r.phone_number || '—'}</td>
+                              <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                                {r.email ? <a href={`mailto:${r.email}`} style={{ color: '#334155' }}>{r.email}</a> : '—'}
+                              </td>
+                              <td style={{ padding: '10px 14px' }}>
+                                {r.consent_image ? (
+                                  <img
+                                    src={ocImageUrl(r.consent_image)}
+                                    alt="Consent"
+                                    onClick={() => setOcPhotoModal(ocImageUrl(r.consent_image))}
+                                    style={{ width: 64, height: 44, borderRadius: 6, objectFit: 'cover', cursor: 'zoom-in', border: '1.5px solid #e2e8f0', display: 'block' }}
+                                  />
+                                ) : (
+                                  <div style={{ width: 64, height: 44, borderRadius: 6, background: '#f1f5f9', border: '1.5px dashed #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <span style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600 }}>NO IMAGE</span>
+                                  </div>
+                                )}
+                              </td>
+                              <td style={{ padding: '12px 14px', maxWidth: 200, fontSize: 12, color: '#334155' }}>{r.consent_remark || '—'}</td>
+                              <td style={{ padding: '12px 14px', maxWidth: 200, fontSize: 12, color: '#334155' }}>{r.remark_summary || '—'}</td>
+                              <td style={{ padding: '12px 14px', color: '#64748b', fontSize: 12, whiteSpace: 'nowrap' }}>
+                                {r.created_at ? new Date(r.created_at).toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12: true }) : '—'}
+                              </td>
+                              <td style={{ padding: '12px 14px', whiteSpace: 'nowrap', position: 'sticky', right: 0, background: i % 2 === 0 ? '#fff' : '#fafafa', borderLeft: '1.5px solid #e2e8f0' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 5, width: 74 }}>
+                                  <button onClick={() => openOcEdit(r)}
+                                    style={{ padding: '5px 8px', borderRadius: 7, border: '1.5px solid #c2772b', background: '#fff', color: '#c2772b', fontWeight: 700, fontSize: 11, cursor: 'pointer', width: '100%' }}>
+                                    ✎ Update
+                                  </button>
+                                  <button onClick={() => handleOwnerConsentDelete(r.id)} disabled={ocDeletingId === r.id}
+                                    style={{ padding: '5px 8px', borderRadius: 7, border: '1.5px solid #dc2626', background: '#fff', color: '#dc2626', fontWeight: 700, fontSize: 11, cursor: 'pointer', opacity: ocDeletingId === r.id ? 0.6 : 1, width: '100%' }}>
+                                    {ocDeletingId === r.id ? '...' : '🗑 Del'}
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
+                  {/* Photo lightbox */}
+                  {ocPhotoModal && (
+                    <div onClick={() => setOcPhotoModal(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, cursor: 'zoom-out' }}>
+                      <img src={ocPhotoModal} alt="Consent" style={{ maxWidth: '90vw', maxHeight: '85vh', borderRadius: 12, objectFit: 'contain', boxShadow: '0 8px 40px rgba(0,0,0,0.4)' }} />
+                    </div>
+                  )}
+
+                  {/* Add/Edit popup */}
+                  {ocAddOpen && (
+                    <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.55)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 9999, padding: '40px 16px', overflowY: 'auto' }}>
+                      <div style={{ background: '#fff', borderRadius: 16, padding: '28px 28px 24px', width: '100%', maxWidth: 640, boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                          <h3 style={{ margin: 0, fontSize: 19, fontWeight: 800, color: '#1e293b' }}>{ocEditingId ? `Update Consent Record #${ocEditingId}` : 'Add Owner Consent Record'}</h3>
+                          <button onClick={closeOcAdd} style={{ border: 'none', background: 'none', fontSize: 20, color: '#94a3b8', cursor: 'pointer', lineHeight: 1 }}>✕</button>
+                        </div>
+                        <p style={{ margin: '0 0 20px', fontSize: 12.5, color: '#64748b' }}>
+                          {ocEditingId ? 'Update the details below — changes save straight to this record.' : "Log an owner's consent details — it'll appear in the table above."}
+                        </p>
+
+                        <form onSubmit={handleOwnerConsentSubmit}>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>Owner Name</label>
+                              <input style={inputStyle} value={ocForm.owner_name} onChange={e => setOcField('owner_name', e.target.value)} required />
+                            </div>
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>Property Name</label>
+                              <input style={inputStyle} value={ocForm.property_name} onChange={e => setOcField('property_name', e.target.value)} required />
+                            </div>
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>Property ID</label>
+                              <input style={inputStyle} value={ocForm.property_id} onChange={e => setOcField('property_id', e.target.value)} />
+                            </div>
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>Property Location</label>
+                              <input style={inputStyle} value={ocForm.property_location} onChange={e => setOcField('property_location', e.target.value)} />
+                            </div>
+                            <div style={{ ...fieldWrap, gridColumn: '1 / -1' }}>
+                              <label style={labelStyle}>Property Link</label>
+                              <input style={inputStyle} type="url" placeholder="https://..." value={ocForm.property_link} onChange={e => setOcField('property_link', e.target.value)} />
+                            </div>
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>Phone Number</label>
+                              <input style={inputStyle} type="tel" value={ocForm.phone_number} onChange={e => setOcField('phone_number', e.target.value.replace(/\D/g, '').slice(0, 10))} />
+                            </div>
+                            <div style={fieldWrap}>
+                              <label style={labelStyle}>Email</label>
+                              <input style={inputStyle} type="email" value={ocForm.email} onChange={e => setOcField('email', e.target.value)} />
+                            </div>
+                            <div style={{ ...fieldWrap, gridColumn: '1 / -1' }}>
+                              <label style={labelStyle}>Owner Consent — Image</label>
+                              <input style={inputStyle} type="file" accept="image/*" onChange={onOcPhotoChange} />
+                              {ocPhotoPreview && (
+                                <img src={ocPhotoPreview} alt="Preview" style={{ marginTop: 8, width: 100, height: 68, objectFit: 'cover', borderRadius: 8, border: '1.5px solid #e2e8f0' }} />
+                              )}
+                            </div>
+                            <div style={{ ...fieldWrap, gridColumn: '1 / -1' }}>
+                              <label style={labelStyle}>Owner Consent — Remark</label>
+                              <textarea style={{ ...inputStyle, minHeight: 70, resize: 'vertical' }} value={ocForm.consent_remark} onChange={e => setOcField('consent_remark', e.target.value)} />
+                            </div>
+                            <div style={{ ...fieldWrap, gridColumn: '1 / -1' }}>
+                              <label style={labelStyle}>Remark Summary</label>
+                              <textarea style={{ ...inputStyle, minHeight: 70, resize: 'vertical' }} value={ocForm.remark_summary} onChange={e => setOcField('remark_summary', e.target.value)} />
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 8 }}>
+                            <button type="button" onClick={closeOcAdd} disabled={ocSaving}
+                              style={{ padding: '10px 20px', borderRadius: 9, border: '1.5px solid #e2e8f0', background: '#fff', color: '#475569', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
+                              Cancel
+                            </button>
+                            <button type="submit" disabled={ocSaving}
+                              style={{ padding: '10px 22px', borderRadius: 9, border: 'none', background: '#16a34a', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', opacity: ocSaving ? 0.7 : 1 }}>
+                              {ocSaving ? 'Saving...' : (ocEditingId ? 'Save Changes' : 'Add Record')}
                             </button>
                           </div>
                         </form>
