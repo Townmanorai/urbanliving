@@ -112,7 +112,7 @@ const PropertyForm = () => {
       });
 
       // Make API call
-      const response = await fetch('https://www.townmanor.ai/api/ovika/properties', {
+      const response = await fetch('https://www.domiva.in/api/ovika/properties', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

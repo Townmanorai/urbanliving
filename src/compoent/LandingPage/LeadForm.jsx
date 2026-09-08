@@ -16,7 +16,7 @@ const CITIES = ['Noida', 'Greater Noida', 'Gurugram', 'Delhi', 'Ghaziabad'];
 
 const TIMEFRAMES = ['Immediately', 'Within 15 days', 'Within a month', 'Just exploring'];
 
-const LANDING_LEADS_API = 'https://www.townmanor.ai/api/ovika/landing-leads';
+const LANDING_LEADS_API = 'https://www.domiva.in/api/ovika/landing-leads';
 
 export default function LeadForm({ id }) {
   const [form, setForm] = useState({

@@ -8,7 +8,7 @@ import CityDropdown from "./CityDropdown";
 import { useStepBackNav } from "../../utils/useStepBackNav";
 import { compressImage } from "../../utils/compressImage";
 
-const API_BASE = "https://www.townmanor.ai/api";
+const API_BASE = "https://www.domiva.in/api";
 
 /* ── Reference data ─────────────────────────────────────────────────────── */
 const PROPERTY_TYPES = ["Flat/Apartment", "Independent House / Villa", "Builder Floor", "1 RK/ Studio Apartment", "Serviced Apartment", "Farmhouse", "Other"];

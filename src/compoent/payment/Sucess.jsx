@@ -45,11 +45,11 @@ function Sucess() {
       const bookingId = localStorage.getItem('bookingId');
       const propertyId = localStorage.getItem('property_id');
       
-      const propertyRes = await fetch(`https://www.townmanor.ai/api/ovika/properties/${propertyId}`);
+      const propertyRes = await fetch(`https://www.domiva.in/api/ovika/properties/${propertyId}`);
       const propertyDataRaw = await propertyRes.json();
       const property = propertyDataRaw?.data || propertyDataRaw?.property || propertyDataRaw;
       
-      const bookingRes = await fetch(`https://www.townmanor.ai/api/booking-request/${bookingId}`);
+      const bookingRes = await fetch(`https://www.domiva.in/api/booking-request/${bookingId}`);
       const bookingData = await bookingRes.json();
       const booking = bookingData?.booking || bookingData?.data || bookingData;
 
@@ -192,12 +192,12 @@ function Sucess() {
       const propertyId = localStorage.getItem('property_id')
       
       // Fetch property details (use Ovika API)
-      const propertyRes = await fetch(`https://www.townmanor.ai/api/ovika/properties/${propertyId}`)
+      const propertyRes = await fetch(`https://www.domiva.in/api/ovika/properties/${propertyId}`)
       const propertyDataRaw = await propertyRes.json()
       const property = propertyDataRaw?.data || propertyDataRaw?.property || propertyDataRaw
       
       // Fetch booking details
-      const bookingRes = await fetch(`https://www.townmanor.ai/api/booking-request/${bookingId}`)
+      const bookingRes = await fetch(`https://www.domiva.in/api/booking-request/${bookingId}`)
       const bookingData = await bookingRes.json()
       const booking = bookingData?.booking || bookingData?.data || bookingData
 
@@ -273,7 +273,7 @@ function Sucess() {
       };
 
       try {
-        const response = await fetch(`https://www.townmanor.ai/api/booking-request/${id}/status`, {
+        const response = await fetch(`https://www.domiva.in/api/booking-request/${id}/status`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(patchBody),

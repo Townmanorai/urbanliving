@@ -82,7 +82,7 @@ const InquiriesBookings = () => {
   const fetchOwnerProperties = useCallback(async () => {
     if (!ownerId) return [];
     const res = await axios.get(
-      "https://www.townmanor.ai/api/ovika/properties"
+      "https://www.domiva.in/api/ovika/properties"
     );
     let list = [];
     if (Array.isArray(res.data)) list = res.data;
@@ -109,7 +109,7 @@ const InquiriesBookings = () => {
       setOwnerPropertyIds(propertyIds);
 
       const res = await axios.get(
-        "https://www.townmanor.ai/api/booking-request"
+        "https://www.domiva.in/api/booking-request"
       );
       let list = [];
       if (Array.isArray(res.data)) list = res.data;
@@ -141,7 +141,7 @@ const InquiriesBookings = () => {
     setActionLoadingId(id);
     try {
       await axios.patch(
-        `https://www.townmanor.ai/api/booking-request/${id}/${action}`
+        `https://www.domiva.in/api/booking-request/${id}/${action}`
       );
       fetchRequests();
     } catch {

@@ -24,7 +24,7 @@ import {
   Plus
 } from "lucide-react";
 
-const API_BASE = "https://www.townmanor.ai/api";
+const API_BASE = "https://www.domiva.in/api";
 
 const PROPERTY_CATEGORIES = [
   { id: "Signature Stays",    label: "Signature Stays",    sub: "Luxury villas, premium suites & signature homes", icon: <Hotel size={20} /> },
@@ -187,7 +187,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
   const uploadPhotos = async (files) => {
     const fd = new FormData();
     files.forEach(f => fd.append('images', f));
-    const res = await fetch('https://www.townmanor.ai/api/image/aws-upload-owner-images', {
+    const res = await fetch('https://www.domiva.in/api/image/aws-upload-owner-images', {
       method: 'POST',
       body: fd,
     });
@@ -663,7 +663,7 @@ const PGUpdateForm = ({ propId: passedId, onComplete }) => {
 
       console.log("Submitting payload:", idStr, payload);
 
-      const res = await axios.put(`https://www.townmanor.ai/api/ovika/properties/${idStr}`, payload, {
+      const res = await axios.put(`https://www.domiva.in/api/ovika/properties/${idStr}`, payload, {
         headers: { 'Content-Type': 'application/json' },
         withCredentials: true
       });

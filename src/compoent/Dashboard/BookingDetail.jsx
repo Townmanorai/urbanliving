@@ -31,7 +31,7 @@ function BookingDetail() {
       setError("");
 
       try {
-        const bookingsRes = await fetch("https://www.townmanor.ai/api/booking-request");
+        const bookingsRes = await fetch("https://www.domiva.in/api/booking-request");
         if (!bookingsRes.ok) throw new Error(`Bookings HTTP ${bookingsRes.status}`);
         const bookingsResult = await bookingsRes.json();
 
@@ -39,7 +39,7 @@ function BookingDetail() {
         if (Array.isArray(bookingsResult)) bookingsList = bookingsResult;
         else if (Array.isArray(bookingsResult?.data)) bookingsList = bookingsResult.data;
 
-        const propsRes = await fetch("https://www.townmanor.ai/api/ovika/properties");
+        const propsRes = await fetch("https://www.domiva.in/api/ovika/properties");
         if (!propsRes.ok) throw new Error(`Properties HTTP ${propsRes.status}`);
         const propsResult = await propsRes.json();
         const allProperties = Array.isArray(propsResult) ? propsResult : (propsResult?.data || []);
@@ -98,7 +98,7 @@ function BookingDetail() {
 
     try {
       const isActuallyPaid = isPaid || booking.status === 'confirmed' || booking.status === 'paid' || booking.payment_status === 'paid';
-      const url = `https://www.townmanor.ai/api/booking-request/${bookingId}/cancel`;
+      const url = `https://www.domiva.in/api/booking-request/${bookingId}/cancel`;
 
       const res = await fetch(url, {
         method: "PATCH",

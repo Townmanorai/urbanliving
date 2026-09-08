@@ -55,13 +55,13 @@ const Financials = () => {
     try {
       setLoading(true);
       // 1. Fetch Owner Properties
-      const propsRes = await axios.get("https://www.townmanor.ai/api/ovika/properties");
+      const propsRes = await axios.get("https://www.domiva.in/api/ovika/properties");
       const allProps = Array.isArray(propsRes.data) ? propsRes.data : (propsRes.data?.data || []);
       const ownerProps = allProps.filter(p => String(p.owner_id || p.ownerId) === String(ownerId));
       const ownerPropIds = ownerProps.map(p => Number(p.id || p._id));
 
       // 2. Fetch All Bookings (Inquiries & Bookings)
-      const bookingsRes = await axios.get("https://www.townmanor.ai/api/booking-request");
+      const bookingsRes = await axios.get("https://www.domiva.in/api/booking-request");
       const allBookings = Array.isArray(bookingsRes.data) ? bookingsRes.data : (bookingsRes.data?.data || []);
       const ownerBookings = allBookings.filter(b => ownerPropIds.includes(Number(b.property_id)));
 

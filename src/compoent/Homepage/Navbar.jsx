@@ -305,7 +305,7 @@ export default function Navbar() {
                       { icon: <Briefcase size={16} color="#c2772b"/>, label: "Career", path: "/career-support", action: (e) => { closeMobileMenu(); goCareer(e); } },
                       { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: 18, height: "auto" }} />, label: "OvikaLiving Verified", path: "/ovika-verified", action: (e) => { closeMobileMenu(); goOvikaVerified(e); } },
                       { icon: <CheckCircle size={16} color="#c2772b"/>, label: "Self Verification", path: "/ovika-self-verified", action: (e) => { closeMobileMenu(); goSelfVerified(e); } },
-                      { icon: <Map size={16} color="#c2772b"/>, label: "Explore Townmanor", action: () => { closeMobileMenu(); window.open("https://www.townmanor.ai/", "_blank"); } },
+                      { icon: <Map size={16} color="#c2772b"/>, label: "Explore Townmanor", action: () => { closeMobileMenu(); window.open("https://www.domiva.in/", "_blank"); } },
                     ].map((item) => (
                       <button key={item.label} onClick={(e) => item.action(e)}
                         onAuxClick={(e) => item.path ? auxNavClick(e, item.path) : null}
@@ -518,7 +518,7 @@ export default function Navbar() {
                 { icon: <Briefcase size={14} color="#c2772b"/>, label: "Career", path: "/career-support", action: goCareer },
                 { icon: <img src="/ovikaver.png" alt="ovika-verified" style={{ width: '20px', height: 'auto' }} />, label: "OvikaLiving Verified", path: "/ovika-verified", action: goOvikaVerified },
                 { icon: <CheckCircle size={14} color="#c2772b"/>, label: "Property Self Verification", path: "/ovika-self-verified", action: goSelfVerified },
-                { icon: <Map size={14} color="#c2772b"/>, label: "Explore Townmanor", action: () => { setHamburgerMenuOpen(false); window.open("https://www.townmanor.ai/", "_blank"); } },
+                { icon: <Map size={14} color="#c2772b"/>, label: "Explore Townmanor", action: () => { setHamburgerMenuOpen(false); window.open("https://www.domiva.in/", "_blank"); } },
               ].map((item) => (
                 <button key={item.label} onClick={(e) => item.action(e)} onAuxClick={(e) => item.path ? auxNavClick(e, item.path) : null} style={{ border: "none", background: "transparent", padding: "7px 4px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", width: "100%", borderRadius: 8, transition: "background 0.15s" }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = "#fef9f2"; }}

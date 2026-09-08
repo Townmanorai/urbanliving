@@ -96,7 +96,7 @@ const AMENITY_ICONS = {
   'Indoor Games Area':     <Gamepad2 size={S} />,
 };
 
-const API_BASE = "https://www.townmanor.ai/api";
+const API_BASE = "https://www.domiva.in/api";
 
 const TimePickerAMPM = ({ value, onChange }) => {
   const parse = (t) => {

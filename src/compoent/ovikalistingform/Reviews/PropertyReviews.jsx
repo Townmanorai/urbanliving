@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./PropertyReviews.css";
 
-const API_BASE = "https://townmanor.ai/api/feedback";
+const API_BASE = "https://domiva.in/api/feedback";
 
 /* ── Hardcoded reviews for Ovika Signature properties ── */
 const NIGHTLY_REVIEWS = [

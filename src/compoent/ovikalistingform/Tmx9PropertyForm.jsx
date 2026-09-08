@@ -7,7 +7,7 @@ import CityDropdown, { addressContainsCityOrState } from "./CityDropdown";
 import { useStepBackNav } from "../../utils/useStepBackNav";
 import { compressImage } from "../../utils/compressImage";
 
-const API_BASE = "https://www.townmanor.ai/api";
+const API_BASE = "https://www.domiva.in/api";
 const STORAGE_KEY = "user";
 
 const TimePickerAMPM = ({ value, onChange, className }) => {
@@ -723,7 +723,7 @@ const Tmx9PropertyForm = ({ propId: passedId, onComplete } = {}) => {
             const compressedPhotos = await Promise.all(photoEntries.map(p => compressImage(p.file)));
             const uploadFd = new FormData();
             compressedPhotos.forEach((f, i) => uploadFd.append("images", f, photoEntries[i].name || `photo-${i}`));
-            const uploadRes = await fetch("https://www.townmanor.ai/api/image/aws-upload-owner-images", {
+            const uploadRes = await fetch("https://www.domiva.in/api/image/aws-upload-owner-images", {
               method: "POST",
               body: uploadFd,
             });

@@ -35,7 +35,7 @@ function useMapThrustLoader() {
   return { isLoaded };
 }
 
-const API_BASE_URL = 'https://www.townmanor.ai/api/ovika';
+const API_BASE_URL = 'https://www.domiva.in/api/ovika';
 
 // Hotels live in a separate resource (/ovika/hotels) with their own richer shape
 // (rooms[] with per-room rates instead of a single price). Normalize each hotel
@@ -367,7 +367,7 @@ function PropertyMapView({ properties, isMonthly, onCardClick, onPinSelect, isMo
           const photos = Array.isArray(p.photos) ? p.photos : [];
           const coverPhoto = photos[Number(p.cover_photo_index) || 0] || photos[0];
           const imgSrc = coverPhoto
-            ? (coverPhoto.startsWith('http') ? coverPhoto : `https://www.townmanor.ai${coverPhoto}`)
+            ? (coverPhoto.startsWith('http') ? coverPhoto : `https://www.domiva.in${coverPhoto}`)
             : null;
 
           return (
@@ -3388,7 +3388,7 @@ const PropertyListPage = () => {
                 const price = p._mapPrice || 0;
                 const photos = Array.isArray(p.photos) ? p.photos : [];
                 const cover = photos[Number(p.cover_photo_index) || 0] || photos[0];
-                const imgSrc = cover ? (cover.startsWith('http') ? cover : `https://www.townmanor.ai${cover}`) : null;
+                const imgSrc = cover ? (cover.startsWith('http') ? cover : `https://www.domiva.in${cover}`) : null;
                 return (
                   <div style={{
                     position: 'absolute', bottom: 0, left: 0, right: 0,
@@ -3460,7 +3460,7 @@ const PropertyListPage = () => {
                 const price = p._mapPrice || 0;
                 const photos = Array.isArray(p.photos) ? p.photos : [];
                 const cover = photos[Number(p.cover_photo_index) || 0] || photos[0];
-                const imgSrc = cover ? (cover.startsWith('http') ? cover : `https://www.townmanor.ai${cover}`) : null;
+                const imgSrc = cover ? (cover.startsWith('http') ? cover : `https://www.domiva.in${cover}`) : null;
                 const rt = isMonthly ? 'long' : 'short';
                 return (
                   <div

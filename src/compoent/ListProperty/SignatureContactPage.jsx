@@ -40,7 +40,7 @@ const SignatureContactPage = () => {
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setSubmitting(true);
     try {
-      const res = await fetch('https://www.townmanor.ai/api/formlead/leads', {
+      const res = await fetch('https://www.domiva.in/api/formlead/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -4,7 +4,7 @@ import { MapPin, Search, Star, Building2, Home, Users, Building, Moon, CalendarD
 import { FiMapPin, FiSearch, FiStar } from 'react-icons/fi';
 import { navClick, auxNavClick } from '../../utils/navClick';
 
-const API_BASE_URL = 'https://www.townmanor.ai/api/ovika';
+const API_BASE_URL = 'https://www.domiva.in/api/ovika';
 const SHORT_TERM_TYPES = ['entire place', 'private room', 'shared room', 'hotel room', 'homestay'];
 const isLongTermProperty = (p) => !SHORT_TERM_TYPES.includes((p.property_type || '').toLowerCase());
 

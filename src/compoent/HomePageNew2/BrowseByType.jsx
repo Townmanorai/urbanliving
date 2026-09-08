@@ -4,7 +4,7 @@ import { FiStar } from 'react-icons/fi';
 import { Building2, Home, Building, Users, ArrowRight } from 'lucide-react';
 import { navClick } from '../../utils/navClick';
 
-const API_BASE = 'https://www.townmanor.ai/api/ovika';
+const API_BASE = 'https://www.domiva.in/api/ovika';
 
 function low(s) { return (s || '').toLowerCase(); }
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Apple, PlayCircle, Search, Home as HomeIcon, Building2, Users, ShieldCheck, Star, Clock, ChevronLeft, Bell, Compass, Heart, User, MapPin } from 'lucide-react';
 
-const API_BASE = 'https://www.townmanor.ai/api';
+const API_BASE = 'https://www.domiva.in/api';
 
 const STATS = [
   { icon: Users, value: '15,000+', label: 'Happy Guests' },

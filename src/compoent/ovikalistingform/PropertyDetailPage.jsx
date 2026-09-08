@@ -267,12 +267,12 @@ const getRuleIcon = (label, isAllowed) => {
 
 const getValidPropertyId = (frontendId) => String(frontendId);
 
-const API_BASE_URL = 'https://www.townmanor.ai/api/ovika';
-const CALENDAR_API_BASE = 'https://www.townmanor.ai/api/booking/calendar';
-const BOOKING_REQUEST_API = 'https://www.townmanor.ai/api/booking-request';
+const API_BASE_URL = 'https://www.domiva.in/api/ovika';
+const CALENDAR_API_BASE = 'https://www.domiva.in/api/booking/calendar';
+const BOOKING_REQUEST_API = 'https://www.domiva.in/api/booking-request';
 const BLOCKED_DATES_API = import.meta.env.DEV
   ? 'http://localhost:3030/api/ovika/blocked-dates'
-  : 'https://townmanor.ai/api/ovika/blocked-dates';
+  : 'https://domiva.in/api/ovika/blocked-dates';
 
 const getPhotoUrl = (photo) => {
   if (!photo) return null;
@@ -1584,7 +1584,7 @@ const LeadGenerationModal = ({ isOpen, onClose, propertyName, propertyId, user, 
     setLoading(true);
     try {
       const finalPropertyName = roomType ? `${propertyName} - ${roomType}` : propertyName;
-      await axios.post('https://www.townmanor.ai/api/formlead/leads', {
+      await axios.post('https://www.domiva.in/api/formlead/leads', {
         name: form.name, email: form.email, phone_number: form.phone,
         property_name: finalPropertyName, property_id: propertyId,
         purpose: form.message, city: 'N/A', source: 'Property Detail Page'
@@ -1977,7 +1977,7 @@ const PropertyDetailPage = () => {
     const fetchHostUser = async () => {
       if (!property?.owner_id) return;
       try {
-        const res = await axios.get("https://www.townmanor.ai/api/users-list");
+        const res = await axios.get("https://www.domiva.in/api/users-list");
         const users = Array.isArray(res.data) ? res.data : [];
         const matchedUser = users.find((u) => String(u.id) === String(property.owner_id));
         if (matchedUser) setHostUser({ name: matchedUser.username });
@@ -1990,7 +1990,7 @@ const PropertyDetailPage = () => {
     const fetchHostImage = async () => {
       if (!property?.owner_id) return;
       try {
-        const res = await axios.get(`https://www.townmanor.ai/api/user-details?user_id=${property.owner_id}`);
+        const res = await axios.get(`https://www.domiva.in/api/user-details?user_id=${property.owner_id}`);
         if (res.data?.profile_photo) setHostImage(res.data.profile_photo);
       } catch {}
     };
@@ -1999,7 +1999,7 @@ const PropertyDetailPage = () => {
 
   useEffect(() => {
     if (user?.username && property?.id) {
-      axios.get(`https://www.townmanor.ai/api/booking-request?username=${user.username}`)
+      axios.get(`https://www.domiva.in/api/booking-request?username=${user.username}`)
         .then(res => {
           if (res.data.success && Array.isArray(res.data.data)) {
             setUserBookingRequests(res.data.data);
@@ -2087,7 +2087,7 @@ const PropertyDetailPage = () => {
   const sendAvailabilityRequest = async ({ checkInDate, checkOutDate }) => {
     try {
       setOwnerApprovalStatus('pending');
-      const { data } = await axios.post('https://www.townmanor.ai/api/booking-request', {
+      const { data } = await axios.post('https://www.domiva.in/api/booking-request', {
         property_id: property.id, property_name: property.property_name || property.name,
         city: property.city, username: user?.username || username,
         start_date: checkInDate, end_date: checkOutDate
@@ -2147,7 +2147,7 @@ const PropertyDetailPage = () => {
     const fd = new FormData();
     fd.append('images', file);
     try {
-      const response = await fetch('https://www.townmanor.ai/api/image/aws-upload-owner-images', { method: 'POST', body: fd });
+      const response = await fetch('https://www.domiva.in/api/image/aws-upload-owner-images', { method: 'POST', body: fd });
       const data = await response.json();
       if (!data?.fileUrls?.length) throw new Error('Image URL not found');
       setFormData(prev => ({ ...prev, uploadedPhoto: data.fileUrls[0] }));
@@ -2196,7 +2196,7 @@ const PropertyDetailPage = () => {
     try {
       const fd = new FormData();
       fd.append('images', file);
-      const response = await fetch('https://www.townmanor.ai/api/image/aws-upload-owner-images', { method: 'POST', body: fd });
+      const response = await fetch('https://www.domiva.in/api/image/aws-upload-owner-images', { method: 'POST', body: fd });
       const data = await response.json();
       if (!data?.fileUrls?.length) throw new Error('Upload failed');
       setFormData(prev => ({ ...prev, uploadedPhoto: data.fileUrls[0] }));
@@ -2216,7 +2216,7 @@ const PropertyDetailPage = () => {
     try {
       const fd = new FormData();
       fd.append('images', file);
-      const response = await fetch('https://www.townmanor.ai/api/image/aws-upload-owner-images', { method: 'POST', body: fd });
+      const response = await fetch('https://www.domiva.in/api/image/aws-upload-owner-images', { method: 'POST', body: fd });
       const data = await response.json();
       if (!data?.fileUrls?.length) throw new Error('Upload failed');
       setFormData(prev => ({ ...prev, uploadedPhoto: data.fileUrls[0] }));
@@ -2338,12 +2338,12 @@ const PropertyDetailPage = () => {
     try {
       let userLocal = {};
       try { userLocal = JSON.parse(localStorage.getItem('user')) || {}; } catch {}
-      let userEmail = userLocal.email || 'guest@townmanor.ai';
+      let userEmail = userLocal.email || 'guest@domiva.in';
       let userPhone = mobileNumber || '9999999999';
       let finalUsername = userLocal.username || username || 'guest';
       if (username) {
         try {
-          const userRes = await fetch(`https://www.townmanor.ai/api/user/${username}`);
+          const userRes = await fetch(`https://www.domiva.in/api/user/${username}`);
           if (userRes.ok) { const ud = await userRes.json(); userEmail = ud.email || userEmail; userPhone = mobileNumber || ud.phone || userPhone; }
         } catch {}
       }
@@ -2419,16 +2419,16 @@ const PropertyDetailPage = () => {
       localStorage.setItem('paymentSubtotal', (pricing.subtotal || 0).toFixed(2));
       localStorage.setItem('paymentGst', (pricing.gst || 0).toFixed(2));
       localStorage.setItem('paymentDiscount', (pricing.discount || 0).toFixed(2));
-      const userResponse = await fetch(`https://www.townmanor.ai/api/user/${username}`);
+      const userResponse = await fetch(`https://www.domiva.in/api/user/${username}`);
       if (!userResponse.ok) throw new Error('Failed to fetch user data');
       const userData = await userResponse.json();
       const txnid = 'OID' + Date.now();
-      const response = await axios.post('https://www.townmanor.ai/api/payu/payment', {
+      const response = await axios.post('https://www.domiva.in/api/payu/payment', {
         key: 'UvTrjC', txnid, amount: pricing.total.toFixed(2), productinfo: 'Room Booking',
-        firstname: userData.name || username || 'Guest', email: userData.email || 'guest@townmanor.ai',
+        firstname: userData.name || username || 'Guest', email: userData.email || 'guest@domiva.in',
         phone: userData.phone || mobileNumber || '',
-        surl: `https://www.townmanor.ai/api/boster/payu/success?redirectUrl=https://ovikaliving.com/success`,
-        furl: `https://www.townmanor.ai/api/boster/payu/failure?redirectUrl=https://ovikaliving.com/failure`,
+        surl: `https://www.domiva.in/api/boster/payu/success?redirectUrl=https://ovikaliving.com/success`,
+        furl: `https://www.domiva.in/api/boster/payu/failure?redirectUrl=https://ovikaliving.com/failure`,
         udf1: String(bookingIdParam), service_provider: 'payu_paisa'
       });
       if (!response.data?.paymentUrl || !response.data?.params) throw new Error('Invalid payment response');

@@ -4,10 +4,10 @@ import { Helmet } from "react-helmet";
 import { AuthContext } from "../Login/AuthContext";
 import "./CalendarBlocking.css";
 
-const API_BASE = "https://www.townmanor.ai/api/ovika";
+const API_BASE = "https://www.domiva.in/api/ovika";
 const BLOCKED_DATES_API = import.meta.env.DEV
   ? "http://localhost:3030/api/ovika/blocked-dates"
-  : "https://townmanor.ai/api/ovika/blocked-dates";
+  : "https://domiva.in/api/ovika/blocked-dates";
 const STORAGE_PREFIX = "ovika_blocked_";
 
 // ─── helpers ────────────────────────────────────────────────────────────────

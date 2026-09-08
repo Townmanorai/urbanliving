@@ -47,7 +47,7 @@ function ThirdMain() {
 
         if (OVIKA_IDS.includes(numId)) {
           // ── Ovika API se fetch (id: 287 = TM Luxe 3) ──
-          const response = await fetch(`https://www.townmanor.ai/api/ovika/properties/${numId}`);
+          const response = await fetch(`https://www.domiva.in/api/ovika/properties/${numId}`);
           if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
           const json = await response.json();
 
@@ -71,7 +71,7 @@ function ThirdMain() {
           }
         } else {
           // ── Purani API se fetch (TM Luxe 1 & 2) ──
-          const response = await fetch(`https://www.townmanor.ai/api/properties/${id}`);
+          const response = await fetch(`https://www.domiva.in/api/properties/${id}`);
           if (!response.ok) throw new Error(`Request failed with status ${response.status}`);
           const data = await response.json();
           if (isMounted) {

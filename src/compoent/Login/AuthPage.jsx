@@ -19,7 +19,7 @@ import {
   Users,
 } from "lucide-react";
 
-const API_BASE = "https://www.townmanor.ai/api";
+const API_BASE = "https://www.domiva.in/api";
 const STORAGE_KEY = "user"; // keep same as AuthContext
 
 export default function AuthPage() {

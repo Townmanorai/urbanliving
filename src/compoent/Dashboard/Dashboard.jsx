@@ -67,7 +67,7 @@ const Dashboard = () => {
 
   const fetchUserProfile = async (userId) => {
     try {
-      const res = await fetch(`https://www.townmanor.ai/api/user-details?user_id=${userId}`, {
+      const res = await fetch(`https://www.domiva.in/api/user-details?user_id=${userId}`, {
         method: "GET",
         mode: "cors",
         credentials: "include",
@@ -128,7 +128,7 @@ const Dashboard = () => {
       formData.append("user_id", user.user_id || user.id || 3);
       formData.append("profile_photo", selectedImage);
 
-      const res = await fetch("https://www.townmanor.ai/api/user-details", {
+      const res = await fetch("https://www.domiva.in/api/user-details", {
         method: "POST",
         mode: "cors",
         credentials: "include",
@@ -174,7 +174,7 @@ const Dashboard = () => {
     setLoadingNotification(true);
 
     try {
-      const res = await fetch("https://www.townmanor.ai/api/booking-request");
+      const res = await fetch("https://www.domiva.in/api/booking-request");
       const result = await res.json();
 
       let list = [];
@@ -213,8 +213,8 @@ const Dashboard = () => {
 
     try {
       const url = isActuallyPaid
-        ? `https://www.townmanor.ai/api/booking/${id}/cancel`
-        : `https://www.townmanor.ai/api/booking-request/${id}/cancel`;
+        ? `https://www.domiva.in/api/booking/${id}/cancel`
+        : `https://www.domiva.in/api/booking-request/${id}/cancel`;
 
       console.log(`Cancelling Booking ID: ${id} at ${url}`);
 

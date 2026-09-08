@@ -45,10 +45,10 @@ ChartJS.register(
   Filler
 );
 
-const API_PROPERTIES = "https://www.townmanor.ai/api/ovika/properties";
-const API_PROPERTIES_UPLOAD = "https://www.townmanor.ai/api/ovika/properties/upload";
-const API_BOOKINGS = "https://www.townmanor.ai/api/booking-request";
-const API_USERS = "https://www.townmanor.ai/api/users-list";
+const API_PROPERTIES = "https://www.domiva.in/api/ovika/properties";
+const API_PROPERTIES_UPLOAD = "https://www.domiva.in/api/ovika/properties/upload";
+const API_BOOKINGS = "https://www.domiva.in/api/booking-request";
+const API_USERS = "https://www.domiva.in/api/users-list";
 
 const SHARING_TYPES = ["Single Room", "Double Sharing", "Triple Sharing", "Four Sharing", "Dormitory"];
 const BEDROOM_TYPES = ["King Bed", "Queen Bed", "Single Bed", "Bunk Bed", "Twin Bed", "Other"];
@@ -121,7 +121,7 @@ export default function SuperAdminDashboard() {
   const [abForm, setAbForm] = useState(AB_EMPTY_FORM);
 
   // ── Owner Consent Record states ──
-  const OWNER_CONSENT_API = 'https://www.townmanor.ai/api/owner-consent';
+  const OWNER_CONSENT_API = 'https://www.domiva.in/api/owner-consent';
   const [ocList, setOcList] = useState([]);
   const [ocLoading, setOcLoading] = useState(false);
   const [ocSearch, setOcSearch] = useState('');
@@ -132,7 +132,7 @@ export default function SuperAdminDashboard() {
   const [ocPhotoFile, setOcPhotoFile] = useState(null); // File object for new upload
   const [ocPhotoPreview, setOcPhotoPreview] = useState(''); // local preview (new file) or existing stored image URL
   const [ocPhotoModal, setOcPhotoModal] = useState(null);
-  const ocImageUrl = (path) => path ? (String(path).startsWith('http') ? path : `https://www.townmanor.ai${path}`) : '';
+  const ocImageUrl = (path) => path ? (String(path).startsWith('http') ? path : `https://www.domiva.in${path}`) : '';
   const OC_EMPTY_FORM = {
     owner_name: '', property_name: '', property_id: '', property_location: '',
     property_link: '', phone_number: '', email: '', consent_remark: '', remark_summary: '',
@@ -214,7 +214,7 @@ export default function SuperAdminDashboard() {
     siteName: "TownManor",
     maintenanceMode: false,
     serviceFee: 5,
-    adminEmail: "admin@townmanor.ai"
+    adminEmail: "admin@domiva.in"
   });
 
   // Pagination State
@@ -238,7 +238,7 @@ export default function SuperAdminDashboard() {
   const [metaLeadsStats, setMetaLeadsStats] = useState({ total: 0, new: 0, contacted: 0, converted: 0 });
   const [metaSyncing, setMetaSyncing] = useState(false);
   const META_LEADS_LIMIT = 20;
-  const META_LEADS_API = "https://townmanor.ai/api/meta-leads";
+  const META_LEADS_API = "https://domiva.in/api/meta-leads";
 
   // Landing Page Leads State (ads landing page — /get-started — lead form)
   const [landingLeads, setLandingLeads] = useState([]);
@@ -250,7 +250,7 @@ export default function SuperAdminDashboard() {
   const [landingLeadsTotal, setLandingLeadsTotal] = useState(0);
   const [landingLeadLastRefresh, setLandingLeadLastRefresh] = useState(null);
   const LANDING_LEADS_LIMIT = 20;
-  const LANDING_LEADS_API = "https://www.townmanor.ai/api/ovika/landing-leads";
+  const LANDING_LEADS_API = "https://www.domiva.in/api/ovika/landing-leads";
   const LANDING_LEAD_CITIES = ['Noida', 'Greater Noida', 'Gurugram', 'Delhi', 'Ghaziabad'];
   const LANDING_LEAD_CATEGORIES = ['Signature Stays', 'Hotel Stays', 'Homestays & BnB', 'Apartments & Villas', 'PG & Co-Living'];
 
@@ -260,7 +260,7 @@ export default function SuperAdminDashboard() {
   const [reviewSearch, setReviewSearch] = useState('');
   const [reviewStatusFilter, setReviewStatusFilter] = useState('ALL');
   const [reviewPage, setReviewPage] = useState(1);
-  const REVIEWS_API = "https://townmanor.ai/api/feedback";
+  const REVIEWS_API = "https://domiva.in/api/feedback";
   const REVIEWS_PER_PAGE = 10;
 
   // --- Fetch Data ---
@@ -319,7 +319,7 @@ export default function SuperAdminDashboard() {
 
   const fetchAllLeads = async () => {
     try {
-        const res = await axios.get("https://www.townmanor.ai/api/formlead/leads");
+        const res = await axios.get("https://www.domiva.in/api/formlead/leads");
         if (Array.isArray(res.data)) {
             setLeads(res.data);
         } else if (res.data && Array.isArray(res.data.data)) {
@@ -462,10 +462,10 @@ export default function SuperAdminDashboard() {
 
     // Try multiple endpoint variants — backend may not have /all
     const endpoints = [
-      'https://townmanor.ai/api/owner-verification',
-      'https://www.townmanor.ai/api/owner-verification',
-      'https://townmanor.ai/api/owner-verification/all',
-      'https://www.townmanor.ai/api/owner-verification/submissions',
+      'https://domiva.in/api/owner-verification',
+      'https://www.domiva.in/api/owner-verification',
+      'https://domiva.in/api/owner-verification/all',
+      'https://www.domiva.in/api/owner-verification/submissions',
     ];
 
     let found = false;
@@ -505,7 +505,7 @@ export default function SuperAdminDashboard() {
       const body = { status };
       if (reason.trim()) body.reason = reason.trim();
       const res = await axios.patch(
-        `https://www.townmanor.ai/api/owner-verification/${sv.id}/status`,
+        `https://www.domiva.in/api/owner-verification/${sv.id}/status`,
         body,
         { validateStatus: false }
       );
@@ -586,7 +586,7 @@ export default function SuperAdminDashboard() {
   const fetchBookingInquiries = async () => {
     setBiLoading(true);
     try {
-      const res = await axios.get('https://www.townmanor.ai/api/booking-request');
+      const res = await axios.get('https://www.domiva.in/api/booking-request');
       const list = Array.isArray(res.data) ? res.data : (res.data?.data || []);
       setBiList(list.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)));
     } catch (e) {
@@ -601,7 +601,7 @@ export default function SuperAdminDashboard() {
   const fetchAirbnbData = async () => {
     setAbLoading(true);
     try {
-      const res = await axios.get('https://www.townmanor.ai/api/airbnb-bookings');
+      const res = await axios.get('https://www.domiva.in/api/airbnb-bookings');
       const list = Array.isArray(res.data) ? res.data : (res.data?.data || []);
       setAbList(list.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)));
     } catch (e) {
@@ -629,8 +629,8 @@ export default function SuperAdminDashboard() {
 
       const isEdit = !!abEditingId;
       const url = isEdit
-        ? `https://www.townmanor.ai/api/airbnb-bookings/${abEditingId}`
-        : 'https://www.townmanor.ai/api/airbnb-bookings';
+        ? `https://www.domiva.in/api/airbnb-bookings/${abEditingId}`
+        : 'https://www.domiva.in/api/airbnb-bookings';
       const res = isEdit
         ? await axios.put(url, fd, { headers: { 'Content-Type': 'multipart/form-data' } })
         : await axios.post(url, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
@@ -661,7 +661,7 @@ export default function SuperAdminDashboard() {
     if (!window.confirm('Delete this Airbnb booking record? This cannot be undone.')) return;
     setAbDeletingId(id);
     try {
-      await axios.delete(`https://www.townmanor.ai/api/airbnb-bookings/${id}`);
+      await axios.delete(`https://www.domiva.in/api/airbnb-bookings/${id}`);
       setAbList(prev => prev.filter(b => b.id !== id));
     } catch (e) {
       console.error('Airbnb data delete failed', e);
@@ -747,7 +747,7 @@ export default function SuperAdminDashboard() {
   const fetchLeadPurchases = async () => {
     setLpLoading(true);
     try {
-      const res = await axios.get('https://townmanor.ai/api/lead-invoices', { validateStatus: false });
+      const res = await axios.get('https://domiva.in/api/lead-invoices', { validateStatus: false });
       const data = res.data?.invoices || res.data?.data || (Array.isArray(res.data) ? res.data : []);
       setLpList(data);
     } catch (e) {
@@ -1193,7 +1193,7 @@ export default function SuperAdminDashboard() {
     const id = prop.id || prop._id;
     if (!window.confirm(`Are you sure you want to delete "${prop.property_name || prop.name}"? This cannot be undone.`)) return;
     try {
-      await axios.delete(`https://www.townmanor.ai/api/ovika/properties/${id}`);
+      await axios.delete(`https://www.domiva.in/api/ovika/properties/${id}`);
       alert("Property deleted successfully.");
       fetchAllProperties();
     } catch (e) {
@@ -3249,7 +3249,7 @@ export default function SuperAdminDashboard() {
                     const photo = (!isNaN(idx) && photos[idx]) ? photos[idx] : photos[0];
                     if (!photo) return null;
                     if (photo.startsWith('http')) return photo;
-                    return `https://www.townmanor.ai/api/uploads/${photo.startsWith('/') ? photo.substring(1) : photo}`;
+                    return `https://www.domiva.in/api/uploads/${photo.startsWith('/') ? photo.substring(1) : photo}`;
                 };
 
                 const getRentalType = (p) => {
@@ -3282,7 +3282,7 @@ export default function SuperAdminDashboard() {
                 const toggleBadge = async (prop, add) => {
                     setVbLoading(true);
                     try {
-                        const res = await fetch(`https://www.townmanor.ai/api/ovika/properties/${prop.id}/badge`, {
+                        const res = await fetch(`https://www.domiva.in/api/ovika/properties/${prop.id}/badge`, {
                             method: 'PATCH',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ verified_badge: add }),
@@ -3426,7 +3426,7 @@ export default function SuperAdminDashboard() {
 
             {/* VIEW: SELF VERIFICATION */}
             {view === 'self-verification' && (() => {
-                const API_IMG = 'https://www.townmanor.ai';
+                const API_IMG = 'https://www.domiva.in';
 
                 const imgUrl = (path) => {
                     if (!path) return null;
@@ -3439,7 +3439,7 @@ export default function SuperAdminDashboard() {
                     if (!propId) { alert('Property ID not found in this submission.'); return; }
                     setSvBadgeLoading(true);
                     try {
-                        const res = await fetch(`https://www.townmanor.ai/api/ovika/properties/${propId}/badge`, {
+                        const res = await fetch(`https://www.domiva.in/api/ovika/properties/${propId}/badge`, {
                             method: 'PATCH',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ verified_badge: add }),
@@ -3938,7 +3938,7 @@ export default function SuperAdminDashboard() {
                               : null;
                             const rawPhoto = b.user_photo || b.photo || b.profile_photo || b.image || b.id_photo || b.document_photo || '';
                             const photoUrl = rawPhoto
-                              ? (rawPhoto.startsWith('http') ? rawPhoto : `https://www.townmanor.ai${rawPhoto}`)
+                              ? (rawPhoto.startsWith('http') ? rawPhoto : `https://www.domiva.in${rawPhoto}`)
                               : null;
 
                             return (
@@ -4105,7 +4105,7 @@ export default function SuperAdminDashboard() {
                 });
                 const rawPhoto = b.user_photo || '';
                 setAbPhotoFile(null);
-                setAbPhotoPreview(rawPhoto ? (rawPhoto.startsWith('http') ? rawPhoto : `https://www.townmanor.ai${rawPhoto}`) : '');
+                setAbPhotoPreview(rawPhoto ? (rawPhoto.startsWith('http') ? rawPhoto : `https://www.domiva.in${rawPhoto}`) : '');
                 setAbEditingId(b.id);
                 setAbAddOpen(true);
               };
@@ -4186,7 +4186,7 @@ export default function SuperAdminDashboard() {
                               : null;
                             const rawPhoto = b.user_photo || b.photo || b.profile_photo || b.image || b.id_photo || b.document_photo || '';
                             const photoUrl = rawPhoto
-                              ? (rawPhoto.startsWith('http') ? rawPhoto : `https://www.townmanor.ai${rawPhoto}`)
+                              ? (rawPhoto.startsWith('http') ? rawPhoto : `https://www.domiva.in${rawPhoto}`)
                               : null;
 
                             return (

@@ -26,7 +26,7 @@ const PropertyConsultation = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("https://www.townmanor.ai/api/formlead/leads", {
+      const response = await fetch("https://www.domiva.in/api/formlead/leads", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

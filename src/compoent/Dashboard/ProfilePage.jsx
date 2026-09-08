@@ -4,8 +4,8 @@ import "./ProfilePage.css";
 
 import { AuthContext } from "../Login/AuthContext";
 
-const API_BASE_AUTH = "https://www.townmanor.ai/api/auth";
-const API_BASE = "https://www.townmanor.ai/api"; // General API base
+const API_BASE_AUTH = "https://www.domiva.in/api/auth";
+const API_BASE = "https://www.domiva.in/api"; // General API base
 
 const ProfilePage = () => {
   const { user, login } = useContext(AuthContext);

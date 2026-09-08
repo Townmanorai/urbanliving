@@ -9,7 +9,7 @@ import CityDropdown from "./CityDropdown";
 import { useStepBackNav } from "../../utils/useStepBackNav";
 import { compressImage } from "../../utils/compressImage";
 
-const API_BASE = "https://www.townmanor.ai/api";
+const API_BASE = "https://www.domiva.in/api";
 const STORAGE_KEY = "user";
 
 /* ── Reference data (per product spec) ─────────────────────────────────── */

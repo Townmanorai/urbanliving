@@ -76,7 +76,7 @@ const FAQ = () => {
             { "@type": "Question", "name": "Does OvikaLiving.com share my data with third parties?", "acceptedAnswer": { "@type": "Answer", "text": "Personal data is shared only with trusted service providers where necessary (e.g., payment processing) or when required by law." } },
             { "@type": "Question", "name": "What laws govern OvikaLiving.com?", "acceptedAnswer": { "@type": "Answer", "text": "All services are governed by the laws of India, as outlined in the Terms & Conditions." } },
             { "@type": "Question", "name": "Can OvikaLiving.com change its policies?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. OvikaLiving.com may update its policies from time to time. Updated versions will be published on the platform." } },
-            { "@type": "Question", "name": "How can I contact OvikaLiving support?", "acceptedAnswer": { "@type": "Answer", "text": "You can contact OvikaLiving at enquiry@ovikaLiving.com or support@townmanor.ai" } }
+            { "@type": "Question", "name": "How can I contact OvikaLiving support?", "acceptedAnswer": { "@type": "Answer", "text": "You can contact OvikaLiving at enquiry@ovikaLiving.com or support@domiva.in" } }
           ]
         })}</script>
       </Helmet>
@@ -227,12 +227,12 @@ const FAQ = () => {
         <FAQItem 
           number="21"
           question="How can I contact OvikaLiving support?"
-          answer={<p>You can contact us at: <a href="mailto:enquiry@ovikaLiving.com" className="faq-page-link-unique">enquiry@ovikaLiving.com</a> or <a href="mailto:support@townmanor.ai" className="faq-page-link-unique">support@townmanor.ai</a></p>}
+          answer={<p>You can contact us at: <a href="mailto:enquiry@ovikaLiving.com" className="faq-page-link-unique">enquiry@ovikaLiving.com</a> or <a href="mailto:support@domiva.in" className="faq-page-link-unique">support@domiva.in</a></p>}
         />
       </div>
 
       <div className="faq-page-contact-unique">
-        <p>Still have questions? Contact our support team at <a href="mailto:enquiry@ovikaLiving.com" className="faq-page-link-unique">enquiry@ovikaLiving.com</a> or <a href="mailto:support@townmanor.ai" className="faq-page-link-unique">support@townmanor.ai</a></p>
+        <p>Still have questions? Contact our support team at <a href="mailto:enquiry@ovikaLiving.com" className="faq-page-link-unique">enquiry@ovikaLiving.com</a> or <a href="mailto:support@domiva.in" className="faq-page-link-unique">support@domiva.in</a></p>
       </div>
     </div>
   );

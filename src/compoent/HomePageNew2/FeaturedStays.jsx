@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Star, Heart, ArrowRight } from 'lucide-react';
 import { navClick } from '../../utils/navClick';
 
-const API_BASE = 'https://www.townmanor.ai/api/ovika';
+const API_BASE = 'https://www.domiva.in/api/ovika';
 
 const CATEGORIES = ['Signature Stays', 'Hotel Stays', 'Homestays & BnB', 'Apartments & Villas', 'PG & Co-Living'];
 

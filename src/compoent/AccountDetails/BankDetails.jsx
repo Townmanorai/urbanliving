@@ -8,7 +8,7 @@ const STEPS = ['Payout Method', 'Bank Account', 'Address', 'Review'];
 
 const API_BASE = import.meta.env.DEV
   ? 'http://localhost:3030'
-  : 'https://townmanor.ai';
+  : 'https://domiva.in';
 
 const axiosOpts = { withCredentials: true };
 
@@ -297,7 +297,7 @@ export default function BankDetails({ standalone = false }) {
     const userId = getUserId(user);
     if (!userId) { setHasListings(false); setLoading(false); return; }
 
-    fetch(`https://www.townmanor.ai/api/ovika/properties`)
+    fetch(`https://www.domiva.in/api/ovika/properties`)
       .then(r => r.json())
       .then(data => {
         const all = Array.isArray(data) ? data : (data?.data || []);

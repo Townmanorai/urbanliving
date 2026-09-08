@@ -458,7 +458,7 @@ const TermsAndConditions = () => {
           <p>For questions, support, or legal notices:</p>
           <p>
             <a href="mailto:enquiry@ovikaliving.com" className="contact-email">enquiry@ovikaliving.com</a><br />
-            <a href="mailto:support@townmanor.ai" className="contact-email">support@townmanor.ai</a>
+            <a href="mailto:support@domiva.in" className="contact-email">support@domiva.in</a>
           </p>
         </div>
       </div> */}
@@ -476,12 +476,12 @@ const TermsAndConditions = () => {
             enquiry@ovikaliving.com
           </a>
           <span className="or-divider">or</span>
-          <a href="mailto:support@townmanor.ai" className="contact-email">
+          <a href="mailto:support@domiva.in" className="contact-email">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="#c98b3e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M22 6L12 13L2 6" stroke="#c98b3e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            support@townmanor.ai
+            support@domiva.in
           </a>
         </div>
       </div>

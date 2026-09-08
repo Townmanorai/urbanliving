@@ -15,7 +15,7 @@ function Failure() {
         const raw = localStorage.getItem('pending_leads_purchase');
         const pending = raw ? JSON.parse(raw) : null;
         if (pending?.buyerEmail) {
-          fetch('https://townmanor.ai/api/lead-invoices/send-email', {
+          fetch('https://domiva.in/api/lead-invoices/send-email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

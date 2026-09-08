@@ -34,7 +34,7 @@ const QUESTIONS = [
   },
 ];
 
-const API_FEEDBACK = "https://townmanor.ai/api/feedback";
+const API_FEEDBACK = "https://domiva.in/api/feedback";
 
 function StarRow({ questionKey, value, onChange }) {
   const [hovered, setHovered] = useState(0);

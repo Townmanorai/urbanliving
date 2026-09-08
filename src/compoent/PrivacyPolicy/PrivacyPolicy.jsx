@@ -789,7 +789,7 @@ const PrivacyPolicy = () => {
           <p style={{ fontSize: '16px', marginTop: '20px', padding: '15px', background: '#f9f9f9', borderLeft: '4px solid #c98b3e' }}>
             <strong>Email:</strong><br />
             <a href="mailto:enquiry@ovikaliving.com" style={{ color: '#c2772b', textDecoration: 'none', fontWeight: 600, borderBottom: '1px solid #c98b3e' }}>enquiry@ovikaliving.com</a><br />
-            <a href="mailto:support@townmanor.ai" style={{ color: '#c2772b', textDecoration: 'none', fontWeight: 600, borderBottom: '1px solid #c98b3e' }}>support@townmanor.ai</a>
+            <a href="mailto:support@domiva.in" style={{ color: '#c2772b', textDecoration: 'none', fontWeight: 600, borderBottom: '1px solid #c98b3e' }}>support@domiva.in</a>
           </p>
           <p style={{ fontSize: '14px', marginBottom: '12px' }}>We will acknowledge and address all grievances within the timelines prescribed under the Digital Personal Data Protection Act, 2023 and the Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011. Our team is committed to resolving such matters in a fair, transparent, and efficient manner.</p>
         </div>
@@ -1021,7 +1021,7 @@ const PrivacyPolicy = () => {
             enquiry@ovikaliving.com
           </a>
           {/* <span style={{ color: 'rgba(255, 255, 255, 0.8)', fontWeight: 600, fontSize: '15px' }}>or</span> */}
-          <a href="mailto:support@townmanor.ai" style={{
+          <a href="mailto:support@domiva.in" style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '10px',
@@ -1039,7 +1039,7 @@ const PrivacyPolicy = () => {
               <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M22 6L12 13L2 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            support@townmanor.ai
+            support@domiva.in
           </a>
         </div>
       </div>

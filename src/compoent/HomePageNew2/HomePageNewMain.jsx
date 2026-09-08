@@ -150,7 +150,7 @@ const homeJsonLd = {
       "url": "https://www.ovikaliving.com/",
       "logo": { "@type": "ImageObject", "url": "https://www.ovikaliving.com/ovikaliving_logo_clean.png", "width": 300, "height": 60 },
       "contactPoint": { "@type": "ContactPoint", "contactType": "customer support", "areaServed": "IN", "availableLanguage": ["en", "hi"] },
-      "sameAs": ["https://www.townmanor.ai/"],
+      "sameAs": ["https://www.domiva.in/"],
       "address": { "@type": "PostalAddress", "addressLocality": "Noida", "addressRegion": "Uttar Pradesh", "addressCountry": "IN" }
     },
     {

@@ -64,7 +64,7 @@ const MONTHLY = [
   },
 ];
 
-const API_BASE = 'https://www.townmanor.ai/api/ovika';
+const API_BASE = 'https://www.domiva.in/api/ovika';
 const SIGNATURE_NIGHTLY_IDS = [77, 78, 79, 80, 81];
 const SIGNATURE_MONTHLY_IDS = [323, 315, 316, 317];
 

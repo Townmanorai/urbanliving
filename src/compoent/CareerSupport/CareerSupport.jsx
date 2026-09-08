@@ -105,7 +105,7 @@ export default function CareerSupport() {
         property_id:   0,
         property_name: "Career Page",
       };
-      const res = await fetch("https://www.townmanor.ai/api/formlead/leads", {
+      const res = await fetch("https://www.domiva.in/api/formlead/leads", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify(payload),

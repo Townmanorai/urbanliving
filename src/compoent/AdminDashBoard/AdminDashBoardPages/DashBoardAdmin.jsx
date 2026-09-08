@@ -348,9 +348,9 @@ export default function DashBoardAdmin() {
     setError(null);
     try {
       const [propsRes, hotelsRes, apartmentsRes] = await Promise.allSettled([
-        axios.get("https://www.townmanor.ai/api/ovika/properties", { timeout: 10000 }),
-        axios.get(`https://www.townmanor.ai/api/ovika/hotels/owner/${resolvedOwnerId}`, { timeout: 10000 }),
-        axios.get(`https://www.townmanor.ai/api/ovika/apartments/owner/${resolvedOwnerId}`, { timeout: 10000 }),
+        axios.get("https://www.domiva.in/api/ovika/properties", { timeout: 10000 }),
+        axios.get(`https://www.domiva.in/api/ovika/hotels/owner/${resolvedOwnerId}`, { timeout: 10000 }),
+        axios.get(`https://www.domiva.in/api/ovika/apartments/owner/${resolvedOwnerId}`, { timeout: 10000 }),
       ]);
 
       let all = [];
@@ -516,10 +516,10 @@ export default function DashBoardAdmin() {
           try {
             const id = prop.id || prop._id;
             const deleteUrl = prop._isHotel
-              ? `https://www.townmanor.ai/api/ovika/hotels/${prop._hotelId}`
+              ? `https://www.domiva.in/api/ovika/hotels/${prop._hotelId}`
               : prop._isApartment
-                ? `https://www.townmanor.ai/api/ovika/apartments/${prop._apartmentId}`
-                : `https://www.townmanor.ai/api/ovika/properties/${id}`;
+                ? `https://www.domiva.in/api/ovika/apartments/${prop._apartmentId}`
+                : `https://www.domiva.in/api/ovika/properties/${id}`;
             await axios.delete(deleteUrl);
             setProperties(prev => prev.filter(p => (p.id || p._id) !== id));
           } catch (e) { alert("Failed to delete property"); console.error(e); }

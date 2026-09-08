@@ -135,15 +135,15 @@ export default function Subs2() {
 
     try {
       const origin = window.location.origin; // http://localhost:5173 locally, https://ovikaliving.com in prod
-      const res = await axios.post("https://www.townmanor.ai/api/payu/payment", {
+      const res = await axios.post("https://www.domiva.in/api/payu/payment", {
         amount:      modal.gstPrice,
         productinfo: `Lead Purchase - ${modal.label} Plan (${modal.leads} Leads)`,
         firstname:   form.name.trim(),
         email:       form.email.trim(),
         phone:       form.phone.trim().replace(/\s/g, ""),
         bookingId:   txnId,
-        surl: `https://www.townmanor.ai/api/boster/payu/success?redirectUrl=${origin}/leads-success`,
-        furl: `https://www.townmanor.ai/api/boster/payu/failure?redirectUrl=${origin}/failure`,
+        surl: `https://www.domiva.in/api/boster/payu/success?redirectUrl=${origin}/leads-success`,
+        furl: `https://www.domiva.in/api/boster/payu/failure?redirectUrl=${origin}/failure`,
       });
 
       const { paymentUrl, params } = res.data;

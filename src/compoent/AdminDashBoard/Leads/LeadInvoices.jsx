@@ -146,7 +146,7 @@ export default function LeadInvoices() {
       if (userId) {
         try {
           const res = await fetch(
-            `https://townmanor.ai/api/lead-invoices?user_id=${userId}`
+            `https://domiva.in/api/lead-invoices?user_id=${userId}`
           );
           if (res.ok) {
             const data = await res.json();

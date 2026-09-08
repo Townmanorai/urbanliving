@@ -161,6 +161,6 @@ CREATE TABLE feedback (
 | Environment | URL |
 |---|---|
 | Local | `http://localhost:3030` |
-| Production | `https://townmanor.ai` |
+| Production | `https://domiva.in` |
 
-Full endpoint: `POST https://townmanor.ai/api/feedback`
+Full endpoint: `POST https://domiva.in/api/feedback`

@@ -5,7 +5,7 @@ import "./LeadsSuccess.css";
 
 async function sendSuccessEmail(inv) {
   try {
-    await fetch("https://townmanor.ai/api/lead-invoices/send-email", {
+    await fetch("https://domiva.in/api/lead-invoices/send-email", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -156,7 +156,7 @@ const getUserId = () => {
 
 const saveInvoiceToBackend = async (inv, userId) => {
   try {
-    await fetch("https://townmanor.ai/api/lead-invoices", {
+    await fetch("https://domiva.in/api/lead-invoices", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

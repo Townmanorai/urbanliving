@@ -93,7 +93,7 @@ const avatarColor = (name = "") => AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COL
 async function getLatestPurchase(userId) {
   if (userId) {
     try {
-      const res = await fetch(`https://townmanor.ai/api/lead-invoices?user_id=${userId}`);
+      const res = await fetch(`https://domiva.in/api/lead-invoices?user_id=${userId}`);
       if (res.ok) {
         const data = await res.json();
         if (data?.success && Array.isArray(data.invoices) && data.invoices.length > 0) {
@@ -229,7 +229,7 @@ export default function OwnerLeads() {
     if (!userId) { setStatus("noPG"); return; }
 
     const loadProperties = axios
-      .get(`https://www.townmanor.ai/api/ovika/properties?owner_id=${userId}`)
+      .get(`https://www.domiva.in/api/ovika/properties?owner_id=${userId}`)
       .then((res) => {
         const list = res.data?.properties || res.data?.data || res.data || [];
         const pgList = Array.isArray(list)

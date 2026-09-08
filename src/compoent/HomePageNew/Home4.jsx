@@ -49,7 +49,7 @@ const Home4 = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const res = await fetch("https://www.townmanor.ai/api/ovika/properties");
+        const res = await fetch("https://www.domiva.in/api/ovika/properties");
         if (!res.ok) throw new Error("Failed to fetch properties");
         const json = await res.json();
         const info = json.data || json;
