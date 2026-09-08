@@ -931,13 +931,13 @@ export default function SuperAdminDashboard() {
   };
 
   // Only this exact number is allowed for the admin panel's second security layer.
-  const ALLOWED_ADMIN_MOBILE = '6392058759';
+  const ALLOWED_ADMIN_MOBILES = ['6392058759', '7526058759'];
   const SUREPASS_AUTH_HEADER = 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcxMDE0NjA5NiwianRpIjoiNmM0YWMxNTMtNDE2MS00YzliLWI4N2EtZWIxYjhmNDRiOTU5IiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LnVzZXJuYW1lXzJ5MTV1OWk0MW10bjR3eWpsaTh6b2p6eXZiZEBzdXJlcGFzcy5pbyIsIm5iZiI6MTcxMDE0NjA5NiwiZXhwIjoyMzQwODY2MDk2LCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsidXNlciJdfX0.DfipEQt4RqFBQbOK29jbQju3slpn0wF9aoccdmtIsPg';
 
   const handleSendAdminOTP = async (e) => {
     e.preventDefault();
     setSaOtpError('');
-    if (saMobileNumber !== ALLOWED_ADMIN_MOBILE) {
+    if (!ALLOWED_ADMIN_MOBILES.includes(saMobileNumber)) {
       setSaOtpError('Invalid mobile number.');
       return;
     }
