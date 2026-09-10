@@ -66,6 +66,7 @@ import LeadInvoices from "./compoent/AdminDashBoard/Leads/LeadInvoices";
 import LeadsSuccess from "./compoent/SubsriptionNew/LeadsSuccess";
 import MobileBottomNav from "./compoent/MobileBottomNav/MobileBottomNav";
 import LandingPage from "./compoent/LandingPage/LandingPage";
+import DeleteAccount from "./compoent/DeleteAccount/DeleteAccount";
 function RequireAuth({ children }) {
   const { user } = useContext(AuthContext);
   const location = useLocation();
@@ -263,6 +264,7 @@ function App() {
           <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
           <Route path="/refund-cancellation-policy" element={<RefundAndCancellation />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/delete-account" element={<DeleteAccount />} />
           <Route path="/ovika-verified" element={<OvikaVerified />} />
           <Route path="/career-support" element={<RequireAuth><CareerSupport /></RequireAuth>} />
           <Route path="/coliving-space" element={<ColivingSpace />} />
