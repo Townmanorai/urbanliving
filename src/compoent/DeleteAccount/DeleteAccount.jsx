@@ -239,17 +239,17 @@ const DeleteAccount = () => {
               <tr>
                 <td style={tdStyle}>Listings / properties</td>
                 <td style={tdStyle}><span style={badgeRetained}>Retained</span></td>
-                <td style={tdStyle}>Retained for a defined period for legal/accounting purposes, then anonymized</td>
+                <td style={tdStyle}>Retained for 90 days for legal/accounting purposes, then anonymized</td>
               </tr>
               <tr>
                 <td style={tdStyle}>Bookings / inquiries / agreements</td>
                 <td style={tdStyle}><span style={badgeRetained}>Retained</span></td>
-                <td style={tdStyle}>Retained for a defined period for legal/accounting purposes, then anonymized</td>
+                <td style={tdStyle}>Retained for 90 days for legal/accounting purposes, then anonymized</td>
               </tr>
               <tr>
                 <td style={tdStyle}>Expense & staff records</td>
                 <td style={tdStyle}><span style={badgeRetained}>Retained</span></td>
-                <td style={tdStyle}>Retained for a defined period for legal/accounting purposes, then anonymized</td>
+                <td style={tdStyle}>Retained for 90 days for legal/accounting purposes, then anonymized</td>
               </tr>
               <tr>
                 <td style={tdStyle}>Deletion audit-log entry</td>
@@ -260,9 +260,9 @@ const DeleteAccount = () => {
           </table>
         </div>
         <p style={{ ...pStyle, marginBottom: 0 }}>
-          Property, booking, and financial records tied to your account are retained for legal and accounting purposes
-          before being anonymized, since these records may also relate to tenants, staff, or other parties who have a
-          legitimate reference to them.
+          Property, booking, and financial records tied to your account are retained for <strong>90 days</strong> for legal and
+          accounting purposes before being anonymized, since these records may also relate to tenants, staff, or other
+          parties who have a legitimate reference to them.
         </p>
       </Section>
 
