@@ -68,6 +68,8 @@ import MobileBottomNav from "./compoent/MobileBottomNav/MobileBottomNav";
 import LandingPage from "./compoent/LandingPage/LandingPage";
 import DeleteAccount from "./compoent/DeleteAccount/DeleteAccount";
 import AccountDeletionPolicy from "./compoent/AccountDeletionPolicy/AccountDeletionPolicy";
+import CookiePolicy from "./compoent/CookiePolicy/CookiePolicy";
+import Disclaimer from "./compoent/Disclaimer/Disclaimer";
 function RequireAuth({ children }) {
   const { user } = useContext(AuthContext);
   const location = useLocation();
@@ -267,6 +269,8 @@ function App() {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/delete-account" element={<DeleteAccount />} />
           <Route path="/account-deletion-policy" element={<AccountDeletionPolicy />} />
+          <Route path="/cookie-policy" element={<CookiePolicy />} />
+          <Route path="/disclaimer" element={<Disclaimer />} />
           <Route path="/ovika-verified" element={<OvikaVerified />} />
           <Route path="/career-support" element={<RequireAuth><CareerSupport /></RequireAuth>} />
           <Route path="/coliving-space" element={<ColivingSpace />} />

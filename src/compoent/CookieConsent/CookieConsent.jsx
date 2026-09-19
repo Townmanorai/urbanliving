@@ -41,7 +41,7 @@ const CookieConsent = () => {
                     <h3 className="cookie-title">Cookies & Privacy</h3>
                     <p className="cookie-description">
                         This website employs cookies and associated technologies, as outlined in our 
-                        {" "}<a href="/privacy-policy" target="_blank" rel="noopener noreferrer">privacy policy</a>, 
+                        {" "}<a href="/cookie-policy" target="_blank" rel="noopener noreferrer">cookie policy</a>,
                         to serve various purposes including website functionality, analytics, 
                         improved user experience, and targeted advertising. You have the option to 
                         consent to the use of these technologies, or to customize your preferences 
