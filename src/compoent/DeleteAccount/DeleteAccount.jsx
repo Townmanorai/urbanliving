@@ -282,7 +282,7 @@ const DeleteAccount = () => {
       <Section num={4} title="Questions or Support">
         <p style={pStyle}>If you have any questions about this process or need help deleting your account, please contact us:</p>
         <div style={{ fontSize: '14px', marginTop: '16px', padding: '18px', background: '#f9f9f9', borderLeft: '4px solid #c98b3e', borderRadius: '6px', lineHeight: '1.9' }}>
-          <div><strong>Company:</strong> OvikaLiving, a brand of Townmanor Technologies Private Limited</div>
+          <div><strong>Company:</strong> OvikaLiving and OvikaLiving Partners, a brand of Townmanor Technologies Private Limited</div>
           <div><strong>Email:</strong> <a href="mailto:enquiry@ovikaliving.com" style={{ color: '#c2772b', textDecoration: 'none', fontWeight: 600, borderBottom: '1px solid #c98b3e' }}>enquiry@ovikaliving.com</a></div>
           <div><strong>Phone:</strong> 9319392227</div>
         </div>

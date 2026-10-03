@@ -157,8 +157,8 @@ const PrivacyPolicy = () => {
       <div style={{ ...cardStyleOdd, borderLeft: '5px solid #c2772b' }}>
         <p style={pStyle}>
           This Privacy Policy explains how <strong>Townmanor Technologies Private Limited</strong>, operating its accommodation and
-          property aggregation platform under the brand <strong>OvikaLiving</strong> ("OvikaLiving", "we", "us", or "our"), collects,
-          uses, stores, discloses and protects information when you access or use the OvikaLiving website, mobile application,
+          property aggregation platform under the brand <strong>OvikaLiving and OvikaLiving Partners</strong> ("OvikaLiving and OvikaLiving Partners", "we", "us", or "our"), collects,
+          uses, stores, discloses and protects information when you access or use the OvikaLiving and OvikaLiving Partners website, mobile application,
           platform or related services (collectively, the "Services" or "Platform").
         </p>
         <p style={pStyle}>
@@ -170,7 +170,7 @@ const PrivacyPolicy = () => {
           By accessing or using the Services, you acknowledge that you have read and understood this Privacy Policy.
         </p>
         <p style={{ ...pStyle, marginBottom: 0 }}>
-          Your use of the Platform is also subject to the OvikaLiving Website Terms &amp; Conditions and, where applicable, the
+          Your use of the Platform is also subject to the OvikaLiving and OvikaLiving Partners Website Terms &amp; Conditions and, where applicable, the
           Master Property Owner Agreement, Cancellation &amp; Refund Policy and applicable commercial terms.
         </p>
       </div>
@@ -191,7 +191,7 @@ const PrivacyPolicy = () => {
         <h3 style={h3Style}>1.2 KYC and Verification Information</h3>
         <p style={pStyle}>Where required, we may collect Know Your Customer ("KYC") and verification information to establish the identity or authority of users, Property Owners, customers, partners, vendors or other parties using the Services.</p>
         <p style={pStyle}>This may include identity documents, PAN, ownership or authorisation documents, property documents, applicable licences, registrations, NOCs, tourism registrations, GST details, bank details, business information or other verification information required under applicable law.</p>
-        <p style={pStyle}>Where permitted, KYC or verification activities may be conducted directly by OvikaLiving or through authorised third-party service providers and may include document checks, telephone calls, video verification, physical inspection or technology-based verification.</p>
+        <p style={pStyle}>Where permitted, KYC or verification activities may be conducted directly by OvikaLiving and OvikaLiving Partners or through authorised third-party service providers and may include document checks, telephone calls, video verification, physical inspection or technology-based verification.</p>
 
         <h3 style={h3Style}>1.3 Information Relating to Children</h3>
         <p style={pStyle}>For purposes of this Policy, a child means a person below 18 years of age, consistent with the Digital Personal Data Protection Act, 2023.</p>
@@ -249,11 +249,11 @@ const PrivacyPolicy = () => {
         <p style={pStyle}>The use of third-party services may also be subject to the applicable third party's own terms and privacy policies.</p>
 
         <h3 style={h3Style}>2.2 Payments and Settlement</h3>
-        <p style={pStyle}>Where OvikaLiving facilitates payments, relevant transaction and billing information may be shared with authorised payment gateways, payment service providers or financial institutions to process payments, deduct applicable service or platform fees and taxes, and settle amounts to registered Property Owner bank accounts.</p>
-        <p style={pStyle}>OvikaLiving is not responsible for delays or failed transfers resulting from incorrect, incomplete, outdated or invalid payment information provided by a Property Owner, subject to applicable law.</p>
+        <p style={pStyle}>Where OvikaLiving and OvikaLiving Partners facilitates payments, relevant transaction and billing information may be shared with authorised payment gateways, payment service providers or financial institutions to process payments, deduct applicable service or platform fees and taxes, and settle amounts to registered Property Owner bank accounts.</p>
+        <p style={pStyle}>OvikaLiving and OvikaLiving Partners is not responsible for delays or failed transfers resulting from incorrect, incomplete, outdated or invalid payment information provided by a Property Owner, subject to applicable law.</p>
 
         <h3 style={h3Style}>2.3 Partner Agreements and Data Protection</h3>
-        <p style={pStyle}>Where OvikaLiving enters into agreements or Memoranda of Understanding with partners, service providers, vendors or other organisations involving access to personal data collected through the Platform, such arrangements will require appropriate confidentiality, data-protection and security obligations consistent with this Policy and applicable law.</p>
+        <p style={pStyle}>Where OvikaLiving and OvikaLiving Partners enters into agreements or Memoranda of Understanding with partners, service providers, vendors or other organisations involving access to personal data collected through the Platform, such arrangements will require appropriate confidentiality, data-protection and security obligations consistent with this Policy and applicable law.</p>
 
         <h3 style={h3Style}>2.4 Marketing and Promotional Communications</h3>
         <p style={pStyle}>Where permitted by applicable law and subject to any required consent, we may use certain information to provide marketing communications, promotional offers, product updates, personalised recommendations, information about new services and other relevant offers.</p>
@@ -262,54 +262,54 @@ const PrivacyPolicy = () => {
 
         <h3 style={h3Style}>2.5 Photographs, Videos and Listing Content</h3>
         <p style={pStyle}>Property Owners may provide photographs, videos, descriptions, logos, property information and other content for listing and promotional purposes.</p>
-        <p style={pStyle}>Property Owners grant OvikaLiving the applicable licence to use such content for listing the Property and for marketing, advertising, social media, search results, promotional campaigns and improving OvikaLiving's Services, subject to the terms and limitations set out in the applicable Master Property Owner Agreement.</p>
+        <p style={pStyle}>Property Owners grant OvikaLiving and OvikaLiving Partners the applicable licence to use such content for listing the Property and for marketing, advertising, social media, search results, promotional campaigns and improving OvikaLiving and OvikaLiving Partners' Services, subject to the terms and limitations set out in the applicable Master Property Owner Agreement.</p>
         <p style={pStyle}>Property Owners are responsible for ensuring that they have the necessary rights and permissions to provide such content.</p>
 
         <h3 style={h3Style}>2.6 Information Handled by Property Owners</h3>
         <p style={pStyle}>Property Owners who receive User or Guest information through the Platform, including information relating to a confirmed booking, must handle such information only for legitimate purposes connected with the relevant booking, rental or provision of accommodation.</p>
-        <p style={{ ...pStyle, marginBottom: 0 }}>Property Owners must comply with applicable privacy and data-protection laws and must not sell, misuse, disclose or commercially exploit User information obtained through OvikaLiving.</p>
+        <p style={{ ...pStyle, marginBottom: 0 }}>Property Owners must comply with applicable privacy and data-protection laws and must not sell, misuse, disclose or commercially exploit User information obtained through OvikaLiving and OvikaLiving Partners.</p>
       </Section>
 
       {/* Section 3 */}
       <Section num={3} title="Confidentiality">
-        <p style={{ ...pStyle, marginBottom: 0 }}>Property Owners must keep confidential any non-public commercial, technical, financial or operational information received from OvikaLiving and must not disclose such information except where required or permitted by law or under the applicable agreement.</p>
+        <p style={{ ...pStyle, marginBottom: 0 }}>Property Owners must keep confidential any non-public commercial, technical, financial or operational information received from OvikaLiving and OvikaLiving Partners and must not disclose such information except where required or permitted by law or under the applicable agreement.</p>
       </Section>
 
       {/* Section 4 */}
       <Section num={4} title="Fraudulent or Unauthorised Applications and Communications">
-        <p style={pStyle}>Users and Property Owners should exercise caution when providing personal, KYC, financial or other sensitive information to third-party applications, websites or individuals claiming to represent OvikaLiving.</p>
-        <p style={pStyle}>Any application, website, message or individual falsely representing itself or themselves as OvikaLiving or an authorised representative of OvikaLiving is unauthorised and may be fraudulent.</p>
-        <p style={pStyle}>OvikaLiving will not be responsible for information voluntarily provided by a user to an unauthorised third party, subject always to any statutory liability that cannot lawfully be excluded.</p>
-        <p style={{ ...pStyle, marginBottom: 0 }}>Where OvikaLiving reasonably believes that fraud, misuse or unlawful activity has occurred, it may suspend, restrict, remove or terminate access to an account or listing, subject to applicable law and, wherever practicable, providing the affected person a fair opportunity to be heard.</p>
+        <p style={pStyle}>Users and Property Owners should exercise caution when providing personal, KYC, financial or other sensitive information to third-party applications, websites or individuals claiming to represent OvikaLiving and OvikaLiving Partners.</p>
+        <p style={pStyle}>Any application, website, message or individual falsely representing itself or themselves as OvikaLiving and OvikaLiving Partners or an authorised representative of OvikaLiving and OvikaLiving Partners is unauthorised and may be fraudulent.</p>
+        <p style={pStyle}>OvikaLiving and OvikaLiving Partners will not be responsible for information voluntarily provided by a user to an unauthorised third party, subject always to any statutory liability that cannot lawfully be excluded.</p>
+        <p style={{ ...pStyle, marginBottom: 0 }}>Where OvikaLiving and OvikaLiving Partners reasonably believes that fraud, misuse or unlawful activity has occurred, it may suspend, restrict, remove or terminate access to an account or listing, subject to applicable law and, wherever practicable, providing the affected person a fair opportunity to be heard.</p>
       </Section>
 
       {/* Section 5 */}
       <Section num={5} title="Legal and Regulatory Compliance">
-        <p style={pStyle}>OvikaLiving may collect, use, retain or disclose information where reasonably necessary to comply with applicable laws and regulations; respond to lawful governmental or regulatory requests; prevent fraud or misuse; protect the rights, property and safety of OvikaLiving, Users, Property Owners or others; enforce our agreements and policies; and resolve disputes.</p>
-        <p style={pStyle}>Where required by law, OvikaLiving will cooperate with competent authorities.</p>
+        <p style={pStyle}>OvikaLiving and OvikaLiving Partners may collect, use, retain or disclose information where reasonably necessary to comply with applicable laws and regulations; respond to lawful governmental or regulatory requests; prevent fraud or misuse; protect the rights, property and safety of OvikaLiving and OvikaLiving Partners, Users, Property Owners or others; enforce our agreements and policies; and resolve disputes.</p>
+        <p style={pStyle}>Where required by law, OvikaLiving and OvikaLiving Partners will cooperate with competent authorities.</p>
 
         <h3 style={h3Style}>5.1 Information Technology Act, 2000</h3>
-        <p style={pStyle}>OvikaLiving seeks to operate the Services in accordance with the Information Technology Act, 2000 and applicable rules made thereunder, including the Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011 ("SPDI Rules") and the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021, as amended, replaced or supplemented from time to time.</p>
-        <p style={pStyle}>OvikaLiving implements reasonable security practices and procedures designed to protect sensitive personal data or information, where applicable, from unauthorised access, damage, use, modification, disclosure or impairment.</p>
+        <p style={pStyle}>OvikaLiving and OvikaLiving Partners seeks to operate the Services in accordance with the Information Technology Act, 2000 and applicable rules made thereunder, including the Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011 ("SPDI Rules") and the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021, as amended, replaced or supplemented from time to time.</p>
+        <p style={pStyle}>OvikaLiving and OvikaLiving Partners implements reasonable security practices and procedures designed to protect sensitive personal data or information, where applicable, from unauthorised access, damage, use, modification, disclosure or impairment.</p>
 
         <h3 style={h3Style}>5.2 Digital Personal Data Protection Act, 2023</h3>
-        <p style={pStyle}>OvikaLiving has regard to the Digital Personal Data Protection Act, 2023 ("DPDP Act") and the Digital Personal Data Protection Rules, 2025.</p>
-        <p style={pStyle}>As a Data Fiduciary, OvikaLiving is working towards compliance with applicable obligations under the DPDP framework, including requirements relating to lawful processing, consent where applicable, purpose limitation, data-principal rights, reasonable security safeguards and personal-data breach notification.</p>
+        <p style={pStyle}>OvikaLiving and OvikaLiving Partners has regard to the Digital Personal Data Protection Act, 2023 ("DPDP Act") and the Digital Personal Data Protection Rules, 2025.</p>
+        <p style={pStyle}>As a Data Fiduciary, OvikaLiving and OvikaLiving Partners is working towards compliance with applicable obligations under the DPDP framework, including requirements relating to lawful processing, consent where applicable, purpose limitation, data-principal rights, reasonable security safeguards and personal-data breach notification.</p>
         <p style={pStyle}>The DPDP Act and Rules are being brought into force in phases. Provisions relating to the Data Protection Board of India, certain definitions and Government rule-making powers took effect from 13 November 2025. The framework relating to registration and operation of Consent Managers takes effect from 13 November 2026. The remaining substantive obligations, including specified consent, data-principal rights, breach-notification and enforcement provisions, are scheduled to take effect from 13 May 2027.</p>
-        <p style={pStyle}>OvikaLiving will update this Privacy Policy and its practices as applicable provisions come into force and will comply with each obligation from its applicable commencement date.</p>
+        <p style={pStyle}>OvikaLiving and OvikaLiving Partners will update this Privacy Policy and its practices as applicable provisions come into force and will comply with each obligation from its applicable commencement date.</p>
 
         <h3 style={h3Style}>5.3 Companies Act, 2013</h3>
-        <p style={pStyle}>Townmanor Technologies Private Limited, the corporate entity operating OvikaLiving, is incorporated and regulated under the Companies Act, 2013 and applicable rules made thereunder.</p>
+        <p style={pStyle}>Townmanor Technologies Private Limited, the corporate entity operating OvikaLiving and OvikaLiving Partners, is incorporated and regulated under the Companies Act, 2013 and applicable rules made thereunder.</p>
         <p style={pStyle}>Corporate Identification Number (CIN): U68200UP2023PTC193656</p>
         <p style={pStyle}>GSTIN: 09AAKCT6155G1ZZ</p>
 
         <h3 style={h3Style}>5.4 Other Applicable Laws</h3>
-        <p style={{ ...pStyle, marginBottom: 0 }}>Depending on the nature of a transaction, OvikaLiving and/or a Property Owner may also be subject to other applicable laws, including consumer-protection laws, applicable e-commerce regulations, payment and settlement systems regulations, tax legislation including GST law, the Mediation Act, 2023 and the Arbitration and Conciliation Act, 1996, as amended from time to time.</p>
+        <p style={{ ...pStyle, marginBottom: 0 }}>Depending on the nature of a transaction, OvikaLiving and OvikaLiving Partners and/or a Property Owner may also be subject to other applicable laws, including consumer-protection laws, applicable e-commerce regulations, payment and settlement systems regulations, tax legislation including GST law, the Mediation Act, 2023 and the Arbitration and Conciliation Act, 1996, as amended from time to time.</p>
       </Section>
 
       {/* Section 6 */}
       <Section num={6} title="Data Retention">
-        <p style={pStyle}>OvikaLiving retains personal data only for as long as reasonably necessary to fulfil the purpose for which it was collected, including to provide the Services, complete and administer bookings, comply with applicable legal, tax or accounting requirements, resolve disputes and enforce agreements.</p>
+        <p style={pStyle}>OvikaLiving and OvikaLiving Partners retains personal data only for as long as reasonably necessary to fulfil the purpose for which it was collected, including to provide the Services, complete and administer bookings, comply with applicable legal, tax or accounting requirements, resolve disputes and enforce agreements.</p>
         <p style={pStyle}>Retention periods may vary depending on the category and nature of the data.</p>
         <p style={pStyle}>For example, KYC and financial records may be retained for periods required under applicable legal, tax or regulatory requirements.</p>
         <p style={{ ...pStyle, marginBottom: 0 }}>When the applicable retention period expires, personal data will be deleted, anonymised or securely archived in accordance with applicable law.</p>
@@ -318,15 +318,15 @@ const PrivacyPolicy = () => {
       {/* Section 7 */}
       <Section num={7} title="Cross-Border Data Transfers">
         <p style={pStyle}>Certain third-party service providers, such as cloud-hosting or analytics providers, may process personal data on servers located outside India.</p>
-        <p style={pStyle}>Where personal data is transferred or processed outside India, OvikaLiving will do so in accordance with applicable law, including the DPDP Act and any applicable conditions or restrictions notified by the Central Government from time to time.</p>
-        <p style={{ ...pStyle, marginBottom: 0 }}>OvikaLiving will require relevant service providers to maintain appropriate contractual, security and data-protection safeguards.</p>
+        <p style={pStyle}>Where personal data is transferred or processed outside India, OvikaLiving and OvikaLiving Partners will do so in accordance with applicable law, including the DPDP Act and any applicable conditions or restrictions notified by the Central Government from time to time.</p>
+        <p style={{ ...pStyle, marginBottom: 0 }}>OvikaLiving and OvikaLiving Partners will require relevant service providers to maintain appropriate contractual, security and data-protection safeguards.</p>
       </Section>
 
       {/* Section 8 */}
       <Section num={8} title="Electronic Communications and Records">
         <p style={pStyle}>By using the Platform, Users and Property Owners consent, where legally permissible, to receiving electronic communications relating to their use of the Platform, including booking confirmations, transaction notifications, account communications, service updates, important notices and other communications relating to the Services.</p>
         <p style={pStyle}>Where legally permissible, electronic records and electronic acceptance may have the same legal effect as physical records.</p>
-        <p style={{ ...pStyle, marginBottom: 0 }}>OvikaLiving may maintain electronic records relating to acceptance of agreements, including identity details, date and time of acceptance, IP address or device information, the version of an agreement accepted and other relevant transaction records.</p>
+        <p style={{ ...pStyle, marginBottom: 0 }}>OvikaLiving and OvikaLiving Partners may maintain electronic records relating to acceptance of agreements, including identity details, date and time of acceptance, IP address or device information, the version of an agreement accepted and other relevant transaction records.</p>
       </Section>
 
       {/* Section 9 */}
@@ -341,37 +341,37 @@ const PrivacyPolicy = () => {
           <li style={liStyle}>Manage location permissions through your device settings; and</li>
           <li style={liStyle}>Manage cookie preferences through the Platform or your browser/device settings.</li>
         </ul>
-        <p style={pStyle}>You are responsible for ensuring that your contact, account and payment information provided to OvikaLiving remains accurate and up to date.</p>
-        <p style={pStyle}>Where OvikaLiving becomes aware that a child's information has been collected improperly, it will take reasonable steps to delete such information.</p>
+        <p style={pStyle}>You are responsible for ensuring that your contact, account and payment information provided to OvikaLiving and OvikaLiving Partners remains accurate and up to date.</p>
+        <p style={pStyle}>Where OvikaLiving and OvikaLiving Partners becomes aware that a child's information has been collected improperly, it will take reasonable steps to delete such information.</p>
         <p style={{ ...pStyle, marginBottom: 0 }}>Rights and mechanisms may be subject to applicable law and the phased commencement of the DPDP framework.</p>
       </Section>
 
       {/* Section 10 - Grievance Redressal and Contact */}
       <Section num={10} title="Grievance Redressal and Contact">
-        <p style={pStyle}>OvikaLiving maintains a grievance mechanism in accordance with applicable Indian laws and regulations.</p>
+        <p style={pStyle}>OvikaLiving and OvikaLiving Partners maintains a grievance mechanism in accordance with applicable Indian laws and regulations.</p>
         <p style={pStyle}>For privacy-related complaints, concerns or requests, you may contact:</p>
         <div style={{ fontSize: '14px', marginTop: '16px', padding: '18px', background: '#f9f9f9', borderLeft: '4px solid #c98b3e', borderRadius: '6px', lineHeight: '1.9' }}>
-          <div><strong>Company:</strong> OvikaLiving, a brand of Townmanor Technologies Private Limited</div>
+          <div><strong>Company:</strong> OvikaLiving and OvikaLiving Partners, a brand of Townmanor Technologies Private Limited</div>
           <div><strong>Grievance Officer:</strong> Ankush Mishra</div>
           <div><strong>Email:</strong> <a href="mailto:enquiry@ovikaliving.com" style={{ color: '#c2772b', textDecoration: 'none', fontWeight: 600, borderBottom: '1px solid #c98b3e' }}>enquiry@ovikaliving.com</a></div>
           <div><strong>Phone:</strong> 9319392227</div>
           <div><strong>Registered Office:</strong> ST-304, Eldeco Studio, Sector-93A, Noida, Uttar Pradesh – 201304</div>
           <div><strong>Website:</strong> <a href="https://www.ovikaliving.com" style={{ color: '#c2772b', textDecoration: 'none', fontWeight: 600, borderBottom: '1px solid #c98b3e' }}>www.ovikaliving.com</a></div>
         </div>
-        <p style={{ ...pStyle, marginTop: '16px' }}>Grievances will be handled in accordance with applicable law and the grievance process maintained by OvikaLiving.</p>
+        <p style={{ ...pStyle, marginTop: '16px' }}>Grievances will be handled in accordance with applicable law and the grievance process maintained by OvikaLiving and OvikaLiving Partners.</p>
       </Section>
 
       {/* Section 11 */}
       <Section num={11} title="Governing Law and Dispute Resolution">
         <p style={pStyle}>This Privacy Policy is governed by and construed in accordance with the laws of India.</p>
-        <p style={pStyle}>Any dispute, controversy, claim or difference arising out of or relating to this Privacy Policy shall first be addressed through good-faith discussions and, where unresolved, through mediation and arbitration consistent with the dispute-resolution provisions contained in the applicable OvikaLiving Website Terms &amp; Conditions and Master Property Owner Agreement.</p>
+        <p style={pStyle}>Any dispute, controversy, claim or difference arising out of or relating to this Privacy Policy shall first be addressed through good-faith discussions and, where unresolved, through mediation and arbitration consistent with the dispute-resolution provisions contained in the applicable OvikaLiving and OvikaLiving Partners Website Terms &amp; Conditions and Master Property Owner Agreement.</p>
         <p style={pStyle}>The seat and venue of arbitration shall be Noida, Gautam Buddh Nagar, Uttar Pradesh, India, subject to applicable law.</p>
         <p style={{ ...pStyle, marginBottom: 0 }}>The competent courts of the applicable jurisdiction shall have jurisdiction, subject to any mandatory statutory jurisdiction that cannot lawfully be excluded and applicable consumer-protection rights.</p>
       </Section>
 
       {/* Section 12 */}
       <Section num={12} title="Changes to This Privacy Policy">
-        <p style={pStyle}>OvikaLiving may update this Privacy Policy from time to time to reflect changes in our Services, business practices, technology, applicable laws or regulatory requirements.</p>
+        <p style={pStyle}>OvikaLiving and OvikaLiving Partners may update this Privacy Policy from time to time to reflect changes in our Services, business practices, technology, applicable laws or regulatory requirements.</p>
         <p style={pStyle}>When we update this Policy, we will publish the revised version on the Platform and update the "Last Updated" date.</p>
         <p style={pStyle}>Where appropriate, we may also communicate material changes through the Platform, email, dashboard, account notifications or other reasonable electronic means.</p>
         <p style={{ ...pStyle, marginBottom: 0 }}>Your continued use of the Services after an update may constitute acceptance of the revised Policy, subject to applicable law.</p>
@@ -380,7 +380,7 @@ const PrivacyPolicy = () => {
       {/* Section 13 */}
       <Section num={13} title="Severability and Related Policies">
         <p style={pStyle}>If any provision of this Privacy Policy is found to be invalid, unlawful or unenforceable, the remaining provisions will continue in effect to the extent permitted by law.</p>
-        <p style={{ ...pStyle, marginBottom: 0 }}>This Privacy Policy should be read together with the OvikaLiving Website Terms &amp; Conditions, Master Property Owner Agreement, Charges, Payment and Settlement terms, and Cancellation and Refund Policy, as applicable.</p>
+        <p style={{ ...pStyle, marginBottom: 0 }}>This Privacy Policy should be read together with the OvikaLiving and OvikaLiving Partners Website Terms &amp; Conditions, Master Property Owner Agreement, Charges, Payment and Settlement terms, and Cancellation and Refund Policy, as applicable.</p>
       </Section>
 
       {/* Contact Section */}

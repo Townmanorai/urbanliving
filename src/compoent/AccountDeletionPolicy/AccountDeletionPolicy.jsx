@@ -179,7 +179,7 @@ const AccountDeletionPolicy = () => {
       {/* Section 1 - Overview */}
       <Section num={1} title="Overview">
         <p style={{ ...pStyle, marginBottom: 0 }}>
-          Users can permanently delete their OvikaLiving account and the personal data associated with it directly from
+          Users can permanently delete their OvikaLiving and OvikaLiving Partners account and the personal data associated with it directly from
           within the app — no separate website, form, or support request is required. The same screen also offers a
           reversible alternative (temporary deactivation) for users who want a break rather than permanent deletion.
         </p>
@@ -338,7 +338,7 @@ const AccountDeletionPolicy = () => {
           <div><a href="mailto:support@townmanor.ai" style={{ color: '#c2772b', textDecoration: 'none', fontWeight: 600, borderBottom: '1px solid #c98b3e' }}>support@townmanor.ai</a></div>
         </div>
         <p style={{ ...pStyle, marginTop: '16px', marginBottom: 0 }}>
-          For the full data collection, retention, and privacy practices governing OvikaLiving, see our{' '}
+          For the full data collection, retention, and privacy practices governing OvikaLiving and OvikaLiving Partners, see our{' '}
           <Link to="/privacy-policy" style={{ color: '#c2772b', textDecoration: 'none', fontWeight: 600, borderBottom: '1px solid #c98b3e' }}>Privacy Policy</Link>{' '}
           (also available in-app under Profile → Privacy Policy).
         </p>

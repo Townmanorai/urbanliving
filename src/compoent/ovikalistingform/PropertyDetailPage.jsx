@@ -270,6 +270,10 @@ const getValidPropertyId = (frontendId) => String(frontendId);
 const API_BASE_URL = 'https://www.domiva.in/api/ovika';
 const CALENDAR_API_BASE = 'https://www.domiva.in/api/booking/calendar';
 const BOOKING_REQUEST_API = 'https://www.domiva.in/api/booking-request';
+const COUPONS = {
+  OVIKA500: { amount: 500, propertyIds: [77, 78, 79, 80, 81] },
+  OVIKA200: { amount: 200, propertyIds: [77] },
+};
 const BLOCKED_DATES_API = import.meta.env.DEV
   ? 'http://localhost:3030/api/ovika/blocked-dates'
   : 'https://domiva.in/api/ovika/blocked-dates';
@@ -1734,6 +1738,27 @@ const PropertyDetailPage = () => {
   const [couponInput, setCouponInput] = useState('');
   const [couponApplied, setCouponApplied] = useState(false);
   const [couponError, setCouponError] = useState('');
+  const [appliedCouponCode, setAppliedCouponCode] = useState('');
+  const appliedCouponAmount = couponApplied ? (COUPONS[appliedCouponCode]?.amount || 0) : 0;
+  const applyCoupon = () => {
+    const code = couponInput.trim().toUpperCase();
+    const coupon = COUPONS[code];
+    if (coupon && coupon.propertyIds.includes(Number(property?.id))) {
+      setAppliedCouponCode(code);
+      setCouponApplied(true);
+      setCouponError('');
+    } else {
+      setAppliedCouponCode('');
+      setCouponApplied(false);
+      setCouponError('Invalid coupon code');
+    }
+  };
+  const removeCoupon = () => {
+    setCouponApplied(false);
+    setAppliedCouponCode('');
+    setCouponInput('');
+    setCouponError('');
+  };
 
   const token = Cookies.get('jwttoken');
   let username = '';
@@ -1898,7 +1923,7 @@ const PropertyDetailPage = () => {
         ? (selectedPrice || Number(property?.meta?.perMonthPrice) || Number(property?.meta?.monthlyPrice) || Number(property?.monthly_price) || Number(property?.price) || 0)
         : 0;
       const isNightlyOffer = [77, 78, 79, 80, 81].includes(Number(property?.id));
-      const couponDiscount = (isNightlyOffer && couponApplied) ? 500 * Math.max(1, currentDays) : 0;
+      const couponDiscount = (isNightlyOffer && couponApplied) ? appliedCouponAmount * Math.max(1, currentDays) : 0;
       const afterCoupon = Math.max(0, afterDiscount - couponDiscount);
       const gst = isMonthlyBooking ? 0 : afterCoupon * 0.05;
       const securityDeposit = isMonthlyBooking
@@ -1909,7 +1934,7 @@ const PropertyDetailPage = () => {
     } else {
       setPricing({ subtotal: 0, discount: 0, discountPercentage: 0, gst: 0, securityDeposit: 0, total: 0, daysNeededForNextTier: 0, nextTierPercentage: 0, couponDiscount: 0 });
     }
-  }, [formData.checkInDate, formData.checkOutDate, property, pricingMode, selectedPrice, monthlyDuration, couponApplied]);
+  }, [formData.checkInDate, formData.checkOutDate, property, pricingMode, selectedPrice, monthlyDuration, couponApplied, appliedCouponAmount]);
 
   useEffect(() => {
     const isNightlyOffer = [77, 78, 79, 80, 81].includes(Number(property?.id));
@@ -2505,7 +2530,7 @@ const PropertyDetailPage = () => {
   const isNightlyOfferProperty = [77, 78, 79, 80, 81].includes(Number(property.id));
   const nightlyOriginalPrice = isNightlyOfferProperty ? Math.round(displayBasePrice / 0.6) : 0;
   const nightlyEffectivePrice = isNightlyOfferProperty
-    ? (couponApplied ? displayBasePrice - 500 : displayBasePrice)
+    ? displayBasePrice - appliedCouponAmount
     : displayBasePrice;
 
   // Seeded discount for all other nightly properties (OYO-style strikethrough)
@@ -3179,7 +3204,7 @@ const PropertyDetailPage = () => {
                               <>
                                 <span style={{ textDecoration: 'line-through', color: '#aaa', marginRight: '4px' }}>₹{perNight.toLocaleString('en-IN')}</span>
                                 <span style={{ color: '#15803d', fontWeight: 700 }}>₹{perNight.toLocaleString('en-IN')}</span>
-                                <span style={{ color: '#15803d', fontSize: '0.78rem' }}> (−₹500/night coupon)</span>
+                                <span style={{ color: '#15803d', fontSize: '0.78rem' }}> (−₹{appliedCouponAmount}/night coupon)</span>
                               </>
                             ) : (
                               <span>₹{perNight.toLocaleString('en-IN')}</span>
@@ -3199,7 +3224,7 @@ const PropertyDetailPage = () => {
                         )}
                         {pricing.couponDiscount > 0 && (
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid #e5e5e5', color: '#16a34a' }}>
-                            <span>Coupon (OVIKA500 · ₹500/night)</span><span>-<MdCurrencyRupee style={{ display: 'inline' }} />{pricing.couponDiscount.toFixed(2)}</span>
+                            <span>Coupon ({appliedCouponCode} · ₹{appliedCouponAmount}/night)</span><span>-<MdCurrencyRupee style={{ display: 'inline' }} />{pricing.couponDiscount.toFixed(2)}</span>
                           </div>
                         )}
                         {pricing.securityDeposit > 0 && (
@@ -3252,15 +3277,7 @@ const PropertyDetailPage = () => {
                                   style={{ flex: 1, padding: '7px 10px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '0.82rem', outline: 'none' }}
                                 />
                                 <button
-                                  onClick={() => {
-                                    if (couponInput === 'OVIKA500') {
-                                      setCouponApplied(true);
-                                      setCouponError('');
-                                    } else {
-                                      setCouponApplied(false);
-                                      setCouponError('Invalid coupon code');
-                                    }
-                                  }}
+                                  onClick={applyCoupon}
                                   style={{ padding: '7px 12px', background: '#b45309', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '0.82rem', cursor: 'pointer', whiteSpace: 'nowrap' }}
                                 >Apply</button>
                               </div>
@@ -3268,9 +3285,9 @@ const PropertyDetailPage = () => {
                             </>
                           ) : (
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '6px', padding: '8px 12px' }}>
-                              <span style={{ fontSize: '0.8rem', color: '#15803d', fontWeight: 600 }}>✓ OVIKA500 — ₹500/night off!</span>
+                              <span style={{ fontSize: '0.8rem', color: '#15803d', fontWeight: 600 }}>✓ {appliedCouponCode} — ₹{appliedCouponAmount}/night off!</span>
                               <button
-                                onClick={() => { setCouponApplied(false); setCouponInput(''); setCouponError(''); }}
+                                onClick={removeCoupon}
                                 style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 600, padding: '0 4px' }}
                               >✕ Remove</button>
                             </div>
@@ -3452,7 +3469,7 @@ const PropertyDetailPage = () => {
                   <div style={{ maxWidth: '500px', margin: '0 auto', padding: '2.5rem', background: '#f8fafc', borderRadius: '12px', textAlign: 'center' }}>
                     <p style={{ fontSize: '1rem', color: '#666', marginBottom: '0.5rem' }}>Final Amount</p>
                     {couponApplied && pricing.couponDiscount > 0 && (
-                      <p style={{ fontSize: '0.82rem', color: '#15803d', fontWeight: 600, marginBottom: '6px' }}>✓ OVIKA500 applied — ₹500/night saved!</p>
+                      <p style={{ fontSize: '0.82rem', color: '#15803d', fontWeight: 600, marginBottom: '6px' }}>✓ {appliedCouponCode} applied — ₹{appliedCouponAmount}/night saved!</p>
                     )}
                     <p style={{ fontSize: '2.5rem', fontWeight: '700', color: '#8b0000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MdOutlineCurrencyRupee size={40} />{pricing.total.toFixed(2)}</p>
                     <div style={{ marginBottom: '2rem', padding: '1rem', background: 'white', borderRadius: '8px', textAlign: 'left' }}>
@@ -4242,7 +4259,7 @@ const PropertyDetailPage = () => {
                     </div>
                   )}
                   {couponApplied && isNightlyOfferProperty && (
-                    <div className="pdp-price-coupon-pill">-₹500 COUPON</div>
+                    <div className="pdp-price-coupon-pill">-₹{appliedCouponAmount} COUPON</div>
                   )}
                   {showDistinctRoomPrices && (
                     <span className="pdp-price-note">
@@ -4309,15 +4326,7 @@ const PropertyDetailPage = () => {
                               style={{ flex: 1, padding: '7px 10px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '0.8rem', outline: 'none' }}
                             />
                             <button
-                              onClick={() => {
-                                if (couponInput === 'OVIKA500') {
-                                  setCouponApplied(true);
-                                  setCouponError('');
-                                } else {
-                                  setCouponApplied(false);
-                                  setCouponError('Invalid coupon code');
-                                }
-                              }}
+                              onClick={applyCoupon}
                               style={{ padding: '7px 12px', background: '#b45309', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '0.8rem', cursor: 'pointer', whiteSpace: 'nowrap' }}
                             >Apply</button>
                           </div>
@@ -4327,9 +4336,9 @@ const PropertyDetailPage = () => {
                         </>
                       ) : (
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '6px', padding: '8px 12px' }}>
-                          <span style={{ fontSize: '0.8rem', color: '#15803d', fontWeight: 600 }}>✓ OVIKA500 — ₹500/night off!</span>
+                          <span style={{ fontSize: '0.8rem', color: '#15803d', fontWeight: 600 }}>✓ {appliedCouponCode} — ₹{appliedCouponAmount}/night off!</span>
                           <button
-                            onClick={() => { setCouponApplied(false); setCouponInput(''); setCouponError(''); }}
+                            onClick={removeCoupon}
                             style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 600, padding: '0 4px' }}
                           >✕ Remove</button>
                         </div>
