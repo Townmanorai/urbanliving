@@ -3843,6 +3843,31 @@ const PropertyDetailPage = () => {
             </div>
           </div>
 
+          {isNightlyOfferProperty && (
+            <div className="pdp-mobile-coupon">
+              <p className="pdp-mobile-coupon-title">Have a coupon code?</p>
+              {!couponApplied ? (
+                <>
+                  <div className="pdp-mobile-coupon-row">
+                    <input
+                      type="text"
+                      value={couponInput}
+                      onChange={e => { setCouponInput(e.target.value.toUpperCase()); setCouponError(''); }}
+                      placeholder="Enter coupon"
+                    />
+                    <button onClick={applyCoupon}>Apply</button>
+                  </div>
+                  {couponError && <p className="pdp-mobile-coupon-error">{couponError}</p>}
+                </>
+              ) : (
+                <div className="pdp-mobile-coupon-applied">
+                  <span>✓ {appliedCouponCode} — ₹{appliedCouponAmount}/night off!</span>
+                  <button onClick={removeCoupon}>✕ Remove</button>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* NON-PG ROOM ARRANGEMENTS */}
           {property.parsedBedrooms?.length > 0 && !isPG && (
             <>

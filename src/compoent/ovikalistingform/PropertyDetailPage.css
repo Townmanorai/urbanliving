@@ -4996,3 +4996,15 @@ table {
   margin-top: 0.75rem;
 }
 
+.pdp-mobile-coupon { display: none; }
+
+@media (max-width: 1024px) {
+  .pdp-mobile-coupon { display: block; margin: 16px 0; padding: 14px 16px; background: #fff; border: 1.5px solid #f0e8da; border-radius: 14px; }
+  .pdp-mobile-coupon-title { font-size: 0.85rem; font-weight: 600; color: #374151; margin: 0 0 10px; }
+  .pdp-mobile-coupon-row { display: flex; gap: 8px; }
+  .pdp-mobile-coupon-row input { flex: 1; padding: 9px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.85rem; outline: none; }
+  .pdp-mobile-coupon-row button { padding: 9px 16px; background: #b45309; color: #fff; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+  .pdp-mobile-coupon-error { color: #dc2626; font-size: 0.78rem; margin: 6px 0 0; }
+  .pdp-mobile-coupon-applied { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 9px 12px; color: #15803d; font-size: 0.85rem; font-weight: 600; }
+  .pdp-mobile-coupon-applied button { background: none; border: none; color: #dc2626; font-weight: 600; cursor: pointer; font-size: 0.8rem; }
+}
