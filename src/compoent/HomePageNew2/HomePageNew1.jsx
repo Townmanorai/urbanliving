@@ -14,7 +14,7 @@ const isLongTermProperty = (p) => !SHORT_TERM_TYPES.includes((p.property_type ||
 // browser fetch() to a public geocoder (e.g. Nominatim) doesn't work here because
 // that API doesn't send CORS headers, so it's silently blocked by the browser —
 // loading the provider as a <script> and calling its JS SDK avoids that entirely.
-const MAPTHRUST_API_KEY = 'AlzaSyMPwhjsTA8V3WjSO0SMbMsxq98NZIMXGAK';
+const GOOGLE_MAPS_API_KEY = 'AIzaSyD7T_bWCedlDv61HJ2RlV_OLYBfjSONnK0';
 function useMapThrustPlaces() {
   const [isLoaded, setIsLoaded] = useState(() => !!(window.google && window.google.maps && window.google.maps.places));
   useEffect(() => {
@@ -28,7 +28,7 @@ function useMapThrustPlaces() {
     if (document.getElementById('mapthrust-places-script')) { markLoaded(); return; }
     const s = document.createElement('script');
     s.id = 'mapthrust-places-script';
-    s.src = `https://maps.mapthrust.io/maps/api/js?key=${MAPTHRUST_API_KEY}&libraries=places`;
+    s.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
     s.async = true;
     s.onload = markLoaded;
     document.head.appendChild(s);

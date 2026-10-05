@@ -7,7 +7,7 @@ import { FiSearch, FiMapPin, FiHeart, FiPlus, FiStar, FiX, FiMoon, FiCalendar, F
 import { BiBed, BiBath, BiArea } from 'react-icons/bi';
 import { GoogleMap, MarkerF, InfoWindowF } from '@react-google-maps/api';
 
-const MAPTHRUST_API_KEY = 'AlzaSyMPwhjsTA8V3WjSO0SMbMsxq98NZIMXGAK';
+const GOOGLE_MAPS_API_KEY = 'AIzaSyD7T_bWCedlDv61HJ2RlV_OLYBfjSONnK0';
 
 function useMapThrustLoader() {
   const [isLoaded, setIsLoaded] = useState(() => !!(window.google && window.google.maps));
@@ -21,7 +21,7 @@ function useMapThrustLoader() {
     }
     const s = document.createElement('script');
     s.id = 'mapthrust-script';
-    s.src = `https://maps.mapthrust.io/maps/api/js?key=${MAPTHRUST_API_KEY}`;
+    s.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}`;
     s.async = true;
     s.onload = () => {
       if (window.google && window.google.maps) { setIsLoaded(true); return; }
