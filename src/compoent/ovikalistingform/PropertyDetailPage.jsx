@@ -3017,7 +3017,27 @@ const PropertyDetailPage = () => {
                     <p style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>4. Payment & Pricing</p>
                     <p style={{ marginBottom: '1rem' }}>All prices are final. Payment must be completed in full before confirmation.</p>
                     <p style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>5. Privacy</p>
-                    <p>Your personal information will be used solely for this booking.</p>
+                    <p style={{ marginBottom: '1rem' }}>Your personal information will be used solely for this booking.</p>
+
+                    <p style={{ fontWeight: 'bold', marginBottom: '0.5rem', marginTop: '1.25rem', borderTop: '1px solid #e2e8f0', paddingTop: '1.25rem' }}>Booking, Payment and Confirmation</p>
+
+                    <p style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>6. Booking Request and Payment Receipt</p>
+                    <p style={{ marginBottom: '1rem' }}>Upon successful receipt of payment for a booking made through the OvikaLiving platform, the customer will receive an acknowledgement confirming receipt of the booking request and payment. Such acknowledgement shall not constitute a final booking confirmation.</p>
+
+                    <p style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>7. Property Owner Confirmation</p>
+                    <p style={{ marginBottom: '1rem' }}>All bookings that require confirmation from the concerned property owner shall remain pending confirmation until OvikaLiving receives confirmation from the property owner. OvikaLiving shall endeavour to communicate the final booking status to the customer within 24 hours of receipt of the booking request and payment.</p>
+
+                    <p style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>8. Non-Confirmation and Refunds</p>
+                    <p style={{ marginBottom: '1rem' }}>If the concerned property owner declines or is unable to confirm the booking, OvikaLiving shall initiate a refund of the full booking amount received for that booking to the customer's original payment method within five (5) working days of determining that the booking cannot be confirmed. The time taken for the refunded amount to reflect in the customer's account may vary depending on the payment service provider, bank or card issuer.</p>
+
+                    <p style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>9. Customer Acknowledgement</p>
+                    <p style={{ marginBottom: '1rem' }}>By proceeding with a booking and making payment through OvikaLiving, the customer acknowledges that certain bookings are subject to confirmation by the concerned property owner and that the booking shall be considered confirmed only upon communication of the final confirmation by OvikaLiving.</p>
+
+                    <p style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>10. Booking Confirmation Timeline and Communication Hours</p>
+                    <p style={{ marginBottom: '0.5rem' }}>All communications from OvikaLiving regarding booking requests, payment acknowledgements, booking confirmations, booking status updates, and related matters shall be processed during official working hours, Monday to Saturday, from 10:00 AM to 6:00 PM (IST), excluding Sundays and applicable public holidays.</p>
+                    <p style={{ marginBottom: '0.5rem' }}>OvikaLiving shall endeavour to communicate the final booking confirmation status within 24 hours of receipt of the booking request and successful payment, or within the next eight (8) working hours, whichever is later.</p>
+                    <p style={{ marginBottom: '0.5rem' }}>Bookings and payments received outside official working hours shall be processed during the next available working hours.</p>
+                    <p>If the concerned property owner is unable to confirm the booking, OvikaLiving shall initiate a full refund to the customer's original payment method within five (5) working days of determining that the booking cannot be confirmed, subject to applicable bank and payment gateway processing timelines.</p>
                   </div>
                   <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '1rem', background: '#f8fafc', borderRadius: '8px' }}>
                     <input type="checkbox" checked={formData.termsAgreed} onChange={(e) => setFormData({ ...formData, termsAgreed: e.target.checked })} style={{ marginRight: '0.75rem', width: '20px', height: '20px' }} />
