@@ -2048,17 +2048,9 @@ const PropertyDetailPage = () => {
 
   const handleRoomBookNow = (room) => {
     if (!user) { navigate('/login', { state: { from: location } }); return; }
-    // Hotels & Homestays/BnB: no direct booking — always show the lead/enquiry form instead.
-    const categoryStr = `${property?.property_category || ''} ${property?.property_type || ''}`.toLowerCase();
-    const isHotelOrBnB = categoryStr.includes('hotel') || categoryStr.includes('homestay') || categoryStr.includes('bnb') || categoryStr.includes('b&b');
-    if (isHotelOrBnB) {
-      setSelectedRoomForLead(room?.type || null);
-      setShowLeadModal(true);
-      return;
-    }
     const isOvika = !!(property?.property_name?.includes('TM Luxe') || property?.property_name?.toLowerCase()?.includes('ovika') || [77, 78, 79, 80, 81].includes(Number(property?.id)));
-    // Monthly mode: non-Ovika properties → show lead/enquiry form
-    if (pricingMode === 'monthly' && !isOvika) {
+    // Every property except Signature Stays (Ovika) → show lead/enquiry form instead of direct booking.
+    if (!isOvika) {
       setSelectedRoomForLead(room?.type || null);
       setShowLeadModal(true);
       return;
@@ -2104,17 +2096,9 @@ const PropertyDetailPage = () => {
 
   const handleReserveClick = () => {
     if (!user) { navigate('/login', { state: { from: location } }); return; }
-    // Hotels & Homestays/BnB: no direct booking — always show the lead/enquiry form instead.
-    const categoryStr = `${property?.property_category || ''} ${property?.property_type || ''}`.toLowerCase();
-    const isHotelOrBnB = categoryStr.includes('hotel') || categoryStr.includes('homestay') || categoryStr.includes('bnb') || categoryStr.includes('b&b');
-    if (isHotelOrBnB) {
-      setSelectedRoomForLead(null);
-      setShowLeadModal(true);
-      return;
-    }
     const isOvika = !!(property?.property_name?.includes('TM Luxe') || property?.property_name?.toLowerCase()?.includes('ovika') || [77, 78, 79, 80, 81].includes(Number(property?.id)));
-    // Monthly mode: non-Ovika properties → show lead/enquiry form
-    if (pricingMode === 'monthly' && !isOvika) {
+    // Every property except Signature Stays (Ovika) → show lead/enquiry form instead of direct booking.
+    if (!isOvika) {
       setSelectedRoomForLead(null);
       setShowLeadModal(true);
       return;
