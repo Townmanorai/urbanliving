@@ -155,12 +155,31 @@ const TermsAndConditions = () => {
           <h2 className="section-title">Bookings</h2>
         </div>
         <div className="section-content">
-          <p>A Guest may request a Booking by selecting a Property, dates, number of Guests and other applicable details and completing the required booking process.</p>
-          <p>A Booking becomes confirmed only when the Platform or its authorised payment/booking system communicates confirmation to the Guest. Submission of a booking request or initiation of payment does not by itself guarantee that a Booking has been confirmed.</p>
-          <p>Prices, availability, taxes, fees and other charges are displayed during the booking process. Despite reasonable measures to maintain accurate Platform information, errors may occasionally occur, including pricing, availability, description or technical errors. Where a material error is identified, OvikaLiving may take reasonable steps to correct it, including cancelling the affected Booking and arranging an applicable refund where required.</p>
-          <p>A Booking may not be confirmed if payment is unsuccessful, incomplete, reversed, declined or otherwise not received through the applicable payment process.</p>
-          <p>If a confirmed Booking cannot reasonably be honoured by the Host, OvikaLiving may, where practicable, assist the Guest with available alternatives or an applicable refund in accordance with the applicable Booking and Cancellation & Refund Policy. OvikaLiving does not guarantee that an alternative Property will always be available.</p>
-          <p>No-show, late arrival, early departure or changes to the stay may be subject to the cancellation and refund terms applicable to the Booking.</p>
+          <h3>8.1 Booking Request and Payment Acknowledgement</h3>
+          <p>A Guest may request a Booking by selecting a Property, dates, number of Guests, and other applicable details and completing the required booking process. Upon successful receipt of payment, OvikaLiving shall acknowledge receipt of the booking request and payment. Such acknowledgement shall not, by itself, constitute a confirmed Booking.</p>
+
+          <h3>8.2 Booking Confirmation</h3>
+          <p>Where a Booking requires confirmation from the concerned Host or Property Owner, it shall remain pending until the required confirmation is received and communicated to the Guest by OvikaLiving through the Platform or an authorised communication channel. A Booking shall be considered confirmed only when the Guest receives the applicable booking confirmation.</p>
+          <p>OvikaLiving shall communicate the final booking status within <strong>24 hours</strong> of receipt of the booking request and successful payment or within the next <strong>eight (8) working hours</strong>, whichever is later, subject to the communication hours specified below.</p>
+
+          <h3>8.3 Communication Hours</h3>
+          <p>Communications relating to booking requests, payment acknowledgements, booking confirmations, booking status updates, and related matters shall be processed during OvikaLiving's working hours, <strong>Monday to Saturday, from 10:00 AM to 6:00 PM Indian Standard Time (IST)</strong>, excluding Sundays and applicable public holidays.</p>
+          <p>Requests and payments received outside these working hours shall be processed during the next available working hours. The confirmation timeline specified in Clause 8.2 shall apply.</p>
+
+          <h3>8.4 Non-Confirmation and Refunds</h3>
+          <p>If the concerned Host or Property Owner declines or is unable to confirm a Booking, OvikaLiving shall notify the Guest and initiate a refund of the full booking amount received for that Booking to the Guest's original payment method within <strong>five (5) working days</strong> of determining that the Booking cannot be confirmed. The time taken for the refund to appear in the Guest's account may vary depending on the payment gateway, bank, or card issuer.</p>
+
+          <h3>8.5 Pricing, Availability and Errors</h3>
+          <p>Prices, availability, taxes, fees, and other charges are displayed during the booking process. Despite reasonable measures to maintain accurate Platform information, errors may occasionally occur, including pricing, availability, description, or technical errors. Where a material error is identified, OvikaLiving may take reasonable steps to correct it, including cancelling the affected Booking and arranging an applicable refund where required by law and the applicable Booking and Cancellation &amp; Refund Policy.</p>
+
+          <h3>8.6 Payment Processing</h3>
+          <p>A Booking may not be confirmed if payment is unsuccessful, incomplete, reversed, declined, or otherwise not received through the applicable payment process. Receipt of payment alone does not guarantee confirmation where Host or Property Owner confirmation is required.</p>
+
+          <h3>8.7 Host Unable to Honour a Confirmed Booking</h3>
+          <p>If a confirmed Booking cannot reasonably be honoured by the Host, OvikaLiving may, where practicable, assist the Guest with available alternatives or an applicable refund in accordance with the applicable Booking and Cancellation &amp; Refund Policy and applicable law. OvikaLiving does not guarantee that an alternative Property will always be available.</p>
+
+          <h3>8.8 No-Shows and Changes to Stay</h3>
+          <p>No-shows, late arrival, early departure, or changes to the stay may be subject to the cancellation and refund terms applicable to the Booking.</p>
         </div>
       </div>
 
