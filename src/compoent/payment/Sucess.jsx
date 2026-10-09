@@ -60,87 +60,137 @@ function Sucess() {
 
       const userLocal = JSON.parse(localStorage.getItem('user') || '{}');
 
-      // Add Logo (Top Left and Bottom Right)
+      // ── Brand palette (matches the site's gold theme) ──
+      const GOLD = [194, 119, 43];        // #c2772b
+      const GOLD_LIGHT = [253, 247, 238]; // #fdf7ee
+      const INK = [26, 18, 9];            // #1a1209
+      const GRAY = [107, 85, 64];         // #6b5540
+      const GREEN = [22, 101, 52];        // #166534
+      const GREEN_BG = [240, 253, 244];   // #f0fdf4
+      const BOX_BG = [250, 248, 244];
+      const BOX_LINE = [240, 232, 218];
+      const pageW = 210;
+      const marginX = 18;
+      const contentW = pageW - marginX * 2;
+
+      // ── Header band with logo + brand ──
+      doc.setFillColor(...GOLD_LIGHT);
+      doc.rect(0, 0, pageW, 34, 'F');
+
       try {
-        const logoUrl = '/ovika.png';
+        const logoUrl = '/ovikaliving_logo_clean.png';
         const img = new Image();
         img.src = logoUrl;
         await new Promise((resolve, reject) => {
-           img.onload = resolve;
-           img.onerror = reject;
+          img.onload = resolve;
+          img.onerror = reject;
         });
-        const logoRatio = img.width / img.height;
-        const logoHeight = 32;
-        const logoWidth = logoHeight * logoRatio;
-        
-        // Top Left
-        doc.addImage(img, 'PNG', 20, 10, logoWidth, logoHeight);
-        
-        // Bottom Right
-        doc.addImage(img, 'PNG', 190 - logoWidth, 260, logoWidth, logoHeight);
+        const logoHeight = 14;
+        const logoWidth = logoHeight * (img.width / img.height);
+        doc.addImage(img, 'PNG', marginX, 10, logoWidth, logoHeight);
       } catch (e) {
         console.error("Logo load failed", e);
+        doc.setFontSize(16);
+        doc.setTextColor(...GOLD);
+        doc.setFont(undefined, "bold");
+        doc.text("OvikaLiving", marginX, 20);
       }
 
-      doc.setFontSize(22);
-      doc.setTextColor(0, 0, 0); 
-      doc.setFont(undefined, "bold");
-      doc.text("Townmanor Technologies Pvt Ltd.", 105, 50, { align: "center" });
-      
-      doc.setFontSize(11);
-      doc.setTextColor(100, 100, 100);
+      doc.setFontSize(9);
+      doc.setTextColor(...GRAY);
       doc.setFont(undefined, "normal");
-      doc.text("Payment Receipt", 105, 58, { align: "center" });
-      
-      doc.setDrawColor(200, 200, 200);
-      doc.line(20, 66, 190, 66);
-      
-      doc.setFontSize(10);
-      doc.setTextColor(80, 80, 80);
-      doc.text(`Receipt ID: OVIKA-${bookingId}-${Date.now().toString().slice(-4)}`, 20, 73);
-      doc.text(`Date: ${new Date().toLocaleString()}`, 190, 73, { align: "right" });
+      doc.text("A brand of Townmanor Technologies Private Limited", pageW - marginX, 15, { align: "right" });
+      doc.setFontSize(8.5);
+      doc.text("www.ovikaliving.com", pageW - marginX, 20, { align: "right" });
 
-      let y = 84;
-      const x = 20;
+      doc.setDrawColor(...GOLD);
+      doc.setLineWidth(0.6);
+      doc.line(0, 34, pageW, 34);
 
+      // ── Title row ──
+      let y = 46;
+      doc.setFontSize(18);
+      doc.setTextColor(...INK);
+      doc.setFont(undefined, "bold");
+      doc.text("Booking Payment Receipt", marginX, y);
+
+      // Status pill
+      doc.setFillColor(...GREEN_BG);
+      doc.roundedRect(pageW - marginX - 34, y - 6, 34, 8, 2, 2, 'F');
+      doc.setFontSize(9);
+      doc.setTextColor(...GREEN);
+      doc.setFont(undefined, "bold");
+      doc.text("CONFIRMED", pageW - marginX - 17, y - 0.5, { align: "center" });
+
+      y += 8;
+      const receiptId = `OVIKA-${bookingId}-${Date.now().toString().slice(-4)}`;
+      doc.setFontSize(9.5);
+      doc.setTextColor(...GRAY);
+      doc.setFont(undefined, "normal");
+      doc.text(`Receipt No: ${receiptId}`, marginX, y);
+      doc.text(`Issued: ${new Date().toLocaleString('en-IN')}`, pageW - marginX, y, { align: "right" });
+
+      y += 12;
+
+      // ── Section helpers (single column, stacked) ──
       const sectionTitle = (title) => {
+        doc.setFillColor(...GOLD);
+        doc.rect(marginX, y - 4, 3, 3.5, 'F');
         doc.setFont(undefined, "bold");
-        doc.setFontSize(12);
-        doc.setTextColor(0, 0, 0);
-        doc.text(title, x, y);
-        y += 8;
-        doc.line(x, y-5, x+40, y-5);
-      };
-
-      const row = (label, value) => {
-        doc.setFont(undefined, "bold");
-        doc.setFontSize(10);
-        doc.setTextColor(80, 80, 80);
-        doc.text(label, x, y);
-        doc.setFont(undefined, "normal");
-        doc.setTextColor(0, 0, 0);
-        doc.text(String(value ?? "N/A"), x + 50, y);
+        doc.setFontSize(11);
+        doc.setTextColor(...INK);
+        doc.text(title.toUpperCase(), marginX + 6, y);
         y += 7;
       };
 
-      sectionTitle("Guest Details");
-      row("Guest Name:", userLocal.username || booking.username || "Guest");
-      row("Email:", userLocal.email || booking.email || "N/A");
-      row("Phone:", booking.phone_number || "N/A");
-      y += 5;
+      const row = (label, value) => {
+        doc.setFont(undefined, "normal");
+        doc.setFontSize(9.5);
+        doc.setTextColor(...GRAY);
+        doc.text(label, marginX + 4, y);
+        doc.setFont(undefined, "bold");
+        doc.setTextColor(...INK);
+        doc.text(String(value ?? "N/A"), marginX + 50, y);
+        y += 6.5;
+      };
 
-      sectionTitle("Property Details");
-      row("Property:", property?.name || "N/A");
-      row("Address:", property?.address || "N/A");
-      y += 5;
+      const sectionBox = (innerHeight, renderInner) => {
+        const boxTop = y;
+        doc.setFillColor(...BOX_BG);
+        doc.setDrawColor(...BOX_LINE);
+        doc.roundedRect(marginX, boxTop - 2, contentW, innerHeight, 2, 2, 'FD');
+        y += 6;
+        renderInner();
+        y = boxTop + innerHeight + 6;
+      };
 
-      sectionTitle("Stay Overview");
-      row("Check-in:", format(new Date(booking.start_date), 'dd MMM yyyy'));
-      row("Check-out:", format(new Date(booking.end_date), 'dd MMM yyyy'));
-      row("Nights:", differenceInDays(new Date(booking.end_date), new Date(booking.start_date)));
-      y += 5;
+      // Guest Details
+      sectionBox(32, () => {
+        sectionTitle("Guest Details");
+        row("Name", userLocal.username || booking.username || "Guest");
+        row("Email", userLocal.email || booking.email || "N/A");
+        row("Phone", booking.phone_number || "N/A");
+      });
 
-      sectionTitle("Billing Information");
+      // Property Details
+      sectionBox(32, () => {
+        sectionTitle("Property Details");
+        row("Property", property?.property_name || property?.name || "N/A");
+        row("Category", property?.property_category || "N/A");
+        row("City", property?.city || property?.address || "N/A");
+      });
+
+      // Stay Overview
+      const nights = differenceInDays(new Date(booking.end_date), new Date(booking.start_date));
+      sectionBox(38, () => {
+        sectionTitle("Stay Overview");
+        row("Booking ID", bookingId || "N/A");
+        row("Check-in", format(new Date(booking.start_date), 'dd MMM yyyy'));
+        row("Check-out", format(new Date(booking.end_date), 'dd MMM yyyy'));
+        row("Nights", String(nights));
+      });
+
+      // Billing Information
       // booking.total_price is already GST-inclusive (saved that way at booking creation) —
       // use the stored subtotal/gst_amount directly instead of re-deriving from total_price,
       // otherwise GST gets applied twice.
@@ -148,22 +198,45 @@ function Sucess() {
       const subtotal = booking.subtotal != null ? Number(booking.subtotal) : finalTotal / 1.05;
       const gst = booking.gst_amount != null ? Number(booking.gst_amount) : finalTotal - subtotal;
 
-      row("Base fare:", `₹${subtotal.toFixed(2)}`);
-      row("Taxes & fees (5%):", `₹${gst.toFixed(2)}`);
-      doc.setFont(undefined, "bold");
-      row("Total Paid:", `₹${finalTotal.toFixed(2)}`);
-      y += 10;
+      sectionBox(40, () => {
+        sectionTitle("Billing Information");
+        row("Base fare", `Rs. ${subtotal.toFixed(2)}`);
+        row("Taxes & fees (5% GST)", `Rs. ${gst.toFixed(2)}`);
 
-      doc.setFontSize(11);
-      doc.setTextColor(22, 101, 52);
-      doc.text("Booking Status: CONFIRMED", 105, y, { align: "center" });
+        doc.setDrawColor(...GOLD);
+        doc.setLineWidth(0.3);
+        doc.line(marginX + 4, y - 2, marginX + contentW - 4, y - 2);
+        y += 4;
+
+        doc.setFont(undefined, "bold");
+        doc.setFontSize(12.5);
+        doc.setTextColor(...GOLD);
+        doc.text("Total Paid", marginX + 4, y);
+        doc.text(`Rs. ${finalTotal.toFixed(2)}`, marginX + contentW - 4, y, { align: "right" });
+      });
+
+      // ── Footer ──
+      doc.setDrawColor(230, 220, 205);
+      doc.setLineWidth(0.3);
+      doc.line(marginX, 262, pageW - marginX, 262);
+
+      doc.setFontSize(9.5);
+      doc.setTextColor(...INK);
+      doc.setFont(undefined, "bold");
+      doc.text("Townmanor Technologies Private Limited", pageW / 2, 269, { align: "center" });
 
       doc.setFontSize(8);
-      doc.setTextColor(150, 150, 150);
-      doc.text("This is an official payment confirmation for your booking with Ovika Living.", 105, 280, { align: "center" });
-      doc.text("For support, please contact us at support@ovikaliving.com", 105, 285, { align: "center" });
+      doc.setTextColor(...GRAY);
+      doc.setFont(undefined, "normal");
+      doc.text("Brand: OvikaLiving  |  CIN: U68200UP2023PTC193656  |  GSTIN: 09AAKCT6155G1ZZ", pageW / 2, 274, { align: "center" });
+      doc.text("Registered Office: ST-304, Eldeco Studio, Sector-93A, Noida, Uttar Pradesh - 201304, India", pageW / 2, 279, { align: "center" });
+      doc.text("Support: enquiry@ovikaliving.com  |  +91 93193 92227  |  www.ovikaliving.com", pageW / 2, 284, { align: "center" });
 
-      doc.save(`Invoice-Ovika-${bookingId}.pdf`);
+      doc.setFontSize(7.5);
+      doc.setTextColor(170, 160, 145);
+      doc.text("This is a system-generated receipt and does not require a physical signature.", pageW / 2, 291, { align: "center" });
+
+      doc.save(`OvikaLiving-Receipt-${bookingId}.pdf`);
     } catch (err) {
       console.error(err);
       alert("Failed to download invoice");
