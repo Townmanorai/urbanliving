@@ -2157,6 +2157,7 @@ const PropertyListPage = () => {
   );
 
   return (
+    <>
     <div className="plp-page" style={{ height: 'calc(100vh - 60px)', display: 'flex', flexDirection: 'column', background: '#f5f0e8', fontFamily: "'Inter', -apple-system, sans-serif", overflow: 'hidden' }}>
       <style>{`
         /* ── Content row: sidebar + grid ── */
@@ -3712,8 +3713,9 @@ const PropertyListPage = () => {
 
         </div>{/* end right content */}
       </div>{/* end plp-body */}
-      <PLPSeoContent />
     </div>
+    <PLPSeoContent />
+    </>
   );
 };
 
