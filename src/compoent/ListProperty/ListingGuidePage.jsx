@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Hotel, Building2, Home, Building, Users, ArrowRight } from 'lucide-react';
 import { navClick, auxNavClick } from '../../utils/navClick';
 import './ListingGuidePage.css';
+import ListingGuideSeoContent from './ListingGuideSeoContent';
 
 const CATEGORIES = [
   {
@@ -166,6 +167,7 @@ const ListingGuidePage = () => {
       >
         ← Back to category selection
       </button>
+      <ListingGuideSeoContent />
     </div>
   );
 };

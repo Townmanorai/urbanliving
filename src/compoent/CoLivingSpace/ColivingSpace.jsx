@@ -3,6 +3,7 @@
 import React from 'react'
 import { Helmet } from 'react-helmet'
 import C1 from './C1'
+import CoLivingSeoContent from './CoLivingSeoContent'
 // import C2 from './C2'
 
 
@@ -37,6 +38,7 @@ export default function ColivingSpace() {
       </Helmet>
         <C1/>
         {/* <C2/> */}
+        <CoLivingSeoContent/>
     </div>
   )
 }

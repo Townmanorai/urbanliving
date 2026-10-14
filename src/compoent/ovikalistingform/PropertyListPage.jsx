@@ -6,6 +6,7 @@ import { navClick, auxNavClick } from '../../utils/navClick';
 import { FiSearch, FiMapPin, FiHeart, FiPlus, FiStar, FiX, FiMoon, FiCalendar, FiTag, FiHome, FiTrendingUp, FiAward, FiClock, FiMap, FiList, FiChevronLeft, FiChevronRight, FiUser, FiUsers, FiBriefcase, FiCoffee, FiFeather, FiShield, FiZap, FiCheckCircle, FiLayers } from 'react-icons/fi';
 import { BiBed, BiBath, BiArea } from 'react-icons/bi';
 import { GoogleMap, MarkerF, InfoWindowF } from '@react-google-maps/api';
+import PLPSeoContent from './PLPSeoContent';
 
 const GOOGLE_MAPS_API_KEY = 'AIzaSyD7T_bWCedlDv61HJ2RlV_OLYBfjSONnK0';
 
@@ -3711,6 +3712,7 @@ const PropertyListPage = () => {
 
         </div>{/* end right content */}
       </div>{/* end plp-body */}
+      <PLPSeoContent />
     </div>
   );
 };

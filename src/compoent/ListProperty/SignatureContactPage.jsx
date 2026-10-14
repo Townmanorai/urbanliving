@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, ShieldCheck, Clock, Phone } from 'lucide-react';
+import SignatureSeoContent from './SignatureSeoContent';
 
 const HIGHLIGHTS = [
   { icon: <Star size={16} strokeWidth={1.5} />, text: 'Premium listing placement' },
@@ -412,6 +413,7 @@ const SignatureContactPage = () => {
 
         </div>
       </div>
+      <SignatureSeoContent />
     </>
   );
 };

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
+import ContactSeoContent from './ContactSeoContent';
 
 const ContactMain = () => {
   const [formData, setFormData] = useState({
@@ -607,8 +608,9 @@ const ContactMain = () => {
           >
             Send Message →
           </button>
-        </div>  
+        </div>
       </div>
+      <ContactSeoContent />
     </div>
   );
 };

@@ -4,6 +4,7 @@ import Subs1 from "./Subs1"
 import Subs2 from './Subs2'
 import Subs3 from './Subs3'
 import './Subsriptionmain.css'
+import LeadsSeoContent from './LeadsSeoContent'
 
 export const Subsriptionmain = () => {
   return (
@@ -55,6 +56,7 @@ export const Subsriptionmain = () => {
       <Subs2 />
       <Subs1 />
       <Subs3 />
+      <LeadsSeoContent />
     </div>
   )
 }

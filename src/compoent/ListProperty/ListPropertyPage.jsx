@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
 import './ListPropertyPage.css';
+import ListPropertySeoContent from './ListPropertySeoContent';
 import { IoArrowForward } from 'react-icons/io5';
 import { FaUser, FaCamera, FaCheckCircle, FaPlay, FaShieldAlt, FaCreditCard, FaUsers, FaGlobe } from 'react-icons/fa';
 
@@ -367,6 +368,7 @@ const ListPropertyPage = () => {
         </div>
       </div>
       )}
+      <ListPropertySeoContent />
     </div>
   );
 };

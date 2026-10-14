@@ -1,6 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 import "./About.css";
+import AboutSeoContent from "./AboutSeoContent";
 
 const AboutUs = () => {
   return (
@@ -106,6 +107,7 @@ const AboutUs = () => {
           </div>
         </div>
       </section>
+      <AboutSeoContent />
     </div>
   );
 };

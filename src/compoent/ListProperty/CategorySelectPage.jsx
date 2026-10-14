@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Hotel, Building2, Home, Building, Users } from 'lucide-react';
 import { navClick, auxNavClick } from '../../utils/navClick';
 import './CategorySelectPage.css';
+import CategorySeoContent from './CategorySeoContent';
 
 const ALL_CATS = [
   {
@@ -129,6 +130,7 @@ const CategorySelectPage = () => {
         Not sure which category?{' '}
         <a href="/listing-guide" className="csp-link">Learn more</a> about listing types.
       </p>
+      <CategorySeoContent />
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import './OvikaSelfVerified.css';
+import SelfVerifiedSeoContent from './SelfVerifiedSeoContent';
 
 // ─── SVG Shield ──────────────────────────────────────────────────────────────
 const ShieldBadge = ({ size = 110 }) => (
@@ -283,7 +284,7 @@ export default function OvikaSelfVerified({ onOpenForm }) {
         </div>
       </section>
 
-
+      <SelfVerifiedSeoContent />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { navClick, auxNavClick } from '../../utils/navClick';
 import { Helmet } from 'react-helmet';
 import './ROICalculator.css';
+import ROISeoContent from './ROISeoContent';
 
 const DAYS = 30;
 
@@ -375,7 +376,7 @@ export default function ROICalculator() {
         </div>
       </div>
     </div>
-
+    <ROISeoContent />
 </>
   );
 }

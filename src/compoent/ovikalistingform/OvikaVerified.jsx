@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
+import OvikaVerifiedSeoContent from './OvikaVerifiedSeoContent';
 
 // ─── Responsive hook ──────────────────────────────────────────────────────────
 const useViewport = () => {
@@ -579,6 +580,7 @@ const OvikaVerified = () => {
         />
       </section>
 
+      <OvikaVerifiedSeoContent />
     </div>
   );
 };

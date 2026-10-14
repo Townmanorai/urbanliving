@@ -33,7 +33,7 @@ function normalizeHotelForDashboard(h) {
     photos: h.photos || [],
     cover_photo_index: h.cover_photo_index || 0,
     bedrooms: rooms.map((r) => ({ type: r.roomType, count: r.numberOfRooms })),
-    bathrooms: rooms.map((r) => ({ type: "Attached", count: r.bathroomCount || 1 })),
+    bathrooms: rooms.map((r) => ({ type: "Attached", count: r.bathroomCount || 1 })), 
     max_guests: rooms.reduce((m, r) => Math.max(m, Number(r.occupancy?.maxOccupancy) || 0), 0) || undefined,
   };
 }

@@ -62,9 +62,9 @@ const SEO_ROUTES = {
     description: 'Find answers to common questions about booking, listing, payments, cancellations and more on OvikaLiving.',
     keywords: 'OvikaLiving FAQ, frequently asked questions, booking questions, rental FAQ, OvikaLiving help',
     og: { type: 'website', image: DEFAULT_IMG },
-    schema: {
-      '@type': 'FAQPage',
-    },
+    // Note: the actual FAQPage schema (with full question/answer mainEntity) is rendered
+    // by FAQ.jsx itself, matching its visible Q&A content. An incomplete stub here would
+    // duplicate/conflict with that, so it's intentionally left out.
   },
   '/privacy-policy': {
     title: 'Privacy Policy | OvikaLiving',

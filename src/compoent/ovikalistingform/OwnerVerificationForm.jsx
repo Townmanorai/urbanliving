@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../Login/AuthContext';
 import './OwnerVerificationForm.css';
+import OwnerVerificationSeoContent from './OwnerVerificationSeoContent';
 import { useStepBackNav } from '../../utils/useStepBackNav';
 
 const API_BASE = 'https://www.domiva.in/api';
@@ -552,6 +553,7 @@ export default function OwnerVerificationForm() {
           </form>
         )}
       </div>
+      <OwnerVerificationSeoContent />
     </div>
   );
 }

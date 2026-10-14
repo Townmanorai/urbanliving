@@ -6,6 +6,7 @@ import { Helmet } from 'react-helmet'
 import LuxeHeroTM from './LuxeHeroTM'
 import TMLuxeWhyChoose from './TMLuxeWhyChoose'
 import TMXLuxeTestimonialsCard from './TMXLuxeTestimonialsCard'
+import LuxeSeoContent from './LuxeSeoContent'
 
 function LuxeMain() {
   return (
@@ -73,6 +74,7 @@ function LuxeMain() {
     <LuxeProperties/>
     <TMXLuxeTestimonialsCard/>
     {/* <LuxeResidentReviews/> */}
+    <LuxeSeoContent/>
     </>
   )
 }
