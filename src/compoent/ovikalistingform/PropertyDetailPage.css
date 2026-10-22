@@ -3570,6 +3570,42 @@ table {
 .cal-day--disabled { color: #ccc; cursor: not-allowed; background: #fafafa; }
 .cal-day--selected { background: #8b0000; color: #fff; font-weight: 500; border-radius: 50%; }
 .cal-day--range { background: #ffe5e5; color: #8b0000; }
+/* Owner-blocked dates get a distinct look from plain past dates, so guests can tell the
+   difference between "already gone by" and "the host marked this unavailable". */
+.cal-day--blocked {
+  color: #b45309;
+  background: repeating-linear-gradient(135deg, #fdf0dc, #fdf0dc 4px, #fbe3bd 4px, #fbe3bd 8px);
+  position: relative;
+}
+.cal-day--blocked::after {
+  content: '';
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  top: 50%;
+  height: 1.5px;
+  background: #b45309;
+  opacity: 0.6;
+}
+
+.cal-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 2px 0;
+  font-size: 0.74rem;
+  color: #6b5540;
+}
+.cal-legend-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.cal-legend-swatch--blocked {
+  background: repeating-linear-gradient(135deg, #fdf0dc, #fdf0dc 3px, #fbe3bd 3px, #fbe3bd 6px);
+  border: 1px solid #f0dcb8;
+}
 
 .cal-footer {
   display: flex;

@@ -1494,6 +1494,11 @@ const Calendar = ({ selectedDates, onDateSelect, minDate = new Date(), disabledD
     if (!date) return true;
     return toYMD(date) < toYMD(minDate) || disabledDateSet.has(toYMD(date));
   };
+  // Distinguish "blocked by host" from a plain past date, so the calendar can tell guests why.
+  const isOwnerBlocked = (date) => {
+    if (!date) return false;
+    return toYMD(date) >= toYMD(minDate) && disabledDateSet.has(toYMD(date));
+  };
   const isDateSelected = (date) => {
     if (!date) return false;
     const s = toYMD(date);
@@ -1543,10 +1548,12 @@ const Calendar = ({ selectedDates, onDateSelect, minDate = new Date(), disabledD
             key={index}
             onClick={() => handleDateClick(date)}
             disabled={!date || isDateDisabled(date)}
+            title={date && isOwnerBlocked(date) ? 'Not available — blocked by host' : undefined}
             className={[
               'cal-day',
               !date ? 'cal-day--empty' : '',
               date && isDateDisabled(date) ? 'cal-day--disabled' : '',
+              date && isOwnerBlocked(date) ? 'cal-day--blocked' : '',
               date && isDateSelected(date) ? 'cal-day--selected' : '',
               date && isDateInRange(date) ? 'cal-day--range' : '',
             ].join(' ')}
@@ -1555,6 +1562,12 @@ const Calendar = ({ selectedDates, onDateSelect, minDate = new Date(), disabledD
           </button>
         ))}
       </div>
+      {Array.from(disabledDateSet).some(d => d >= toYMD(minDate)) && (
+        <div className="cal-legend">
+          <span className="cal-legend-swatch cal-legend-swatch--blocked" />
+          <span>Not available — blocked by host</span>
+        </div>
+      )}
       <div className="cal-footer">
         <div className="cal-footer-item"><span className="cal-footer-label">Check-in</span><strong>{checkInDate ? checkInDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—'}</strong></div>
         <div className="cal-footer-sep" />
