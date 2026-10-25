@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Facebook, Instagram, YoutubeIcon } from "lucide-react";
+import { Facebook, Instagram, YoutubeIcon, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
 
 /* =====================================================================
@@ -1196,6 +1196,14 @@ const HoomieFooter = () => {
                   aria-label="YouTube"
                 >
                   <YoutubeIcon size={16} />
+                </a>
+                <a
+                  href="https://www.linkedin.com/company/townmanor/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                >
+                  <Linkedin size={16} />
                 </a>
               </div>
             </div>
