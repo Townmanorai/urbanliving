@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Facebook, Instagram, Linkedin } from "lucide-react";
+import { Facebook, Instagram, YoutubeIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
 /* =====================================================================
@@ -1174,7 +1174,7 @@ const HoomieFooter = () => {
               </p>
               <div className="ov-footer-social">
                 <a
-                  href="https://www.facebook.com/share/1BojvDLPY6/"
+                  href="https://www.facebook.com/share/1EfoTa1c4P/"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Facebook"
@@ -1182,7 +1182,7 @@ const HoomieFooter = () => {
                   <Facebook size={16} />
                 </a>
                 <a
-                  href="https://www.instagram.com/ovikaliving/"
+                  href="https://www.instagram.com/domivaofficial"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram"
@@ -1190,12 +1190,12 @@ const HoomieFooter = () => {
                   <Instagram size={16} />
                 </a>
                 <a
-                  href="https://www.linkedin.com/company/townmanor/"
+                  href="https://www.youtube.com/@Townmanor_Technologies-pvt"
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="LinkedIn"
+                  aria-label="YouTube"
                 >
-                  <Linkedin size={16} />
+                  <YoutubeIcon size={16} />
                 </a>
               </div>
             </div>

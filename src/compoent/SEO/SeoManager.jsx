@@ -17,7 +17,7 @@ const SEO_ROUTES = {
       name: 'OvikaLiving',
       url: SITE_URL,
       logo: LOGO_URL,
-      sameAs: ['https://www.instagram.com/ovikaliving', 'https://www.facebook.com/ovikaliving'],
+      sameAs: ['https://www.instagram.com/domivaofficial', 'https://www.facebook.com/share/1EfoTa1c4P/', 'https://www.youtube.com/@Townmanor_Technologies-pvt'],
       contactPoint: { '@type': 'ContactPoint', telephone: '+91-9319392227', contactType: 'customer support' },
     },
   },
