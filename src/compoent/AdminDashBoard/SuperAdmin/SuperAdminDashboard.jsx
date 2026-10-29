@@ -49,6 +49,9 @@ const API_PROPERTIES = "https://www.domiva.in/api/ovika/properties";
 const API_PROPERTIES_UPLOAD = "https://www.domiva.in/api/ovika/properties/upload";
 const API_BOOKINGS = "https://www.domiva.in/api/booking-request";
 const API_USERS = "https://www.domiva.in/api/users-list";
+const API_INVESTOR_REQUESTS = "https://domiva.in/api/admin/investor-deck-requests";
+const API_JOB_APPLICATIONS = "https://domiva.in/api/admin/job-applications";
+const ADMIN_API_HEADERS = { 'x-admin-key': import.meta.env.VITE_ADMIN_API_KEY };
 
 const SHARING_TYPES = ["Single Room", "Double Sharing", "Triple Sharing", "Four Sharing", "Dormitory"];
 const BEDROOM_TYPES = ["King Bed", "Queen Bed", "Single Bed", "Bunk Bed", "Twin Bed", "Other"];
@@ -254,6 +257,28 @@ export default function SuperAdminDashboard() {
   const LANDING_LEAD_CITIES = ['Noida', 'Greater Noida', 'Gurugram', 'Delhi', 'Ghaziabad'];
   const LANDING_LEAD_CATEGORIES = ['Signature Stays', 'Hotel Stays', 'Homestays & BnB', 'Apartments & Villas', 'PG & Co-Living'];
 
+  // Townmanor Investor Leads — sub-tab + Investor Deck Requests + Job Applications
+  const [investorLeadsTab, setInvestorLeadsTab] = useState('investor'); // 'investor' | 'jobs'
+
+  const [investorRequests, setInvestorRequests] = useState([]);
+  const [investorRequestsLoading, setInvestorRequestsLoading] = useState(false);
+  const [investorRequestPage, setInvestorRequestPage] = useState(1);
+  const [investorRequestSearch, setInvestorRequestSearch] = useState("");
+  const [investorRequestStatusFilter, setInvestorRequestStatusFilter] = useState("ALL");
+  const [investorRequestsTotal, setInvestorRequestsTotal] = useState(0);
+  const INVESTOR_REQUESTS_LIMIT = 20;
+  const INVESTOR_STATUS_OPTIONS = ['new', 'deck_sent', 'meeting_scheduled', 'closed'];
+
+  const [jobApplications, setJobApplications] = useState([]);
+  const [jobApplicationsLoading, setJobApplicationsLoading] = useState(false);
+  const [jobApplicationPage, setJobApplicationPage] = useState(1);
+  const [jobApplicationSearch, setJobApplicationSearch] = useState("");
+  const [jobApplicationStatusFilter, setJobApplicationStatusFilter] = useState("ALL");
+  const [jobApplicationPositionFilter, setJobApplicationPositionFilter] = useState("ALL");
+  const [jobApplicationsTotal, setJobApplicationsTotal] = useState(0);
+  const JOB_APPLICATIONS_LIMIT = 20;
+  const JOB_STATUS_OPTIONS = ['new', 'shortlisted', 'interview', 'rejected', 'hired'];
+
   // Reviews State
   const [reviewsList, setReviewsList] = useState([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
@@ -319,7 +344,9 @@ export default function SuperAdminDashboard() {
 
   const fetchAllLeads = async () => {
     try {
-        const res = await axios.get("https://www.domiva.in/api/formlead/leads");
+        const res = await axios.get("https://www.domiva.in/api/formlead/leads", {
+            headers: ADMIN_API_HEADERS
+        });
         if (Array.isArray(res.data)) {
             setLeads(res.data);
         } else if (res.data && Array.isArray(res.data.data)) {
@@ -455,6 +482,129 @@ export default function SuperAdminDashboard() {
     }, 30000);
     return () => clearInterval(interval);
   }, [view]);
+
+  // Townmanor Investor Leads — Investor Deck Requests
+  const fetchInvestorRequests = async (page = investorRequestPage, search = investorRequestSearch, status = investorRequestStatusFilter) => {
+    setInvestorRequestsLoading(true);
+    try {
+        const params = { page, limit: INVESTOR_REQUESTS_LIMIT };
+        if (search) params.search = search;
+        if (status !== 'ALL') params.status = status;
+        const res = await axios.get(API_INVESTOR_REQUESTS, { params, headers: ADMIN_API_HEADERS, validateStatus: false });
+        if (res.data && res.data.success !== false) {
+            setInvestorRequests(res.data.data || []);
+            setInvestorRequestsTotal(res.data.pagination?.total ?? (res.data.data || []).length);
+        } else {
+            setInvestorRequests([]);
+            setInvestorRequestsTotal(0);
+        }
+    } catch (e) {
+        console.error("Fetch investor deck requests failed", e);
+        setInvestorRequests([]);
+    } finally {
+        setInvestorRequestsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (view !== 'investor-leads' || investorLeadsTab !== 'investor') return;
+    fetchInvestorRequests(investorRequestPage, investorRequestSearch, investorRequestStatusFilter);
+  }, [view, investorLeadsTab, investorRequestPage, investorRequestSearch, investorRequestStatusFilter]);
+
+  const updateInvestorRequestStatus = async (id, status) => {
+    try {
+        await axios.patch(`${API_INVESTOR_REQUESTS}/${id}`, { status }, { headers: ADMIN_API_HEADERS, validateStatus: false });
+        setInvestorRequests(prev => prev.map(r => r.id === id ? { ...r, status } : r));
+    } catch (e) {
+        console.error("Update investor request status failed", e);
+    }
+  };
+
+  const exportInvestorRequestsCsv = async () => {
+    try {
+        const res = await axios.get(`${API_INVESTOR_REQUESTS}/export`, { params: { format: 'csv' }, headers: ADMIN_API_HEADERS, responseType: 'blob' });
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'investor-deck-requests.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+    } catch (e) {
+        console.error("Export investor requests CSV failed", e);
+        alert("CSV export failed.");
+    }
+  };
+
+  // Townmanor Investor Leads — Job Applications
+  const fetchJobApplications = async (page = jobApplicationPage, search = jobApplicationSearch, status = jobApplicationStatusFilter, position = jobApplicationPositionFilter) => {
+    setJobApplicationsLoading(true);
+    try {
+        const params = { page, limit: JOB_APPLICATIONS_LIMIT };
+        if (search) params.search = search;
+        if (status !== 'ALL') params.status = status;
+        if (position !== 'ALL') params.position = position;
+        const res = await axios.get(API_JOB_APPLICATIONS, { params, headers: ADMIN_API_HEADERS, validateStatus: false });
+        if (res.data && res.data.success !== false) {
+            setJobApplications(res.data.data || []);
+            setJobApplicationsTotal(res.data.pagination?.total ?? (res.data.data || []).length);
+        } else {
+            setJobApplications([]);
+            setJobApplicationsTotal(0);
+        }
+    } catch (e) {
+        console.error("Fetch job applications failed", e);
+        setJobApplications([]);
+    } finally {
+        setJobApplicationsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (view !== 'investor-leads' || investorLeadsTab !== 'jobs') return;
+    fetchJobApplications(jobApplicationPage, jobApplicationSearch, jobApplicationStatusFilter, jobApplicationPositionFilter);
+  }, [view, investorLeadsTab, jobApplicationPage, jobApplicationSearch, jobApplicationStatusFilter, jobApplicationPositionFilter]);
+
+  const updateJobApplicationStatus = async (id, status) => {
+    try {
+        await axios.patch(`${API_JOB_APPLICATIONS}/${id}`, { status }, { headers: ADMIN_API_HEADERS, validateStatus: false });
+        setJobApplications(prev => prev.map(r => r.id === id ? { ...r, status } : r));
+    } catch (e) {
+        console.error("Update job application status failed", e);
+    }
+  };
+
+  const downloadResume = async (id) => {
+    try {
+        const res = await axios.get(`${API_JOB_APPLICATIONS}/${id}/resume`, { headers: ADMIN_API_HEADERS, validateStatus: false });
+        if (res.data?.success && res.data?.url) {
+            window.open(res.data.url, '_blank', 'noopener,noreferrer');
+        } else {
+            alert("Resume link not available.");
+        }
+    } catch (e) {
+        console.error("Fetch resume link failed", e);
+        alert("Failed to get resume link.");
+    }
+  };
+
+  const exportJobApplicationsCsv = async () => {
+    try {
+        const res = await axios.get(`${API_JOB_APPLICATIONS}/export`, { params: { format: 'csv' }, headers: ADMIN_API_HEADERS, responseType: 'blob' });
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'job-applications.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+    } catch (e) {
+        console.error("Export job applications CSV failed", e);
+        alert("CSV export failed.");
+    }
+  };
 
   const fetchSelfVerifications = async () => {
     setSvLoading(true);
@@ -1548,6 +1698,9 @@ export default function SuperAdminDashboard() {
                 <button className={view === 'landing-leads' ? 'active' : ''} onClick={() => setView('landing-leads')}>
                     <span className="sa-nav-icon"><Icons.LandingLeads /></span> Landing Page Leads
                 </button>
+                <button className={view === 'investor-leads' ? 'active' : ''} onClick={() => setView('investor-leads')}>
+                    <span className="sa-nav-icon">💼</span> Townmanor Investor Leads
+                </button>
                 <button className={view === 'reviews' ? 'active' : ''} onClick={() => setView('reviews')}>
                     <span className="sa-nav-icon"><Icons.Reviews /></span> Review Feedback
                 </button>
@@ -1595,6 +1748,7 @@ export default function SuperAdminDashboard() {
                 {view === 'settings' && 'Platform Settings'}
                 {view === 'meta-leads' && 'Meta Ads Leads (Real-Time)'}
                 {view === 'landing-leads' && 'Landing Page Leads (/get-started)'}
+                {view === 'investor-leads' && 'Townmanor Investor Leads'}
                 {view === 'reviews' && 'Review Feedback Management'}
                 {view === 'verification' && 'Verification Badge Management'}
                 {view === 'self-verification' && 'Self Verification Submissions'}
@@ -3020,6 +3174,249 @@ export default function SuperAdminDashboard() {
                             </div>
                         )}
                     </div>
+                </div>
+                );
+            })()}
+
+            {/* VIEW: TOWNMANOR INVESTOR LEADS — Investor Deck Requests + Job Applications */}
+            {view === 'investor-leads' && (() => {
+                return (
+                <div>
+                    <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
+                        <button
+                            className="sa-btn-primary"
+                            onClick={() => setInvestorLeadsTab('investor')}
+                            style={{ backgroundColor: investorLeadsTab === 'investor' ? '#6366f1' : '#e2e8f0', color: investorLeadsTab === 'investor' ? '#fff' : '#475569' }}
+                        >Investor Deck Requests</button>
+                        <button
+                            className="sa-btn-primary"
+                            onClick={() => setInvestorLeadsTab('jobs')}
+                            style={{ backgroundColor: investorLeadsTab === 'jobs' ? '#6366f1' : '#e2e8f0', color: investorLeadsTab === 'jobs' ? '#fff' : '#475569' }}
+                        >Job Applications</button>
+                    </div>
+
+                    {investorLeadsTab === 'investor' && (() => {
+                        const totalPages = Math.ceil(investorRequestsTotal / INVESTOR_REQUESTS_LIMIT);
+                        return (
+                        <div className="sa-table-container">
+                            <div className="sa-table-header-row">
+                                <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    Investor Deck Requests
+                                    <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 400 }}>Total: {investorRequestsTotal}</span>
+                                    {investorRequestsLoading && <span style={{ fontSize: '12px', color: '#6366f1', fontWeight: 400 }}>Loading...</span>}
+                                </h3>
+                                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                    <select
+                                        className="sa-search-input"
+                                        style={{ width: '170px' }}
+                                        value={investorRequestStatusFilter}
+                                        onChange={(e) => { setInvestorRequestStatusFilter(e.target.value); setInvestorRequestPage(1); }}
+                                    >
+                                        <option value="ALL">All Status</option>
+                                        {INVESTOR_STATUS_OPTIONS.map(s => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
+                                    </select>
+                                    <input
+                                        type="text"
+                                        placeholder="Search name, firm, email..."
+                                        className="sa-search-input"
+                                        value={investorRequestSearch}
+                                        onChange={(e) => { setInvestorRequestSearch(e.target.value); setInvestorRequestPage(1); }}
+                                    />
+                                    <button className="sa-btn-primary" onClick={() => fetchInvestorRequests(investorRequestPage, investorRequestSearch, investorRequestStatusFilter)} disabled={investorRequestsLoading}>
+                                        {investorRequestsLoading ? 'Loading...' : '↻ Refresh'}
+                                    </button>
+                                    <button className="sa-btn-primary" onClick={exportInvestorRequestsCsv} style={{ backgroundColor: '#16a34a' }}>⬇ CSV</button>
+                                </div>
+                            </div>
+
+                            {investorRequests.length === 0 && !investorRequestsLoading ? (
+                                <div style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
+                                    <div style={{ fontSize: '48px', marginBottom: '16px' }}>💼</div>
+                                    <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>No Investor Deck Requests Yet</div>
+                                </div>
+                            ) : (
+                                <table className="sa-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Name</th>
+                                            <th>Firm</th>
+                                            <th>Email</th>
+                                            <th>Message</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {investorRequests.map((req, idx) => (
+                                            <tr key={req.id || idx}>
+                                                <td style={{ whiteSpace: 'nowrap', fontSize: '11px', color: '#64748b' }}>
+                                                    {req.created_at ? new Date(req.created_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
+                                                </td>
+                                                <td style={{ fontWeight: '600', whiteSpace: 'nowrap' }}>{req.name || '—'}</td>
+                                                <td>{req.firm || '—'}</td>
+                                                <td style={{ fontSize: '12px' }}>
+                                                    {req.email ? <a href={`mailto:${req.email}`} style={{ color: '#6366f1', textDecoration: 'none' }}>{req.email}</a> : '—'}
+                                                </td>
+                                                <td style={{ fontSize: '12px', maxWidth: '260px', whiteSpace: 'normal' }}>{req.message || '—'}</td>
+                                                <td>
+                                                    <select
+                                                        value={req.status || 'new'}
+                                                        onChange={(e) => updateInvestorRequestStatus(req.id, e.target.value)}
+                                                        className="sa-search-input"
+                                                        style={{ width: '160px', fontSize: '12px' }}
+                                                    >
+                                                        {INVESTOR_STATUS_OPTIONS.map(s => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
+
+                            {investorRequestsTotal > INVESTOR_REQUESTS_LIMIT && (
+                                <div style={{ padding: '20px', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div style={{ fontSize: '13px', color: '#64748b' }}>
+                                        Showing {((investorRequestPage - 1) * INVESTOR_REQUESTS_LIMIT) + 1}–{Math.min(investorRequestPage * INVESTOR_REQUESTS_LIMIT, investorRequestsTotal)} of {investorRequestsTotal}
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                        <button
+                                            className="sa-btn-primary"
+                                            disabled={investorRequestPage === 1}
+                                            onClick={() => setInvestorRequestPage(p => p - 1)}
+                                            style={{ backgroundColor: investorRequestPage === 1 ? '#e2e8f0' : '#6366f1', color: investorRequestPage === 1 ? '#94a3b8' : '#fff', cursor: investorRequestPage === 1 ? 'not-allowed' : 'pointer' }}
+                                        >Previous</button>
+                                        <span style={{ padding: '6px 14px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '6px', fontSize: '13px', fontWeight: '600' }}>
+                                            {investorRequestPage} / {totalPages}
+                                        </span>
+                                        <button
+                                            className="sa-btn-primary"
+                                            disabled={investorRequestPage >= totalPages}
+                                            onClick={() => setInvestorRequestPage(p => p + 1)}
+                                            style={{ backgroundColor: investorRequestPage >= totalPages ? '#e2e8f0' : '#6366f1', color: investorRequestPage >= totalPages ? '#94a3b8' : '#fff', cursor: investorRequestPage >= totalPages ? 'not-allowed' : 'pointer' }}
+                                        >Next</button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        );
+                    })()}
+
+                    {investorLeadsTab === 'jobs' && (() => {
+                        const totalPages = Math.ceil(jobApplicationsTotal / JOB_APPLICATIONS_LIMIT);
+                        return (
+                        <div className="sa-table-container">
+                            <div className="sa-table-header-row">
+                                <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    Job Applications
+                                    <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 400 }}>Total: {jobApplicationsTotal}</span>
+                                    {jobApplicationsLoading && <span style={{ fontSize: '12px', color: '#6366f1', fontWeight: 400 }}>Loading...</span>}
+                                </h3>
+                                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                                    <select
+                                        className="sa-search-input"
+                                        style={{ width: '150px' }}
+                                        value={jobApplicationStatusFilter}
+                                        onChange={(e) => { setJobApplicationStatusFilter(e.target.value); setJobApplicationPage(1); }}
+                                    >
+                                        <option value="ALL">All Status</option>
+                                        {JOB_STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+                                    </select>
+                                    <input
+                                        type="text"
+                                        placeholder="Search name, email, position..."
+                                        className="sa-search-input"
+                                        value={jobApplicationSearch}
+                                        onChange={(e) => { setJobApplicationSearch(e.target.value); setJobApplicationPage(1); }}
+                                    />
+                                    <button className="sa-btn-primary" onClick={() => fetchJobApplications(jobApplicationPage, jobApplicationSearch, jobApplicationStatusFilter, jobApplicationPositionFilter)} disabled={jobApplicationsLoading}>
+                                        {jobApplicationsLoading ? 'Loading...' : '↻ Refresh'}
+                                    </button>
+                                    <button className="sa-btn-primary" onClick={exportJobApplicationsCsv} style={{ backgroundColor: '#16a34a' }}>⬇ CSV</button>
+                                </div>
+                            </div>
+
+                            {jobApplications.length === 0 && !jobApplicationsLoading ? (
+                                <div style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
+                                    <div style={{ fontSize: '48px', marginBottom: '16px' }}>📄</div>
+                                    <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>No Job Applications Yet</div>
+                                </div>
+                            ) : (
+                                <table className="sa-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Name</th>
+                                            <th>Position</th>
+                                            <th>Contact</th>
+                                            <th>Link</th>
+                                            <th>Resume</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {jobApplications.map((app, idx) => (
+                                            <tr key={app.id || idx}>
+                                                <td style={{ whiteSpace: 'nowrap', fontSize: '11px', color: '#64748b' }}>
+                                                    {app.created_at ? new Date(app.created_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
+                                                </td>
+                                                <td style={{ fontWeight: '600', whiteSpace: 'nowrap' }}>{app.name || '—'}</td>
+                                                <td style={{ fontSize: '12px' }}>{app.position || '—'}</td>
+                                                <td style={{ fontSize: '12px' }}>
+                                                    {app.email && <div><a href={`mailto:${app.email}`} style={{ color: '#6366f1', textDecoration: 'none' }}>{app.email}</a></div>}
+                                                    {app.phone && <div><a href={`tel:${app.phone}`} style={{ color: '#0f172a', textDecoration: 'none' }}>{app.phone}</a></div>}
+                                                </td>
+                                                <td style={{ fontSize: '12px' }}>
+                                                    {app.link ? <a href={app.link} target="_blank" rel="noopener noreferrer" style={{ color: '#6366f1' }}>View</a> : '—'}
+                                                </td>
+                                                <td>
+                                                    {app.has_resume ? (
+                                                        <button className="sa-btn-primary" style={{ padding: '4px 10px', fontSize: '11px' }} onClick={() => downloadResume(app.id)}>Download</button>
+                                                    ) : '—'}
+                                                </td>
+                                                <td>
+                                                    <select
+                                                        value={app.status || 'new'}
+                                                        onChange={(e) => updateJobApplicationStatus(app.id, e.target.value)}
+                                                        className="sa-search-input"
+                                                        style={{ width: '140px', fontSize: '12px' }}
+                                                    >
+                                                        {JOB_STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
+
+                            {jobApplicationsTotal > JOB_APPLICATIONS_LIMIT && (
+                                <div style={{ padding: '20px', background: '#f8fafc', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div style={{ fontSize: '13px', color: '#64748b' }}>
+                                        Showing {((jobApplicationPage - 1) * JOB_APPLICATIONS_LIMIT) + 1}–{Math.min(jobApplicationPage * JOB_APPLICATIONS_LIMIT, jobApplicationsTotal)} of {jobApplicationsTotal}
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                        <button
+                                            className="sa-btn-primary"
+                                            disabled={jobApplicationPage === 1}
+                                            onClick={() => setJobApplicationPage(p => p - 1)}
+                                            style={{ backgroundColor: jobApplicationPage === 1 ? '#e2e8f0' : '#6366f1', color: jobApplicationPage === 1 ? '#94a3b8' : '#fff', cursor: jobApplicationPage === 1 ? 'not-allowed' : 'pointer' }}
+                                        >Previous</button>
+                                        <span style={{ padding: '6px 14px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '6px', fontSize: '13px', fontWeight: '600' }}>
+                                            {jobApplicationPage} / {totalPages}
+                                        </span>
+                                        <button
+                                            className="sa-btn-primary"
+                                            disabled={jobApplicationPage >= totalPages}
+                                            onClick={() => setJobApplicationPage(p => p + 1)}
+                                            style={{ backgroundColor: jobApplicationPage >= totalPages ? '#e2e8f0' : '#6366f1', color: jobApplicationPage >= totalPages ? '#94a3b8' : '#fff', cursor: jobApplicationPage >= totalPages ? 'not-allowed' : 'pointer' }}
+                                        >Next</button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        );
+                    })()}
                 </div>
                 );
             })()}
