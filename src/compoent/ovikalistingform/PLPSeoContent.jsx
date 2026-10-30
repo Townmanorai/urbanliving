@@ -1,4 +1,5 @@
 import React from 'react';
+import SeoReadMore from '../SEO/SeoReadMore';
 
 const css = `
 .plp-seo { background: #fdf9f3; border-top: 1px solid #f0e8da; padding: 40px 24px 48px; font-family: 'Poppins', sans-serif; }
@@ -32,6 +33,7 @@ const PLPSeoContent = () => (
         to your rent.
       </p>
 
+      <SeoReadMore>
       <h3>Finding the Right PG or Co-Living Space</h3>
       <p>
         Most PG searches in Delhi NCR come down to three things: location, sharing type and what's included.
@@ -86,6 +88,7 @@ const PLPSeoContent = () => (
         notice period for moving out are the three details worth confirming on the listing page before you
         reach out to a property owner.
       </p>
+      </SeoReadMore>
 
       <div className="plp-seo-tags">
         {SECTOR_TAGS.map(tag => <span className="plp-seo-tag" key={tag}>{tag}</span>)}

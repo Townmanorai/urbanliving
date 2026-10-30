@@ -13,6 +13,7 @@ import Home6 from "../HomePageNew/Home6"
 import HomeReviews from "../HomePageNew/HomeReviews"
 import AppDownload from './AppDownload'
 import HomeFAQ from './HomeFAQ'
+import HomeSeoContent from './HomeSeoContent'
 // import InspirationSection from './InspirationSection' // commented out for now — restore later if needed
 
 const BASE = "https://www.ovikaliving.com";
@@ -231,6 +232,7 @@ export const HomePageNewMain = () => {
         {/* <Home6 /> */}
         <HomeFAQ />
         <AppDownload />
+        <HomeSeoContent />
         {/* <InspirationSection /> commented out for now — restore later if needed */}
       </div>
     </>

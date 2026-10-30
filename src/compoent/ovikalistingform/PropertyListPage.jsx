@@ -1,6 +1,9 @@
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
+import PLPSeoContent from './PLPSeoContent';
+import NightlySeoContent from './NightlySeoContent';
+import MonthlySeoContent from './MonthlySeoContent';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { navClick, auxNavClick } from '../../utils/navClick';
 import { FiSearch, FiMapPin, FiHeart, FiPlus, FiStar, FiX, FiMoon, FiCalendar, FiTag, FiHome, FiTrendingUp, FiAward, FiClock, FiMap, FiList, FiChevronLeft, FiChevronRight, FiUser, FiUsers, FiBriefcase, FiCoffee, FiFeather, FiShield, FiZap, FiCheckCircle, FiLayers } from 'react-icons/fi';
@@ -3713,6 +3716,9 @@ const PropertyListPage = () => {
         </div>{/* end right content */}
       </div>{/* end plp-body */}
     </div>
+    {location.pathname === '/nightly-stays' ? <NightlySeoContent />
+      : location.pathname === '/monthly-rentals' ? <MonthlySeoContent />
+      : <PLPSeoContent />}
     </>
   );
 };

@@ -1,10 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
+import { useLocation } from 'react-router-dom';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import ContactSeoContent from './ContactSeoContent';
+import SupportSeoContent from './SupportSeoContent';
 
 const ContactMain = () => {
+  const location = useLocation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -610,7 +613,7 @@ const ContactMain = () => {
           </button>
         </div>
       </div>
-      <ContactSeoContent />
+      {location.pathname === '/support' ? <SupportSeoContent /> : <ContactSeoContent />}
     </div>
   );
 };

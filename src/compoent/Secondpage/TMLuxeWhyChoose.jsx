@@ -35,7 +35,7 @@ export default function TMLuxeWhyChoose() {
 
           <article className="tmluxe-card">
             <div className="tmluxe-icon-wrap">
-              <img src="/key.png" alt="Key" className="tmluxe-icon" style={{ width: '45px', height: '45px' }} />
+              <img src="/key.png" alt="Self check-in icon — OvikaLiving Signature Stays" className="tmluxe-icon" style={{ width: '45px', height: '45px' }} />
             </div>
             <h3 className="tmluxe-card-title">Self Check-in & Check-out</h3>
             <p className="tmluxe-card-text">

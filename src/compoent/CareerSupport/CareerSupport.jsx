@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet";
 import "./CareerSupport.css";
+import CareerSeoContent from "./CareerSeoContent";
 
 // react-icons imports
 import { FiCode, FiTrendingUp, FiMapPin, FiArrowRight, FiX, FiCheck } from "react-icons/fi";
@@ -208,7 +209,7 @@ export default function CareerSupport() {
               <div className="cs-about-img-main">
                 <img
                   src="/mission.jpeg"
-                  alt="OvikaLiving property"
+                  alt="OvikaLiving mission — Townmanor Technologies team building India's rental platform in Noida"
                 />
               </div>
             </div>
@@ -470,6 +471,8 @@ export default function CareerSupport() {
           Apply Anyway <FiArrowRight style={{ marginLeft: 6, verticalAlign: "middle" }} />
         </button>
       </div>
+
+      <CareerSeoContent />
 
     </div>
   );

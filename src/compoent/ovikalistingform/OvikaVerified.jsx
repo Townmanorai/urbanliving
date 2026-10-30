@@ -575,7 +575,7 @@ const OvikaVerified = () => {
       {/* Process image */}
       <section style={{ padding:'0 20px 48px', textAlign:'center' }}>
         <img
-          src="/verifyimage.png" alt="Verification process"
+          src="/verifyimage.png" alt="OvikaLiving property verification process Noida"
           style={{ width:'100%', borderRadius:'16px', border:`1px solid ${C.border}`, boxShadow:'0 8px 24px rgba(0,0,0,0.07)' }}
         />
       </section>

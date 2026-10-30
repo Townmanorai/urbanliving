@@ -110,7 +110,7 @@ function LuxeProperties() {
             {/* Dummy Coming Soon Property */}
             <article className="tmxluxe-prop-card">
               <div className="tmxluxe-prop-media" style={{position: 'relative'}}>
-                <img src="/tmluxe3.png" alt="TM Luxe 3" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                <img src="/tmluxe3.png" alt="OvikaLiving Signature Stay premium furnished apartment interior Noida" style={{width: '100%', height: '100%', objectFit: 'cover'}} />
                 <span className="tmxluxe-prop-badge">Coming Soon</span>
               </div>
               <div className="tmxluxe-prop-body">
